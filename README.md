@@ -1,8 +1,8 @@
-# Scanbot Barcode & Document Scanning Example App for Xamarin.Forms
+# Scanbot Barcode & Document Scanning Example App for Maui
 
-This example app shows how to integrate the [Scanbot Barcode Scanner SDK](https://scanbot.io/developer/xamarin-barcode-scanner/), [Scanbot Document Scanner SDK](https://scanbot.io/developer/xamarin-document-scanner/), and [Scanbot Data Capture SDK](https://scanbot.io/developer/xamarin-data-capture/) for Xamarin.
+This example app shows how to integrate the [Scanbot Barcode Scanner SDK](https://scanbot.io/developer/xamarin-barcode-scanner/), [Scanbot Document Scanner SDK](https://scanbot.io/developer/xamarin-document-scanner/), and [Scanbot Data Capture SDK](https://scanbot.io/developer/xamarin-data-capture/) for Maui.
 
-The Scanbot SDK is available as a NuGet package for the Xamarin.Forms platform:
+The Scanbot SDK is available as a NuGet package for the Maui platform:
 [ScanbotSDK.Xamarin.Forms](https://www.nuget.org/packages/ScanbotSDK.Xamarin.Forms)
 
 ## What is the Scanbot SDK?
@@ -28,6 +28,6 @@ framework or features, please visit our [Support Page](https://docs.scanbot.io/s
 👉 [Scanbot SDK documentation](https://docs.scanbot.io/document-scanner-sdk/xamarin/introduction/)
 
 ## Requirements
-[Microsoft Visual Studio](https://www.visualstudio.com) with [Xamarin Platform](https://www.xamarin.com)
+[Microsoft Visual Studio](https://www.visualstudio.com) with [Maui Platform](https://www.xamarin.com)
 (For iOS Visual Studio for Mac **7.4+**)
 
