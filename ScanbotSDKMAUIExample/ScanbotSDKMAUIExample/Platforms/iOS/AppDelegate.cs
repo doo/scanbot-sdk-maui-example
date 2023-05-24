@@ -27,6 +27,7 @@ public class AppDelegate : MauiUIApplicationDelegate
             }
         });
         raw.SetProvider(new SQLite3Provider_sqlite3());
+        
         return MauiProgram.CreateMauiApp();
     }
 

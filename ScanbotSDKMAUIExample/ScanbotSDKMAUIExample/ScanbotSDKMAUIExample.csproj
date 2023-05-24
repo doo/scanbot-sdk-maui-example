@@ -1,4 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+    <!-- ===================== Common Project Configs/Architecture =====================  -->
     <PropertyGroup>
         <TargetFrameworks>net6.0-ios;net6.0-android</TargetFrameworks>
         <OutputType>Exe</OutputType>
@@ -19,27 +20,12 @@
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24</SupportedOSPlatformVersion>
     </PropertyGroup>
-    <!-- DEBUG CONFIGS -->
-   <!-- <PropertyGroup Condition="'$(TargetFramework)|$(Platform)'=='net6.0-ios|AnyCPU'">
-        <CreatePackage>false</CreatePackage>
-        <CodesignProvision>Automatic</CodesignProvision>
-        <CodesignKey>iPhone Developer</CodesignKey>
-        <MtouchArch>ARM64</MtouchArch>
-        <RuntimeIdentifiers>ios-arm64</RuntimeIdentifiers>
-        <MtouchLink>None</MtouchLink>
-        <MtouchExtraArgs>-v</MtouchExtraArgs>
-        <MtouchFloat32>true</MtouchFloat32>
-        <DeviceSpecificBuild>true</DeviceSpecificBuild>
-        <MtouchDebug>true</MtouchDebug>
-        <MtouchFastDev>true</MtouchFastDev>
-        <MtouchProfiling>true</MtouchProfiling>
-        <MtouchUseSGen>true</MtouchUseSGen>
-        <MtouchUseRefCounting>true</MtouchUseRefCounting>
-    </PropertyGroup>-->
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0-ios|AnyCPU'">
-      <MtouchLink>SdkOnly</MtouchLink>
-      <MtouchInterpreter>-all</MtouchInterpreter>
+        <MtouchLink>SdkOnly</MtouchLink>
+        <MtouchInterpreter>-all</MtouchInterpreter>
+        <CreatePackage>false</CreatePackage>
     </PropertyGroup>
+    <!-- ===================== Application Resources =====================  -->
     <ItemGroup>
         <!-- App Icon -->
         <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
@@ -53,6 +39,8 @@
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
     </ItemGroup>
+    
+    <!-- ===================== IOS Project References =====================  -->
     <ItemGroup Condition="'$(TargetFramework)|$(Platform)'=='net6.0-ios|AnyCPU'">
         <PackageReference Include="NuGet.Build.Packaging" Version="0.2.2">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -60,14 +48,12 @@
         </PackageReference>
         <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
     </ItemGroup>
-    <ItemGroup Condition="'$(TargetFramework)|$(Platform)'=='net6.0-android|AnyCPU'">
-        
-    </ItemGroup>
+    
+    <!-- ===================== Common Project References =====================  -->
     <ItemGroup>
         <PackageReference Include="SQLitePCLRaw.core" Version="2.1.4" />
         <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.4" />
         <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
-        <PackageReference Include="ScanbotSDK.MAUI" Version="1.0.0-alpha.2" />
+        <PackageReference Include="ScanbotSDK.MAUI" Version="2.0.0-beta.1" />
     </ItemGroup>
 </Project>
-

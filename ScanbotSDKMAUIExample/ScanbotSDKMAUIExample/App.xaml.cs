@@ -6,6 +6,7 @@ namespace DocumentSDK.MAUI.Example
 {
     public partial class App : Application
     {
+        
         public const string SCANBOT_LICENSE_KEY = null;
         public App()
         {
@@ -15,7 +16,7 @@ namespace DocumentSDK.MAUI.Example
             InitializeAsync();
 #pragma warning restore CS4014 
             MainPage = new NavigationPage(new HomePage());
-          
+
         }
 
         async void InitializeAsync()
