@@ -56,4 +56,11 @@
         <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
         <PackageReference Include="ScanbotSDK.MAUI" Version="2.0.0-beta.2" />
     </ItemGroup>
+
+        <!-- ===================== IOS OCR Data Files =====================  -->
+      <ItemGroup Condition="'$(TargetFramework)|$(Platform)'=='net6.0-ios|AnyCPU'">
+        <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\eng.traineddata" />
+        <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\deu.traineddata" />
+        <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\osd.traineddata" />
+    </ItemGroup>
 </Project>

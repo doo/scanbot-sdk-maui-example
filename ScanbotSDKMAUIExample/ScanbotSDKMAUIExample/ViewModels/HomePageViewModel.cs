@@ -54,8 +54,11 @@ namespace DocumentSDK.MAUI.Example.ViewModels
                     new SDKService { Title = SDKServiceTitle.ScanMultipleQRAndBarcodes, ShowService = true },
                     new SDKService { Title = SDKServiceTitle.ImportImageAndDetectBarcode, ShowService = true },
 
-                    new SDKService { Title = "DATA DETECTORS", ShowSection = true },
+                      new SDKService { Title = "DATA DETECTORS", ShowSection = true },
                     new SDKService { Title = SDKServiceTitle.MRZScanner, ShowService = true },
+                    new SDKService { Title = SDKServiceTitle.EHICScanner, ShowService = true },
+                    new SDKService { Title = SDKServiceTitle.GenericDocRecognizer, ShowService = true },
+                    new SDKService { Title = SDKServiceTitle.CheckRecognizer, ShowService = true },
 
                     new SDKService { Title = "MISCELLANEOUS", ShowSection = true },
                     new SDKService { Title = SDKServiceTitle.ViewLicenseInfo, ShowService = true },
@@ -105,6 +108,10 @@ namespace DocumentSDK.MAUI.Example.ViewModels
 
                 case SDKServiceTitle.GenericDocRecognizer:
                     await GenericDocumentRecognizerClicked();
+                    break;
+
+                case SDKServiceTitle.CheckRecognizer:
+                    await CheckRecognizerClicked();
                     break;
 
                 case SDKServiceTitle.ViewLicenseInfo:
@@ -293,6 +300,8 @@ namespace DocumentSDK.MAUI.Example.ViewModels
             }
         }
 
+
+
         // ------------------------------------
         // EHIC Scanner
         // ------------------------------------
@@ -300,6 +309,7 @@ namespace DocumentSDK.MAUI.Example.ViewModels
         {
             var configuration = new HealthInsuranceCardConfiguration { };
 
+            //TestCloseHealthInsuranceCardScannerAsync();
             var result = await ScanbotSDK.ReadyToUseUIService.LaunchHealthInsuranceCardScannerAsync(configuration);
             if (result.Status == OperationResult.Ok)
             {
@@ -313,23 +323,43 @@ namespace DocumentSDK.MAUI.Example.ViewModels
         // ------------------------------------
         async Task GenericDocumentRecognizerClicked()
         {
+            if (!SDKUtils.CheckLicense(CurrentPage)) { return; }
+
             var configuration = new GenericDocumentRecognizerConfiguration
             {
                 DocumentType = GenericDocumentType.DeIdCard
-                // Other options...
-                // DetailsActionColor = Color.Blue,
-                // DetailsBackgroundColor = Color.Yellow,
-                // CancelButtonTitle = "CANCEL TEST",
-                // ScanFrontSideTitle = "FRONT SIDE TITLE",
-                // TopBarButtonsInactiveColor = Color.Tomato,
-                // TopBarButtonsColor = Color.Green,
             };
-
             var result = await ScanbotSDK.ReadyToUseUIService.LaunchGenericDocumentRecognizerAsync(configuration);
             if (result.Status == OperationResult.Ok)
             {
                 var message = SDKUtils.ParseGDRResult(result);
                 ViewUtils.Alert(CurrentPage, "GDR Result", message);
+            }
+        }
+
+        // ------------------------------------
+        // Check Recognizer
+        // ------------------------------------
+        async Task CheckRecognizerClicked()
+        {
+            if (!SDKUtils.CheckLicense(CurrentPage)) { return; }
+
+            var configuration = new CheckRecognizerConfiguration
+            {
+                AcceptedCheckStandards = new List<CheckStandard>() {
+                    CheckStandard.USA,
+                    CheckStandard.AUS,
+                    CheckStandard.IND,
+                    CheckStandard.FRA,
+                    CheckStandard.KWT,
+                }
+            };
+
+            var result = await ScanbotSDK.ReadyToUseUIService.LaunchCheckRecognizerAsync(configuration);
+            if (result.Status == OperationResult.Ok)
+            {
+                var message = SDKUtils.ParseCheckResult(result);
+                ViewUtils.Alert(CurrentPage, "Check Result", message);
             }
         }
 

@@ -30,6 +30,7 @@ namespace DocumentSDK.MAUI.Example.Models
         public const string MRZScanner = "MRZ Scanner";
         public const string EHICScanner = "EHIC Scanner";
         public const string GenericDocRecognizer = "Generic Document Recognizer";
+        public const string CheckRecognizer = "Check Recognizer";
 
         // MISCELLANEOUS
         public const string ViewLicenseInfo = "View License Info";
