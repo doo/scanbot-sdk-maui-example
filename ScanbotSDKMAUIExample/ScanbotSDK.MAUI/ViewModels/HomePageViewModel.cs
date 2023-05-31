@@ -220,7 +220,8 @@ namespace DocumentSDK.MAUI.Example.ViewModels
                     new BarcodeSDK.MAUI.Models.Barcode {
                             Format = barcodes.Format,
                             Text = barcodes.Text,
-                            Image = source
+                            Image = source,
+                            RawBytes = barcodes.RawBytes
                 }}));
             }
         }

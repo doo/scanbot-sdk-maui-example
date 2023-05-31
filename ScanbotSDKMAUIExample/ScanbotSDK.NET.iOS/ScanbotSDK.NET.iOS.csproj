@@ -48,7 +48,7 @@
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="ScanbotSDK.NET" Version="1.0.0-local.1" />
+		<PackageReference Include="ScanbotSDK.NET" Version="1.0.0-alpha.2" />
 	</ItemGroup>
 <ItemGroup Condition=" '$(Configuration)' == 'Release' ">
     <Reference Include="DocumentSDK.iOS">
