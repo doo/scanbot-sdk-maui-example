@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 17.0.31611.283
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScanbotSDKMAUIExample", "ScanbotSDKMAUIExample\ScanbotSDKMAUIExample.csproj", "{EFE30BF5-F7A5-43BF-9A9F-EB4D2192A31B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScanbotSDK.MAUI", "ScanbotSDK.MAUI\ScanbotSDK.MAUI.csproj", "{EFE30BF5-F7A5-43BF-9A9F-EB4D2192A31B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScanbotSDK.NET.iOS", "ScanbotSDK.NET.iOS\ScanbotSDK.NET.iOS.csproj", "{A3676FA2-6444-4EE2-8E37-918C32FA931C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentSDK.NET.Droid", "DocumentSDK.NET.Droid\DocumentSDK.NET.Droid.csproj", "{17EA4B1B-DE2F-4AAD-9E7B-7F5D28A91CBC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,6 +21,14 @@ Global
 		{EFE30BF5-F7A5-43BF-9A9F-EB4D2192A31B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EFE30BF5-F7A5-43BF-9A9F-EB4D2192A31B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EFE30BF5-F7A5-43BF-9A9F-EB4D2192A31B}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{A3676FA2-6444-4EE2-8E37-918C32FA931C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3676FA2-6444-4EE2-8E37-918C32FA931C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3676FA2-6444-4EE2-8E37-918C32FA931C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3676FA2-6444-4EE2-8E37-918C32FA931C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17EA4B1B-DE2F-4AAD-9E7B-7F5D28A91CBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17EA4B1B-DE2F-4AAD-9E7B-7F5D28A91CBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17EA4B1B-DE2F-4AAD-9E7B-7F5D28A91CBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17EA4B1B-DE2F-4AAD-9E7B-7F5D28A91CBC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

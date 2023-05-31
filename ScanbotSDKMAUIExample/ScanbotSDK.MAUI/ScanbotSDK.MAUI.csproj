@@ -1,0 +1,66 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <!-- ===================== Common Project Configs/Architecture =====================  -->
+    <PropertyGroup>
+        <TargetFrameworks>net6.0-ios;net6.0-android</TargetFrameworks>
+        <OutputType>Exe</OutputType>
+        <RootNamespace>DocumentSDK.MAUI.Example</RootNamespace>
+        <UseMaui>true</UseMaui>
+        <SingleProject>true</SingleProject>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <!-- Display name -->
+        <ApplicationTitle>MAUI ScanbotSDK</ApplicationTitle>
+        <!-- App Identifier -->
+        <ApplicationId>io.scanbot.example.sdk.xamarin.forms</ApplicationId>
+        <ApplicationIdGuid>e4ba4957-9c1e-4228-8037-7e92a44e5778</ApplicationIdGuid>
+        <AssemblyName>ScanbotSDK.MAUI.Ex</AssemblyName>
+        <!-- Versions -->
+        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+        <ApplicationVersion>1.0</ApplicationVersion>
+        <!-- Supported Platforms -->
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24</SupportedOSPlatformVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0-ios|AnyCPU'">
+        <MtouchLink>SdkOnly</MtouchLink>
+        <MtouchInterpreter>-all</MtouchInterpreter>
+        <CreatePackage>false</CreatePackage>
+    </PropertyGroup>
+    <!-- ===================== Application Resources =====================  -->
+    <ItemGroup>
+        <!-- App Icon -->
+        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+        <!-- Splash Screen -->
+        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+        <!-- Images -->
+        <MauiImage Include="Resources\Images\*" />
+        <MauiImage Update="Resources\Images\dotnet_bot.svg" BaseSize="168,208" />
+        <!-- Custom Fonts -->
+        <MauiFont Include="Resources\Fonts\*" />
+        <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
+        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+    </ItemGroup>
+    
+    <!-- ===================== IOS Project References =====================  -->
+    <ItemGroup Condition="'$(TargetFramework)|$(Platform)'=='net6.0-ios|AnyCPU'">
+        <PackageReference Include="NuGet.Build.Packaging" Version="0.2.2">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+    </ItemGroup>
+    
+    <!-- ===================== Common Project References =====================  -->
+    <ItemGroup>
+        <PackageReference Include="SQLitePCLRaw.core" Version="2.1.4" />
+        <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.4" />
+        <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
+        <PackageReference Include="ScanbotSDK.MAUI" Version="2.0.0-beta.2" />
+    </ItemGroup>
+
+        <!-- ===================== IOS OCR Data Files =====================  -->
+      <ItemGroup Condition="'$(TargetFramework)|$(Platform)'=='net6.0-ios|AnyCPU'">
+        <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\eng.traineddata" />
+        <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\deu.traineddata" />
+        <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\osd.traineddata" />
+    </ItemGroup>
+</Project>
