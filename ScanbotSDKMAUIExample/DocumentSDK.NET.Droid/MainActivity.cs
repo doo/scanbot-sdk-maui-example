@@ -212,12 +212,14 @@ namespace DocumentSDK.NET.Droid
             {
                 var configuration = new BarcodeScannerConfiguration();
                 configuration.SetFinderTextHint("Please align the QR-/Barcode in the frame above to scan it");
+                configuration.SetSelectionOverlayConfiguration(GetSelectionOverlayConfiguration());
                 var intent = BarcodeScannerActivity.NewIntent(this, configuration);
                 StartActivityForResult(intent, Constants.QR_BARCODE_DEFAULT_UI_REQUEST_CODE);
             }
             else if (button.Data.Code == ListItemCode.ScannerBatchBarcode)
             {
                 var configuration = new BatchBarcodeScannerConfiguration();
+                configuration.SetSelectionOverlayConfiguration(GetSelectionOverlayConfiguration());
                 configuration.SetFinderTextHint("Please align the QR-/Barcode in the frame above to scan it");
                 var intent = BatchBarcodeScannerActivity.NewIntent(this, configuration, null);
                 StartActivityForResult(intent, Constants.QR_BARCODE_DEFAULT_UI_REQUEST_CODE);
@@ -267,6 +269,15 @@ namespace DocumentSDK.NET.Droid
                 var intent = CheckRecognizerActivity.NewIntent(this, config);
                 StartActivityForResult(intent, Constants.CHECK_RECOGNIZER_REQUEST);
             }
+        }
+
+        // Returns the selection overlay configuration
+        private SelectionOverlayConfiguration GetSelectionOverlayConfiguration()
+        {
+            return new SelectionOverlayConfiguration(true, false, IO.Scanbot.Sdk.Barcode.UI.BarcodeOverlayTextFormat.CodeAndType,
+                        Color.Yellow, Color.Yellow, Color.Black, Java.Lang.Integer.ValueOf(Color.Red.ToArgb()),
+                        Java.Lang.Integer.ValueOf(Color.Red.ToArgb()),
+                        Java.Lang.Integer.ValueOf(Color.Black.ToArgb()));
         }
 
         /**

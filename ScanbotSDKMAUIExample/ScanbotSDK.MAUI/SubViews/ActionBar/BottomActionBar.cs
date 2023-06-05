@@ -56,7 +56,7 @@ namespace DocumentSDK.MAUI.Example.SubViews.ActionBar
             Children.Add(button);
         }
 
-        public void AddClickEvent(BottomActionButton button, EventHandler action)
+        public void AddClickEvent(BottomActionButton button, EventHandler<TappedEventArgs> action)
         {
             var recognizer = new TapGestureRecognizer();
             recognizer.Tapped += action;
