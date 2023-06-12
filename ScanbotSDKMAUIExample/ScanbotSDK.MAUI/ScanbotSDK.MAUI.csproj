@@ -20,10 +20,11 @@
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24</SupportedOSPlatformVersion>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
+    <PropertyGroup Condition="'$(TargetFramework)|$(Platform)'=='net7.0-ios|AnyCPU'">
         <MtouchLink>SdkOnly</MtouchLink>
         <MtouchInterpreter>-all</MtouchInterpreter>
         <CreatePackage>false</CreatePackage>
+        <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>        
     </PropertyGroup>
     <!-- ===================== Application Resources =====================  -->
     <ItemGroup>
@@ -39,7 +40,6 @@
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
     </ItemGroup>
-    
     <!-- ===================== IOS Project References =====================  -->
     <ItemGroup Condition="'$(TargetFramework)|$(Platform)'=='net7.0-ios|AnyCPU'">
         <PackageReference Include="NuGet.Build.Packaging" Version="0.2.2">
@@ -54,7 +54,7 @@
         <PackageReference Include="SQLitePCLRaw.core" Version="2.1.4" />
         <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.4" />
         <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
-        <PackageReference Include="ScanbotSDK.MAUI" Version="2.0.0-beta.3" />
+        <PackageReference Include="ScanbotSDK.MAUI" Version="2.2.0-beta.1" />
     </ItemGroup>
 
         <!-- ===================== IOS OCR Data Files =====================  -->

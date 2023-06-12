@@ -11,6 +11,6 @@
     <AssemblyName>ScanbotSDK.Android</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="ScanbotSDK.NET" Version="1.0.0-local.3" />
+    <PackageReference Include="ScanbotSDK.NET" Version="2.2.0-beta.1" />
   </ItemGroup>
 </Project>

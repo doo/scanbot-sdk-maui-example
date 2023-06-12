@@ -33,7 +33,7 @@ public class MainApplication : MauiApplication
                     EnableNativeLogging = true
                 };
 
-                SBSDKInitializer.Initialize(this, App.SCANBOT_LICENSE_KEY, configuration);
+                SBSDKInitializer.Initialize(this, App.LICENSE_KEY, configuration);
 
             }
             catch (Exception e)
