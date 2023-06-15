@@ -275,9 +275,7 @@ namespace DocumentSDK.NET.Droid
         private SelectionOverlayConfiguration GetSelectionOverlayConfiguration()
         {
             return new SelectionOverlayConfiguration(true, false, IO.Scanbot.Sdk.Barcode.UI.BarcodeOverlayTextFormat.CodeAndType,
-                        Color.Yellow, Color.Yellow, Color.Black, Java.Lang.Integer.ValueOf(Color.Red.ToArgb()),
-                        Java.Lang.Integer.ValueOf(Color.Red.ToArgb()),
-                        Java.Lang.Integer.ValueOf(Color.Black.ToArgb()));
+                        Color.Yellow, Color.Yellow, Color.Black);
         }
 
         /**

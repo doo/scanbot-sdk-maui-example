@@ -203,7 +203,7 @@ namespace DocumentSDK.MAUI.Example.ViewModels
 
             config.CodeDensity = BarcodeDensity.High;
             config.EngineMode = EngineMode.NextGen;
-            config.OverlayConfiguration = new SelectionOverlayConfiguration(Colors.Yellow, Colors.Yellow, Colors.Black, Colors.Red, Colors.Red, Colors.White);
+            config.OverlayConfiguration = new SelectionOverlayConfiguration(true, OverlayFormat.Code, Colors.Yellow, Colors.Yellow, Colors.Black, Colors.Red, Colors.Red, Colors.White);
             var result = await ScanbotSDK.ReadyToUseUIService.OpenBarcodeScannerView(config);
             if (result.Status == OperationResult.Ok)
             {
@@ -233,7 +233,7 @@ namespace DocumentSDK.MAUI.Example.ViewModels
         {
             var config = new BatchBarcodeScannerConfiguration();
             config.BarcodeFormats = BarcodeTypes.Instance.AcceptedTypes;
-            config.OverlayConfiguration = new SelectionOverlayConfiguration(Colors.Yellow, Colors.Yellow, Colors.Black, Colors.Red, Colors.Red, Colors.White);
+            config.OverlayConfiguration = new SelectionOverlayConfiguration(true, OverlayFormat.Code, null, null, null);
             var result = await ScanbotSDK.ReadyToUseUIService.OpenBatchBarcodeScannerView(config);
             if (result.Status == OperationResult.Ok)
             {
