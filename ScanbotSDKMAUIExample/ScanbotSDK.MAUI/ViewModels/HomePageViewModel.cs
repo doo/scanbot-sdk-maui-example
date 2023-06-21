@@ -51,6 +51,7 @@ namespace DocumentSDK.MAUI.Example.ViewModels
 
                     new SDKService { Title = "BARCODE DETECTOR", ShowSection = true },
                     new SDKService { Title = SDKServiceTitle.ScanQRAndBarcodes, ShowService = true },
+                     new SDKService { Title = SDKServiceTitle.ScanQRAndBarcodesWithImage, ShowService = true },
                     new SDKService { Title = SDKServiceTitle.ScanMultipleQRAndBarcodes, ShowService = true },
                     new SDKService { Title = SDKServiceTitle.ImportImageAndDetectBarcode, ShowService = true },
 
@@ -83,11 +84,15 @@ namespace DocumentSDK.MAUI.Example.ViewModels
                     break;
 
                 case SDKServiceTitle.ViewImageResults:
-                    ViewImageResultsClicked();
+                        ViewImageResultsClicked();
                     break;
 
                 case SDKServiceTitle.ScanQRAndBarcodes:
-                    await BarcodeScannerClicked();
+                    await BarcodeScannerClicked(false);
+                    break;
+
+                case SDKServiceTitle.ScanQRAndBarcodesWithImage:
+                    await BarcodeScannerClicked(true);
                     break;
 
                 case SDKServiceTitle.ScanMultipleQRAndBarcodes:
@@ -182,7 +187,7 @@ namespace DocumentSDK.MAUI.Example.ViewModels
         // ------------------------------------
         // Barcode Scanner
         // ------------------------------------
-        async Task BarcodeScannerClicked()
+        async Task BarcodeScannerClicked(bool withImage)
         {
             var config = new BarcodeScannerConfiguration
             {
@@ -201,28 +206,30 @@ namespace DocumentSDK.MAUI.Example.ViewModels
                 config.StripCheckDigits = stripCheckDigits;
             }
 
+            if (withImage)
+            {
+                config.BarcodeImageGenerationType = BarcodeImageGenerationType.CapturedImage;
+            }
+
             config.CodeDensity = BarcodeDensity.High;
             config.EngineMode = EngineMode.NextGen;
-            config.OverlayConfiguration = new SelectionOverlayConfiguration(true, OverlayFormat.Code, Colors.Yellow, Colors.Yellow, Colors.Black, Colors.Red, Colors.Red, Colors.White);
+            config.OverlayConfiguration = new SelectionOverlayConfiguration(true, OverlayFormat.Code, Colors.Yellow, Colors.Yellow, Colors.Black);
+            //TestCloseBarcodeScannerAsync();
+
             var result = await ScanbotSDK.ReadyToUseUIService.OpenBarcodeScannerView(config);
             if (result.Status == OperationResult.Ok)
             {
                 if (result.Barcodes.Count == 0)
                 {
+
                     ViewUtils.Alert(CurrentPage, "Oops!", "No barcodes found, please try again");
                     return;
                 }
 
-                var source = result.Image;
-                var barcodes = result.Barcodes[0];
-
-                await Navigate(new BarcodeResultPage(new List<BarcodeSDK.MAUI.Models.Barcode> {
-                    new BarcodeSDK.MAUI.Models.Barcode {
-                            Format = barcodes.Format,
-                            Text = barcodes.Text,
-                            Image = source,
-                            RawBytes = barcodes.RawBytes
-                }}));
+                if (withImage)
+                    await Navigate(new BarcodeResultPage(result.Image, result.Barcodes));
+                else
+                    await Navigate(new BarcodeResultPage(result.Barcodes));
             }
         }
 
@@ -233,7 +240,7 @@ namespace DocumentSDK.MAUI.Example.ViewModels
         {
             var config = new BatchBarcodeScannerConfiguration();
             config.BarcodeFormats = BarcodeTypes.Instance.AcceptedTypes;
-            config.OverlayConfiguration = new SelectionOverlayConfiguration(true, OverlayFormat.Code, null, null, null);
+            config.OverlayConfiguration = new SelectionOverlayConfiguration(true, OverlayFormat.Code, Colors.Yellow, Colors.Yellow, Colors.Black);
             var result = await ScanbotSDK.ReadyToUseUIService.OpenBatchBarcodeScannerView(config);
             if (result.Status == OperationResult.Ok)
             {
@@ -291,7 +298,10 @@ namespace DocumentSDK.MAUI.Example.ViewModels
         // ------------------------------------
         async Task MRZScannerClicked()
         {
-            MrzScannerConfiguration configuration = null;
+            MrzScannerConfiguration configuration = new MrzScannerConfiguration();
+            configuration.CancelButtonTitle = "Done";
+            configuration.FlashEnabled = true;
+            configuration.TopBarButtonsColor = Colors.Green;
 
             var result = await ScanbotSDK.ReadyToUseUIService.LaunchMrzScannerAsync(configuration);
             if (result.Status == OperationResult.Ok)
@@ -301,21 +311,21 @@ namespace DocumentSDK.MAUI.Example.ViewModels
             }
         }
 
-
-
         // ------------------------------------
         // EHIC Scanner
         // ------------------------------------
         async Task EHICScannerClicked()
         {
-            var configuration = new HealthInsuranceCardConfiguration { };
-
+            var configuration = new HealthInsuranceCardConfiguration();
+            configuration.CancelButtonTitle = "Done";
+            configuration.FlashEnabled = true;
+            configuration.TopBarButtonsColor = Colors.Green;
             //TestCloseHealthInsuranceCardScannerAsync();
             var result = await ScanbotSDK.ReadyToUseUIService.LaunchHealthInsuranceCardScannerAsync(configuration);
             if (result.Status == OperationResult.Ok)
             {
                 var message = SDKUtils.ParseEHICResult(result);
-                ViewUtils.Alert(CurrentPage, "MRZ Scanner result", message);
+                ViewUtils.Alert(CurrentPage, "EHIC Scanner result", message);
             }
         }
 

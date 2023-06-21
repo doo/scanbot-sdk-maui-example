@@ -4,19 +4,16 @@
              x:Class="DocumentSDK.MAUI.Example.Pages.HomePage"
              xmlns:color="clr-namespace:BarcodeSDK.MAUI.Constants;assembly=BarcodeSDK.MAUI"
              Title="Scanbot SDK MAUI">
-    <StackLayout>
-        <ListView
-            x:Name="ListViewSDKServices"
+    <ScrollView>
+        <StackLayout>
+            <CollectionView
+            x:Name="CollectionViewSDKServices"
             ItemsSource="{Binding SDKServices, Mode=TwoWay}"
-            HasUnevenRows="True"
-            ItemSelected="ListViewSDKServices_ItemSelected"
-            SeparatorVisibility="None"
+            SelectionChanged="CollectionViewSDKServices_ItemSelected"
             SelectionMode="Single"
-            SeparatorColor="Silver"
-            >
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <ViewCell>
+            VerticalScrollBarVisibility="Default" >
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
                         <StackLayout>
                             <Label
                                 Padding="10,0"
@@ -43,10 +40,10 @@
                                  BackgroundColor="LightGray"
                                  HeightRequest="0.5" />
                         </StackLayout>
-                    </ViewCell>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-        <StackLayout HeightRequest="10" />
-    </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <StackLayout HeightRequest="10" />
+        </StackLayout>
+    </ScrollView>
 </ContentPage>
