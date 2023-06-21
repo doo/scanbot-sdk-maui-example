@@ -2,8 +2,6 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>net7.0-ios</TargetFrameworks>
-		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
-		<!-- <TargetFrameworks>$(TargetFrameworks);net7.0-tizen</TargetFrameworks> -->
 		<OutputType>Exe</OutputType>
 		<RootNamespace>DocumentSDK.NET.iOS</RootNamespace>
 		<UseMaui>true</UseMaui>
@@ -46,7 +44,7 @@
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="ScanbotSDK.NET" Version="2.2.0-beta.2" />
+		<PackageReference Include="ScanbotSDK.NET" Version="2.2.0-beta.3" />
 	</ItemGroup>
 <ItemGroup Condition=" '$(Configuration)' == 'Release' ">
     <Reference Include="DocumentSDK.iOS">

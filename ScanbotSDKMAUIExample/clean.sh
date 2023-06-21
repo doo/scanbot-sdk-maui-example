@@ -9,3 +9,6 @@ set -e
     rm -rf "$folder"/obj "$folder/bin"
     echo $folder
   done
+
+# For visual studio project cache
+  rm -rf ./.vs

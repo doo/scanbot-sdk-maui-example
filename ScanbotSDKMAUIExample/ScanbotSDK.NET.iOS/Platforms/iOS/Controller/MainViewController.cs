@@ -37,8 +37,6 @@ namespace DocumentSDK.MAUI.Example.Native.iOS.Controller
             CameraCallback = new SimpleScanCallback();
 
             ContentView.LicenseIndicator.Text = Texts.no_license_found_the_app_will_terminate_after_one_minute;
-
-        
         }
 
         public override void ViewWillAppear(bool animated)
@@ -196,6 +194,12 @@ namespace DocumentSDK.MAUI.Example.Native.iOS.Controller
                 var configuration = SBSDKUIBarcodeScannerConfiguration.DefaultConfiguration;
                 var controller = SBSDKUIBarcodeScannerViewController.CreateNewWithConfiguration(configuration, Delegates.Barcode);
                 controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
+                configuration.SelectionOverlayConfiguration.OverlayEnabled = true;
+                configuration.SelectionOverlayConfiguration.AutomaticSelectionEnabled = true;
+                configuration.SelectionOverlayConfiguration.OverlayTextFormat = SBSDKBarcodeOverlayFormat.Code;
+                configuration.SelectionOverlayConfiguration.PolygonColor = UIColor.Yellow;
+                configuration.SelectionOverlayConfiguration.TextColor = UIColor.Yellow;
+                configuration.SelectionOverlayConfiguration.TextContainerColor = UIColor.Black;
                 PresentViewController(controller, false, null);
             }
             else if (button.Data.Code == ListItemCode.ScannerBatchBarcode)
@@ -203,6 +207,12 @@ namespace DocumentSDK.MAUI.Example.Native.iOS.Controller
                 var configuration = SBSDKUIBarcodesBatchScannerConfiguration.DefaultConfiguration;
                 var controller = SBSDKUIBarcodesBatchScannerViewController.CreateNewWithConfiguration(configuration, Delegates.BatchBarcode);
                 controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
+                configuration.SelectionOverlayConfiguration.OverlayEnabled = true;
+                configuration.SelectionOverlayConfiguration.AutomaticSelectionEnabled = true;
+                configuration.SelectionOverlayConfiguration.OverlayTextFormat = SBSDKBarcodeOverlayFormat.Code;
+                configuration.SelectionOverlayConfiguration.PolygonColor = UIColor.Yellow;
+                configuration.SelectionOverlayConfiguration.TextColor = UIColor.Yellow;
+                configuration.SelectionOverlayConfiguration.TextContainerColor = UIColor.Black;
                 PresentViewController(controller, false, null);
             }
             else if (button.Data.Code == ListItemCode.ScannerImportBarcode)
@@ -228,13 +238,20 @@ namespace DocumentSDK.MAUI.Example.Native.iOS.Controller
             {
                 var config = new SBSDKUIMRZScannerConfiguration();
                 config.TextConfiguration.CancelButtonTitle = "Done";
+                config.BehaviorConfiguration.FlashEnabled = true;
+                config.UiConfiguration.TopBarButtonsColor = UIColor.Green;
                 var controller = SBSDKUIMRZScannerViewController
                     .CreateNewWithConfiguration(config, Delegates.MRZ.WithViewController(this));
+                
                 PresentViewController(controller, true, null);
             }
             else if (button.Data.Code == ListItemCode.ScannerEHIC)
             {
                 var configuration = SBSDKUIHealthInsuranceCardScannerConfiguration.DefaultConfiguration;
+
+                configuration.TextConfiguration.CancelButtonTitle = "Done";
+                configuration.BehaviorConfiguration.FlashEnabled = true;
+                configuration.UiConfiguration.TopBarButtonsColor = UIColor.Green;
                 var controller = SBSDKUIHealthInsuranceCardScannerViewController
                     .CreateNewWithConfiguration(configuration, Delegates.EHIC);
 

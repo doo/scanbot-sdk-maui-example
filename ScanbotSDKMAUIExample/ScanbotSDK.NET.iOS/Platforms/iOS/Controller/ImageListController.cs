@@ -65,6 +65,9 @@ namespace DocumentSDK.MAUI.Example.Native.iOS.Controller
 
         private void OnSaveButtonClick(object sender, EventArgs e)
         {
+            if (PageRepository.DocumentImageURLs.Length == 0)
+                return;
+
             var input = PageRepository.DocumentImageURLs;
 
             var docs = NSSearchPathDirectory.DocumentDirectory;

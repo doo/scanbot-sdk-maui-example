@@ -23,6 +23,7 @@ namespace DocumentSDK.MAUI.Example.Models
 
         // BARCODE DETECTOR
         public const string ScanQRAndBarcodes = "Scan QR & Barcodes";
+        public const string ScanQRAndBarcodesWithImage = "Scan QR & Barcodes With Image";
         public const string ScanMultipleQRAndBarcodes = "Scan Multiple QR & Barcodes";
         public const string ImportImageAndDetectBarcode = "Import Image & Detect Barcodes";
 
