@@ -23,13 +23,13 @@ public partial class HomePage : ContentPage, IPageInteraction
     public ContentPage CurrentPage => this;
 
     /// Item Selected method invoked on the ListView item selection.
-    async void ListViewSDKServices_ItemSelected(Object sender, SelectedItemChangedEventArgs e)
+    async void CollectionViewSDKServices_ItemSelected(System.Object sender, Microsoft.Maui.Controls.SelectionChangedEventArgs e)
     {
-        if (e.SelectedItem is SDKService service)
+        if (e?.CurrentSelection?.FirstOrDefault() is SDKService service && service != null)
         {
             if (!SDKUtils.CheckLicense(CurrentPage)) { return; }
             await ViewModel.InvokeSDKService(service.Title);
         }
-        ListViewSDKServices.SelectedItem = null;
+        CollectionViewSDKServices.SelectedItem = null;
     }
 }

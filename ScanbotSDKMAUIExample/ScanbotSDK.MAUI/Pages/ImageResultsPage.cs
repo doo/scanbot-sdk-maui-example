@@ -58,7 +58,6 @@ namespace DocumentSDK.MAUI.Example.Pages
                 Color = SBColors.ScanbotRed,
                 IsRunning = true,
                 IsEnabled = true,
-                BackgroundColor = Colors.Purple,
                 Scale = (DeviceInfo.Platform == DevicePlatform.iOS) ? 2 : 0.3
             };
 
@@ -129,6 +128,10 @@ namespace DocumentSDK.MAUI.Example.Pages
 
         async void OnSaveButtonClick(object sender, EventArgs e)
         {
+            var count = ScannedPage.Instance?.DocumentSources?.Count() ?? 0;
+            if (count == 0)
+                return;
+
             var parameters = new string[] { "PDF", "PDF with OCR", "TIFF (1-bit, B&W)" };
             string action = await DisplayActionSheet("Save Image as", "Cancel", null, parameters);
 

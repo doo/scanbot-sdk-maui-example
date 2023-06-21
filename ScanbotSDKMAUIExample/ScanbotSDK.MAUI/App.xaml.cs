@@ -7,7 +7,7 @@ namespace DocumentSDK.MAUI.Example
     public partial class App : Application
     {
         
-        public const string SCANBOT_LICENSE_KEY = null;
+        public const string LICENSE_KEY = null;
         public App()
         {
             InitializeComponent();

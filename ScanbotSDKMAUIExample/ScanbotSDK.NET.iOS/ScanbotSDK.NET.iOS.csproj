@@ -1,9 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6.0-ios</TargetFrameworks>
-		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
-		<!-- <TargetFrameworks>$(TargetFrameworks);net6.0-tizen</TargetFrameworks> -->
+		<TargetFrameworks>net7.0-ios</TargetFrameworks>
 		<OutputType>Exe</OutputType>
 		<RootNamespace>DocumentSDK.NET.iOS</RootNamespace>
 		<UseMaui>true</UseMaui>
@@ -23,8 +21,6 @@
 
 		<SupportedOSPlatformVersion>11.0</SupportedOSPlatformVersion>
 	    <MtouchLink>SdkOnly</MtouchLink>
-        <MtouchInterpreter>-all</MtouchInterpreter>
-        <RuntimeIdentifiers>ios-arm64</RuntimeIdentifiers>
         <CreatePackage>false</CreatePackage>
         <CodesignProvision>Automatic</CodesignProvision>
         <CodesignKey>iPhone Developer</CodesignKey>
@@ -48,16 +44,16 @@
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="ScanbotSDK.NET" Version="1.0.0-alpha.2" />
+		<PackageReference Include="ScanbotSDK.NET" Version="2.2.0-beta.3" />
 	</ItemGroup>
 <ItemGroup Condition=" '$(Configuration)' == 'Release' ">
     <Reference Include="DocumentSDK.iOS">
-      <HintPath>..\..\SBSDK.BindingLibraries.iOS\DocumentSDK.iOS\obj\Release\net6.0-ios\DocumentSDK.iOS.dll</HintPath>
+      <HintPath>..\..\SBSDK.BindingLibraries.iOS\DocumentSDK.iOS\obj\Release\net7.0-ios\DocumentSDK.iOS.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
 	  <Reference Include="DocumentSDK.iOS">
-	    <HintPath>..\..\SBSDK.BindingLibraries.iOS\DocumentSDK.iOS\obj\Debug\net6.0-ios\DocumentSDK.iOS.dll</HintPath>
+	    <HintPath>..\..\SBSDK.BindingLibraries.iOS\DocumentSDK.iOS\obj\Debug\net7.0-ios\DocumentSDK.iOS.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
   <ItemGroup>

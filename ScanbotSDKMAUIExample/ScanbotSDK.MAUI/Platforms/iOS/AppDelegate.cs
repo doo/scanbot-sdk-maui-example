@@ -13,7 +13,7 @@ public class AppDelegate : MauiUIApplicationDelegate
 
     private MauiApp CreateApp()
     {
-        SBSDKInitializer.Initialize(UIKit.UIApplication.SharedApplication, App.SCANBOT_LICENSE_KEY, new SBSDKConfiguration
+        SBSDKInitializer.Initialize(UIKit.UIApplication.SharedApplication, App.LICENSE_KEY, new SBSDKConfiguration
         {
             EnableLogging = true,
             StorageBaseDirectory = GetDemoStorageBaseDirectory(),

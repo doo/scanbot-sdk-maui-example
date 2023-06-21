@@ -5,7 +5,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>ScanbotSDK .NET</string>
 	<key>CFBundleIdentifier</key>
-	<string>io.scanbot.example.sdk.xamarin.forms</string>
+	<string>io.scanbot.example.sdk.xamarin.rtu</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0.0</string>
 	<key>CFBundleVersion</key>
@@ -22,7 +22,7 @@
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
-		<string>armv64</string>
+		<string>armv7</string>
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
@@ -37,8 +37,6 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<!-- <key>XSAppIconAssets</key>
-	<string>Resources/AppIcon.appiconset</string> -->
 	<key>NSCameraUsageDescription</key>
 	<string>Please provide the camera permission.</string>
 	<key>UIFileSharingEnabled</key>
@@ -47,7 +45,6 @@
 	<string>Application would like to use photos app for importing images</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Application would like to use photos app for importing images</string>
-
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/appicon.appiconset</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
