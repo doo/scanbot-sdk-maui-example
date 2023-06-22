@@ -12,6 +12,8 @@ using BarcodeSDK.MAUI;
 using BarcodeSDK.MAUI.Models;
 using DocumentSDK.MAUI.Droid;
 using DocumentSDK.MAUI.Droid.Utils;
+using IO.Scanbot.Sdk;
+using IO.Scanbot.Sdk.Barcode;
 using IO.Scanbot.Sdk.Barcode.Entity;
 using IO.Scanbot.Sdk.Barcode.UI;
 using IO.Scanbot.Sdk.Camera;
@@ -66,7 +68,8 @@ namespace ScanbotSDK.MAUI.NativeRenderer.CustomViews
             }));
 
             cameraViewDroid.InitCamera(new CameraUiSettings(false));
-            BarcodeScannerViewWrapper.InitDetectionBehavior(cameraViewDroid, detector, new BarcodeDetectorResultHandler(HandleFrameHandlerResult), new BarcodeScannerViewCallback(VirtualView, cameraViewDroid));
+            BarcodeScannerViewWrapper.InitDetectionBehavior(cameraViewDroid, detector, new SBResultHandler(HandleFrameHandlerResult), new BarcodeScannerViewCallback(VirtualView, cameraViewDroid));
+
         }
 
         protected override void DisconnectHandler(FrameLayout platformView)
@@ -197,6 +200,24 @@ namespace ScanbotSDK.MAUI.NativeRenderer.CustomViews
         }
 
         #endregion
+    }
+
+    internal class SBResultHandler : BarcodeDetectorResultHandlerWrapper
+    {
+        public delegate bool HandleFrameHandlerResult(BarcodeScanningResult result, SdkLicenseError error);
+        public readonly HandleFrameHandlerResult handleResultFunc;
+
+        public SBResultHandler(HandleFrameHandlerResult handleResultFunc)
+        {
+            this.handleResultFunc = handleResultFunc;
+        }
+
+        public override bool HandleResult(BarcodeScanningResult result, SdkLicenseError error)
+        {
+            handleResultFunc(result, error);
+            System.Diagnostics.Debug.WriteLine(result?.BarcodeItems);
+            return false;
+        }
     }
 
     internal class BarcodeScannerViewCallback : Java.Lang.Object, IBarcodeScannerViewCallback
