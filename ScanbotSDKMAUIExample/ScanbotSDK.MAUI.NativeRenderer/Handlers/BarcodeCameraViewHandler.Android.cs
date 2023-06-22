@@ -1,14 +1,10 @@
-﻿using System;
-using Android;
+﻿using Android;
 using Android.Content;
 using Android.Content.PM;
-using Android.OS;
 using Android.Views;
 using Android.Widget;
 using AndroidX.Core.App;
 using AndroidX.Core.Content;
-using AndroidX.Core.View;
-using BarcodeSDK.MAUI;
 using BarcodeSDK.MAUI.Models;
 using DocumentSDK.MAUI.Droid;
 using DocumentSDK.MAUI.Droid.Utils;
@@ -18,11 +14,8 @@ using IO.Scanbot.Sdk.Barcode.Entity;
 using IO.Scanbot.Sdk.Barcode.UI;
 using IO.Scanbot.Sdk.Camera;
 using IO.Scanbot.Sdk.UI.Camera;
-using Java.Interop;
-using Java.Lang;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
-using ScanbotSDK.MAUI.NativeRenderer.CustomViews;
 using ScanbotSDK.MAUI.NativeRenderer.Platforms.Android.CustomViews;
 
 namespace ScanbotSDK.MAUI.NativeRenderer.CustomViews
@@ -33,15 +26,6 @@ namespace ScanbotSDK.MAUI.NativeRenderer.CustomViews
         protected BarcodeScannerView cameraViewDroid;
         private readonly int REQUEST_PERMISSION_CODE = 200;
 
-        public nint Handle => throw new NotImplementedException();
-
-        public int JniIdentityHashCode => throw new NotImplementedException();
-
-        public JniObjectReference PeerReference => throw new NotImplementedException();
-
-        public JniPeerMembers JniPeerMembers => throw new NotImplementedException();
-
-        public JniManagedPeerStates JniManagedPeerState => throw new NotImplementedException();
         #region Handler Overrides
 
         protected override FrameLayout CreatePlatformView()

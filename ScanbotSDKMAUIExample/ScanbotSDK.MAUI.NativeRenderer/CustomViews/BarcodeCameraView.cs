@@ -1,8 +1,5 @@
-﻿using System;
-using BarcodeSDK.MAUI.Configurations;
+﻿using BarcodeSDK.MAUI.Configurations;
 using BarcodeSDK.MAUI.Models;
-using Microsoft.Maui.Handlers;
-using static Android.Provider.MediaStore;
 
 namespace ScanbotSDK.MAUI.NativeRenderer.CustomViews
 {        /*
