@@ -1,25 +1,34 @@
 ﻿using System;
+using System.ComponentModel;
 using Android;
 using Android.Content;
 using Android.Content.PM;
+using Android.Graphics;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using AndroidX.Core.App;
 using AndroidX.Core.Content;
 using BarcodeSDK.MAUI.Models;
+using DocumentSDK.MAUI.Droid;
 using DocumentSDK.MAUI.Droid.Utils;
+using IO.Scanbot.Sdk;
 using IO.Scanbot.Sdk.Barcode;
+using IO.Scanbot.Sdk.Barcode.Entity;
+using IO.Scanbot.Sdk.Barcode.UI;
 using IO.Scanbot.Sdk.Camera;
 using IO.Scanbot.Sdk.Contourdetector;
 using IO.Scanbot.Sdk.UI;
 using IO.Scanbot.Sdk.UI.Camera;
 using Java.Interop;
 using Kotlin.Jvm.Functions;
+using Microsoft.Maui;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Compatibility.Platform.Android;
 using Microsoft.Maui.Controls.Platform;
 using Microsoft.Maui.Platform;
 using ScanbotSDK.MAUI.NativeRenderer.CustomViews;
+using static ScanbotSDK.MAUI.NativeRenderer.Platforms.Android.CustomViews.BarcodeDetectorResultHandler;
 
 namespace ScanbotSDK.MAUI.NativeRenderer.Platforms.Android.CustomViews
 {
@@ -27,15 +36,14 @@ namespace ScanbotSDK.MAUI.NativeRenderer.Platforms.Android.CustomViews
        By extending 'ViewRenderer' we specify that we want our custom renderer to target 'BarcodeCameraView' and
        override it with our native view, which is a 'FrameLayout' in this case (see layout/barcode_camera_view.xml)
     */
-    class AndroidBarcodeCameraRenderer : Microsoft.Maui.Controls.Handlers.Compatibility.ViewRenderer<BarcodeCameraView, FrameLayout>, ICameraOpenCallback, BarcodeDetectorFrameHandler.IResultHandler
+    class AndroidBarcodeCameraRenderer : Microsoft.Maui.Controls.Handlers.Compatibility.ViewRenderer<BarcodeCameraView, FrameLayout>, IBarcodeScannerViewCallback //  ICameraOpenCallback
     {
         protected BarcodeCameraView.BarcodeScannerResultHandler HandleScanResult;
-        protected DocumentAutoSnappingController autoSnappingController;
+        //protected DocumentAutoSnappingController autoSnappingController;
         protected BarcodeDetectorFrameHandler barcodeDetectorFrameHandler;
         protected FrameLayout cameraLayout;
-        protected ScanbotCameraView cameraView;
-        protected FinderOverlayView finderOverlayView;
-        //protected IO.Scanbot.Sdk.UI.PolygonView polygonView;
+        // Classical component
+        protected BarcodeScannerView cameraView;
         private readonly int REQUEST_PERMISSION_CODE = 200;
 
         public AndroidBarcodeCameraRenderer(Context context) : base(context)
@@ -43,7 +51,8 @@ namespace ScanbotSDK.MAUI.NativeRenderer.Platforms.Android.CustomViews
             SetupViews(context);
         }
 
-        private void SetupViews(Context context) {
+        private void SetupViews(Context context)
+        {
 
             // We instantiate our views from the layout XML
             cameraLayout = (FrameLayout)LayoutInflater
@@ -51,27 +60,7 @@ namespace ScanbotSDK.MAUI.NativeRenderer.Platforms.Android.CustomViews
                 .Inflate(Resource.Layout.barcode_camera_view, null, false);
 
             // Here we retrieve the Camera View...
-            cameraView = cameraLayout.FindViewById<ScanbotCameraView>(Resource.Id.barcode_camera);
-
-            // ...and here we retrieve and configure the Finder Overlay View
-            finderOverlayView = cameraLayout.FindViewById<FinderOverlayView>(Resource.Id.barcode_finder_overlay);
-            finderOverlayView.SetFinderMinPadding(80);
-            finderOverlayView.RequiredAspectRatios = new List<IO.Scanbot.Sdk.AspectRatio>
-            {
-                new IO.Scanbot.Sdk.AspectRatio(1, 1)
-            };
-        }
-
-        private void StartDetection() {
-            cameraView.OnResume();
-            barcodeDetectorFrameHandler.Enabled = true;
-            finderOverlayView.Visibility = ViewStates.Visible;
-            CheckPermissions();
-        }
-
-        private void StopDetection() {
-            barcodeDetectorFrameHandler.Enabled = false;
-            finderOverlayView.Visibility = ViewStates.Invisible;
+            cameraView = cameraLayout.FindViewById<BarcodeScannerView>(Resource.Id.barcode_camera);
         }
 
         /*
@@ -82,13 +71,10 @@ namespace ScanbotSDK.MAUI.NativeRenderer.Platforms.Android.CustomViews
          */
         protected override void OnElementChanged(ElementChangedEventArgs<BarcodeCameraView> e)
         {
-
             // The SetNativeControl method should be used to instantiate the native control,
             // and this method will also assign the control reference to the Control property
             SetNativeControl(cameraLayout);
-
             base.OnElementChanged(e);
-
             if (Control != null)
             {
                 // The Element object is the instance of BarcodeCameraView as defined in the Forms
@@ -96,12 +82,12 @@ namespace ScanbotSDK.MAUI.NativeRenderer.Platforms.Android.CustomViews
                 // these native calls will be executed whenever those methods will be called.
                 Element.OnResumeHandler = (sender, e) =>
                 {
-                    cameraView.OnResume();
+                    cameraView.ViewController.OnResume();
                 };
 
                 Element.OnPauseHandler = (sender, e) =>
                 {
-                    cameraView.OnPause();
+                    cameraView.ViewController.OnPause();
                 };
 
                 Element.StartDetectionHandler = (sender, e) =>
@@ -120,46 +106,78 @@ namespace ScanbotSDK.MAUI.NativeRenderer.Platforms.Android.CustomViews
 
                 // In this example we demonstrate how to lock the orientation of the UI (Activity)
                 // as well as the orientation of the taken picture to portrait.
-                cameraView.LockToPortrait(true);
+                //cameraView.LockToPortrait(true);
 
                 // Here we create the BarcodeDetectorFrameHandler which will take care of detecting
                 // barcodes in your video frames
                 var detector = new IO.Scanbot.Sdk.ScanbotSDK(Context.GetActivity()).CreateBarcodeDetector();
-                barcodeDetectorFrameHandler = BarcodeDetectorFrameHandler.Attach(cameraView, detector);
-
-                detector.ModifyConfig(new Function1Impl<IO.Scanbot.Sdk.Barcode.Entity.BarcodeScannerConfigBuilder>((response) => {
+                detector.ModifyConfig(new Function1Impl<IO.Scanbot.Sdk.Barcode.Entity.BarcodeScannerConfigBuilder>((response) =>
+                {
                     response.SetSaveCameraPreviewFrame(false);
                 }));
+
+                cameraView.InitCamera(new CameraUiSettings(false));
+
+                BarcodeScannerViewWrapper.InitDetectionBehavior(cameraView, detector, new BarcodeDetectorResultHandler(HandleFrameHandlerResult), null);
+
+                SetSelectionOverlayConfiguration();
+                // TODO: Need to fix this from bindings
+                //cameraView?.FinderViewController?.SetFinderEnabled(false);
+
+
+                //barcodeDetectorFrameHandler = BarcodeDetectorFrameHandler.Attach(cameraView, detector);
+
 
                 if (barcodeDetectorFrameHandler is BarcodeDetectorFrameHandler handler)
                 {
                     handler.SetDetectionInterval(0);
-                    handler.AddResultHandler(this);// new BarcodeDetectionResultHandler((result) => HandleFrameHandlerResult(result)));
+                    //BarcodeScannerViewWrapper.InitDetectionBehavior(view, detector, new BarcodeDetectorResultHandler(YOUR_RESULT_HANDLER_FUNCTION), null);
+                    //handler.AddResultHandler(new BarcodeDetectorResultHandler((result, errror) => HandleFrameHandlerResult(result)));
 
                     // Uncomment to enable auto-snapping (eg. single barcode scan)
                     // var barcodeAutoSnappingController = BarcodeAutoSnappingController.Attach(cameraView, handler);
                     // barcodeAutoSnappingController.SetSensitivity(1f);
                 }
-
-                cameraView.SetCameraOpenCallback(this);
             }
         }
 
-        void ICameraOpenCallback.OnCameraOpened()
+        private void StartDetection()
         {
-            cameraView.PostDelayed(() =>
+            cameraView.ViewController?.OnResume();
+            //barcodeDetectorFrameHandler.Enabled = true;
+            CheckPermissions();
+        }
+
+        private void StopDetection()
+        {
+            cameraView.ViewController?.StopPreview();
+            //barcodeDetectorFrameHandler.Enabled = false;
+        }
+
+        private void SetSelectionOverlayConfiguration()
+        {
+            if (Element?.OverlayConfiguration?.Enabled == true)
             {
-                // Disable auto-focus sound:
-                cameraView.SetAutoFocusSound(false);
+                cameraView.SelectionOverlayController.SetEnabled(Element.OverlayConfiguration.Enabled);
+                cameraView.SelectionOverlayController.SetPolygonColor(Element.OverlayConfiguration.PolygonColor.ToArgb());
+                cameraView.SelectionOverlayController.SetTextColor(Element.OverlayConfiguration.TextColor.ToArgb());
+                cameraView.SelectionOverlayController.SetTextContainerColor(Element.OverlayConfiguration.TextContainerColor.ToArgb());
 
-                // Uncomment to disable shutter sound (supported since Android 4.2+):
-                // Please note that some devices may not allow disabling the camera shutter sound. 
-                // If the shutter sound state cannot be set to the desired value, this method will be ignored.
-                // cameraView.SetShutterSound(false);
+                if (Element.OverlayConfiguration.HighlightedPolygonColor != null)
+                {
+                    cameraView.SelectionOverlayController.SetPolygonHighlightedColor(Element.OverlayConfiguration.HighlightedPolygonColor.ToArgb());
+                }
 
-                // Enable ContinuousFocus mode:
-                cameraView.ContinuousFocus();
-            }, 500);
+                if (Element.OverlayConfiguration.HighlightedTextColor != null)
+                {
+                    cameraView.SelectionOverlayController.SetTextHighlightedColor(Element.OverlayConfiguration.HighlightedTextColor.ToArgb());
+                }
+
+                if (Element.OverlayConfiguration.HighlightedTextContainerColor != null)
+                {
+                    cameraView.SelectionOverlayController.SetTextContainerHighlightedColor(Element.OverlayConfiguration.HighlightedTextContainerColor.ToArgb());
+                }
+            }
         }
 
         private bool HandleSuccess(IO.Scanbot.Sdk.Barcode.Entity.BarcodeScanningResult result)
@@ -176,19 +194,15 @@ namespace ScanbotSDK.MAUI.NativeRenderer.Platforms.Android.CustomViews
             return true;
         }
 
-        private bool HandleFrameHandlerResult(FrameHandlerResult result)
+        private bool HandleFrameHandlerResult(BarcodeScanningResult result, IO.Scanbot.Sdk.SdkLicenseError error)
         {
-            if (result is FrameHandlerResult.Success success)
+            if (result != null)
             {
-                if (success.Value is IO.Scanbot.Sdk.Barcode.Entity.BarcodeScanningResult barcodeResult)
-                {
-                    HandleSuccess(barcodeResult);
-                }
+                HandleSuccess(result);
             }
             else
             {
                 cameraView.Post(() => Toast.MakeText(Context.GetActivity(), "License has expired!", ToastLength.Long).Show());
-                cameraView.RemoveFrameHandler(barcodeDetectorFrameHandler);
             }
 
             return false;
@@ -209,32 +223,59 @@ namespace ScanbotSDK.MAUI.NativeRenderer.Platforms.Android.CustomViews
             }
         }
 
-        public new bool Handle(FrameHandlerResult result)
+        public void OnSelectionOverlayBarcodeClicked(BarcodeItem barcodeItem)
         {
-            HandleFrameHandlerResult(result);
-            return false;
+
+        }
+
+        public void OnCameraOpen()
+        {
+            //cameraView.PostDelayed(() =>
+            //{
+
+            //    // Disable auto-focus sound:
+            //    cameraView.SetAutoFocusSound(false);
+
+            //    // Uncomment to disable shutter sound (supported since Android 4.2+):
+            //    // Please note that some devices may not allow disabling the camera shutter sound. 
+            //    // If the shutter sound state cannot be set to the desired value, this method will be ignored.
+            //    cameraView.SetShutterSound(false);
+
+            //    // Enable ContinuousFocus mode:
+            //    cameraView.ContinuousFocus();
+            //}, 500);
+
+        }
+
+        public void OnPictureTaken(byte[] image, CaptureInfo captureInfo)
+        {
+
         }
     }
 
     // Here we define a custom BarcodeDetectorResultHandler. Whenever a result is ready, the frame handler
     // will call the Handle method on this object. To make this more flexible, we allow to
     // specify a delegate through the constructor.
-    internal class BarcodeDetectionResultHandler: Java.Lang.Object, BarcodeDetectorFrameHandler.IResultHandler
+    // Here we define a custom BarcodeDetectorResultHandler. Whenever a result is ready, the frame handler
+    // will call the Handle method on this object. To make this more flexible, we allow to
+    // specify a delegate through the constructor.
+    class BarcodeDetectorResultHandler : IO.Scanbot.Sdk.Barcode.BarcodeDetectorResultHandlerWrapper
     {
-        internal delegate bool HandleResultFunction(FrameHandlerResult result);
-        internal readonly HandleResultFunction handleResultFunc;
+        public delegate bool HandleResultFunction(BarcodeScanningResult result, IO.Scanbot.Sdk.SdkLicenseError error);
+        public readonly HandleResultFunction handleResultFunc;
 
-        internal BarcodeDetectionResultHandler(HandleResultFunction handleResultFunc)
+        public BarcodeDetectorResultHandler(HandleResultFunction handleResultFunc)
         {
             this.handleResultFunc = handleResultFunc;
         }
 
-        bool IBaseResultHandler.Handle(FrameHandlerResult result)
+        public override bool HandleResult(BarcodeScanningResult result, IO.Scanbot.Sdk.SdkLicenseError error)
         {
-            handleResultFunc(result);
+            handleResultFunc(result, error);
             return false;
         }
     }
+
 
     /**
    * Snippet from: 

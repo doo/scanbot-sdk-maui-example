@@ -39,6 +39,5 @@ public class AppDelegate : MauiUIApplicationDelegate
 
         return folder;
     }
-
 }
 

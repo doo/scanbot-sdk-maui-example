@@ -1,4 +1,6 @@
-﻿namespace ScanbotSDK.MAUI.NativeRenderer;
+﻿using ScanbotSDK.MAUI.NativeRenderer.CustomViews;
+
+namespace ScanbotSDK.MAUI.NativeRenderer;
 
 public static class MauiProgram
 {
@@ -13,7 +15,7 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			}).ConfigureMauiHandlers(handlers =>
 			{
-
+				handlers.AddHandler(typeof(BarcodeCameraView), typeof(BarcodeCameraViewHandler));
 			});
 
 		return builder.Build();

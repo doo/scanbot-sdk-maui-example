@@ -1,9 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6.0-android</TargetFrameworks>
-		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
-		<!-- <TargetFrameworks>$(TargetFrameworks);net6.0-tizen</TargetFrameworks> -->
+		<TargetFrameworks>net7.0-android</TargetFrameworks>
 		<OutputType>Exe</OutputType>
 		<RootNamespace>ScanbotSDK.MAUI.NativeRenderer</RootNamespace>
 		<UseMaui>true</UseMaui>
@@ -25,7 +23,7 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0-ios|AnyCPU'">
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
 	  <CreatePackage>false</CreatePackage>
 	</PropertyGroup>
 	<ItemGroup>
@@ -47,20 +45,26 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="ScanbotSDK.MAUI" Version="2.0.0-beta.3" />
-	</ItemGroup>
-	<ItemGroup>
 	  <Folder Include="Platforms\Android\CustomViews\" />
 	  <Folder Include="Platforms\Android\Resources\layout\" />
+	  <Folder Include="Handlers\" />
 	</ItemGroup>
 	<ItemGroup>
 	  <None Remove="Platforms\Android\CustomViews\" />
 	  <None Remove="Platforms\Android\Resources\layout\" />
+	  <None Remove="Handlers\" />
 	</ItemGroup>
 	<ItemGroup>
 	  <AndroidResource Update="Platforms\Android\Resources\layout\barcode_camera_view.xml">
 	    <SubType></SubType>
 	    <Generator></Generator>
 	  </AndroidResource>
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="ScanbotSDK.MAUI" Version="2.2.0-native-renderer-local.1" />
+	</ItemGroup>
+		<ItemGroup Condition="$(TargetFramework.StartsWith('net7.0-android')) != true">
+		<Compile Remove="**\**\*.Android.cs" />
+		<None Include="**\**\*.Android.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
 	</ItemGroup>
 </Project>

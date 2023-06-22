@@ -5,7 +5,9 @@
              xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
              xmlns:local="clr-namespace:ScanbotSDK.MAUI.NativeRenderer.CustomViews"
              ios:Page.UseSafeArea="true"
-             BackgroundColor="#c8193c">
+             BackgroundColor="#c8193c"
+             xmlns:deviceDimensions="clr-namespace:Microsoft.Maui.Devices;assembly=Microsoft.Maui.Essentials">
+
     <StackLayout BackgroundColor="#e2e2e2" Spacing="0">
         <Frame BackgroundColor="#c8193c" Padding="16" CornerRadius="0" HasShadow="False">
             <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
@@ -19,16 +21,38 @@
         Here we include our BarcodeCameraView. This view will be overriden by our native implementation because of
         the custom renderers that we have created. See: BarcodeCameraView.cs and AndroidBarcodeCameraRenderer.cs.
         Remember to define an xmlns attribute on the XAML root element to access your Views (in this case xmlns:local) -->
+        <StackLayout  BackgroundColor="#1f1f1f">
+            <local:BarcodeCameraView x:Name="cameraView" HeightRequest="300" WidthRequest="300" />
+        </StackLayout>
 
-        <local:BarcodeCameraView x:Name="cameraView" HeightRequest="250" BackgroundColor="#1f1f1f" />
-       
         <!--==========================================================================================================-->
 
         <StackLayout x:Name="buttonsLayout">
             <BoxView Style="{StaticResource Separator}"/>
-                <StackLayout Orientation="Vertical" HorizontalOptions="CenterAndExpand" Margin="16, 32, 16, 32">
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="6*" />
+                    <ColumnDefinition Width="2*" />
+                </Grid.ColumnDefinitions>
+                <StackLayout Grid.Column="0"/>
+                <StackLayout Grid.Column="1" Orientation="Vertical" HorizontalOptions="CenterAndExpand" Margin="16, 32, 16, 32">
                     <Button x:Name="scanButton" Text="START SCANNING" CornerRadius="10" Padding="24, 16" BackgroundColor="#c8193c" TextColor="White"/>
                 </StackLayout>
+                <Grid Grid.Column="2">
+                    <ImageButton x:Name="imgButtonFlash"
+                                 CornerRadius="20"
+                                 Clicked="FlashButtonClicked"
+                                 Source="ui_scanning_flash_on"
+                                 WidthRequest="40"
+                                 HeightRequest="40"
+                                 Padding="3"
+                                 BackgroundColor="Transparent"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="Center"/>
+                </Grid>
+            </Grid>
             <BoxView Style="{StaticResource Separator}"/>
         </StackLayout>
         <StackLayout x:Name="resultsPreviewLayout" BackgroundColor="#d2d2d2" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
@@ -36,5 +60,4 @@
             <Label x:Name="resultsLabel" Margin="16,0,16,0" HorizontalTextAlignment="Start" TextColor="Black" FontSize="16"/>
         </StackLayout>
     </StackLayout>
-
 </ContentPage>
