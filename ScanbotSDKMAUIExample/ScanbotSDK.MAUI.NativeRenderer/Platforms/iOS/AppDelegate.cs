@@ -1,10 +1,8 @@
-﻿using DocumentSDK.MAUI.Constants;
-using DocumentSDK.MAUI.iOS;
-using DocumentSDK.MAUI.Models;
+﻿using System;
+using System.IO;
 using Foundation;
-using SQLitePCL;
 
-namespace DocumentSDK.MAUI.Example;
+namespace ScanbotSDK.MAUI.NativeRenderer;
 
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate
@@ -27,7 +25,7 @@ public class AppDelegate : MauiUIApplicationDelegate
             }
         });
         raw.SetProvider(new SQLite3Provider_sqlite3());
-        
+
         return MauiProgram.CreateMauiApp();
     }
 
