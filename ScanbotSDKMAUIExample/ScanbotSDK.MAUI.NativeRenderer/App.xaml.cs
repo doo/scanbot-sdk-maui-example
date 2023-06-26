@@ -1,7 +1,4 @@
-﻿using BarcodeSDK.MAUI.Models;
-using Xamarin.Google.Crypto.Tink.Proto;
-
-namespace ScanbotSDK.MAUI.NativeRenderer;
+﻿namespace ScanbotSDK.MAUI.NativeRenderer;
 /// <summary>
 /// Type of application.
 /// </summary>
@@ -20,7 +17,7 @@ public partial class App : Application
     // Using this constant we can switch between different application
     // structures (SinglePage, NavigationPage, TabbedPage) to make
     // sure everything works under every circumstance.
-    const ApplicationType APPLICATION_TYPE = ApplicationType.SinglePage;
+    const ApplicationType APPLICATION_TYPE = ApplicationType.NavigationPage;
 
     public App()
     {

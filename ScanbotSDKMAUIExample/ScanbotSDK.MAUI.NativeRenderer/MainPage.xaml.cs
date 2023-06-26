@@ -1,7 +1,4 @@
 ﻿using BarcodeSDK.MAUI.Configurations;
-using IO.Scanbot.Sdk.Configuration;
-using IO.Scanbot.Sdk.UI.View.Camera;
-using Microsoft.Maui;
 using Microsoft.Maui.Controls.PlatformConfiguration;
 using Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;
 
@@ -53,7 +50,7 @@ namespace ScanbotSDK.MAUI.NativeRenderer
                     text += string.Format("{0} ({1})\n", barcode.Text, barcode.Format.ToString().ToUpper());
                 }
 
-                Device.BeginInvokeOnMainThread(() =>
+                MainThread.BeginInvokeOnMainThread(() =>
                 {
                     resultsLabel.Text = text;
                 });
@@ -134,9 +131,9 @@ namespace ScanbotSDK.MAUI.NativeRenderer
 
         private void SetupIOSAppearance()
         {
-            if (Device.RuntimePlatform != Device.iOS) { return; }
+            if (DeviceInfo.Current.Platform != DevicePlatform.iOS) { return; }
 
-            var safeInsets = On<iOS>().SafeAreaInsets();
+            var safeInsets = On< Microsoft.Maui.Controls.PlatformConfiguration.iOS>().SafeAreaInsets();
             safeInsets.Bottom = 0;
             Padding = safeInsets;
         }
