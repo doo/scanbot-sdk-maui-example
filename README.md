@@ -1,9 +1,10 @@
 # Scanbot Barcode & Document Scanning Example App for Maui
 
-This example app shows how to integrate the [Scanbot Barcode Scanner SDK](https://scanbot.io/developer/xamarin-barcode-scanner/), [Scanbot Document Scanner SDK](https://scanbot.io/developer/xamarin-document-scanner/), and [Scanbot Data Capture SDK](https://scanbot.io/developer/xamarin-data-capture/) for Maui.
+This example app shows how to integrate the [Scanbot Barcode Scanner SDK](https://scanbot.io/developer/maui-barcode-scanner/), [Scanbot Document Scanner SDK](https://scanbot.io/developer/maui-document-scanner/), and [Scanbot Data Capture SDK](https://scanbot.io/developer/maui-data-capture/) for MAUI and .NET(Native iOS and Android platforms).
 
-The Scanbot SDK is available as a NuGet package for the Maui platform:
-[ScanbotSDK.Xamarin.Forms](https://www.nuget.org/packages/ScanbotSDK.Xamarin.Forms)
+The Scanbot SDK are available as a NuGet package for the MAUI and .NET platforms:
+[ScanbotSDK.MAUI](https://www.nuget.org/packages/ScanbotSDK.MAUI)
+[ScanbotSDK.NET](https://www.nuget.org/packages/ScanbotSDK.NET)
 
 ## What is the Scanbot SDK?
 
@@ -25,9 +26,22 @@ If you encounter technical issues with integrating the Scanbot SDK or need advic
 framework or features, please visit our [Support Page](https://docs.scanbot.io/support/).
 
 ## Documentation
-👉 [Scanbot SDK documentation](https://docs.scanbot.io/document-scanner-sdk/xamarin/introduction/)
+👉 [Scanbot SDK documentation](https://docs.scanbot.io/document-scanner-sdk/maiu/introduction/)
 
 ## Requirements
-[Microsoft Visual Studio](https://www.visualstudio.com) with [Maui Platform](https://www.xamarin.com)
-(For iOS Visual Studio for Mac **7.4+**)
+[Microsoft Visual Studio](https://www.visualstudio.com)
+Developing native, cross-platform .NET Multi-platform App UI (.NET MAUI) apps requires Visual Studio 2022 17.3 or greater, or Visual Studio 2022 for Mac 17.4 or greater.
 
+
+## Documentation
+The documentation of the current Scanbot SDK Xamarin release can be found [here](https://docs.scanbot.io/document-scanner-sdk/maui/introduction/)
+
+
+## Please note
+
+The Scanbot SDK will run without a license for one minute per session!
+
+After the trial period has expired all Scanbot SDK functions as well as the UI components (like the Document Scanner UI) will stop working or may be terminated.
+You have to restart the app to get another trial period.
+
+To get a free "no-strings-attached" trial license, please submit the [Trial License Form](https://scanbot.io/trial/) on our website.
