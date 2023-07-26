@@ -9,6 +9,7 @@
         public List<ListItem> Items = new List<ListItem>
         {
             new ListItem { Title = "Scan Document", Code = ListItemCode.ScanDocument },
+            new ListItem { Title = "Scan Document with Finder", Code = ListItemCode.ScanDocumentWithFinder },
             new ListItem { Title = "Import Image", Code = ListItemCode.ImportImage },
             new ListItem { Title = "View Images", Code = ListItemCode.ViewImages }
         };

@@ -17,6 +17,7 @@
     {
         // DOCUMENT SCANNER
         public const string ScanDocument = "Scan Document";
+        public const string ScanDocumentWithFinder = "Scan Document with Finder";
         public const string ImportImageAndDetectDoc = "Import image & Detect Document";
         public const string ViewImageResults = "View Image Results";
 

@@ -178,6 +178,19 @@ namespace ReadyToUseUI.Droid
                 var intent = DocumentScannerActivity.NewIntent(this, configuration);
                 StartActivityForResult(intent, Constants.CAMERA_DEFAULT_UI_REQUEST_CODE);
             }
+            else if (button.Data.Code == ListItemCode.ScanDocumentWithFinder)
+            {
+                var configuration = new FinderDocumentScannerConfiguration();
+                configuration.SetCameraPreviewMode(CameraPreviewMode.FitIn);
+                configuration.SetIgnoreBadAspectRatio(true);
+                configuration.SetTextHintOK("Don't move.\nCapturing document...");
+                //configuration.SetFinderLineColor(Color.Blue);
+                //configuration.SetTopBarBackgroundColor(Color.White);
+                // see further customization configs...
+
+                var intent = FinderDocumentScannerActivity.NewIntent(this, configuration);
+                StartActivityForResult(intent, Constants.CAMERA_DEFAULT_UI_REQUEST_CODE);
+            }
             else if (button.Data.Code == ListItemCode.ImportImage)
             {
                 StartImportActivity(Constants.IMPORT_IMAGE_REQUEST);
