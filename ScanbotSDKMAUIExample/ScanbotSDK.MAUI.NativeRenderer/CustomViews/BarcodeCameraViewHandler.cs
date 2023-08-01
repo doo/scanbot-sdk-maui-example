@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.Maui.Handlers;
-using static Android.Provider.MediaStore;
+﻿using Microsoft.Maui.Handlers;
 
 namespace ScanbotSDK.MAUI.NativeRenderer.CustomViews
 {

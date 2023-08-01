@@ -1,5 +1,4 @@
-﻿using System;
-namespace DocumentSDK.NET.Droid.Utils
+﻿namespace DocumentSDK.NET.Droid.Utils
 {
     public class Constants
     {

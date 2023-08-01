@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using DocumentSDK.MAUI.Models;
 using DocumentSDK.MAUI.Services;
 using BarcodeItem = BarcodeSDK.MAUI.Models.Barcode;
@@ -39,80 +36,6 @@ namespace DocumentSDK.MAUI.Example.Utils
             return result;
         }
 
-        public static string ParseWorkflowResult(IWorkflowStepResult result)
-        {
-            var sb = new StringBuilder();
-            if (result is IWorkflowBarcodeResult barcodeResult)
-            {
-                foreach (var barcode in barcodeResult.Barcodes)
-                {
-                    sb.AppendFormat("{0}\n{1}\n", barcode.Format, barcode.Text);
-                }
-            }
-            if (result is IWorkflowMachineReadableZoneResult mrzResult)
-            {
-                if (mrzResult.MachineReadableZone != null
-                    && mrzResult.MachineReadableZone.Fields != null)
-                {
-                    foreach (var field in mrzResult.MachineReadableZone.Fields)
-                    {
-                        sb.AppendFormat("{0}: {1}\n", field.Name, field.Value);
-                    }
-                    sb.AppendFormat("Valid check digits: {0}/{1}\n",
-                        mrzResult.MachineReadableZone.ValidCheckDigitsCount,
-                        mrzResult.MachineReadableZone.CheckDigitsCount);
-                }
-                else
-                {
-                    sb.AppendLine("MRZ not recognized");
-                }
-            }
-            if (result is IWorkflowPayFormResult payformResult)
-            {
-                if (payformResult.PayForm != null && payformResult.PayForm.RecognizedFields != null)
-                {
-                    foreach (var field in payformResult.PayForm.RecognizedFields)
-                    {
-                        sb.AppendFormat("{0}: {1}\n", field.Token.Type, field.Value);
-                    }
-                }
-                else
-                {
-                    sb.AppendLine("Payform not recognized");
-                }
-            }
-            if (result is IWorkflowMedicalCertificateResult dcResult)
-            {
-                if (dcResult.MedicalCertificate.RecognitionSuccessful)
-                {
-                    foreach (var cb in dcResult.MedicalCertificate.Checkboxes)
-                    {
-                        sb.AppendFormat("{0}: {1}\n", cb.Type, cb.IsChecked ? "Yes" : "No");
-                    }
-                    foreach (var date in dcResult.MedicalCertificate.Dates)
-                    {
-                        sb.AppendFormat("{0}: {1}\n", date.Type, date.DateString);
-                    }
-                }
-                else
-                {
-                    sb.AppendLine("DC not recognized");
-                }
-            }
-            return sb.ToString();
-        }
-
-        public static string ParseWorkflowResults(IWorkflowStepResult[] results)
-        {
-            var builder = new StringBuilder();
-
-            foreach(var result in results)
-            {
-                builder.Append(ParseWorkflowResult(result));
-            }
-            return builder.ToString();
-        }
-
         public static string ParseBarcodes(List<BarcodeItem> barcodes)
         {
             var builder = new StringBuilder();
@@ -129,9 +52,9 @@ namespace DocumentSDK.MAUI.Example.Utils
         {
             var builder = new StringBuilder();
             builder.AppendLine($"DocumentType: {result.DocumentType}");
-            foreach (var field in result.Fields)
+            foreach (var field in result.Document.Fields)
             {
-                builder.AppendLine($"{field.Name}: {field.Value} ({field.Confidence:F2})");
+                builder.AppendLine($"{field.Type.Name}: {field.Value.Text} ({field.Value.Confidence:F2})");
             }
             return builder.ToString();
         }

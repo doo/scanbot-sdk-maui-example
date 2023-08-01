@@ -2,8 +2,6 @@
 using DocumentSDK.MAUI.Example.Utils;
 using ScannedItem = DocumentSDK.MAUI.Example.Models.ScannedPage;
 using DocumentSDK.MAUI.Example.SubViews.ActionBar;
-using DocumentSDK.MAUI.Example.Models;
-using System.Collections.Generic;
 
 namespace DocumentSDK.MAUI.Example.Pages
 {

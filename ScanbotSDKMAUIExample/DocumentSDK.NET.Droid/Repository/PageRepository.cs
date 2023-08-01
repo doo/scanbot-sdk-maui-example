@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Android.Content;
+﻿using Android.Content;
 using IO.Scanbot.Sdk.Persistence;
 using IO.Scanbot.Sdk.Process;
 using SBSDK = DocumentSDK.MAUI.Native.Droid.ScanbotSDK;

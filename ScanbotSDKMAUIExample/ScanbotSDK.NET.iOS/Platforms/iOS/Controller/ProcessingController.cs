@@ -1,12 +1,7 @@
-﻿using System;
-using Foundation;
-using DocumentSDK.MAUI.Example.Native.iOS.Repository;
-using DocumentSDK.MAUI.Example.Native.iOS.Utils;
+﻿using DocumentSDK.MAUI.Example.Native.iOS.Repository;
 using DocumentSDK.MAUI.Example.Native.iOS.View;
-using DocumentSDK.MAUI.Example.Native.iOS.Models;
 using ScanbotSDK.iOS;
 using UIKit;
-using PdfKit;
 
 namespace DocumentSDK.MAUI.Example.Native.iOS.Controller
 {

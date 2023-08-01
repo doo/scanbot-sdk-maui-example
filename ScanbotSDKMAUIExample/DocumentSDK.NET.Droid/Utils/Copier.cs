@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using Android.Content;
+﻿using Android.Content;
 
 namespace DocumentSDK.NET.Droid.Utils
 {

@@ -1,6 +1,4 @@
-﻿
-using System;
-using CoreGraphics;
+﻿using CoreGraphics;
 using Foundation;
 using DocumentSDK.MAUI.Example.Native.iOS.Models;
 using UIKit;

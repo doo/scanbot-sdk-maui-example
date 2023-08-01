@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using CoreGraphics;
+﻿using CoreGraphics;
 using Foundation;
-using DocumentSDK.MAUI.Example.Native.iOS.Models;
 using UIKit;
-using System.Runtime.InteropServices;
 
 namespace DocumentSDK.MAUI.Example.Native.iOS.View
 {

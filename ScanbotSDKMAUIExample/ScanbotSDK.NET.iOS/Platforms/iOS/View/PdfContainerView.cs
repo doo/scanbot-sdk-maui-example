@@ -1,11 +1,7 @@
-﻿
-using System;
-using UIKit;
+﻿using UIKit;
 using PdfKit;
 using Foundation;
 using CoreGraphics;
-using DocumentSDK.MAUI.Example.Native.iOS.Models;
-using System.Runtime.InteropServices;
 using SBSDK = DocumentSDK.MAUI.Native.iOS.ScanbotSDK;
 
 namespace DocumentSDK.MAUI.Example.Native.iOS.View

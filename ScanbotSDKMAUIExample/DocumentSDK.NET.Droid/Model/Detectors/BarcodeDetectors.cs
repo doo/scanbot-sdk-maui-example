@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace DocumentSDK.NET.Model
+﻿namespace DocumentSDK.NET.Model
 {
     public class BarcodeDetectors
     {

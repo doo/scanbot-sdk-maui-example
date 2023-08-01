@@ -1,5 +1,4 @@
-﻿
-namespace DocumentSDK.MAUI.Example.SubViews.ActionBar
+﻿namespace DocumentSDK.MAUI.Example.SubViews.ActionBar
 {
     public class BottomActionButton : StackLayout
     {

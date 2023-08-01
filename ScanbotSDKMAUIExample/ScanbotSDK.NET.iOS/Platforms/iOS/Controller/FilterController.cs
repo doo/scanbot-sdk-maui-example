@@ -1,6 +1,4 @@
-﻿
-using System;
-using DocumentSDK.MAUI.Example.Native.iOS.Model;
+﻿using DocumentSDK.MAUI.Example.Native.iOS.Model;
 using DocumentSDK.MAUI.Example.Native.iOS.Repository;
 using DocumentSDK.MAUI.Example.Native.iOS.View;
 using ScanbotSDK.iOS;

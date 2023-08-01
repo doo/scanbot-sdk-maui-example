@@ -1,6 +1,4 @@
-﻿
-using System;
-using UIKit;
+﻿using UIKit;
 namespace DocumentSDK.MAUI.Example.Native.iOS.Utils
 {
     public class Alert

@@ -1,10 +1,9 @@
-﻿using System;
-namespace DocumentSDK.MAUI.Example.Models
+﻿namespace DocumentSDK.MAUI.Example.Models
 {
-	/// <summary>
-	/// Model class to binding the ListView with all the services available in SDK.
-	/// </summary>
-	public class SDKService
+    /// <summary>
+    /// Model class to binding the ListView with all the services available in SDK.
+    /// </summary>
+    public class SDKService
 	{
 		public string Title { get; set; }
         public bool ShowSection { get; set; }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using BarcodeSDK.MAUI.Configurations;
+﻿using BarcodeSDK.MAUI.Configurations;
 using BarcodeSDK.MAUI.Constants;
 
 namespace DocumentSDK.MAUI.Example.Models

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using CoreGraphics;
+﻿using CoreGraphics;
 using Foundation;
 using ScanbotSDK.iOS;
 using UIKit;

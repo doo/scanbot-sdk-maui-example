@@ -1,7 +1,4 @@
-﻿
-using System;
-using CoreGraphics;
-using DocumentSDK.MAUI.Example.Native.iOS.Models;
+﻿using CoreGraphics;
 using UIKit;
 
 namespace DocumentSDK.MAUI.Example.Native.iOS.View

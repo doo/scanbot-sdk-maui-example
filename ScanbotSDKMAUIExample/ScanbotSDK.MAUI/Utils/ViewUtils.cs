@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace DocumentSDK.MAUI.Example.Utils
+﻿namespace DocumentSDK.MAUI.Example.Utils
 {
     public class ViewUtils
     {

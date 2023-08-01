@@ -1,17 +1,10 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using CoreGraphics;
-using Foundation;
-using DocumentSDK.MAUI.Example.Native.iOS.Repository;
+﻿using DocumentSDK.MAUI.Example.Native.iOS.Repository;
 using DocumentSDK.MAUI.Example.Native.iOS.Service;
 using DocumentSDK.MAUI.Example.Native.iOS.Utils;
 using DocumentSDK.MAUI.Example.Native.iOS.View;
 using DocumentSDK.MAUI.Example.Native.iOS.Models;
 using ScanbotSDK.iOS;
 using UIKit;
-using MobileCoreServices;
 using SBSDK = DocumentSDK.MAUI.Native.iOS.ScanbotSDK;
 
 namespace DocumentSDK.MAUI.Example.Native.iOS.Controller

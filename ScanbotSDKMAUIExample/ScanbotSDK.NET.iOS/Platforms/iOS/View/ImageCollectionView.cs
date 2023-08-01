@@ -1,6 +1,4 @@
-﻿
-using System;
-using CoreGraphics;
+﻿using CoreGraphics;
 using DocumentSDK.MAUI.Example.Native.iOS.View.Collection;
 using UIKit;
 

@@ -1,5 +1,4 @@
-﻿using System;
-namespace DocumentSDK.NET.Droid.Listeners
+﻿namespace DocumentSDK.NET.Droid.Listeners
 {
     interface IFiltersListener
     {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using DocumentSDK.MAUI.Example.Native.iOS.Controller;
+﻿using DocumentSDK.MAUI.Example.Native.iOS.Controller;
 using ScanbotSDK.iOS;
 using UIKit;
 

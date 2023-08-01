@@ -1,5 +1,4 @@
-﻿using System;
-namespace DocumentSDK.NET.Model
+﻿namespace DocumentSDK.NET.Model
 {
     public enum ListItemCode
     {
