@@ -1,7 +1,4 @@
-﻿using System;
-using IO.Scanbot.Sdk.Generictext;
-
-namespace DocumentSDK.NET.Droid.Utils
+﻿namespace DocumentSDK.NET.Droid.Utils
 {
     public class ValidationCallback : Java.Lang.Object //, IGenericTextRecognizerGenericTextValidationCallback
     {

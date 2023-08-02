@@ -3,7 +3,7 @@
     <TargetFramework>net7.0-android</TargetFramework>
     <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
     <OutputType>Exe</OutputType>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationId>com.companyname.ScanbotSDK.NET.Droid</ApplicationId>
     <ApplicationVersion>1</ApplicationVersion>
@@ -11,6 +11,6 @@
     <AssemblyName>ScanbotSDK.Android</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="ScanbotSDK.NET" Version="2.2.0" />
+    <PackageReference Include="ScanbotSDK.NET" Version="2.3.0-beta.2" />
   </ItemGroup>
 </Project>

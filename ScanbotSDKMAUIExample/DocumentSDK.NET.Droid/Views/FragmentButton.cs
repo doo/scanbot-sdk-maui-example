@@ -1,7 +1,4 @@
-﻿using System;
-using Android.Content;
-using Android.Widget;
-using DocumentSDK.NET.Droid.Model;
+﻿using Android.Content;
 using DocumentSDK.NET.Model;
 
 namespace DocumentSDK.NET.Droid.Views

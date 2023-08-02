@@ -1,9 +1,4 @@
-﻿using Android.App;
-using Android.Widget;
-using Android.OS;
-using DocumentSDK.NET.Droid.Model;
-using Android.Views;
-
+﻿using Android.Views;
 using DocumentSDK.NET.Droid.Views;
 using DocumentSDK.NET.Droid.Fragments;
 using Android.Graphics;
@@ -11,15 +6,12 @@ using Android.Content;
 using Android.Runtime;
 using IO.Scanbot.Sdk.UI.View.Mrz.Configuration;
 using IO.Scanbot.Sdk.UI.View.Mrz;
-using IO.Scanbot.Mrzscanner.Model;
 using IO.Scanbot.Sdk.UI.View.Camera.Configuration;
 using IO.Scanbot.Sdk.UI.View.Camera;
-using System.Linq;
 using IO.Scanbot.Sdk.Persistence;
 using DocumentSDK.NET.Droid.Repository;
 using DocumentSDK.NET.Droid.Activities;
 using DocumentSDK.NET.Droid.Utils;
-using System.Threading.Tasks;
 using IO.Scanbot.Sdk.Process;
 using IO.Scanbot.Sdk.UI.View.Barcode.Configuration;
 using IO.Scanbot.Sdk.UI.View.Barcode;
@@ -36,14 +28,12 @@ using IO.Scanbot.Genericdocument.Entity;
 using IO.Scanbot.Sdk.UI.View.Genericdocument;
 using IO.Scanbot.Sdk.UI.Result;
 using IO.Scanbot.Sdk.UI.View.Base;
-using System.Collections.Generic;
-using System;
 using IO.Scanbot.Sdk.UI.View.Check.Configuration;
 using IO.Scanbot.Sdk.UI.View.Check;
 using IO.Scanbot.Sdk.Check.Entity;
 using DocumentSDK.NET.Model;
 using SBSDK = DocumentSDK.MAUI.Native.Droid.ScanbotSDK;
-using Android;
+using IO.Scanbot.Mrzscanner.Model;
 
 namespace DocumentSDK.NET.Droid
 {
@@ -357,7 +347,7 @@ namespace DocumentSDK.NET.Droid
             }
             else if (requestCode == Constants.MRZ_DEFAULT_UI_REQUEST_CODE)
             {
-                var result = (MRZRecognitionResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+                var result = (MRZGenericDocument)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
                 var fragment = MRZDialogFragment.CreateInstance(result);
                 fragment.Show(this.FragmentManager, MRZDialogFragment.NAME);
             }

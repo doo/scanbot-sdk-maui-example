@@ -1,5 +1,4 @@
-﻿using System;
-using ScanbotSDK.iOS;
+﻿using ScanbotSDK.iOS;
 
 namespace DocumentSDK.MAUI.Example.Native.iOS.Model
 {

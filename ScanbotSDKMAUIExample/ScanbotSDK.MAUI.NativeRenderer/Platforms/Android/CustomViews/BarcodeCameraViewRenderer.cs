@@ -1,10 +1,6 @@
-﻿using System;
-using System.ComponentModel;
-using Android;
+﻿using Android;
 using Android.Content;
 using Android.Content.PM;
-using Android.Graphics;
-using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using AndroidX.Core.App;
@@ -12,23 +8,15 @@ using AndroidX.Core.Content;
 using BarcodeSDK.MAUI.Models;
 using DocumentSDK.MAUI.Droid;
 using DocumentSDK.MAUI.Droid.Utils;
-using IO.Scanbot.Sdk;
 using IO.Scanbot.Sdk.Barcode;
 using IO.Scanbot.Sdk.Barcode.Entity;
 using IO.Scanbot.Sdk.Barcode.UI;
 using IO.Scanbot.Sdk.Camera;
-using IO.Scanbot.Sdk.Contourdetector;
-using IO.Scanbot.Sdk.UI;
 using IO.Scanbot.Sdk.UI.Camera;
-using Java.Interop;
 using Kotlin.Jvm.Functions;
-using Microsoft.Maui;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Controls.Compatibility.Platform.Android;
 using Microsoft.Maui.Controls.Platform;
 using Microsoft.Maui.Platform;
 using ScanbotSDK.MAUI.NativeRenderer.CustomViews;
-using static ScanbotSDK.MAUI.NativeRenderer.Platforms.Android.CustomViews.BarcodeDetectorResultHandler;
 
 namespace ScanbotSDK.MAUI.NativeRenderer.Platforms.Android.CustomViews
 {

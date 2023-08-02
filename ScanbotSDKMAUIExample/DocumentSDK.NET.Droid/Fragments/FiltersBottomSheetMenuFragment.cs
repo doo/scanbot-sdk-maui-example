@@ -1,12 +1,7 @@
-﻿
-using Android.OS;
-using Android.Views;
-using Android.Widget;
+﻿using Android.Views;
 using Google.Android.Material.BottomSheet;
 using DocumentSDK.NET.Droid.Listeners;
-using DocumentSDK.NET.Droid.Model;
 using DocumentSDK.NET.Model;
-using Android;
 
 namespace DocumentSDK.NET.Droid.Fragments
 {

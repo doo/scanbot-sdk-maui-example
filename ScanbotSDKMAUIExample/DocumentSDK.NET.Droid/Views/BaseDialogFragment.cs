@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Android;
-using Android.OS;
-using Android.Views;
-using AndroidX.AppCompat.App;
-using AndroidX.Fragment.App;
+﻿using Android.Views;
 using DialogFragment = Android.App.DialogFragment;
 
 namespace DocumentSDK.NET.Droid.Views

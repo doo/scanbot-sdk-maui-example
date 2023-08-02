@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using SBSDK = ScanbotSDK.iOS;
+﻿using SBSDK = ScanbotSDK.iOS;
 
 namespace DocumentSDK.MAUI.Example.Native.iOS.Model
 {

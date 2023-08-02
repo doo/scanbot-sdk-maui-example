@@ -1,11 +1,9 @@
-﻿using System;
-using Foundation;
+﻿using Foundation;
 using DocumentSDK.MAUI.Example.Native.iOS.Repository;
 using DocumentSDK.MAUI.Example.Native.iOS.Utils;
 using DocumentSDK.MAUI.Example.Native.iOS.View;
 using DocumentSDK.MAUI.Example.Native.iOS.View.Collection;
 using DocumentSDK.MAUI.Example.Native.iOS.Models;
-using ScanbotSDK.iOS;
 using UIKit;
 using DocumentSDK.MAUI.Constants;
 using SBSDK = DocumentSDK.MAUI.Native.iOS.ScanbotSDK;

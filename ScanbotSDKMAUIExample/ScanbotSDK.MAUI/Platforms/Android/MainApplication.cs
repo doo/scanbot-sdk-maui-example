@@ -1,6 +1,5 @@
 ﻿using Android.App;
 using Android.Runtime;
-using DocumentSDK.MAUI.Constants;
 using DocumentSDK.MAUI.Droid;
 
 namespace DocumentSDK.MAUI.Example;

@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using Android.App;
-using Android.Runtime;
+﻿using Android.Runtime;
 using Android.Util;
 using DocumentSDK.MAUI.Constants;
 using DocumentSDK.MAUI.Native.Droid.Configurations;

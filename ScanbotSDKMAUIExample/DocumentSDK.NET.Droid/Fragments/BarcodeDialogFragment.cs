@@ -1,7 +1,4 @@
-﻿using System;
-using Android.OS;
-using Android.Views;
-using Android.Widget;
+﻿using Android.Views;
 using IO.Scanbot.Sdk.Barcode.Entity;
 using DocumentSDK.NET.Droid.Views;
 

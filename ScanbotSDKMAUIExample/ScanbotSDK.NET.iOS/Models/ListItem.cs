@@ -1,5 +1,4 @@
-﻿using System;
-namespace DocumentSDK.MAUI.Example.Native.iOS.Models
+﻿namespace DocumentSDK.MAUI.Example.Native.iOS.Models
 {
     public enum ListItemCode
     {

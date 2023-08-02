@@ -1,10 +1,6 @@
-﻿
-using System;
-using System.Collections.Generic;
-using CoreGraphics;
+﻿using CoreGraphics;
 using DocumentSDK.MAUI.Example.Native.iOS.Models;
 using UIKit;
-using Colors = DocumentSDK.MAUI.Example.Native.iOS.Models.Colors;
 
 namespace DocumentSDK.MAUI.Example.Native.iOS.View
 {

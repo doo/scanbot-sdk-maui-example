@@ -1,13 +1,8 @@
-﻿
-using System.IO;
-using System.Threading.Tasks;
-using Android.App;
-using Android.Content;
+﻿using Android.Content;
 using Android.Graphics;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
-using Android.Widget;
 using AndroidX.AppCompat.App;
 using IO.Scanbot.Sdk.Persistence;
 using IO.Scanbot.Sdk.Process;
@@ -18,7 +13,6 @@ using DocumentSDK.NET.Droid.Fragments;
 using DocumentSDK.NET.Droid.Listeners;
 using DocumentSDK.NET.Droid.Repository;
 using DocumentSDK.NET.Droid.Utils;
-using DocumentSDK.NET.Droid.Model;
 using DocumentSDK.NET.Model;
 using SBSDK = DocumentSDK.MAUI.Native.Droid.ScanbotSDK;
 

@@ -1,5 +1,4 @@
-﻿
-using DocumentSDK.MAUI.Example.Models;
+﻿using DocumentSDK.MAUI.Example.Models;
 using DocumentSDK.MAUI.Example.Pages;
 
 namespace DocumentSDK.MAUI.Example

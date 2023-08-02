@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace DocumentSDK.MAUI.Example.Native.iOS.Models
+﻿namespace DocumentSDK.MAUI.Example.Native.iOS.Models
 {
     public class DocumentScanner
     {

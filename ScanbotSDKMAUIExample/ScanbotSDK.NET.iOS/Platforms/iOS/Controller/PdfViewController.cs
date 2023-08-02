@@ -1,6 +1,4 @@
-﻿using System;
-using UIKit;
-using PdfKit;
+﻿using UIKit;
 using Foundation;
 using DocumentSDK.MAUI.Example.Native.iOS.View;
 

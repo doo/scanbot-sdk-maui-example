@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Android.OS;
+﻿using System.Text;
 using Android.Views;
-using Android.Widget;
 using IO.Scanbot.Hicscanner.Model;
 using DocumentSDK.NET.Droid.Views;
-using Android;
 
 namespace DocumentSDK.NET.Droid.Fragments
 {

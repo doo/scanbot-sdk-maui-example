@@ -1,7 +1,5 @@
-﻿using System;
-using Android.Content;
+﻿using Android.Content;
 using Android.Views;
-using Android.Widget;
 
 namespace DocumentSDK.NET.Droid.Utils
 {
