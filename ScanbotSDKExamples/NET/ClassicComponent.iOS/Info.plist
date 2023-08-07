@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
@@ -54,8 +54,8 @@
 	<key>CFBundleName</key>
 	<string>Scanbot SDK Example Xamarin</string>
 	<key>CFBundleIdentifier</key>
-	<string>io.scanbot.example.sdk.xamarin</string>
+	<string>io.scanbot.example.sdk.net</string>
 	<key>CFBundleDisplayName</key>
-	<string>Scanbot SDK Example Xamarin</string>
+	<string>NET Classic Component</string>
 </dict>
 </plist>
