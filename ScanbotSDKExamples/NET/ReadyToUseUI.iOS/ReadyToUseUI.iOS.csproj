@@ -9,7 +9,6 @@
         <AssemblyName>ReadyToUseUI.iOS</AssemblyName>
         <!-- App Identifier -->
         <ApplicationId>io.scanbot.example.sdk.maui.rtu</ApplicationId>
-        <!--<ApplicationIdGuid>4653df0b-6b74-4bd0-a889-35f94efbbf0c</ApplicationIdGuid>-->
         
         <!-- Versions -->
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
