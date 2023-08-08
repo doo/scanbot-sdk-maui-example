@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     
     <PropertyGroup>
-        <TargetFrameworks>net7.0-android</TargetFrameworks>
+        <TargetFrameworks>net7.0-android;net7.0-ios</TargetFrameworks>
         <OutputType>Exe</OutputType>
         <UseMaui>true</UseMaui>
         <SingleProject>true</SingleProject>
@@ -48,11 +48,6 @@
     <ItemGroup>
       <PackageReference Include="ScanbotSDK.MAUI" Version="2.3.0-beta.2" />
     </ItemGroup>
-<!--    <ItemGroup>
-      <None Remove="Platforms\Android\Resources\" />
-      <None Remove="Platforms\Android\Resources\layout\" />
-      <None Remove="Platforms\Android\Resources\values\" />
-    </ItemGroup>-->
     <ItemGroup>
       <Folder Include="Platforms\Android\Resources\" />
       <Folder Include="Platforms\Android\Resources\layout\" />
