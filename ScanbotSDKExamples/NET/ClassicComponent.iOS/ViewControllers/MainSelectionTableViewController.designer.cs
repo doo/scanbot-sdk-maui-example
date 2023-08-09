@@ -87,9 +87,6 @@ namespace ClassicComponent.iOS
 
 		[Action ("PerformOCRUpInside:")]
 		partial void PerformOCRUpInside (UIKit.UIButton sender);
-
-		[Action ("WorkflowScannerTouchUpInside:")]
-		partial void WorkflowScannerTouchUpInside (UIKit.UIButton sender);
 		
 		void ReleaseDesignerOutlets ()
 		{

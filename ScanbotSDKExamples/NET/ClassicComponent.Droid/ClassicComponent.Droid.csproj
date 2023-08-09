@@ -9,12 +9,8 @@
         <ApplicationVersion>1</ApplicationVersion>
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
         <AssemblyName>ClassicComponent.Droid</AssemblyName>
-        <ApplicationTitle>NET RTU UI</ApplicationTitle>
+        <ApplicationTitle>NET Classic Component</ApplicationTitle>
       <RootNamespace>ClassicalComponentsDemo.Droid</RootNamespace>
-    <!-- <AndroidSupportedAbis>armeabi-v7a</AndroidSupportedAbis>
-    <AndroidEnableMultiDex>true</AndroidEnableMultiDex>
-    <JavaMaximumHeapSize>4G</JavaMaximumHeapSize>
-    <RestoreProjectStyle>PackageReference</RestoreProjectStyle> -->
   </PropertyGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\SBSDKLanguageData\deu.traineddata" />

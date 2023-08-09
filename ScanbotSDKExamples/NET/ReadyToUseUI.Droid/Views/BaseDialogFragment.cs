@@ -5,14 +5,9 @@ namespace ReadyToUseUI.Droid.Views
 {
     public class BaseDialogFragment : DialogFragment
     {
-        public const string WORKFLOW_EXTRA = "WORKFLOW_EXTRA";
-        public const string WORKFLOW_RESULT_EXTRA = "WORKFLOW_RESULT_EXTRA";
         public const string SCANNER_RESULT_EXTRA = "SCANNER_RESULT_EXTRA";
 
         public string CopyText { get; set; }
-
-        //protected Workflow workflow;
-        //protected List<WorkflowStepResult> stepResults;
 
         public virtual View AddContentView(LayoutInflater inflater, ViewGroup container)
         {

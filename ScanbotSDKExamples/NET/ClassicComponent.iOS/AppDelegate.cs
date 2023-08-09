@@ -19,7 +19,7 @@ namespace ClassicComponent.iOS
         // After the trial period is over all Scanbot SDK functions as well as the UI components will stop working
         // or may be terminated. You can get an unrestricted "no-strings-attached" 30 day trial license key for free.
         // Please submit the trial license form (https://scanbot.io/sdk/trial.html) on our website by using
-        // the app identifier "io.scanbot.example.sdk.xamarin" of this example app.
+        // the app identifier "io.scanbot.example.sdk.net" of this example app.
         const string LICENSE_KEY = null;
 
         public override UIWindow Window { get; set; }
@@ -54,7 +54,7 @@ namespace ClassicComponent.iOS
             // - https://docs.microsoft.com/en-us/dotnet/api/system.environment.specialfolder
 
             var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            var exampleTempStorage = System.IO.Path.Combine(documents, "sbsdk-xamarin-cc-storage");
+            var exampleTempStorage = System.IO.Path.Combine(documents, "sbsdk-maui-cc-storage");
             System.IO.Directory.CreateDirectory(exampleTempStorage);
             return exampleTempStorage;
         }

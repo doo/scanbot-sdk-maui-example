@@ -65,9 +65,6 @@ namespace ReadyToUseUI.iOS
             Window = new UIWindow(UIScreen.MainScreen.Bounds);
 
             Window.RootViewController = Controller;
-
-            //TopInset = (float)(Controller.NavigationBar.Frame.Height + UIApplication.SharedApplication.StatusBarFrame.Height);
-
             Window.MakeKeyAndVisible();
 
             return true;

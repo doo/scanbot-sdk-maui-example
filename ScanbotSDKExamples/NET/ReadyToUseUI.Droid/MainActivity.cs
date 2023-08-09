@@ -37,7 +37,7 @@ using IO.Scanbot.Mrzscanner.Model;
 
 namespace ReadyToUseUI.Droid
 {
-    [Activity(Label = "Ready-to-use UI Demo", MainLauncher = true, Icon = "@mipmap/icon")]
+    [Activity(Label = "NET RTU UI", MainLauncher = true, Icon = "@mipmap/icon")]
     public class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
     {
         readonly List<FragmentButton> buttons = new List<FragmentButton>();
@@ -138,15 +138,6 @@ namespace ReadyToUseUI.Droid
             }
 
             return SBSDK.IsLicenseValid();
-        }
-
-
-        // WorkflowScannerActivity workflowScanners parameter is an optional parameter,
-        // however, the generated Kotlin -> C# bindings do not that take that into account.
-        // Just create an empty Dictionary and enter it as a parameter
-        Dictionary<Java.Lang.Class, Java.Lang.Class> WorkflowScanners
-        {
-            get => new Dictionary<Java.Lang.Class, Java.Lang.Class>();
         }
 
         void StartImportActivity(int resultConstant)

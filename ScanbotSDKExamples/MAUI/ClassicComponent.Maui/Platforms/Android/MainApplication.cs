@@ -16,29 +16,25 @@ public class MainApplication : MauiApplication
 
     private MauiApp CreateMauiInstance()
     {
-        Task.Run(() =>
+        try
         {
-            try
+            var configuration = new DocumentSDK.MAUI.SBSDKConfiguration
             {
-                //await Task.Delay(5000);
-                var configuration = new DocumentSDK.MAUI.SBSDKConfiguration
-                {
-                    EnableLogging = true,
-                    // If no StorageBaseDirectory is specified, the default will be used
-                    StorageBaseDirectory = GetDemoStorageBaseDirectory(),
-                    AllowGpuAcceleration = false,
-                    AllowXnnpackAcceleration = false,
-                    EnableNativeLogging = true
-                };
+                EnableLogging = true,
+                // If no StorageBaseDirectory is specified, the default will be used
+                StorageBaseDirectory = GetDemoStorageBaseDirectory(),
+                AllowGpuAcceleration = false,
+                AllowXnnpackAcceleration = false,
+                EnableNativeLogging = true
+            };
 
-                SBSDKInitializer.Initialize(this, App.LICENSE_KEY, configuration);
+            SBSDKInitializer.Initialize(this, App.LICENSE_KEY, configuration);
 
-            }
-            catch (Exception e)
-            {
-                System.Diagnostics.Debug.WriteLine(e.StackTrace);
-            }
-        });
+        }
+        catch (Exception e)
+        {
+            System.Diagnostics.Debug.WriteLine(e.StackTrace);
+        }
 
         return MauiProgram.CreateMauiApp();
     }

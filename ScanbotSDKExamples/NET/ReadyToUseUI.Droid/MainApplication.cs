@@ -62,7 +62,7 @@ namespace ReadyToUseUI.Droid
             // - https://developer.android.com/guide/topics/data/data-storage
             // - https://docs.microsoft.com/en-us/xamarin/android/platform/files/
             var external = GetExternalFilesDir(null).AbsolutePath;
-            var path = Path.Combine(external, "scanbot-sdk-example-xamarin-rtu_demo-storage");
+            var path = Path.Combine(external, "scanbot-sdk-example-net-rtu_demo-storage");
             Directory.CreateDirectory(path);
 
             return path;

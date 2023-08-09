@@ -52,7 +52,7 @@
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>CFBundleName</key>
-	<string>Scanbot SDK Example Xamarin</string>
+	<string>NET Classic Component</string>
 	<key>CFBundleIdentifier</key>
 	<string>io.scanbot.example.sdk.net</string>
 	<key>CFBundleDisplayName</key>

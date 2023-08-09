@@ -54,7 +54,7 @@ namespace ClassicComponent.iOS
             // See some examples below the #region SBSDKScannerViewControllerDelegate
             //
             // Please see the API docs of our native Scanbot SDK for iOS, since all those methods and properties
-            // are also available as Scanbot Xamarin bindings.
+            // are also available as Scanbot .NET bindings.
             //
             // =================================================================
 

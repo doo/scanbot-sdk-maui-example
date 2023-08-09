@@ -14,13 +14,6 @@
         ScannerImportBarcode,
         ScannerImportImagesFromBarcode,
 
-
-        WorkflowQR,
-        WorkflowMRZImage,
-        WorkflowMRZFrontBack,
-        WorkflowMC,
-        WorkflowSEPA,
-
         GenericDocumentRecognizer,
         CheckRecognizer
     }

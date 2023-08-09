@@ -29,9 +29,9 @@ namespace ClassicComponent.Maui.CustomViews
 
         protected override FrameLayout CreatePlatformView()
         {
-          var cameraLayout = (FrameLayout)LayoutInflater
-                    .FromContext(Context)
-                    .Inflate(Resource.Layout.barcode_camera_view, null, false);
+            var cameraLayout = (FrameLayout)LayoutInflater
+                      .FromContext(Context)
+                      .Inflate(Resource.Layout.barcode_camera_view, null, false);
 
 
             // Here we retrieve the Camera View...
@@ -164,7 +164,7 @@ namespace ClassicComponent.Maui.CustomViews
             var overlayEnabled = VirtualView.OverlayConfiguration?.Enabled ?? false;
             if (overlayEnabled == false)
             {
-                var outResult = new BarcodeResultBundle //ScanbotSDK.Xamarin.Forms.BarcodeScanningResult
+                var outResult = new BarcodeResultBundle
                 {
                     Barcodes = result.BarcodeItems.ToFormsBarcodeList(),
                     Image = result.PreviewFrame.ToImageSource()
@@ -234,7 +234,6 @@ namespace ClassicComponent.Maui.CustomViews
         }
     }
 
-
     internal class HierarchyChangeListener : Java.Lang.Object, ViewGroup.IOnHierarchyChangeListener
     {
         private ViewGroup viewGroup;
@@ -256,16 +255,14 @@ namespace ClassicComponent.Maui.CustomViews
 
         public void OnChildViewRemoved(Android.Views.View parent, Android.Views.View child)
         {
-           
+
         }
     }
-
-
 
     /**
     * Snippet from: 
     * https://stackoverflow.com/questions/64013415/pass-lambda-function-to-c-sharp-generated-code-of-kotlin-in-xamarin-android-bind
-*/
+    */
     class Function1Impl<T> : Java.Lang.Object, Kotlin.Jvm.Functions.IFunction1 where T : Java.Lang.Object
     {
         private readonly Action<T> OnInvoked;
@@ -292,5 +289,3 @@ namespace ClassicComponent.Maui.CustomViews
         }
     }
 }
-
-

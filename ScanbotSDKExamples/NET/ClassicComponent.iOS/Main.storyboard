@@ -23,7 +23,7 @@
             </objects>
             <point key="canvasLocation" x="-660" y="-55"/>
         </scene>
-        <!--Scanbot SDK Example Xamarin-->
+        <!--ScanbotSDK.NET Example-->
         <scene sceneID="718">
             <objects>
                 <tableViewController id="719" customClass="MainSelectionTableViewController" sceneMemberID="viewController">
@@ -330,7 +330,7 @@
                             <outlet property="delegate" destination="719" id="722"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Scanbot SDK Example Xamarin" id="845"/>
+                    <navigationItem key="navigationItem" title="ScanbotSDK.NET Example" id="845"/>
                     <connections>
                         <outlet property="applyImageFilterButton" destination="747" id="name-outlet-747"/>
                         <outlet property="checkRecognizerButton" destination="9eS-ya-gK0" id="GFq-xp-Ln3"/>

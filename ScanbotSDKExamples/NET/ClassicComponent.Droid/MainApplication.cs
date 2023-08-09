@@ -23,7 +23,7 @@ namespace ClassicComponent.Droid
         // After the trial period is over all Scanbot SDK functions as well as the UI components will stop working
         // or may be terminated. You can get an unrestricted "no-strings-attached" 30 day trial license key for free.
         // Please submit the trial license form (https://scanbot.io/sdk/trial.html) on our website by using
-        // the app identifier "io.scanbot.example.sdk.xamarin" of this example app.
+        // the app identifier "io.scanbot.example.sdk.net" of this example app.
         const string LICENSE_KEY = null;
 
         public MainApplication(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
@@ -68,7 +68,7 @@ namespace ClassicComponent.Droid
             // - https://docs.microsoft.com/en-us/xamarin/android/platform/files/
 
             var external = GetExternalFilesDir(null).AbsolutePath;
-            var path = Path.Combine(external, "sbsdk-xamarin-cc-demo");
+            var path = Path.Combine(external, "sbsdk-maui-cc-demo");
             Directory.CreateDirectory(path);
 
             return path;
