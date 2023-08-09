@@ -44,7 +44,6 @@ namespace ClassicComponent.Maui.CustomViews
         {
             base.ConnectHandler(platformView);
 
-
             var detector = new IO.Scanbot.Sdk.ScanbotSDK(Context.GetActivity()).CreateBarcodeDetector();
             detector.ModifyConfig(new Function1Impl<BarcodeScannerConfigBuilder>((response) =>
             {
@@ -53,7 +52,6 @@ namespace ClassicComponent.Maui.CustomViews
 
             cameraViewDroid.InitCamera(new CameraUiSettings(false));
             BarcodeScannerViewWrapper.InitDetectionBehavior(cameraViewDroid, detector, new SBResultHandler(HandleFrameHandlerResult), new BarcodeScannerViewCallback(VirtualView, cameraViewDroid));
-
         }
 
         protected override void DisconnectHandler(FrameLayout platformView)
@@ -72,7 +70,6 @@ namespace ClassicComponent.Maui.CustomViews
         }
 
         #endregion
-
 
         #region Properties Implementation
 

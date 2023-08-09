@@ -23,6 +23,10 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
         <CreatePackage>false</CreatePackage>
+        <MtouchLink>SdkOnly</MtouchLink>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">
+      <CreatePackage>false</CreatePackage>
     </PropertyGroup>
     <ItemGroup>
         <!-- App Icon -->
@@ -44,6 +48,10 @@
     <ItemGroup Condition="$(TargetFramework.StartsWith('net7.0-android')) != true">
         <Compile Remove="**\**\*.Android.cs" />
         <None Include="**\**\*.Android.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+    </ItemGroup>
+        <ItemGroup Condition="$(TargetFramework.StartsWith('net7.0-ios')) != true">
+        <Compile Remove="**\**\*.iOS.cs" />
+        <None Include="**\**\*.iOS.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="ScanbotSDK.MAUI" Version="2.3.0-beta.2" />
