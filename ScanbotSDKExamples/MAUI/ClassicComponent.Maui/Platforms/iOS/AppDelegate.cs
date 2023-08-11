@@ -67,9 +67,7 @@ public class AppDelegate : MauiUIApplicationDelegate
         // If application has a Navigation Controller
         if (viewController is UINavigationController navigationController)
         {
-            // ALERT: In case of Navigation Controller we are explicitely accessing the ChildViewController and then returning the last object in stack.
-            // Because there is an issue OR we can say it is built this way in MAUI.
-            // Condition: The Navigation Controller has a Navigation Renderer in between the hierarchy, so we cannot use "navigationController?.VisibleViewController" 
+            // Note: The Navigation Controller has a Navigation Renderer in between the NavigationController and MainViewController, so we cannot use "navigationController?.VisibleViewController".
             return navigationController?.VisibleViewController?.ChildViewControllers?.Last();
         }
         else if (viewController is UITabBarController tabBarController)

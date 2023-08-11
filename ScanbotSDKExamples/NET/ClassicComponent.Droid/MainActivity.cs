@@ -13,7 +13,7 @@ using IO.Scanbot.Sdk.UI.Result;
 using IO.Scanbot.Sdk.UI.View.Genericdocument.Configuration;
 using IO.Scanbot.Genericdocument.Entity;
 using IO.Scanbot.Sdk.UI.View.Base;
-using ClassicalComponentsDemo.Droid;
+
 using DocumentSDK.MAUI.Constants;
 using SBSDK = DocumentSDK.MAUI.Native.Droid.ScanbotSDK;
 using DocumentSDK.MAUI.Models;

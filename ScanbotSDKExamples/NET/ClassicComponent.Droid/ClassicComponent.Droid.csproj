@@ -10,7 +10,7 @@
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
         <AssemblyName>ClassicComponent.Droid</AssemblyName>
         <ApplicationTitle>NET Classic Component</ApplicationTitle>
-      <RootNamespace>ClassicalComponentsDemo.Droid</RootNamespace>
+      <RootNamespace>ClassicComponent.Droid</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\SBSDKLanguageData\deu.traineddata" />

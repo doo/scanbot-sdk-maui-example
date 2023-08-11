@@ -12,7 +12,7 @@ using IO.Scanbot.Sdk.Contourdetector;
 using IO.Scanbot.Sdk.UI;
 using IO.Scanbot.Sdk.Core.Contourdetector;
 using ClassicComponent.Droid.Delegates;
-using ClassicalComponentsDemo.Droid;
+
 using DocumentSDK.MAUI.Models;
 
 namespace ClassicComponent.Droid

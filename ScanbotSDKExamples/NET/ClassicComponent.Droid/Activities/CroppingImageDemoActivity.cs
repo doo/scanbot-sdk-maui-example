@@ -8,7 +8,7 @@ using AndroidX.AppCompat.App;
 using IO.Scanbot.Sdk.UI;
 using IO.Scanbot.Sdk.Core.Contourdetector;
 using IO.Scanbot.Sdk.Process;
-using ClassicalComponentsDemo.Droid;
+
 
 namespace ClassicComponent.Droid
 {

@@ -1,6 +1,6 @@
 ﻿using Android.Content;
 using AndroidX.AppCompat.App;
-using ClassicalComponentsDemo.Droid;
+
 using ClassicComponent.Droid.Delegates;
 using IO.Scanbot.Sdk.Camera;
 using IO.Scanbot.Sdk.Check;

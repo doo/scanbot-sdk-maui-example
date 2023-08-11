@@ -3,7 +3,7 @@ using IO.Scanbot.Genericdocument.Entity;
 using Android.Graphics;
 using Android.Content;
 using IO.Scanbot.Sdk.Check.Entity;
-using ClassicalComponentsDemo.Droid;
+
 
 namespace ClassicComponent.Droid.Activities
 {
