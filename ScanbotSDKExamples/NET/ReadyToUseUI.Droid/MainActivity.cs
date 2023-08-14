@@ -171,9 +171,9 @@ namespace ReadyToUseUI.Droid
                 configuration.SetMultiPageEnabled(true);
                 configuration.SetPageCounterButtonTitle("%d Page(s)");
                 configuration.SetTextHintOK("Don't move.\nCapturing document...");
+                // see further customization configs...
                 //configuration.SetBottomBarBackgroundColor(Color.Blue);
                 //configuration.SetBottomBarButtonsColor(Color.White);
-                // see further customization configs...
 
                 var intent = DocumentScannerActivity.NewIntent(this, configuration);
                 StartActivityForResult(intent, Constants.CAMERA_DEFAULT_UI_REQUEST_CODE);
@@ -184,9 +184,9 @@ namespace ReadyToUseUI.Droid
                 configuration.SetCameraPreviewMode(CameraPreviewMode.FitIn);
                 configuration.SetIgnoreBadAspectRatio(true);
                 configuration.SetTextHintOK("Don't move.\nCapturing document...");
+                // see further customization configs...
                 //configuration.SetFinderLineColor(Color.Blue);
                 //configuration.SetTopBarBackgroundColor(Color.White);
-                // see further customization configs...
 
                 var intent = FinderDocumentScannerActivity.NewIntent(this, configuration);
                 StartActivityForResult(intent, Constants.CAMERA_DEFAULT_UI_REQUEST_CODE);
