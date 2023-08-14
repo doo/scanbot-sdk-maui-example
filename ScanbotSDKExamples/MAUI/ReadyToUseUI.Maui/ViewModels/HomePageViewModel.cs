@@ -8,6 +8,7 @@ using ReadyToUseUI.Maui.Models;
 using ReadyToUseUI.Maui.Pages;
 using ReadyToUseUI.Maui.Utils;
 using SBSDK = DocumentSDK.MAUI.ScanbotSDK;
+
 namespace ReadyToUseUI.Maui.ViewModels
 {
     public class HomePageViewModel : INotifyPropertyChanged
@@ -47,6 +48,7 @@ namespace ReadyToUseUI.Maui.ViewModels
                 {
                     new SDKService { Title = "DOCUMENT SCANNER", ShowSection = true },
                     new SDKService { Title = SDKServiceTitle.ScanDocument, ShowService = true },
+                    new SDKService { Title = SDKServiceTitle.ScanDocumentWithFinder, ShowService = true },
                     new SDKService { Title = SDKServiceTitle.ImportImageAndDetectDoc, ShowService = true },
                     new SDKService { Title = SDKServiceTitle.ViewImageResults, ShowService = true },
 
@@ -77,9 +79,11 @@ namespace ReadyToUseUI.Maui.ViewModels
             switch (serviceTitle)
             {
                 case SDKServiceTitle.ScanDocument:
-                    await ScanningUIClicked();
+                    await ScanningUIClicked(withFinder: false);
                     break;
-
+                case SDKServiceTitle.ScanDocumentWithFinder:
+                    await ScanningUIClicked(withFinder: true);
+                    break;
                 case SDKServiceTitle.ImportImageAndDetectDoc:
                     await ImportButtonClicked();
                     break;
@@ -138,10 +142,10 @@ namespace ReadyToUseUI.Maui.ViewModels
         //--------------------------------------------
         async Task ScanningUIClicked(bool withFinder = false)
         {
-            MAUI.Models.DocumentScannerResult result;
+            DocumentSDK.MAUI.Models.DocumentScannerResult result;
             if (withFinder)
             {
-                result = await ScanbotSDK.ReadyToUseUIService.LaunchFinderDocumentScannerAsync(new FinderDocumentScannerConfiguration
+                result = await SBSDK.ReadyToUseUIService.LaunchFinderDocumentScannerAsync(new FinderDocumentScannerConfiguration
                 {
                     // shared properties
                     CameraPreviewMode = CameraPreviewMode.FitIn,
@@ -161,7 +165,7 @@ namespace ReadyToUseUI.Maui.ViewModels
             }
             else
             {
-                result = await ScanbotSDK.ReadyToUseUIService.LaunchDocumentScannerAsync(new DocumentScannerConfiguration
+                result = await SBSDK.ReadyToUseUIService.LaunchDocumentScannerAsync(new DocumentScannerConfiguration
                 {
                     // shared properties
                     CameraPreviewMode = CameraPreviewMode.FitIn,
@@ -242,9 +246,8 @@ namespace ReadyToUseUI.Maui.ViewModels
             config.CodeDensity = BarcodeDensity.High;
             config.EngineMode = EngineMode.NextGen;
             config.OverlayConfiguration = new SelectionOverlayConfiguration(true, OverlayFormat.Code, Colors.Yellow, Colors.Yellow, Colors.Black);
-            //TestCloseBarcodeScannerAsync();
 
-            var result = await ScanbotSDK.ReadyToUseUIService.OpenBarcodeScannerView(config);
+            var result = await SBSDK.ReadyToUseUIService.OpenBarcodeScannerView(config);
             if (result.Status == OperationResult.Ok)
             {
                 if (result.Barcodes.Count == 0)
@@ -269,7 +272,7 @@ namespace ReadyToUseUI.Maui.ViewModels
             var config = new BatchBarcodeScannerConfiguration();
             config.BarcodeFormats = BarcodeTypes.Instance.AcceptedTypes;
             config.OverlayConfiguration = new SelectionOverlayConfiguration(true, OverlayFormat.Code, Colors.Yellow, Colors.Yellow, Colors.Black);
-            var result = await ScanbotSDK.ReadyToUseUIService.OpenBatchBarcodeScannerView(config);
+            var result = await SBSDK.ReadyToUseUIService.OpenBatchBarcodeScannerView(config);
             if (result.Status == OperationResult.Ok)
             {
                 if (result.Barcodes.Count == 0) 
@@ -286,11 +289,11 @@ namespace ReadyToUseUI.Maui.ViewModels
         // ------------------------------------
         async Task ImportAndDetectBarcodesClicked()
         {
-            ImageSource source = await ScanbotSDK.PickerService.PickImageAsync();
+            ImageSource source = await SBSDK.PickerService.PickImageAsync();
 
             if (source != null)
             {
-                var barcodes = await ScanbotSDK.DetectionService.DetectBarcodesFrom(source);
+                var barcodes = await SBSDK.DetectionService.DetectBarcodesFrom(source);
                 await Navigate(new BarcodeResultPage(source, barcodes));
             }
         }
@@ -300,11 +303,11 @@ namespace ReadyToUseUI.Maui.ViewModels
         // ------------------------------------
         async Task ImportButtonClicked()
         {
-            ImageSource source = await ScanbotSDK.PickerService.PickImageAsync();
+            ImageSource source = await SBSDK.PickerService.PickImageAsync();
             if (source != null)
             {
                 // Import the selected image as original image and create a Page object
-                var importedPage = await ScanbotSDK.SDKService.CreateScannedPageAsync(source);
+                var importedPage = await SBSDK.SDKService.CreateScannedPageAsync(source);
 
                 // Run document detection on it
                 await importedPage.DetectDocumentAsync();
@@ -331,7 +334,7 @@ namespace ReadyToUseUI.Maui.ViewModels
             configuration.FlashEnabled = true;
             configuration.TopBarButtonsColor = Colors.Green;
 
-            var result = await ScanbotSDK.ReadyToUseUIService.LaunchMrzScannerAsync(configuration);
+            var result = await SBSDK.ReadyToUseUIService.LaunchMrzScannerAsync(configuration);
             if (result.Status == OperationResult.Ok)
             {
                 var message = SDKUtils.ParseMRZResult(result);
@@ -349,7 +352,7 @@ namespace ReadyToUseUI.Maui.ViewModels
             configuration.FlashEnabled = true;
             configuration.TopBarButtonsColor = Colors.Green;
             //TestCloseHealthInsuranceCardScannerAsync();
-            var result = await ScanbotSDK.ReadyToUseUIService.LaunchHealthInsuranceCardScannerAsync(configuration);
+            var result = await SBSDK.ReadyToUseUIService.LaunchHealthInsuranceCardScannerAsync(configuration);
             if (result.Status == OperationResult.Ok)
             {
                 var message = SDKUtils.ParseEHICResult(result);
@@ -368,7 +371,7 @@ namespace ReadyToUseUI.Maui.ViewModels
             {
                 DocumentType = GenericDocumentType.DeIdCard
             };
-            var result = await ScanbotSDK.ReadyToUseUIService.LaunchGenericDocumentRecognizerAsync(configuration);
+            var result = await SBSDK.ReadyToUseUIService.LaunchGenericDocumentRecognizerAsync(configuration);
             if (result.Status == OperationResult.Ok)
             {
                 var message = SDKUtils.ParseGDRResult(result);
@@ -394,7 +397,7 @@ namespace ReadyToUseUI.Maui.ViewModels
                 }
             };
 
-            var result = await ScanbotSDK.ReadyToUseUIService.LaunchCheckRecognizerAsync(configuration);
+            var result = await SBSDK.ReadyToUseUIService.LaunchCheckRecognizerAsync(configuration);
             if (result.Status == OperationResult.Ok)
             {
                 var message = SDKUtils.ParseCheckResult(result);
@@ -408,7 +411,7 @@ namespace ReadyToUseUI.Maui.ViewModels
         void ViewLicenseInfoClicked()
         {
             var message = "Scanbot SDK License is valid";
-            if (!ScanbotSDK.IsLicenseValid)
+            if (!SBSDK.IsLicenseValid)
             {
                 message = "Scanbot SDK License is expired";
             }
