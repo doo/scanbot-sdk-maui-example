@@ -147,37 +147,34 @@ namespace ReadyToUseUI.Maui.ViewModels
             {
                 result = await SBSDK.ReadyToUseUIService.LaunchFinderDocumentScannerAsync(new FinderDocumentScannerConfiguration
                 {
-                    // shared properties
                     CameraPreviewMode = CameraPreviewMode.FitIn,
                     IgnoreBadAspectRatio = true,
-                    PolygonColor = Colors.Blue,
-                    PolygonColorOK = Colors.Yellow,
-                    //DocumentImageSizeLimit = new Size(2000, 3000) // test code to limit size of document
+                    TextHintOK = "Don't move.\nScanning document...",
+                    OrientationLockMode = InterfaceOrientation.Portrait,
+                    // implicitly the aspect ratio is set to a4 portrait
 
-                    // finder properties
-                    FinderLineColor = Colors.ForestGreen,
-                    FinderLineWidth = 12,
-                    CameraOverlayColor = Colors.DeepSkyBlue,
-                    PolygonEnabled = true,
-                    PolygonCornerRadius = 5,
-                    AutoSnappingEnabled = true
+                    // further configuration properties
+                    //FinderLineColor = Colors.Red,
+                    //TopBarBackgroundColor = Colors.Blue,
+                    //FlashButtonHidden = true,
+                    // and so on...
                 });
             }
             else
             {
                 result = await SBSDK.ReadyToUseUIService.LaunchDocumentScannerAsync(new DocumentScannerConfiguration
                 {
-                    // shared properties
                     CameraPreviewMode = CameraPreviewMode.FitIn,
                     IgnoreBadAspectRatio = true,
-                    PolygonColor = Colors.Pink,
-                    PolygonColorOK = Colors.Magenta,
-
-                    // regular document scanner properties
                     MultiPageEnabled = true,
-                    BottomBarBackgroundColor = Colors.Blue,
                     PageCounterButtonTitle = "%d Page(s)",
-                    //DocumentImageSizeLimit = new Size(2000, 3000) // test code to limit size of document
+                    TextHintOK = "Don't move.\nScanning document...",
+
+                    // further configuration properties
+                    //BottomBarBackgroundColor = Colors.Blue,
+                    //BottomBarButtonsColor = Colors.White,
+                    //FlashButtonHidden = true,
+                    // and so on...
                 });
             }
             

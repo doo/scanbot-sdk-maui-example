@@ -108,9 +108,9 @@ namespace ReadyToUseUI.iOS.Controller
                 config.BehaviorConfiguration.IgnoreBadAspectRatio = true;
                 config.BehaviorConfiguration.MultiPageEnabled = true;
                 config.TextConfiguration.PageCounterButtonTitle = "%d Page(s)";
-                config.TextConfiguration.TextHintOK = "Don't move.\nCapturing document...";
+                config.TextConfiguration.TextHintOK = "Don't move.\nScanning document...";
 
-                // further customization configs
+                // further configuration properties
                 //config.UiConfiguration.BottomBarBackgroundColor = UIColor.Blue;
                 //config.UiConfiguration.BottomBarButtonsColor = UIColor.White;
                 //config.UiConfiguration.FlashButtonHidden = true;
@@ -127,12 +127,14 @@ namespace ReadyToUseUI.iOS.Controller
 
                 config.BehaviorConfiguration.CameraPreviewMode = SBSDKVideoContentMode.FitIn;
                 config.BehaviorConfiguration.IgnoreBadAspectRatio = true;
-                config.TextConfiguration.TextHintOK = "Don't move.\nCapturing document...";
+                config.TextConfiguration.TextHintOK = "Don't move.\nScanning document...";
+                config.UiConfiguration.OrientationLockMode = SBSDKOrientationLock.Portrait;
+                config.UiConfiguration.FinderAspectRatio = new SBSDKAspectRatio(21.0, 29.7); // a4 portrait
 
-                // further customization configs
+                // further configuration properties
                 //config.UiConfiguration.FinderLineColor = UIColor.Red;
                 //config.UiConfiguration.TopBarBackgroundColor = UIColor.Blue;
-                config.UiConfiguration.FlashButtonHidden = true;
+                //config.UiConfiguration.FlashButtonHidden = true;
                 // and so on...
 
                 var controller = SBSDKUIFinderDocumentScannerViewController
