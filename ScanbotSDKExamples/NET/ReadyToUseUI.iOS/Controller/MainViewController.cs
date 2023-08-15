@@ -103,14 +103,19 @@ namespace ReadyToUseUI.iOS.Controller
             if (button.Data.Code == ListItemCode.ScanDocument)
             {
                 var config = SBSDKUIDocumentScannerConfiguration.DefaultConfiguration;
-                config.BehaviorConfiguration.MultiPageEnabled = true;
+
+                config.BehaviorConfiguration.CameraPreviewMode = SBSDKVideoContentMode.FitIn;
                 config.BehaviorConfiguration.IgnoreBadAspectRatio = true;
+                config.BehaviorConfiguration.MultiPageEnabled = true;
                 config.TextConfiguration.PageCounterButtonTitle = "%d Page(s)";
                 config.TextConfiguration.TextHintOK = "Don't move.\nCapturing document...";
-                config.UiConfiguration.BottomBarBackgroundColor = UIColor.Blue;
-                config.UiConfiguration.BottomBarButtonsColor = UIColor.White;
-                // see further customization configs...
-                config.UiConfiguration.FlashButtonHidden = false;
+
+                // further customization configs
+                //config.UiConfiguration.BottomBarBackgroundColor = UIColor.Blue;
+                //config.UiConfiguration.BottomBarButtonsColor = UIColor.White;
+                //config.UiConfiguration.FlashButtonHidden = true;
+                // and so on...
+
                 var controller = SBSDKUIDocumentScannerViewController
                     .CreateNewWithConfiguration(config, new DocumentScannerCallback(OnScanComplete));
                 controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
@@ -119,11 +124,17 @@ namespace ReadyToUseUI.iOS.Controller
             else if (button.Data.Code == ListItemCode.ScanDocumentWithFinder)
             {
                 var config = SBSDKUIFinderDocumentScannerConfiguration.DefaultConfiguration;
+
+                config.BehaviorConfiguration.CameraPreviewMode = SBSDKVideoContentMode.FitIn;
                 config.BehaviorConfiguration.IgnoreBadAspectRatio = true;
                 config.TextConfiguration.TextHintOK = "Don't move.\nCapturing document...";
-                config.UiConfiguration.TopBarBackgroundColor = UIColor.Blue;
-                // see further customization configs...
-                config.UiConfiguration.FlashButtonHidden = false;
+
+                // further customization configs
+                //config.UiConfiguration.FinderLineColor = UIColor.Red;
+                //config.UiConfiguration.TopBarBackgroundColor = UIColor.Blue;
+                config.UiConfiguration.FlashButtonHidden = true;
+                // and so on...
+
                 var controller = SBSDKUIFinderDocumentScannerViewController
                     .CreateNewWithConfiguration(config, new FinderDocumentScannerCallback(OnScanComplete));
                 controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;

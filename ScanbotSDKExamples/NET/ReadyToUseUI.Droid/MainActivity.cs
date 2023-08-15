@@ -171,9 +171,12 @@ namespace ReadyToUseUI.Droid
                 configuration.SetMultiPageEnabled(true);
                 configuration.SetPageCounterButtonTitle("%d Page(s)");
                 configuration.SetTextHintOK("Don't move.\nCapturing document...");
-                // see further customization configs...
+
+                // further configuration properties
                 //configuration.SetBottomBarBackgroundColor(Color.Blue);
                 //configuration.SetBottomBarButtonsColor(Color.White);
+                //configuration.SetFlashButtonHidden(true);
+                // and so on...
 
                 var intent = DocumentScannerActivity.NewIntent(this, configuration);
                 StartActivityForResult(intent, Constants.CAMERA_DEFAULT_UI_REQUEST_CODE);
@@ -181,12 +184,16 @@ namespace ReadyToUseUI.Droid
             else if (button.Data.Code == ListItemCode.ScanDocumentWithFinder)
             {
                 var configuration = new FinderDocumentScannerConfiguration();
+
                 configuration.SetCameraPreviewMode(CameraPreviewMode.FitIn);
                 configuration.SetIgnoreBadAspectRatio(true);
                 configuration.SetTextHintOK("Don't move.\nCapturing document...");
-                // see further customization configs...
-                //configuration.SetFinderLineColor(Color.Blue);
-                //configuration.SetTopBarBackgroundColor(Color.White);
+
+                // further configuration properties
+                //configuration.SetFinderLineColor(Color.Red);
+                //configuration.SetTopBarBackgroundColor(Color.Blue);
+                //configuration.SetFlashButtonHidden(true);
+                // and so on...
 
                 var intent = FinderDocumentScannerActivity.NewIntent(this, configuration);
                 StartActivityForResult(intent, Constants.CAMERA_DEFAULT_UI_REQUEST_CODE);
