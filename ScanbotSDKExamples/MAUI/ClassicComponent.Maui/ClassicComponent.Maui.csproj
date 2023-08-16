@@ -60,5 +60,9 @@
       <Folder Include="Platforms\Android\Resources\" />
       <Folder Include="Platforms\Android\Resources\layout\" />
       <Folder Include="Platforms\Android\Resources\values\" />
+      <Folder Include="Platforms\iOS\Utils\" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Remove="Platforms\iOS\Utils\" />
     </ItemGroup>
 </Project>

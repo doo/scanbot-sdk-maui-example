@@ -60,24 +60,13 @@ namespace ClassicComponent.Maui.CustomViews
 
         public static void MapOnPauseHandler(BarcodeCameraViewHandler current, BarcodeCameraView commonView, object arg3)
         {
-
+            // android only method.
         }
 
         public static void MapOnResumeHandler(BarcodeCameraViewHandler current, BarcodeCameraView commonView, object arg3)
         {
-
+            // android only method
         }
-
-        private void CheckPermissions()
-        {
-
-        }
-
-        #endregion
-
-        #region Support Methods
-
-
 
         #endregion
     }
