@@ -3,6 +3,7 @@
     public enum ListItemCode
     {
         ScanDocument,
+        ScanDocumentWithFinder,
         ImportImage,
         ViewImages,
 

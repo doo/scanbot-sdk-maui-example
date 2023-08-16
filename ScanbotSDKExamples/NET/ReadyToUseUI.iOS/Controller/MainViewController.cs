@@ -1,4 +1,4 @@
-﻿using ReadyToUseUI.iOS.Repository;
+using ReadyToUseUI.iOS.Repository;
 using ReadyToUseUI.iOS.Service;
 using ReadyToUseUI.iOS.Utils;
 using ReadyToUseUI.iOS.View;
@@ -13,8 +13,6 @@ namespace ReadyToUseUI.iOS.Controller
     {
         public MainView ContentView { get; set; }
 
-        public SimpleScanCallback CameraCallback { get; set; }
-
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
@@ -27,7 +25,6 @@ namespace ReadyToUseUI.iOS.Controller
             ContentView.AddContent(DocumentScanner.Instance);
             ContentView.AddContent(BarcodeDetectors.Instance);
             ContentView.AddContent(DataDetectors.Instance);
-            CameraCallback = new SimpleScanCallback();
 
             ContentView.LicenseIndicator.Text = Texts.no_license_found_the_app_will_terminate_after_one_minute;
         }
@@ -55,8 +52,6 @@ namespace ReadyToUseUI.iOS.Controller
             {
                 button.Click += OnDataButtonClick;
             }
-
-            CameraCallback.Selected += OnScanComplete;
         }
 
         public override void ViewWillDisappear(bool animated)
@@ -77,12 +72,15 @@ namespace ReadyToUseUI.iOS.Controller
             {
                 button.Click -= OnDataButtonClick;
             }
-
-            CameraCallback.Selected -= OnScanComplete;
         }
 
-        private void OnScanComplete(object sender, PageEventArgs e)
+        private void OnScanComplete(PageEventArgs e)
         {
+            if (e.Pages.Count == 0)
+            {
+                return;
+            }
+
             foreach (var page in e.Pages)
             {
                 var result = page.DetectDocument(true);
@@ -105,16 +103,42 @@ namespace ReadyToUseUI.iOS.Controller
             if (button.Data.Code == ListItemCode.ScanDocument)
             {
                 var config = SBSDKUIDocumentScannerConfiguration.DefaultConfiguration;
-                config.BehaviorConfiguration.MultiPageEnabled = true;
+
+                config.BehaviorConfiguration.CameraPreviewMode = SBSDKVideoContentMode.FitIn;
                 config.BehaviorConfiguration.IgnoreBadAspectRatio = true;
+                config.BehaviorConfiguration.MultiPageEnabled = true;
                 config.TextConfiguration.PageCounterButtonTitle = "%d Page(s)";
-                config.TextConfiguration.TextHintOK = "Don't move.\nCapturing document...";
-                config.UiConfiguration.BottomBarBackgroundColor = UIColor.Blue;
-                config.UiConfiguration.BottomBarButtonsColor = UIColor.White;
-                // see further customization configs...
-                config.UiConfiguration.FlashButtonHidden = false;
+                config.TextConfiguration.TextHintOK = "Don't move.\nScanning document...";
+
+                // further configuration properties
+                //config.UiConfiguration.BottomBarBackgroundColor = UIColor.Blue;
+                //config.UiConfiguration.BottomBarButtonsColor = UIColor.White;
+                //config.UiConfiguration.FlashButtonHidden = true;
+                // and so on...
+
                 var controller = SBSDKUIDocumentScannerViewController
-                    .CreateNewWithConfiguration(config, CameraCallback);
+                    .CreateNewWithConfiguration(config, new DocumentScannerCallback(OnScanComplete));
+                controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
+                PresentViewController(controller, false, null);
+            }
+            else if (button.Data.Code == ListItemCode.ScanDocumentWithFinder)
+            {
+                var config = SBSDKUIFinderDocumentScannerConfiguration.DefaultConfiguration;
+
+                config.BehaviorConfiguration.CameraPreviewMode = SBSDKVideoContentMode.FitIn;
+                config.BehaviorConfiguration.IgnoreBadAspectRatio = true;
+                config.TextConfiguration.TextHintOK = "Don't move.\nScanning document...";
+                config.UiConfiguration.OrientationLockMode = SBSDKOrientationLock.Portrait;
+                config.UiConfiguration.FinderAspectRatio = new SBSDKAspectRatio(21.0, 29.7); // a4 portrait
+
+                // further configuration properties
+                //config.UiConfiguration.FinderLineColor = UIColor.Red;
+                //config.UiConfiguration.TopBarBackgroundColor = UIColor.Blue;
+                //config.UiConfiguration.FlashButtonHidden = true;
+                // and so on...
+
+                var controller = SBSDKUIFinderDocumentScannerViewController
+                    .CreateNewWithConfiguration(config, new FinderDocumentScannerCallback(OnScanComplete));
                 controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
                 PresentViewController(controller, false, null);
             }
@@ -284,22 +308,45 @@ namespace ReadyToUseUI.iOS.Controller
         public List<SBSDKUIPage> Pages { get; set; }
     }
 
-    public class SimpleScanCallback : SBSDKUIDocumentScannerViewControllerDelegate
+    public class DocumentScannerCallback : SBSDKUIDocumentScannerViewControllerDelegate
     {
-        public EventHandler<PageEventArgs> Selected;
+        private Action<PageEventArgs> selected;
+
+        public DocumentScannerCallback(Action<PageEventArgs> selected)
+        {
+            this.selected = selected;
+        }
+
         public override void DidFinishWithDocument(SBSDKUIDocumentScannerViewController viewController, SBSDKUIDocument document)
         {
-            if (document.NumberOfPages == 0)
-            {
-                return;
-            }
+            selected?.Invoke(ToPageEventArgs(document));
+        }
 
+        public static PageEventArgs ToPageEventArgs(SBSDKUIDocument document)
+        {
             var pages = new List<SBSDKUIPage>();
-            for (var i = 0; i < document.NumberOfPages; ++i) {
+            for (var i = 0; i < document.NumberOfPages; ++i)
+            {
                 pages.Add(document.PageAtIndex(i));
             }
 
-            Selected?.Invoke(this, new PageEventArgs { Pages = pages });
+            return new PageEventArgs { Pages = pages };
+
+        }
+    }
+
+    public class FinderDocumentScannerCallback : SBSDKUIFinderDocumentScannerViewControllerDelegate
+    {
+        private Action<PageEventArgs> selected;
+
+        public FinderDocumentScannerCallback(Action<PageEventArgs> selected)
+        {
+            this.selected = selected;
+        }
+
+        public override void DidFinishWithDocument(SBSDKUIFinderDocumentScannerViewController viewController, SBSDKUIDocument document)
+        {
+            selected?.Invoke(DocumentScannerCallback.ToPageEventArgs(document));
         }
     }
 }

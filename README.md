@@ -1,6 +1,6 @@
-# Scanbot Barcode & Document Scanning Example App for Maui
+# Scanbot Barcode & Document Scanning Example App for MAUI
 
-This example app shows how to integrate the [Scanbot Barcode Scanner SDK](https://scanbot.io/developer/maui-barcode-scanner/), [Scanbot Document Scanner SDK](https://scanbot.io/developer/maui-document-scanner/), and [Scanbot Data Capture SDK](https://scanbot.io/developer/maui-data-capture/) for MAUI and .NET(Native iOS and Android platforms).
+This example app shows how to integrate the [Scanbot Barcode Scanner SDK](https://scanbot.io/developer/maui-barcode-scanner/), [Scanbot Document Scanner SDK](https://scanbot.io/developer/maui-document-scanner/), and [Scanbot Data Capture SDK](https://scanbot.io/developer/maui-data-capture/) for MAUI and .NET (Native iOS and Android platforms).
 
 The Scanbot SDK are available as a NuGet package for the MAUI and .NET platforms:
 [ScanbotSDK.MAUI](https://www.nuget.org/packages/ScanbotSDK.MAUI)

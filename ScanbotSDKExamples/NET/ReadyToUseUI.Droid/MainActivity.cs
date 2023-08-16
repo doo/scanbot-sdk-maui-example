@@ -166,16 +166,39 @@ namespace ReadyToUseUI.Droid
             if (button.Data.Code == ListItemCode.ScanDocument)
             {
                 var configuration = new DocumentScannerConfiguration();
+
                 configuration.SetCameraPreviewMode(CameraPreviewMode.FitIn);
                 configuration.SetIgnoreBadAspectRatio(true);
                 configuration.SetMultiPageEnabled(true);
                 configuration.SetPageCounterButtonTitle("%d Page(s)");
-                configuration.SetTextHintOK("Don't move.\nCapturing document...");
+                configuration.SetTextHintOK("Don't move.\nScanning document...");
+
+                // further configuration properties
                 //configuration.SetBottomBarBackgroundColor(Color.Blue);
                 //configuration.SetBottomBarButtonsColor(Color.White);
-                // see further customization configs...
+                //configuration.SetFlashButtonHidden(true);
+                // and so on...
 
                 var intent = DocumentScannerActivity.NewIntent(this, configuration);
+                StartActivityForResult(intent, Constants.CAMERA_DEFAULT_UI_REQUEST_CODE);
+            }
+            else if (button.Data.Code == ListItemCode.ScanDocumentWithFinder)
+            {
+                var configuration = new FinderDocumentScannerConfiguration();
+
+                configuration.SetCameraPreviewMode(CameraPreviewMode.FitIn);
+                configuration.SetIgnoreBadAspectRatio(true);
+                configuration.SetTextHintOK("Don't move.\nScanning document...");
+                configuration.SetOrientationLockMode(IO.Scanbot.Sdk.UI.View.Base.Configuration.CameraOrientationMode.Portrait);
+                configuration.SetFinderAspectRatio(new IO.Scanbot.Sdk.AspectRatio(21.0, 29.7)); // a4 portrait
+
+                // further configuration properties
+                //configuration.SetFinderLineColor(Color.Red);
+                //configuration.SetTopBarBackgroundColor(Color.Blue);
+                //configuration.SetFlashButtonHidden(true);
+                // and so on...
+
+                var intent = FinderDocumentScannerActivity.NewIntent(this, configuration);
                 StartActivityForResult(intent, Constants.CAMERA_DEFAULT_UI_REQUEST_CODE);
             }
             else if (button.Data.Code == ListItemCode.ImportImage)

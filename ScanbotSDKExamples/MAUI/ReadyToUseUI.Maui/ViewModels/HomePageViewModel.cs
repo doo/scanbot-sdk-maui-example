@@ -8,6 +8,7 @@ using ReadyToUseUI.Maui.Models;
 using ReadyToUseUI.Maui.Pages;
 using ReadyToUseUI.Maui.Utils;
 using SBSDK = DocumentSDK.MAUI.ScanbotSDK;
+
 namespace ReadyToUseUI.Maui.ViewModels
 {
     public class HomePageViewModel : INotifyPropertyChanged
@@ -47,6 +48,7 @@ namespace ReadyToUseUI.Maui.ViewModels
                 {
                     new SDKService { Title = "DOCUMENT SCANNER", ShowSection = true },
                     new SDKService { Title = SDKServiceTitle.ScanDocument, ShowService = true },
+                    new SDKService { Title = SDKServiceTitle.ScanDocumentWithFinder, ShowService = true },
                     new SDKService { Title = SDKServiceTitle.ImportImageAndDetectDoc, ShowService = true },
                     new SDKService { Title = SDKServiceTitle.ViewImageResults, ShowService = true },
 
@@ -77,9 +79,11 @@ namespace ReadyToUseUI.Maui.ViewModels
             switch (serviceTitle)
             {
                 case SDKServiceTitle.ScanDocument:
-                    await ScanningUIClicked();
+                    await ScanningUIClicked(withFinder: false);
                     break;
-
+                case SDKServiceTitle.ScanDocumentWithFinder:
+                    await ScanningUIClicked(withFinder: true);
+                    break;
                 case SDKServiceTitle.ImportImageAndDetectDoc:
                     await ImportButtonClicked();
                     break;
@@ -136,20 +140,44 @@ namespace ReadyToUseUI.Maui.ViewModels
         //--------------------------------------------
         // Document Scanner
         //--------------------------------------------
-        async Task ScanningUIClicked()
+        async Task ScanningUIClicked(bool withFinder = false)
         {
-            var configuration = new DocumentScannerConfiguration
+            DocumentSDK.MAUI.Models.DocumentScannerResult result;
+            if (withFinder)
             {
-                CameraPreviewMode = CameraPreviewMode.FitIn,
-                IgnoreBadAspectRatio = true,
-                MultiPageEnabled = true,
-                PolygonColor = Colors.Red,
-                PolygonColorOK = Colors.Green,
-                BottomBarBackgroundColor = Colors.Blue,
-                PageCounterButtonTitle = "%d Page(s)",
-                //DocumentImageSizeLimit = new Size(2000, 3000)
-            };
-            var result = await SBSDK.ReadyToUseUIService.LaunchDocumentScannerAsync(configuration);
+                result = await SBSDK.ReadyToUseUIService.LaunchFinderDocumentScannerAsync(new FinderDocumentScannerConfiguration
+                {
+                    CameraPreviewMode = CameraPreviewMode.FitIn,
+                    IgnoreBadAspectRatio = true,
+                    TextHintOK = "Don't move.\nScanning document...",
+                    OrientationLockMode = InterfaceOrientation.Portrait,
+                    // implicitly the aspect ratio is set to a4 portrait
+
+                    // further configuration properties
+                    //FinderLineColor = Colors.Red,
+                    //TopBarBackgroundColor = Colors.Blue,
+                    //FlashButtonHidden = true,
+                    // and so on...
+                });
+            }
+            else
+            {
+                result = await SBSDK.ReadyToUseUIService.LaunchDocumentScannerAsync(new DocumentScannerConfiguration
+                {
+                    CameraPreviewMode = CameraPreviewMode.FitIn,
+                    IgnoreBadAspectRatio = true,
+                    MultiPageEnabled = true,
+                    PageCounterButtonTitle = "%d Page(s)",
+                    TextHintOK = "Don't move.\nScanning document...",
+
+                    // further configuration properties
+                    //BottomBarBackgroundColor = Colors.Blue,
+                    //BottomBarButtonsColor = Colors.White,
+                    //FlashButtonHidden = true,
+                    // and so on...
+                });
+            }
+            
             if (result.Status == OperationResult.Ok)
             {
                 foreach (var page in result.Pages)
@@ -215,7 +243,6 @@ namespace ReadyToUseUI.Maui.ViewModels
             config.CodeDensity = BarcodeDensity.High;
             config.EngineMode = EngineMode.NextGen;
             config.OverlayConfiguration = new SelectionOverlayConfiguration(true, OverlayFormat.Code, Colors.Yellow, Colors.Yellow, Colors.Black);
-            //TestCloseBarcodeScannerAsync();
 
             var result = await SBSDK.ReadyToUseUIService.OpenBarcodeScannerView(config);
             if (result.Status == OperationResult.Ok)

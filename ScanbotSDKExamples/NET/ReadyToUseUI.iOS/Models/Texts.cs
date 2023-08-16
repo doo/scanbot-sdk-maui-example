@@ -12,6 +12,8 @@
 
         public const string scan_document = "Scan Document";
 
+        public const string scan_document_with_finder = "Scan Document with Finder";
+
         public const string import_image = "Import Image";
 
         public const string view_images = "View Images";
