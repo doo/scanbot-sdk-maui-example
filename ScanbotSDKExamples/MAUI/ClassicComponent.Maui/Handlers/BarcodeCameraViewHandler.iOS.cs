@@ -60,12 +60,14 @@ namespace ClassicComponent.Maui.CustomViews
 
         public static void MapOnPauseHandler(BarcodeCameraViewHandler current, BarcodeCameraView commonView, object arg3)
         {
-            // android only method.
+            // This is the common method declared in BarcodeCameraViewHandler, and it is useful for the Android native component only.
+            // Based on the MauiHandler concept, we have to define it on all the platforms.
         }
 
         public static void MapOnResumeHandler(BarcodeCameraViewHandler current, BarcodeCameraView commonView, object arg3)
         {
-            // android only method
+            // This is the common method declared in BarcodeCameraViewHandler, and it is useful for the Android native component only.
+            // Based on the MauiHandler concept, we have to define it on all the platforms.
         }
 
         #endregion
