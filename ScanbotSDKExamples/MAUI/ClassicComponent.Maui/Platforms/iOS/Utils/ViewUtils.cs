@@ -4,20 +4,18 @@ using ClassicComponent.Maui.CustomViews;
 namespace ClassicComponent.Maui.Platforms.iOS.Utils
 {
 	public static class ViewUtils
-	{
+    {
         // ------------------------------------------------------------------------------------------------------------------------
         // This method returns the viewController from the iOS navigation hierarchy.
         // Initially the UIWindow object in iOS is not available(null), so we have to give it a delay, to get the UIWindow instance.
         // -------------------------------------------------------------------------------------------------------------------------
-        internal static async Task<UIViewController> TryGetTopViewControllerAsync(BarcodeCameraViewHandler barcodeCameraViewHandler)
+        internal static async Task<UIViewController> TryGetTopViewControllerAsync(UIWindow window, int retryCount = 5, int retryInterval = 500)
         {
-            var retryCount = 5;
-
             UIViewController viewController = null;
             do
             {
-                await Task.Delay(500);
-                viewController = ExtractViewControllerFromWindow(barcodeCameraViewHandler?.PlatformView?.Window);
+                await Task.Delay(retryInterval);
+                viewController = GetTopViewControllerFromWindow(window);
                 retryCount++;
             } while (viewController == null || retryCount < 5);
             return viewController;
@@ -26,7 +24,7 @@ namespace ClassicComponent.Maui.Platforms.iOS.Utils
         // ------------------------------------------------------------------------------------------------------------------------
         // Extracts the TopViewController from the navigation hierarchy by accessing the root UIWindow object of the application.
         // ------------------------------------------------------------------------------------------------------------------------
-        internal static UIViewController ExtractViewControllerFromWindow(UIWindow window)
+        internal static UIViewController GetTopViewControllerFromWindow(UIWindow window)
         {
             var viewController = window?.RootViewController;
 
@@ -57,7 +55,7 @@ namespace ClassicComponent.Maui.Platforms.iOS.Utils
             var alert = UIAlertController.Create("Alert", message, UIAlertControllerStyle.Alert);
             var action = UIAlertAction.Create(buttonTitle ?? "Ok", UIAlertActionStyle.Cancel, (obj) => { });
             alert.AddAction(action);
-            ExtractViewControllerFromWindow(AppDelegate.RootWindow)?.PresentViewController(alert, true, null);
+            GetTopViewControllerFromWindow(AppDelegate.RootWindow)?.PresentViewController(alert, true, null);
         }
     }
 }

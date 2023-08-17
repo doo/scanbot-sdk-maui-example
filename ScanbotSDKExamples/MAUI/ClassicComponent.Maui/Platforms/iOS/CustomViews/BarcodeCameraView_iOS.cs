@@ -17,7 +17,7 @@ namespace ClassicComponent.Maui.Platforms.iOS.CustomViews
         internal async void ConnectHandler(BarcodeCameraViewHandler barcodeCameraViewHandler)
         {
             this.barcodeCameraViewHandler = barcodeCameraViewHandler;
-            var visibleViewController = await ViewUtils.TryGetTopViewControllerAsync(barcodeCameraViewHandler);
+            var visibleViewController = await ViewUtils.TryGetTopViewControllerAsync(barcodeCameraViewHandler?.PlatformView?.Window);
             if (visibleViewController != null)
             {
                 cameraViewController = new SBSDKBarcodeScannerViewController(visibleViewController, barcodeCameraViewHandler.PlatformView);
