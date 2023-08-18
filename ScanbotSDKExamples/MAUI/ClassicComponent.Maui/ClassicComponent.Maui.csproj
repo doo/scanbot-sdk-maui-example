@@ -1,0 +1,68 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    
+    <PropertyGroup>
+        <TargetFrameworks>net7.0-android;net7.0-ios</TargetFrameworks>
+        <OutputType>Exe</OutputType>
+        <UseMaui>true</UseMaui>
+        <SingleProject>true</SingleProject>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <RootNamespace>ClassicComponent.Maui</RootNamespace>
+        
+        <!-- Display name -->
+        <ApplicationTitle>MAUI Classic Component</ApplicationTitle>
+        
+        <!-- App Identifier -->
+        <ApplicationId>io.scanbot.example.sdk.maui</ApplicationId>
+        <ApplicationIdGuid>6742cc14-2939-49ab-8ffe-dd1b6567b00b</ApplicationIdGuid>
+        
+        <!-- Versions -->
+        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+        <ApplicationVersion>1</ApplicationVersion>
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">13.0</SupportedOSPlatformVersion>
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
+        <CreatePackage>false</CreatePackage>
+        <MtouchLink>SdkOnly</MtouchLink>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">
+      <CreatePackage>false</CreatePackage>
+    </PropertyGroup>
+    <ItemGroup>
+        <!-- App Icon -->
+        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+        
+        <!-- Splash Screen -->
+        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+        
+        <!-- Images -->
+        <MauiImage Include="Resources\Images\*" />
+        <MauiImage Update="Resources\Images\dotnet_bot.svg" BaseSize="168,208" />
+        
+        <!-- Custom Fonts -->
+        <MauiFont Include="Resources\Fonts\*" />
+        
+        <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
+        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+    </ItemGroup>
+    <ItemGroup Condition="$(TargetFramework.StartsWith('net7.0-android')) != true">
+        <Compile Remove="**\**\*.Android.cs" />
+        <None Include="**\**\*.Android.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+    </ItemGroup>
+        <ItemGroup Condition="$(TargetFramework.StartsWith('net7.0-ios')) != true">
+        <Compile Remove="**\**\*.iOS.cs" />
+        <None Include="**\**\*.iOS.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="ScanbotSDK.MAUI" Version="2.3.0-beta.4" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Platforms\Android\Resources\" />
+      <Folder Include="Platforms\Android\Resources\layout\" />
+      <Folder Include="Platforms\Android\Resources\values\" />
+      <Folder Include="Platforms\iOS\Utils\" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Remove="Platforms\iOS\Utils\" />
+    </ItemGroup>
+</Project>
