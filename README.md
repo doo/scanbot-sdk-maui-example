@@ -26,7 +26,7 @@ If you encounter technical issues with integrating the Scanbot SDK or need advic
 framework or features, please visit our [Support Page](https://docs.scanbot.io/support/).
 
 ## Documentation
-👉 [Scanbot SDK documentation](https://docs.scanbot.io/document-scanner-sdk/maiu/introduction/)
+👉 [Scanbot SDK documentation](https://docs.scanbot.io/document-scanner-sdk/maui/introduction/)
 
 ## Requirements
 [Microsoft Visual Studio](https://www.visualstudio.com)
@@ -34,7 +34,7 @@ Developing native, cross-platform .NET Multi-platform App UI (.NET MAUI) apps re
 
 
 ## Documentation
-The documentation of the current Scanbot SDK Xamarin release can be found [here](https://docs.scanbot.io/document-scanner-sdk/maui/introduction/)
+The documentation of the current Scanbot SDK MAUI release can be found [here](https://docs.scanbot.io/document-scanner-sdk/maui/introduction/)
 
 
 ## Please note
