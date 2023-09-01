@@ -14,7 +14,7 @@ public class MainApplication : MauiApplication
     {
     }
 
-    protected override MauiApp CreateMauiApp() => CreateMauiInstance();// MauiProgram.CreateMauiApp();
+    protected override MauiApp CreateMauiApp() => CreateMauiInstance();
 
     private MauiApp CreateMauiInstance()
     {
@@ -22,7 +22,6 @@ public class MainApplication : MauiApplication
         {
             try
             {
-                //await Task.Delay(5000);
                 var configuration = new SBSDKConfiguration
                 {
                     EnableLogging = true,
