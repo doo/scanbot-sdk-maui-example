@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
 using BarcodeSDK.MAUI.Configurations;
 using BarcodeSDK.MAUI.Constants;
 using DocumentSDK.MAUI;
@@ -11,40 +10,24 @@ using SBSDK = DocumentSDK.MAUI.ScanbotSDK;
 
 namespace ReadyToUseUI.Maui.ViewModels
 {
-    public class HomePageViewModel : INotifyPropertyChanged
+    public class HomePageViewModel
     {
         /// Current page instance
-        private ContentPage CurrentPage => Interaction.CurrentPage;
+        private Page CurrentPage => navigation.NavigationStack.FirstOrDefault();
 
-        /// Used to interact with View
-        public IPageInteraction Interaction { get; set; }
+        private INavigation navigation;
 
         /// List of the Services provided by the SDK.
         private ObservableCollection<SDKService> _sdkServices;
         public ObservableCollection<SDKService> SDKServices
         {
-            get
-            {
-                return _sdkServices;
-            }
-            set
-            {
-                _sdkServices = value;
-                PropertyChanged?.Invoke(CurrentPage, new PropertyChangedEventArgs(nameof(SDKServices)));
-            }
+            get => _sdkServices;
         }
 
-        public HomePageViewModel(IPageInteraction interaction)
+        public HomePageViewModel(INavigation navigation)
         {
-            Interaction = interaction;
-            InitListViewServices();
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public void InitListViewServices()
-        {
-            SDKServices = new ObservableCollection<SDKService>
+            this.navigation = navigation;
+            _sdkServices = new ObservableCollection<SDKService>
                 {
                     new SDKService { Title = "DOCUMENT SCANNER", ShowSection = true },
                     new SDKService { Title = SDKServiceTitle.ScanDocument, ShowService = true },
@@ -182,7 +165,7 @@ namespace ReadyToUseUI.Maui.ViewModels
             {
                 foreach (var page in result.Pages)
                 {
-                    await ScannedPage.Instance.Add(page);
+                    await PageStorage.Instance.CreateAsync(page);
 
                     // If encryption is enabled, load the decrypted document.
                     // Else accessible via page.Document
@@ -190,26 +173,8 @@ namespace ReadyToUseUI.Maui.ViewModels
                     //var blur = await SBSDK.Operations.EstimateBlurriness(page.Document);
                     Console.WriteLine("Estimated blurriness for detected document: " + blur);
                 }
-                await Navigate(new ImageResultsPage());
-            }
-        }
 
-        /// Navigate to the given content page
-        private async Task Navigate(ContentPage contentPage)
-        {
-            await AddDelay();
-            await MainThread.InvokeOnMainThreadAsync(async () =>
-            {
-                await CurrentPage.Navigation.PushAsync(contentPage);
-            });
-        }
-
-        /// Explicit Delay - TODO: fix the problem and remove this workaround
-        private async Task AddDelay()
-        {
-            if (DeviceInfo.Platform == DevicePlatform.Android)
-            {
-                await Task.Delay(1000);
+                await navigation.PushAsync(new ImageResultsPage());
             }
         }
 
@@ -255,9 +220,13 @@ namespace ReadyToUseUI.Maui.ViewModels
                 }
 
                 if (withImage)
-                    await Navigate(new BarcodeResultPage(result.Image, result.Barcodes));
+                {
+                    await navigation.PushAsync(new BarcodeResultPage(result.Image, result.Barcodes));
+                }
                 else
-                    await Navigate(new BarcodeResultPage(result.Barcodes));
+                {
+                    await navigation.PushAsync(new BarcodeResultPage(result.Barcodes));
+                }   
             }
         }
 
@@ -277,7 +246,7 @@ namespace ReadyToUseUI.Maui.ViewModels
                     ViewUtils.Alert(CurrentPage, "Oops!", "No barcodes found, please try again");
                     return;
                 }
-                await Navigate(new BarcodeResultPage(null, result.Barcodes));
+                await navigation.PushAsync(new BarcodeResultPage(null, result.Barcodes));
             }
         }
 
@@ -291,7 +260,7 @@ namespace ReadyToUseUI.Maui.ViewModels
             if (source != null)
             {
                 var barcodes = await SBSDK.DetectionService.DetectBarcodesFrom(source);
-                await Navigate(new BarcodeResultPage(source, barcodes));
+                await navigation.PushAsync(new BarcodeResultPage(source, barcodes));
             }
         }
 
@@ -308,8 +277,8 @@ namespace ReadyToUseUI.Maui.ViewModels
 
                 // Run document detection on it
                 await importedPage.DetectDocumentAsync();
-                await ScannedPage.Instance.Add(importedPage);
-                await Navigate(new ImageResultsPage());
+                await PageStorage.Instance.CreateAsync(importedPage);
+                await navigation.PushAsync(new ImageResultsPage());
             }
         }
 
@@ -318,7 +287,7 @@ namespace ReadyToUseUI.Maui.ViewModels
         // ------------------------------------
         void ViewImageResultsClicked()
         {
-            CurrentPage.Navigation.PushAsync(new ImageResultsPage());
+            navigation.PushAsync(new ImageResultsPage());
         }
 
         // ------------------------------------
@@ -395,6 +364,7 @@ namespace ReadyToUseUI.Maui.ViewModels
             };
 
             var result = await SBSDK.ReadyToUseUIService.LaunchCheckRecognizerAsync(configuration);
+
             if (result.Status == OperationResult.Ok)
             {
                 var message = SDKUtils.ParseCheckResult(result);
@@ -407,11 +377,7 @@ namespace ReadyToUseUI.Maui.ViewModels
         // ------------------------------------
         void ViewLicenseInfoClicked()
         {
-            var message = "Scanbot SDK License is valid";
-            if (!SBSDK.IsLicenseValid)
-            {
-                message = "Scanbot SDK License is expired";
-            }
+            var message = SBSDK.IsLicenseValid ? "Scanbot SDK License is valid" : "Scanbot SDK License is expired";
             ViewUtils.Alert(CurrentPage, "License info", message);
         }
 
@@ -420,8 +386,7 @@ namespace ReadyToUseUI.Maui.ViewModels
         // ------------------------------------
         async Task LearnMoreClicked()
         {
-            var uri = new Uri("https://scanbot.io/sdk");
-            await Browser.OpenAsync(uri, BrowserLaunchMode.SystemPreferred);
+            await Browser.OpenAsync(new Uri("https://scanbot.io/developer/net-maui-barcode-scanner-sdk/"), BrowserLaunchMode.SystemPreferred);
         }
     }
 }

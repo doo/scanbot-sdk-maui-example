@@ -1,40 +1,40 @@
 ﻿using DocumentSDK.MAUI.Constants;
 using ReadyToUseUI.Maui.Utils;
-using ScannedItem = ReadyToUseUI.Maui.Models.ScannedPage;
 using ReadyToUseUI.Maui.SubViews.ActionBar;
+using DocumentSDK.MAUI.Services;
+using ReadyToUseUI.Maui.Models;
 
 namespace ReadyToUseUI.Maui.Pages
 {
 
     public class ImageDetailPage : ContentPage
     {
-        public Image Image { get; private set; }
+        private Image image;
+        private BottomActionBar bottomBar;
+        private IScannedPageService selectedPage;
 
-        public BottomActionBar BottomBar { get; private set; }
-
-        public ImageFilter CurrentFilter { get; set; }
-
-        public ImageDetailPage()
+        public ImageDetailPage(IScannedPageService selectedPage)
         {
-            Image = new Image
+            this.selectedPage = selectedPage;
+            image = new Image
             {
                 HorizontalOptions = LayoutOptions.Fill,
                 BackgroundColor = Colors.LightGray,
                 Aspect = Aspect.AspectFit,
             };
-            Image.SizeChanged += delegate
+            image.SizeChanged += delegate
             {
                 // Don't allow images larger than 2/3 of the screen
-                Image.HeightRequest = Content.Height / 3 * 2;
+                image.HeightRequest = Content.Height / 3 * 2;
             };
 
-            BottomBar = new BottomActionBar(true);
+            bottomBar = new BottomActionBar(true);
 
             var gridView = new Grid
             {
                 VerticalOptions = LayoutOptions.Fill,
                 HorizontalOptions = LayoutOptions.Fill,
-                Children = { Image, BottomBar },
+                Children = { image, bottomBar },
                 RowDefinitions = new RowDefinitionCollection
                 {
                     new RowDefinition(GridLength.Star),
@@ -42,58 +42,63 @@ namespace ReadyToUseUI.Maui.Pages
                 }
             };
 
-            gridView.SetRow(Image, 0);
-            gridView.SetRow(BottomBar, 1);
+            gridView.SetRow(image, 0);
+            gridView.SetRow(bottomBar, 1);
             Content = gridView;
 
-            BottomBar.AddClickEvent(BottomBar.CropButton, OnCropButtonClick);
-            BottomBar.AddClickEvent(BottomBar.FilterButton, OnFilterButtonClick);
-            BottomBar.AddClickEvent(BottomBar.DeleteButton, OnDeleteButtonClick);
-
-            LoadImage();
+            bottomBar.AddClickEvent(bottomBar.CropButton, OnCropButtonClick);
+            bottomBar.AddClickEvent(bottomBar.FilterButton, OnFilterButtonClick);
+            bottomBar.AddClickEvent(bottomBar.DeleteButton, OnDeleteButtonClick);
         }
 
-        async void LoadImage()
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+
+            image.Source = await PageDocument();
+        }
+
+
+        async Task<ImageSource> PageDocument()
         {
             // If encryption is enabled, load the decrypted document.
-            // Else accessible via Document or DocumentPreview
-            Image.Source = await ReadyToUseUI.Maui.Models.ScannedPage.Instance.SelectedPage.DecryptedDocument();
-            //Image.Source = ScannedPage.Instance.SelectedPage.Document;
+             return await selectedPage.DecryptedDocument();
+
+            // Else accessible via Document or DocumentPreview (uncomment as needed).
+            //return selectedPage.Document;
         }
 
         async void OnCropButtonClick(object sender, EventArgs e)
         {
             if (!SDKUtils.CheckLicense(this)) { return; }
-            if (!SDKUtils.CheckPage(this, ScannedItem.Instance.SelectedPage)) { return; }
 
-            await DocumentSDK.MAUI.ScanbotSDK.ReadyToUseUIService.LaunchCroppingScreenAsync(ScannedItem.Instance.SelectedPage);
-            await ScannedItem.Instance.UpdateSelection();
+            await DocumentSDK.MAUI.ScanbotSDK.ReadyToUseUIService.LaunchCroppingScreenAsync(selectedPage);
+            await PageStorage.Instance.UpdateAsync(selectedPage);
 
-            Image.Source = null;
-            LoadImage();
+            image.Source = await PageDocument();
         }
 
         async void OnFilterButtonClick(object sender, EventArgs e)
         {
             if (!SDKUtils.CheckLicense(this)) { return; }
-            if (!SDKUtils.CheckPage(this, ScannedItem.Instance.SelectedPage)) { return; }
 
             var buttons = Enum.GetNames(typeof(ImageFilter));
             var action = await DisplayActionSheet("Filter", "Cancel", null, buttons);
 
-            ImageFilter filter;
-            Enum.TryParse(action, out filter);
-            CurrentFilter = filter;
+            if (Enum.TryParse<ImageFilter>(action, out var filter))
+            {
+                await selectedPage.SetFilterAsync(filter);
+                await PageStorage.Instance.UpdateAsync(selectedPage);
 
-            await ScannedItem.Instance.UpdateFilterForSelection(filter);
-            LoadImage();
+                image.Source = await PageDocument();
+            }
         }
 
         async void OnDeleteButtonClick(object sender, EventArgs e)
         {
-            ScannedItem.Instance.RemoveSelection();
-            Image.Source = null;
-            await Navigation.PopAsync();
+            image.Source = null;
+            await Task.WhenAll(PageStorage.Instance.DeleteAsync(selectedPage), Navigation.PopAsync());
+            selectedPage = null;
         }
 
     }

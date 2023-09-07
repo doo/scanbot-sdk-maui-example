@@ -8,7 +8,7 @@
         <StackLayout>
             <CollectionView
             x:Name="CollectionViewSDKServices"
-            ItemsSource="{Binding SDKServices, Mode=TwoWay}"
+            ItemsSource="{Binding SDKServices}"
             SelectionChanged="CollectionViewSDKServices_ItemSelected"
             SelectionMode="Single"
             VerticalScrollBarVisibility="Default" >
