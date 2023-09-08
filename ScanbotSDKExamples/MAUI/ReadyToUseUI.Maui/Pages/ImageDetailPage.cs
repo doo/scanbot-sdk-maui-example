@@ -72,12 +72,9 @@ namespace ReadyToUseUI.Maui.Pages
         {
             if (!SDKUtils.CheckLicense(this)) { return; }
 
+            image.Source = null;
             await DocumentSDK.MAUI.ScanbotSDK.ReadyToUseUIService.LaunchCroppingScreenAsync(selectedPage);
             await PageStorage.Instance.UpdateAsync(selectedPage);
-
-            // needed to clear out the previous image reference,
-            // otherwise there will be an exception relating to thread access.  
-            image.Source = null;
             image.Source = await PageDocument();
         }
 
@@ -90,6 +87,7 @@ namespace ReadyToUseUI.Maui.Pages
 
             if (Enum.TryParse<ImageFilter>(action, out var filter))
             {
+                image.Source = null;
                 await selectedPage.SetFilterAsync(filter);
                 await PageStorage.Instance.UpdateAsync(selectedPage);
 
