@@ -8,33 +8,13 @@ namespace ReadyToUseUI.Maui.Utils
 {
     public class SDKUtils
     {
-        public static bool CheckLicense(ContentPage context)
+        public static bool CheckLicense(Page context)
         {
             if (!SBSDK.SDKService.IsLicenseValid)
             {
                 ViewUtils.Alert(context, "Oops!", "License expired or invalid");
             }
             return SBSDK.SDKService.IsLicenseValid;
-        }
-
-        public static bool CheckPage(ContentPage context, IScannedPageService page)
-        {
-            var result = page != null;
-            if (!result)
-            {
-                ViewUtils.Alert(context, "Oops!", "Please select a page");
-            }
-            return result;
-        }
-
-        public static bool CheckDocuments(ContentPage context, IEnumerable<ImageSource> documents)
-        {
-            var result = documents != null && documents.Count() > 0;
-            if (!result)
-            {
-                ViewUtils.Alert(context, "Oops!", "Please import or scan a document first");
-            }
-            return result;
         }
 
         public static string ParseBarcodes(List<BarcodeItem> barcodes)

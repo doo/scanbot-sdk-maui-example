@@ -57,7 +57,7 @@ namespace ClassicComponent.iOS
                 this.rootVc = new WeakReference<MainSelectionTableViewController>(rootVc);
             }
 
-            public override void GenericDocumentRecognizerViewController(SBSDKUIGenericDocumentRecognizerViewController viewController, SBSDKGenericDocument[] documents)
+            public override void DidFinishWithDocuments(SBSDKUIGenericDocumentRecognizerViewController viewController, SBSDKGenericDocument[] documents)
             {
                 if (documents == null || documents.Length == 0)
                 {

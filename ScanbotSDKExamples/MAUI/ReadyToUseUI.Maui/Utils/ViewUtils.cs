@@ -2,7 +2,7 @@
 {
     public class ViewUtils
     {
-        public static void Alert(ContentPage context, string title, string message)
+        public static void Alert(Page context, string title, string message)
         {
             _ = MainThread.InvokeOnMainThreadAsync(async () =>
             {

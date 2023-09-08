@@ -8,50 +8,36 @@ using DocumentSDK.MAUI.Models;
 using DocumentSDK.MAUI.Services;
 using SBSDK = DocumentSDK.MAUI.ScanbotSDK;
 using DocumentSDK.MAUI;
+using System.Collections.ObjectModel;
 
 namespace ReadyToUseUI.Maui.Pages
 {
     public class ImageResultsPage : ContentPage
     {
-        public bool IsLoading
-        {
-            get
-            {
-                return Loader.IsRunning;
-            }
-            set
-            {
-                if (Loader.IsRunning != value)
-                {
-                    Loader.IsVisible  = Loader.IsRunning = value;
-                }
-            }
-        }
+        private Grid pageGridView;
+        private ListView resultList;
+        private BottomActionBar bottomBar;
+        private ActivityIndicator loader;
 
-        public Grid PageGridView { get; private set; }
-
-        public ListView List { get; private set; }
-
-        public BottomActionBar BottomBar { get; private set; }
-
-        public ActivityIndicator Loader { get; set; }
+        private ObservableCollection<IScannedPageService> scannedPages = new ObservableCollection<IScannedPageService>();
 
         public ImageResultsPage()
         {
             Title = "Image Results";
-            List = new ListView
+            resultList = new ListView
             {
                 VerticalOptions = LayoutOptions.Start,
                 HorizontalOptions = LayoutOptions.Fill,
                 BackgroundColor = Colors.White,
                 RowHeight = 120,
-                ItemTemplate = new DataTemplate(typeof(ImageResultCell)),  
+                ItemTemplate = new DataTemplate(typeof(ImageResultCell)),
+                ItemsSource = scannedPages
             };
 
-            BottomBar = new BottomActionBar(false);
-            BottomBar.VerticalOptions = LayoutOptions.End;
+            bottomBar = new BottomActionBar(false);
+            bottomBar.VerticalOptions = LayoutOptions.End;
 
-            Loader = new ActivityIndicator
+            loader = new ActivityIndicator
             {
                 VerticalOptions = LayoutOptions.Fill,
                 HorizontalOptions = LayoutOptions.Fill,
@@ -63,11 +49,11 @@ namespace ReadyToUseUI.Maui.Pages
                 Scale = (DeviceInfo.Platform == DevicePlatform.iOS) ? 2 : 0.3
             };
 
-            PageGridView = new Grid
+            pageGridView = new Grid
             {
                 VerticalOptions = LayoutOptions.Fill,
                 HorizontalOptions = LayoutOptions.Fill,
-                Children = { List, BottomBar },
+                Children = { resultList, bottomBar },
                 RowDefinitions = new RowDefinitionCollection
                 {
                     new RowDefinition(GridLength.Star),
@@ -75,37 +61,68 @@ namespace ReadyToUseUI.Maui.Pages
                 }
             };
 
-            PageGridView.SetRow(List, 0);
-            PageGridView.SetRow(BottomBar, 1);
+            pageGridView.SetRow(resultList, 0);
+            pageGridView.SetRow(bottomBar, 1);
 
             Content = new Grid
             {
-                Children = { PageGridView, Loader},
+                Children = { pageGridView, loader },
                 VerticalOptions = LayoutOptions.Fill,
                 HorizontalOptions = LayoutOptions.Fill
             };
 
-            BottomBar.AddClickEvent(BottomBar.AddButton, OnAddButtonClick);
-            BottomBar.AddClickEvent(BottomBar.SaveButton, OnSaveButtonClick);
-            BottomBar.AddClickEvent(BottomBar.DeleteAllButton, OnDeleteButtonClick);
+            bottomBar.AddClickEvent(bottomBar.AddButton, OnAddButtonClick);
+            bottomBar.AddClickEvent(bottomBar.SaveButton, OnSaveButtonClick);
+            bottomBar.AddClickEvent(bottomBar.DeleteAllButton, OnDeleteButtonClick);
 
-            List.ItemTapped += OnItemClick;
+            resultList.ItemTapped += OnItemClick;
         }
 
-        protected override void OnAppearing()
+        private bool isLoading
+        {
+            get
+            {
+                return loader.IsRunning;
+            }
+            set
+            {
+                if (loader.IsRunning != value)
+                {
+                    loader.IsVisible = loader.IsRunning = value;
+                }
+            }
+        }
+
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
-            ReloadData();
+
+            try
+            {
+                isLoading = true;
+                var savedPages = await PageStorage.Instance.LoadAsync();
+
+                scannedPages.Clear();
+                savedPages.ForEach(scannedPages.Add);
+            }
+            finally
+            {
+                isLoading = false;
+            }
         }
 
         private void OnItemClick(object sender, ItemTappedEventArgs e)
         {
-            ScannedPage.Instance.SelectedPage = (IScannedPageService)e.Item;
-            Navigation.PushAsync(new ImageDetailPage());
+            if (e.Item is IScannedPageService selectedPage && selectedPage != null)
+            {
+                Navigation.PushAsync(new ImageDetailPage(selectedPage));
+            }
         }
 
         async void OnAddButtonClick(object sender, EventArgs e)
         {
+            if (!SDKUtils.CheckLicense(this)) { return; }
+
             var configuration = new DocumentScannerConfiguration
             {
                 CameraPreviewMode = CameraPreviewMode.FitIn,
@@ -118,21 +135,31 @@ namespace ReadyToUseUI.Maui.Pages
 
             };
             var result = await SBSDK.ReadyToUseUIService.LaunchDocumentScannerAsync(configuration);
+
             if (result.Status == OperationResult.Ok)
             {
                 foreach (var page in result.Pages)
                 {
-                    ScannedPage.Instance.List.Add(page);
-
+                    await PageStorage.Instance.CreateAsync(page);
+                    scannedPages.Add(page);
                 }
             }
         }
 
         async void OnSaveButtonClick(object sender, EventArgs e)
         {
-            var count = ScannedPage.Instance?.DocumentSources?.Count() ?? 0;
-            if (count == 0)
+            if (!SDKUtils.CheckLicense(this)) { return; }
+
+            var documentSources = scannedPages
+                .Where(p => p.Document != null)
+                .Select(p => p.Document)
+                .ToList();
+
+            if (documentSources.Count == 0)
+            {
+                ViewUtils.Alert(this, "Oops!", "Please import or scan a document first");
                 return;
+            }
 
             var parameters = new string[] { "PDF", "PDF with OCR", "TIFF (1-bit, B&W)" };
             string action = await DisplayActionSheet("Save Image as", "Cancel", null, parameters);
@@ -142,35 +169,40 @@ namespace ReadyToUseUI.Maui.Pages
                 return;
             }
 
-            IsLoading = true;
-            if (!SDKUtils.CheckLicense(this)) { return; }
-            if (!SDKUtils.CheckDocuments(this, ScannedPage.Instance.DocumentSources)) { return; }
+            try
+            {
+                isLoading = true;
 
-            if (action.Equals(parameters[0]))
-            {
-                var fileUri = await SBSDK.SDKService
-                .CreatePdfAsync(ScannedPage.Instance.DocumentSources, PDFPageSize.FixedA4);
-                ViewUtils.Alert(this, "Success: ", "Wrote documents to: " + fileUri.AbsolutePath);
-            }
-            else if (action.Equals(parameters[1]))
-            {
-                string path = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-                string pdfFilePath = Path.Combine(path, Guid.NewGuid() + ".pdf");
-                var languages = new[] { "en" };
-                var result = await SBSDK.SDKService.PerformOcrAsync(ScannedPage.Instance.DocumentSources, languages, pdfFilePath);
+                if (action.Equals(parameters[0]))
+                {
+                    var fileUri = await SBSDK.SDKService
+                    .CreatePdfAsync(documentSources, PDFPageSize.FixedA4);
+                    ViewUtils.Alert(this, "Success: ", "Wrote documents to: " + fileUri.AbsolutePath);
+                }
+                else if (action.Equals(parameters[1]))
+                {
+                    string path = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                    string pdfFilePath = Path.Combine(path, Guid.NewGuid() + ".pdf");
+                    var languages = new[] { "en" };
+                    var result = await SBSDK.SDKService.PerformOcrAsync(documentSources, languages, pdfFilePath);
 
-                // You can access the results with: result.Pages
-                ViewUtils.Alert(this, "PDF with OCR layer stored: ", pdfFilePath);
+                    // You can access the results with: result.Pages
+                    ViewUtils.Alert(this, "PDF with OCR layer stored: ", pdfFilePath);
+                }
+                else if (action.Equals(parameters[2]))
+                {
+                    var fileUri = await SBSDK.SDKService.WriteTiffAsync(
+                        documentSources,
+                        new TiffOptions { OneBitEncoded = true, Dpi = 300, Compression = TiffCompressionOptions.CompressionCcittT6 }
+                    );
+                    ViewUtils.Alert(this, "Success: ", "Wrote documents to: " + fileUri.AbsolutePath);
+                }
+
             }
-            else if (action.Equals(parameters[2]))
+            finally
             {
-                var fileUri = await SBSDK.SDKService.WriteTiffAsync(
-                    ScannedPage.Instance.DocumentSources,
-                    new TiffOptions { OneBitEncoded = true, Dpi = 300, Compression = TiffCompressionOptions.CompressionCcittT6 }
-                );
-                ViewUtils.Alert(this, "Success: ", "Wrote documents to: " + fileUri.AbsolutePath);
-            }
-            IsLoading = false;
+                isLoading = false;
+            }            
         }
 
         private async void OnDeleteButtonClick(object sender, EventArgs e)
@@ -179,18 +211,10 @@ namespace ReadyToUseUI.Maui.Pages
             var result = await this.DisplayAlert("Attention!", message, "Yes", "No");
             if (result)
             {
-                await ScannedPage.Instance.Clear();
+                await PageStorage.Instance.ClearAsync();
                 await SBSDK.SDKService.CleanUp();
-                ReloadData();
+                scannedPages.Clear();
             }
-
-        }
-
-        void ReloadData()
-        {
-            List.ItemsSource = null;
-            List.ItemsSource = ScannedPage.Instance.List;
-            IsLoading = false;
         }
     }
 }

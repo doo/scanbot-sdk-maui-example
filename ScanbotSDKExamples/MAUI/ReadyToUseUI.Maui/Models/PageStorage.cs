@@ -1,4 +1,5 @@
-﻿using DocumentSDK.MAUI.Services;
+﻿using DocumentSDK.MAUI.Constants;
+using DocumentSDK.MAUI.Services;
 using SQLite;
 
 namespace ReadyToUseUI.Maui.Models
@@ -22,44 +23,62 @@ namespace ReadyToUseUI.Maui.Models
             }
         }
 
-        static SQLiteAsyncConnection Database = new SQLiteAsyncConnection(DatabasePath, Flags);
+        private SQLiteAsyncConnection database;
+
+        private async Task<SQLiteAsyncConnection> GetDatabaseAsync()
+        {
+            if (database == null)
+            {
+                database = new SQLiteAsyncConnection(DatabasePath, Flags);
+                var result = await database.CreateTablesAsync(CreateFlags.None, typeof(DBPage));
+                Console.WriteLine("Storage initialize: " + result);
+            }
+
+            return database;
+        }
+
 
         private PageStorage() {}
 
-        public async Task InitializeAsync()
-        {
-            var result = await Database.CreateTablesAsync(CreateFlags.None, typeof(DBPage));
-            Console.WriteLine("Storage initialize: " + result);
-        }
 
-        public async Task<int> Save(IScannedPageService page)
+        public async Task<int> CreateAsync(IScannedPageService page)
         {
             var dbPage = DBPage.From(page);
-            return await Database.InsertAsync(dbPage);
+            return await (await GetDatabaseAsync()).InsertAsync(dbPage);
         }
 
-        public async Task<int> Update(IScannedPageService page)
+        public async Task<int> UpdateAsync(IScannedPageService page)
         {
-            return await Database.UpdateAsync(DBPage.From(page));
+            return await (await GetDatabaseAsync()).UpdateAsync(DBPage.From(page));
         }
 
-        public async Task<List<DBPage>> Load()
+        public async Task<List<IScannedPageService>> LoadAsync()
         {
-            var pages = await Database.Table<DBPage>().ToListAsync();
-            return pages;
+            var db = await GetDatabaseAsync();
+            var dbPages = await db.Table<DBPage>().ToListAsync();
+
+            return dbPages.Select(page =>
+            {
+                return DocumentSDK.MAUI.ScanbotSDK.SDKService.ReconstructPage(
+                    page.Id,
+                    page.CreatePolygon(),
+                    (ImageFilter)page.Filter,
+                    (DocumentDetectionStatus)page.DetectionStatus
+                ).Result;
+            }).ToList();
         }
 
-        public async Task<int> Delete(IScannedPageService page)
+        public async Task<int> DeleteAsync(IScannedPageService page)
         {
-            return await Database.DeleteAsync(DBPage.From(page));
+            return await (await GetDatabaseAsync()).DeleteAsync(DBPage.From(page));
         }
 
-        public async Task<int> Clear()
+        public async Task<int> ClearAsync()
         {
-            var mapping = Database.TableMappings.First(tables => tables.TableName == "DBPage");
+            var mapping = (await GetDatabaseAsync()).TableMappings.First(tables => tables.TableName == "DBPage");
             if (mapping != null)
             {
-                return await Database.DeleteAllAsync(mapping);
+                return await (await GetDatabaseAsync()).DeleteAllAsync(mapping);
             }
 
             return -1;
@@ -119,12 +138,13 @@ namespace ReadyToUseUI.Maui.Models
 
         public Point[] CreatePolygon()
         {
-            var result = new List<Point>();
-            result.Add(new Point(X1, Y1));
-            result.Add(new Point(X2, Y2));
-            result.Add(new Point(X3, Y3));
-            result.Add(new Point(X4, Y4));
-            return result.ToArray();
+            return new List<Point>
+            {
+                new Point(X1, Y1),
+                new Point(X2, Y2),
+                new Point(X3, Y3),
+                new Point(X4, Y4)
+            }.ToArray();
         }
 
     }
