@@ -75,6 +75,9 @@ namespace ReadyToUseUI.Maui.Pages
             await DocumentSDK.MAUI.ScanbotSDK.ReadyToUseUIService.LaunchCroppingScreenAsync(selectedPage);
             await PageStorage.Instance.UpdateAsync(selectedPage);
 
+            // needed to clear out the previous image reference,
+            // otherwise there will be an exception relating to thread access.  
+            image.Source = null;
             image.Source = await PageDocument();
         }
 
