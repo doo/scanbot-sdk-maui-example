@@ -66,7 +66,7 @@ namespace ReadyToUseUI.iOS.Utils
 
         public class HealthInsuranceCardHandler : SBSDKUIHealthInsuranceCardScannerViewControllerDelegate
         {
-            public override void HealthInsuranceCardDetectionViewController(SBSDKUIHealthInsuranceCardScannerViewController viewController, SBSDKHealthInsuranceCardRecognitionResult card)
+            public override void DidDetectCard(SBSDKUIHealthInsuranceCardScannerViewController viewController, SBSDKHealthInsuranceCardRecognitionResult card)
             {
                 ShowPopup(viewController, card.StringRepresentation);
             }
@@ -127,7 +127,7 @@ namespace ReadyToUseUI.iOS.Utils
                 return this;
             }
 
-            public override void GenericDocumentRecognizerViewController(SBSDKUIGenericDocumentRecognizerViewController viewController, SBSDKGenericDocument[] documents)
+            public override void DidFinishWithDocuments(SBSDKUIGenericDocumentRecognizerViewController viewController, SBSDKGenericDocument[] documents)
             {
                 if (documents == null || documents.Length == 0)
                 {

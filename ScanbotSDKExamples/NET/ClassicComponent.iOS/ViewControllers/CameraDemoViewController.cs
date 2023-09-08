@@ -198,7 +198,7 @@ namespace ClassicComponent.iOS
             throw new System.NotImplementedException();
         }
 
-        public override void DocumentScannerViewController(SBSDKDocumentScannerViewController controller, UIImage documentImage, UIImage originalImage, SBSDKDocumentDetectorResult result, bool autoSnapped)
+        public override void DidSnapDocumentImage(SBSDKDocumentScannerViewController controller, UIImage documentImage, UIImage originalImage, SBSDKDocumentDetectorResult result, bool autoSnapped)
         {
             documentCaptureInteraction.DidDetectDocument(documentImage, originalImage, result, autoSnapped);
         }

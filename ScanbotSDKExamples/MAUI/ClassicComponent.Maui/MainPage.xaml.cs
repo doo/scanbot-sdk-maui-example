@@ -40,7 +40,7 @@ namespace ClassicComponent.Maui
         /// </summary>
         private void SetupViews()
         {
-            cameraView.OverlayConfiguration = new SelectionOverlayConfiguration(true, BarcodeSDK.MAUI.Constants.OverlayFormat.CodeAndType,
+            cameraView.OverlayConfiguration = new SelectionOverlayConfiguration(true, BarcodeSDK.MAUI.Constants.BarcodeTextFormat.CodeAndType,
                 Colors.Yellow, Colors.Yellow, Colors.Black, Colors.Red, Colors.Red, Colors.Black);
             cameraView.OnBarcodeScanResult = (result) =>
             {

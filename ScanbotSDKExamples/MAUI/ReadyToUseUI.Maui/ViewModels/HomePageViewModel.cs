@@ -207,7 +207,7 @@ namespace ReadyToUseUI.Maui.ViewModels
 
             config.CodeDensity = BarcodeDensity.High;
             config.EngineMode = EngineMode.NextGen;
-            config.OverlayConfiguration = new SelectionOverlayConfiguration(true, OverlayFormat.Code, Colors.Yellow, Colors.Yellow, Colors.Black);
+            config.OverlayConfiguration = new SelectionOverlayConfiguration(true, BarcodeTextFormat.Code, Colors.Yellow, Colors.Yellow, Colors.Black);
 
             var result = await SBSDK.ReadyToUseUIService.OpenBarcodeScannerView(config);
             if (result.Status == OperationResult.Ok)
@@ -237,7 +237,7 @@ namespace ReadyToUseUI.Maui.ViewModels
         {
             var config = new BatchBarcodeScannerConfiguration();
             config.BarcodeFormats = BarcodeTypes.Instance.AcceptedTypes;
-            config.OverlayConfiguration = new SelectionOverlayConfiguration(true, OverlayFormat.Code, Colors.Yellow, Colors.Yellow, Colors.Black);
+            config.OverlayConfiguration = new SelectionOverlayConfiguration(true, BarcodeTextFormat.Code, Colors.Yellow, Colors.Yellow, Colors.Black);
             var result = await SBSDK.ReadyToUseUIService.OpenBatchBarcodeScannerView(config);
             if (result.Status == OperationResult.Ok)
             {
