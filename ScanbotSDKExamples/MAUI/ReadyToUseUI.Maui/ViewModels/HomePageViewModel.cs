@@ -188,7 +188,10 @@ namespace ReadyToUseUI.Maui.ViewModels
                 BarcodeFormats = BarcodeTypes.Instance.AcceptedTypes,
                 MsiPlesseyChecksumAlgorithm = DetectionPreferences.Instance.BarcodeAdditionalParameters.MsiPlesseyChecksumAlgorithm,
                 AcceptedDocumentFormats = DocumentTypes.Instance.AcceptedTypes,
+                CodeDensity = BarcodeDensity.High,
+                EngineMode = EngineMode.NextGen
             };
+
 
             if (DetectionPreferences.Instance.BarcodeAdditionalParameters.Gs1DecodingEnabled is bool gs1DecodingEnabled)
             {
@@ -205,9 +208,17 @@ namespace ReadyToUseUI.Maui.ViewModels
                 config.BarcodeImageGenerationType = BarcodeImageGenerationType.CapturedImage;
             }
 
-            config.CodeDensity = BarcodeDensity.High;
-            config.EngineMode = EngineMode.NextGen;
             config.OverlayConfiguration = new SelectionOverlayConfiguration(true, BarcodeTextFormat.Code, Colors.Yellow, Colors.Yellow, Colors.Black);
+
+            // To see the confirmation dialog in action, uncomment the below and comment out the config.OverlayConfiguration line above.
+            //config.ConfirmationDialogConfiguration = new BarcodeConfirmationDialogConfiguration
+            //{
+            //    Title = "Barcode Detected!",
+            //    Message = "A barcode was found.",
+            //    ConfirmButtonTitle = "Continue",
+            //    RetryButtonTitle = "Try again",
+            //    TextFormat = BarcodeTextFormat.CodeAndType
+            //};
 
             var result = await SBSDK.ReadyToUseUIService.OpenBarcodeScannerView(config);
             if (result.Status == OperationResult.Ok)
@@ -235,9 +246,12 @@ namespace ReadyToUseUI.Maui.ViewModels
         // ------------------------------------
         async Task BatchBarcodeScannerClicked()
         {
-            var config = new BatchBarcodeScannerConfiguration();
-            config.BarcodeFormats = BarcodeTypes.Instance.AcceptedTypes;
-            config.OverlayConfiguration = new SelectionOverlayConfiguration(true, BarcodeTextFormat.Code, Colors.Yellow, Colors.Yellow, Colors.Black);
+            var config = new BatchBarcodeScannerConfiguration
+            {
+                BarcodeFormats = BarcodeTypes.Instance.AcceptedTypes,
+                OverlayConfiguration = new SelectionOverlayConfiguration(true, BarcodeTextFormat.Code, Colors.Yellow, Colors.Yellow, Colors.Black)
+        };
+             
             var result = await SBSDK.ReadyToUseUIService.OpenBatchBarcodeScannerView(config);
             if (result.Status == OperationResult.Ok)
             {
