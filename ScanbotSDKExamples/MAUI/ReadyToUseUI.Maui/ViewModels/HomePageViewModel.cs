@@ -208,7 +208,12 @@ namespace ReadyToUseUI.Maui.ViewModels
                 config.BarcodeImageGenerationType = BarcodeImageGenerationType.CapturedImage;
             }
 
-            config.OverlayConfiguration = new SelectionOverlayConfiguration(true, BarcodeTextFormat.Code, Colors.Yellow, Colors.Yellow, Colors.Black);
+            config.OverlayConfiguration = new SelectionOverlayConfiguration(
+                automaticSelectionEnabled: true,
+                overlayFormat: BarcodeTextFormat.Code,
+                polygon: Colors.Yellow,
+                text: Colors.Yellow,
+                textContainer: Colors.Black);
 
             // To see the confirmation dialog in action, uncomment the below and comment out the config.OverlayConfiguration line above.
             //config.ConfirmationDialogConfiguration = new BarcodeConfirmationDialogConfiguration
@@ -249,8 +254,13 @@ namespace ReadyToUseUI.Maui.ViewModels
             var config = new BatchBarcodeScannerConfiguration
             {
                 BarcodeFormats = BarcodeTypes.Instance.AcceptedTypes,
-                OverlayConfiguration = new SelectionOverlayConfiguration(true, BarcodeTextFormat.Code, Colors.Yellow, Colors.Yellow, Colors.Black)
-        };
+                OverlayConfiguration = new SelectionOverlayConfiguration(
+                    automaticSelectionEnabled: true,
+                    overlayFormat: BarcodeTextFormat.Code,
+                    polygon: Colors.Yellow,
+                    text: Colors.Yellow,
+                    textContainer: Colors.Black)
+            };
              
             var result = await SBSDK.ReadyToUseUIService.OpenBatchBarcodeScannerView(config);
             if (result.Status == OperationResult.Ok)
