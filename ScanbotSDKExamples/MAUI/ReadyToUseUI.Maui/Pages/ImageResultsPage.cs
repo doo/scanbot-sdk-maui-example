@@ -24,12 +24,14 @@ namespace ReadyToUseUI.Maui.Pages
         public ImageResultsPage()
         {
             Title = "Image Results";
+            BackgroundColor = Colors.White;
             resultList = new ListView
             {
                 VerticalOptions = LayoutOptions.Start,
                 HorizontalOptions = LayoutOptions.Fill,
                 BackgroundColor = Colors.White,
                 RowHeight = 120,
+                HeightRequest = Application.Current.MainPage.Height,
                 ItemTemplate = new DataTemplate(typeof(ImageResultCell)),
                 ItemsSource = scannedPages
             };
@@ -103,6 +105,8 @@ namespace ReadyToUseUI.Maui.Pages
                 var savedPages = await PageStorage.Instance.LoadAsync();
 
                 scannedPages.Clear();
+
+                resultList.HeightRequest = Height;
                 savedPages.ForEach(scannedPages.Add);
             }
             finally
