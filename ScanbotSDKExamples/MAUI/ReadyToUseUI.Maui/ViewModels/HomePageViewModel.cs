@@ -76,11 +76,11 @@ namespace ReadyToUseUI.Maui.ViewModels
                     break;
 
                 case SDKServiceTitle.ScanQRAndBarcodes:
-                    await BarcodeScannerClicked(false);
+                    await BarcodeScannerClicked(withImage: false);
                     break;
 
                 case SDKServiceTitle.ScanQRAndBarcodesWithImage:
-                    await BarcodeScannerClicked(true);
+                    await BarcodeScannerClicked(withImage: true);
                     break;
 
                 case SDKServiceTitle.ScanMultipleQRAndBarcodes:
@@ -235,14 +235,8 @@ namespace ReadyToUseUI.Maui.ViewModels
                     return;
                 }
 
-                if (withImage)
-                {
-                    await navigation.PushAsync(new BarcodeResultPage(result.Image, result.Barcodes));
-                }
-                else
-                {
-                    await navigation.PushAsync(new BarcodeResultPage(result.Barcodes));
-                }   
+                var resultPage = withImage ? new BarcodeResultPage(result.Image, result.Barcodes) : new BarcodeResultPage(result.Barcodes);
+                await WaitThenNavigate(resultPage);
             }
         }
 
@@ -270,7 +264,7 @@ namespace ReadyToUseUI.Maui.ViewModels
                     ViewUtils.Alert(CurrentPage, "Oops!", "No barcodes found, please try again");
                     return;
                 }
-                await navigation.PushAsync(new BarcodeResultPage(null, result.Barcodes));
+                await WaitThenNavigate(new BarcodeResultPage(null, result.Barcodes));
             }
         }
 
@@ -411,6 +405,14 @@ namespace ReadyToUseUI.Maui.ViewModels
         async Task LearnMoreClicked()
         {
             await Browser.OpenAsync(new Uri("https://scanbot.io/developer/net-maui-barcode-scanner-sdk/"), BrowserLaunchMode.SystemPreferred);
+        }
+
+        async Task WaitThenNavigate(Page page)
+        {
+#if ANDROID
+            await Task.Delay(50);
+#endif
+            await navigation.PushAsync(page);
         }
     }
 }
