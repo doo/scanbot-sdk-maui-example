@@ -24,6 +24,7 @@ namespace ClassicComponent.Maui.CustomViews
         // Classical component
         protected BarcodeScannerView cameraViewDroid;
         private readonly int REQUEST_PERMISSION_CODE = 200;
+        private bool toastShown = false;
 
         #region Handler Overrides
 
@@ -155,9 +156,14 @@ namespace ClassicComponent.Maui.CustomViews
 
         private bool HandleFrameHandlerResult(BarcodeScanningResult result, IO.Scanbot.Sdk.SdkLicenseError error)
         {
-            if (result == null)
+            if (result == null && !DocumentSDK.MAUI.ScanbotSDK.SDKService.IsLicenseValid)
             {
-                cameraViewDroid.Post(() => Toast.MakeText(Context.GetActivity(), "License has expired!", ToastLength.Long).Show());
+                if (!toastShown)
+                {
+                    cameraViewDroid.Post(() => Toast.MakeText(Context.GetActivity(), "License has expired!", ToastLength.Long).Show());
+                    toastShown = true;
+                }
+                
                 return false;
             }
 
