@@ -40,26 +40,16 @@ namespace ClassicComponent.iOS
             bottomButtonsContainer.BackgroundColor = UIColor.Blue;
             View.AddSubview(bottomButtonsContainer);
 
-            // Create a view as container to embed the Scanbot SDK SBSDKScannerViewController:
+            // Create a view as container to embed the Scanbot SDK SBSDKDocumentScannerViewController:
             scanningContainerView = new UIView(new CGRect(0, 0, screenSize.Width, screenSize.Height - buttonsContainerHeight));
             View.AddSubview(scanningContainerView);
 
-            // Create the SBSDKScannerViewController, embedded into our custom scanningContainerView.
-            // As we do not want automatic image storage we pass null here as image storage.
             documentScannerViewController = new SBSDKDocumentScannerViewController(this, scanningContainerView, new DocumentScannerDelegate(this));
 
             // =================================================================
-            //
-            // UI customizations can be implemented via delegate methods from "SBSDKScannerViewControllerDelegate".
-            // See some examples below the #region SBSDKScannerViewControllerDelegate
-            //
             // Please see the API docs of our native Scanbot SDK for iOS, since all those methods and properties
             // are also available as Scanbot .NET bindings.
-            //
             // =================================================================
-
-            // Set the delegate to self.
-            //documentScannerViewController.WeakDelegate = this;
 
             // We want unscaled images in full size:
             documentScannerViewController.ImageScale = 1.0f;
@@ -179,10 +169,9 @@ namespace ClassicComponent.iOS
         }
     }
 
-    // =====================================================================
-    // 
-    // Implementation of some delegate methods from "SBSDKScannerViewControllerDelegate":
-    // 
+    // ================================================================================================
+    // Implementation of some delegate methods from "SBSDKDocumentScannerViewControllerDelegate":
+    // ================================================================================================
     #region
     class DocumentScannerDelegate : SBSDKDocumentScannerViewControllerDelegate
     {
@@ -206,4 +195,3 @@ namespace ClassicComponent.iOS
 
     #endregion
 }
-
