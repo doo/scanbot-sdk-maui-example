@@ -107,6 +107,7 @@ namespace ClassicComponent.Maui
 
             if (!IsLicenseValid)
             {
+                IsDetectionOn = false;
                 ShowExpiredLicenseAlert();
                 return;
             }

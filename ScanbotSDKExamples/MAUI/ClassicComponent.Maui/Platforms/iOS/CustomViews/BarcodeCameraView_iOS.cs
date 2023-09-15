@@ -115,6 +115,8 @@ namespace ClassicComponent.Maui.Platforms.iOS.CustomViews
         public delegate void OnDetectHandler(SBSDKBarcodeScannerResult[] codes);
         public OnDetectHandler OnDetect;
 
+        private bool alertShown = false;
+
         public override void DidDetectBarcodes(SBSDKBarcodeScannerViewController controller, SBSDKBarcodeScannerResult[] codes)
         {
             OnDetect?.Invoke(codes);
@@ -128,7 +130,12 @@ namespace ClassicComponent.Maui.Platforms.iOS.CustomViews
             }
             else
             {
-                ViewUtils.ShowAlert("License Expired!", "Ok");
+                if (!alertShown)
+                {
+                    ViewUtils.ShowAlert("License Expired!", "Ok");
+                    alertShown = true;
+                }
+                
                 return false;
             }
         }
