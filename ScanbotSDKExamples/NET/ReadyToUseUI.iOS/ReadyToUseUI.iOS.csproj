@@ -22,7 +22,7 @@
         <MtouchDebug>true</MtouchDebug>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="ScanbotSDK.NET" Version="2.3.1-beta.1" />
+        <PackageReference Include="ScanbotSDK.NET" Version="2.3.1-beta.2" />
     </ItemGroup>
     <ItemGroup>
         <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\eng.traineddata" />
