@@ -19,6 +19,6 @@
         <CreatePackage>false</CreatePackage>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="ScanbotSDK.NET" Version="2.3.1-beta.2" />
+        <PackageReference Include="ScanbotSDK.NET" Version="2.3.1" />
     </ItemGroup>
 </Project>
