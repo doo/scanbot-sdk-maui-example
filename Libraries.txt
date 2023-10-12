@@ -1,4 +1,4 @@
-Open Source libraries used in the Scanbot SDK for .NET and MAUI version 2.3.0:
+Open Source libraries used in the Scanbot SDK for .NET and MAUI version 2.3.1:
 
 Xamarin Component for ReactiveX RxJava and RxAndroid for Xamarin.Android:
 Xamarin Component for JetBrains Kotlin for Xamarin.Android:

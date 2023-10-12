@@ -315,7 +315,6 @@ namespace ReadyToUseUI.Maui.ViewModels
         {
             MrzScannerConfiguration configuration = new MrzScannerConfiguration();
             configuration.CancelButtonTitle = "Done";
-            configuration.FlashEnabled = true;
             configuration.TopBarButtonsColor = Colors.Green;
 
             var result = await SBSDK.ReadyToUseUIService.LaunchMrzScannerAsync(configuration);
@@ -333,9 +332,7 @@ namespace ReadyToUseUI.Maui.ViewModels
         {
             var configuration = new HealthInsuranceCardConfiguration();
             configuration.CancelButtonTitle = "Done";
-            configuration.FlashEnabled = true;
             configuration.TopBarButtonsColor = Colors.Green;
-            //TestCloseHealthInsuranceCardScannerAsync();
             var result = await SBSDK.ReadyToUseUIService.LaunchHealthInsuranceCardScannerAsync(configuration);
             if (result.Status == OperationResult.Ok)
             {
