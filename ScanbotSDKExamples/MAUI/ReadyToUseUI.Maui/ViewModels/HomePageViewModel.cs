@@ -288,8 +288,10 @@ namespace ReadyToUseUI.Maui.ViewModels
         async Task ImportButtonClicked()
         {
             ImageSource source = await SBSDK.PickerService.PickImageAsync();
+
             if (source != null)
             {
+                source = await source.RotateByExif();
                 // Import the selected image as original image and create a Page object
                 var importedPage = await SBSDK.SDKService.CreateScannedPageAsync(source);
 
