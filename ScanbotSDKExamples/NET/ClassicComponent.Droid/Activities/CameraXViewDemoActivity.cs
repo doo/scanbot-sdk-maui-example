@@ -14,6 +14,7 @@ using IO.Scanbot.Sdk.Core.Contourdetector;
 using ClassicComponent.Droid.Delegates;
 
 using DocumentSDK.MAUI.Models;
+using DocumentSDK.Shared.Models;
 
 namespace ClassicComponent.Droid
 {

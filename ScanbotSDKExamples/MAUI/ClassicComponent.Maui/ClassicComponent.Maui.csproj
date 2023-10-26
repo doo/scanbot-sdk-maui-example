@@ -23,7 +23,7 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
         <CreatePackage>false</CreatePackage>
-        <MtouchLink>SdkOnly</MtouchLink>
+        <MtouchLink>None</MtouchLink>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">
       <CreatePackage>false</CreatePackage>
@@ -54,7 +54,7 @@
         <None Include="**\**\*.iOS.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
     </ItemGroup>
     <ItemGroup>
-      <PackageReference Include="ScanbotSDK.MAUI" Version="2.3.1-beta.1" />
+      <PackageReference Include="ScanbotSDK.MAUI" Version="2.3.2-alpha.1" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Platforms\Android\Resources\" />

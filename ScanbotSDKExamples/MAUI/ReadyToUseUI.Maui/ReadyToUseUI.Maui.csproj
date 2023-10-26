@@ -30,6 +30,9 @@
         <CreatePackage>false</CreatePackage>
     </PropertyGroup>
     <!-- ===================== Application Resources =====================  -->
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
+      <MtouchLink>None</MtouchLink>
+    </PropertyGroup>
     <ItemGroup>
         <!-- App Icon -->
         <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
@@ -57,7 +60,7 @@
         <PackageReference Include="SQLitePCLRaw.core" Version="2.1.4" />
         <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.4" />
         <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
-        <PackageReference Include="ScanbotSDK.MAUI" Version="2.3.1-beta.1" />
+        <PackageReference Include="ScanbotSDK.MAUI" Version="2.3.2-alpha.1" />
     </ItemGroup>
     
     <!-- ===================== IOS OCR Data Files =====================  -->

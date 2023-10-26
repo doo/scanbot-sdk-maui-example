@@ -4,6 +4,7 @@ using ClassicComponent.iOS.ViewControllers;
 using DocumentSDK.MAUI.Constants;
 using SBSDK = DocumentSDK.MAUI.Native.iOS.ScanbotSDK;
 using DocumentSDK.MAUI.Models;
+using DocumentSDK.Shared.Models;
 
 namespace ClassicComponent.iOS
 {

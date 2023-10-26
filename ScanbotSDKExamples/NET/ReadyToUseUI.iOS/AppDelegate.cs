@@ -1,8 +1,8 @@
-﻿using ReadyToUseUI.iOS.Controller;
+﻿using DocumentSDK.MAUI.Constants;
+using DocumentSDK.MAUI.Models;
+using DocumentSDK.MAUI.Native.iOS;
+using ReadyToUseUI.iOS.Controller;
 using SBSDK = DocumentSDK.MAUI.Native.iOS.ScanbotSDK;
-using Foundation;
-using UIKit;
-using DocumentSDK.MAUI.Constants;
 
 namespace ReadyToUseUI.iOS
 {
@@ -34,11 +34,11 @@ namespace ReadyToUseUI.iOS
             Console.WriteLine("Scanbot SDK Example: Initializing Scanbot SDK...");
 
             // Initialization with a custom, public(!) "StorageBaseDirectory" for demo purposes - see comments below!
-            var configuration = new DocumentSDK.MAUI.Native.iOS.SBSDKConfiguration
+            var configuration = new SBSDKConfiguration
             {
                 EnableLogging = true,
                 StorageBaseDirectory = GetDemoStorageBaseDirectory(),
-                Encryption = new DocumentSDK.MAUI.Models.SBSDKEncryption
+                Encryption = new SBSDKEncryption
                 {
                     Mode = EncryptionMode.AES256,
                     Password = "S0m3W3irDL0ngPa$$w0rdino!!!!"

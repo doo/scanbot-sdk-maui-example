@@ -17,6 +17,7 @@ using IO.Scanbot.Sdk.UI.View.Base;
 using DocumentSDK.MAUI.Constants;
 using SBSDK = DocumentSDK.MAUI.Native.Droid.ScanbotSDK;
 using DocumentSDK.MAUI.Models;
+using DocumentSDK.Shared.Models;
 
 namespace ClassicComponent.Droid
 {
