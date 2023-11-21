@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>net7.0-ios</TargetFrameworks>
+        <TargetFrameworks>net8.0-ios</TargetFrameworks>
         <OutputType>Exe</OutputType>
         <ImplicitUsings>enable</ImplicitUsings>
         
@@ -15,14 +15,17 @@
         <ApplicationVersion>1</ApplicationVersion>
         
         <SupportedOSPlatformVersion>13.0</SupportedOSPlatformVersion>
-        <MtouchLink>SdkOnly</MtouchLink>
+        <MtouchLink>None</MtouchLink>
         <CreatePackage>false</CreatePackage>
         <CodesignProvision>Automatic</CodesignProvision>
         <CodesignKey>iPhone Developer</CodesignKey>
         <MtouchDebug>true</MtouchDebug>
     </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+      <MtouchLink>None</MtouchLink>
+    </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="ScanbotSDK.NET" Version="2.3.1-beta.2" />
+        <PackageReference Include="ScanbotSDK.NET" Version="2.3.1" />
     </ItemGroup>
     <ItemGroup>
         <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\eng.traineddata" />
