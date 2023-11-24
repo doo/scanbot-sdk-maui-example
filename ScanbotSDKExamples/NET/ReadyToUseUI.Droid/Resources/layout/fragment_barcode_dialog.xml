@@ -7,8 +7,8 @@
     android:background="@color/backgroundColor"
     >
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <TextView
@@ -16,11 +16,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:layout_marginLeft="24dp"
             android:layout_marginTop="24dp"
             android:fontFamily="sans-serif-medium"
             android:letterSpacing="0.01"
-            android:text="Detected barcodes:"
+            android:text="@string/detected_barcodes_caption"
             android:textColor="#ffffff"
             android:textSize="20sp"
             android:textStyle="normal" />
@@ -30,7 +29,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:layout_marginLeft="24dp"
             android:layout_marginTop="8dp"
             android:fontFamily="sans-serif"
             android:letterSpacing="0.01"
