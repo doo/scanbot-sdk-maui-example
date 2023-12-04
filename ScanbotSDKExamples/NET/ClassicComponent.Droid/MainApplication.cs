@@ -1,9 +1,7 @@
 ﻿using Android.Runtime;
 using Android.Util;
-using DocumentSDK.MAUI.Constants;
-using DocumentSDK.MAUI.Models;
-using DocumentSDK.MAUI.Native.Droid.Utils;
-using NativeDroid = DocumentSDK.MAUI.Native.Droid;
+using AndroidX.Startup;
+using IO.Scanbot.Sdk.Persistence.Fileio;
 
 namespace ClassicComponent.Droid
 {
@@ -15,16 +13,13 @@ namespace ClassicComponent.Droid
     {
         static readonly string LOG_TAG = typeof(MainApplication).Name;
 
-        // Use a custom temp storage directory for demo purposes.
-        public static TempImageStorageService TempImageStorage;
-
         // TODO Add the Scanbot SDK license key here.
         // Please note: The Scanbot SDK will run without a license key for one minute per session!
         // After the trial period is over all Scanbot SDK functions as well as the UI components will stop working
         // or may be terminated. You can get an unrestricted "no-strings-attached" 30 day trial license key for free.
         // Please submit the trial license form (https://scanbot.io/sdk/trial.html) on our website by using
         // the app identifier "io.scanbot.example.sdk.net" of this example app.
-        const string LICENSE_KEY = null;
+        const string LicenseKey = "";
 
         public MainApplication(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
         { }
@@ -32,27 +27,33 @@ namespace ClassicComponent.Droid
         public override void OnCreate()
         {
             base.OnCreate();
-
-            TempImageStorage = new TempImageStorageService(GetExampleTempStorageDir());
-
-            Log.Debug(LOG_TAG, "Initializing Scanbot SDK...");
-            NativeDroid.ScanbotSDK.Initialize(this, LICENSE_KEY, new NativeDroid.Configurations.SBSDKConfiguration
-            {
-                EnableLogging = true,
-                Encryption = new SBSDKEncryption
-                {
-                    Mode = EncryptionMode.AES256,
-                    Password = "S0m3W3irDL0ngPa$$w0rdino!!!!"
-                }
-            });
-
-            ImageLoader.Instance = new ImageLoader(this);
-
-            // In this example we always cleanup the demo temp storage directory on app start.
-            TempImageStorage.CleanUp();
+            InitializeScanbotSdk(this);
         }
 
-        private string GetExampleTempStorageDir()
+        private static void InitializeScanbotSdk(Application app)
+        {
+            Log.Debug(LOG_TAG, "Initializing Scanbot SDK...");
+            var initializer = new IO.Scanbot.Sdk.ScanbotSDKInitializer();
+
+            initializer.WithLogging(useLog: true, enableNativeLogging: false);
+            initializer.SdkFilesDirectory(app, PageStoragePathForExample(app));
+            initializer.License(app, LicenseKey);
+
+            initializer.UsePageStorageSettings(new IO.Scanbot.Sdk.Persistence.PageStorageSettings.Builder()
+                                               .ImageQuality(80)
+                                               .ImageFormat(IO.Scanbot.Sdk.Persistence.CameraImageFormat.Jpg)
+                                               .PreviewTargetMax(1500) // max size for the preview images
+                                               .Build());
+            initializer.OcrBlobsPath(app, "SBSDKLanguageData");
+            initializer.PrepareOCRLanguagesBlobs(true);
+            initializer.UseFileEncryption(enableFileEncryption: true, new AESEncryptedFileIOProcessor(
+                    "S0m3W3irDL0ngPa$$w0rdino!!!!",
+                    AESEncryptedFileIOProcessor.AESEncrypterMode.Aes256
+                ));
+            initializer.Initialize(app);
+        }
+
+        private static Java.IO.File PageStoragePathForExample(Application app)
         {
             // !! Please note !!
             // In this demo app we use the "ExternalStorageDirectory" which is a public(!) storage directory.
@@ -67,11 +68,11 @@ namespace ClassicComponent.Droid
             // - https://developer.android.com/guide/topics/data/data-storage
             // - https://docs.microsoft.com/en-us/xamarin/android/platform/files/
 
-            var external = GetExternalFilesDir(null).AbsolutePath;
+            var external = app.GetExternalFilesDir(null).AbsolutePath;
             var path = Path.Combine(external, "sbsdk-maui-cc-demo");
             Directory.CreateDirectory(path);
 
-            return path;
+            return new Java.IO.File(path);
         }
     }
 }

@@ -13,10 +13,22 @@ using IO.Scanbot.Sdk.UI.Result;
 using IO.Scanbot.Sdk.UI.View.Genericdocument.Configuration;
 using IO.Scanbot.Genericdocument.Entity;
 using IO.Scanbot.Sdk.UI.View.Base;
+using IO.Scanbot.Sdk.Process;
+using Android.Graphics.Pdf;
+using IO.Scanbot.Sdk.Tiff.Model;
+using static Android.Graphics.BitmapFactory;
+using IO.Scanbot.Sdk.Entity;
+using Android.Views;
+using IO.Scanbot.Sdk;
+using IO.Scanbot.Sdk.Camera;
+using IO.Scanbot.Sdk.Check;
+using IO.Scanbot.Sdk.Contourdetector;
+using IO.Scanbot.Sdk.UI.Camera;
+using IO.Scanbot.Sdk.Check.Entity;
 
-using DocumentSDK.MAUI.Constants;
-using SBSDK = DocumentSDK.MAUI.Native.Droid.ScanbotSDK;
-using DocumentSDK.MAUI.Models;
+//using ScanbotSDK.MAUI.Constants;
+//using SBSDK = ScanbotSDK.MAUI.Native.Droid.ScanbotSDK;
+//using ScanbotSDK.MAUI.Models;
 
 namespace ClassicComponent.Droid
 {
@@ -41,9 +53,12 @@ namespace ClassicComponent.Droid
 
         Button performOcrButton;
 
+        private IO.Scanbot.Sdk.ScanbotSDK scanbotSDK;
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            scanbotSDK = new IO.Scanbot.Sdk.ScanbotSDK(this);
 
             SetContentView(Resource.Layout.Main);
 
@@ -116,7 +131,7 @@ namespace ClassicComponent.Droid
             };
         }
 
-        void ApplyImageFilter(ImageFilter filter)
+        void ApplyImageFilter(ImageFilterType filter)
         {
             DebugLog("Applying image filter " + filter + " on image: " + documentImageUri);
             try
@@ -124,8 +139,11 @@ namespace ClassicComponent.Droid
                 Task.Run(() =>
                 {
                     // The SDK call is sync!
-                    var resultImage = SBSDK.ApplyImageFilter(documentImageUri, filter);
-                    documentImageUri = MainApplication.TempImageStorage.AddImage(resultImage);
+                    // TODO load uri
+                    Bitmap documentImage = null; // documentImageUri
+                    var resultImage = scanbotSDK.ImageProcessor().ProcessBitmap(documentImage, new FilterOperation(filter), false);
+                   // var resultImage = SBSDK.ApplyImageFilter(documentImageUri, filter);
+                    documentImageUri = TempImageStorage.Instance.AddImage(resultImage);
                     ShowImageView(resultImage);
                 });
             }
@@ -182,7 +200,9 @@ namespace ClassicComponent.Droid
                         var pdfOutputUri = GenerateRandomFileUrlInDemoTempStorage(".pdf");
                         var images = new AndroidNetUri[] { documentImageUri }; // add more images for PDF pages here
                         // The SDK call is sync!
-                        SBSDK.CreatePDF(images, pdfOutputUri, PDFPageSize.FixedA4);
+                        var tempPdfFile = scanbotSDK.CreatePdfRenderer().RenderDocumentFromImages(images, false, PDFPageSize.FixedA4);
+                        //  SBSDK.CreatePDF(images, pdfOutputUri, PDFPageSize.FixedA4);
+                        File.Move(tempPdfFile.AbsolutePath, new Java.IO.File(pdfOutputUri.Path).AbsolutePath);
                         DebugLog("PDF file created: " + pdfOutputUri);
                         ShowAlertDialog("PDF file created: " + pdfOutputUri, onDismiss: () =>
                         {
@@ -211,14 +231,18 @@ namespace ClassicComponent.Droid
                 {
                     try
                     {
-                        var tiffOutputUri = GenerateRandomFileUrlInDemoTempStorage(".tiff");
-                        var images = new AndroidNetUri[] { documentImageUri }; // add more images for PDF pages here
+                        var tiffOutputUri = GenerateRandomFileInDemoTempStorage(".tiff");
+
                         // The SDK call is sync!
-                        SBSDK.WriteTiff(images, tiffOutputUri, new TiffOptions { OneBitEncoded = true });
+                        scanbotSDK.CreateTiffWriter().WriteTIFFFromFiles(
+                            new[] {new Java.IO.File(documentImageUri.Path) }.ToList(),
+                            false,
+                            new Java.IO.File(tiffOutputUri.Path),
+                            TIFFImageWriterParameters.DefaultParameters());
                         DebugLog("TIFF file created: " + tiffOutputUri);
                         ShowAlertDialog("TIFF file created: " + tiffOutputUri, onDismiss: () =>
                         {
-                            OpenSharingDialog(tiffOutputUri, "image/tiff");
+                            OpenSharingDialog(AndroidNetUri.FromFile(tiffOutputUri), "image/tiff");
                         });
                     }
                     catch (Exception e)
@@ -250,11 +274,17 @@ namespace ClassicComponent.Droid
                         var pdfOutputUri = GenerateRandomFileUrlInDemoTempStorage(".pdf");
                         var images = new AndroidNetUri[] { documentImageUri }; // add more images for OCR here
 
-                        // The SDK call is sync!
-                        var result = SBSDK.PerformOCR(images, new[] { "en", "de" }, pdfOutputUri);
-                        DebugLog("Recognized OCR text: " + result.RecognizedText);
+                        var ocrResult = scanbotSDK.CreateOcrRecognizer().RecognizeTextWithPdfFromUris(
+                            images.ToList(),
+                            false, PDFPageSize.FromImage,
+                            new[] { Language.LanguageByLanguageTag("en"), Language.LanguageByLanguageTag("de") } );
+
+
+                        var tempPdfFile = ocrResult.SandwichedPdfDocumentFile;
+                        File.Move(tempPdfFile.AbsolutePath, new Java.IO.File(pdfOutputUri.Path).AbsolutePath);
+                        DebugLog("Recognized OCR text: " + ocrResult.RecognizedText);
                         DebugLog("Sandwiched PDF file created: " + pdfOutputUri);
-                        ShowAlertDialog(result.RecognizedText, "OCR Result", () =>
+                        ShowAlertDialog(ocrResult.RecognizedText, "OCR Result", () =>
                         {
                             OpenSharingDialog(pdfOutputUri, "application/pdf");
                         });
@@ -305,7 +335,7 @@ namespace ClassicComponent.Droid
 
         bool CheckScanbotSDKLicense()
         {
-            if (SBSDK.IsLicenseValid())
+            if (scanbotSDK.LicenseInfo.IsValid)
             {
                 // Trial period, valid trial license or valid production license.
                 return true;
@@ -428,12 +458,20 @@ namespace ClassicComponent.Droid
                 {
                     // The SDK call is sync!
                     var image = ImageLoader.Instance.LoadFromMedia(imageUri);
-                    var detectionResult = SBSDK.DetectDocument(image);
+
+                    var detectionResult = scanbotSDK.CreateContourDetector().Detect(image);
+
                     DebugLog("Document detection result: " + detectionResult.Status);
-                    if (detectionResult.Status.IsOk())
+                    if (detectionResult.Status == IO.Scanbot.Sdk.Core.Contourdetector.DetectionStatus.Ok)
                     {
-                        var documentImage = detectionResult.Image as Bitmap;
-                        documentImageUri = MainApplication.TempImageStorage.AddImage(documentImage);
+                        var documentImage = image;
+
+                        if (detectionResult.PolygonF != null)
+                        {
+                            documentImage = scanbotSDK.ImageProcessor().ProcessBitmap(image, new CropOperation(detectionResult.PolygonF), false);
+                        }
+
+                        documentImageUri = TempImageStorage.Instance.AddImage(documentImage);
                         ShowImageView(documentImage);
 
                         DebugLog("Detected polygon: ");
@@ -469,11 +507,16 @@ namespace ClassicComponent.Droid
         }
 
 
-        AndroidNetUri GenerateRandomFileUrlInDemoTempStorage(string fileExtension)
+        Java.IO.File GenerateRandomFileInDemoTempStorage(string fileExtension)
         {
             var targetFile = System.IO.Path.Combine(
-                MainApplication.TempImageStorage.TempDir, UUID.RandomUUID() + fileExtension);
-            return AndroidNetUri.FromFile(new Java.IO.File(targetFile));
+                TempImageStorage.Instance.TempDir, UUID.RandomUUID() + fileExtension);
+            return new Java.IO.File(targetFile);
+        }
+
+        AndroidNetUri GenerateRandomFileUrlInDemoTempStorage(string fileExtension)
+        {
+            return AndroidNetUri.FromFile(GenerateRandomFileInDemoTempStorage(fileExtension));
         }
 
         void ShowAlertDialog(string message, string title = "Info", Action onDismiss = null)
@@ -562,41 +605,41 @@ namespace ClassicComponent.Droid
             alert.Show();
         }
 
-    }
 
-    [Obsolete]
-    class ImageFilterDialog : DialogFragment
-    {
-        static List<string> ImageFilterItems = new List<string>();
-
-        static ImageFilterDialog()
+        [Obsolete]
+        class ImageFilterDialog : DialogFragment
         {
-            foreach (ImageFilter filter in Enum.GetValues(typeof(ImageFilter)))
+            static List<string> ImageFilterItems = new List<string>();
+
+            static ImageFilterDialog()
             {
-                if (filter.ToString().ToLower() == "none") { continue; }
-                ImageFilterItems.Add(filter.ToString());
+                foreach (var filter in ImageFilterType.Values())
+                {
+                    if (filter.ToString().ToLower() == "none") { continue; }
+                    ImageFilterItems.Add(filter.ToString());
+                }
             }
-        }
 
-        Action<ImageFilter> ApplyFilterAction;
+            Action<ImageFilterType> ApplyFilterAction;
 
-        internal ImageFilterDialog(Action<ImageFilter> applyFilterAction)
-        {
-            ApplyFilterAction = applyFilterAction;
-        }
-
-        public override Dialog OnCreateDialog(Bundle savedInstanceState)
-        {
-            AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
-            builder.SetTitle("Pick an Image Filter");
-            builder.SetItems(ImageFilterItems.ToArray(), (sender, args) =>
+            internal ImageFilterDialog(Action<ImageFilterType> applyFilterAction)
             {
-                var filterName = ImageFilterItems[args.Which];
-                var filter = (ImageFilter)Enum.Parse(typeof(ImageFilter), filterName);
-                ApplyFilterAction?.Invoke(filter);
-            });
+                ApplyFilterAction = applyFilterAction;
+            }
 
-            return builder.Create();
+            public override Dialog OnCreateDialog(Bundle savedInstanceState)
+            {
+                AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                builder.SetTitle("Pick an Image Filter");
+                builder.SetItems(ImageFilterItems.ToArray(), (sender, args) =>
+                {
+                    var filterName = ImageFilterItems[args.Which];
+                    var filter = ImageFilterType.Values().FirstOrDefault(f => f.ToString() == filterName);
+                    ApplyFilterAction?.Invoke(filter);
+                });
+
+                return builder.Create();
+            }
         }
     }
 }

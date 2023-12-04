@@ -50,7 +50,7 @@
             android:textStyle="normal"/>
 
         <LinearLayout
-            android:id="@+id/document_scanner"
+            android:id="@+id/barcode_detectors"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -66,7 +66,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/barcode_detectors"
+            android:id="@+id/document_scanner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">

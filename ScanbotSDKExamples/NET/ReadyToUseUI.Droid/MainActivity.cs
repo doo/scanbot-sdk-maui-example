@@ -9,7 +9,6 @@ using IO.Scanbot.Sdk.UI.View.Mrz;
 using IO.Scanbot.Sdk.UI.View.Camera.Configuration;
 using IO.Scanbot.Sdk.UI.View.Camera;
 using IO.Scanbot.Sdk.Persistence;
-using ReadyToUseUI.Droid.Repository;
 using ReadyToUseUI.Droid.Activities;
 using ReadyToUseUI.Droid.Utils;
 using IO.Scanbot.Sdk.Process;
@@ -32,26 +31,33 @@ using IO.Scanbot.Sdk.UI.View.Check.Configuration;
 using IO.Scanbot.Sdk.UI.View.Check;
 using IO.Scanbot.Sdk.Check.Entity;
 using DocumentSDK.NET.Model;
-using SBSDK = DocumentSDK.MAUI.Native.Droid.ScanbotSDK;
 using IO.Scanbot.Mrzscanner.Model;
+using System.Diagnostics;
 
 namespace ReadyToUseUI.Droid
 {
     [Activity(Label = "NET RTU UI", MainLauncher = true, Icon = "@mipmap/icon")]
     public class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
     {
-        readonly List<FragmentButton> buttons = new List<FragmentButton>();
+        private const int QR_BARCODE_DEFAULT_UI_REQUEST_CODE = 910;
+        private const int IMPORT_BARCODE_REQUEST = 1338;
 
-        ProgressBar progress;
-        IO.Scanbot.Sdk.ScanbotSDK sdkInstance;
+        private const int CAMERA_DEFAULT_UI_REQUEST_CODE = 1111;
+        private const int IMPORT_IMAGE_REQUEST = 7777;
 
-        TextView LicenseIndicator
+        private const int MRZ_DEFAULT_UI_REQUEST_CODE = 909;
+        private const int REQUEST_EHIC_SCAN = 4715;
+        private const int GENERIC_DOCUMENT_RECOGNIZER_REQUEST = 4716;
+        private const int CHECK_RECOGNIZER_REQUEST = 4717;
+
+        private readonly List<ListItemButton> buttons = new List<ListItemButton>();
+        private ProgressBar progress;
+        private IO.Scanbot.Sdk.ScanbotSDK scanbotSDK;
+        private IO.Scanbot.Sdk.Persistence.PageFileStorage pageStorage;
+
+        private TextView LicenseIndicator
         {
-            get
-            {
-                var container = FindViewById(Resource.Id.container);
-                return container.FindViewById<TextView>(Resource.Id.licenseIndicator);
-            }
+            get => FindViewById(Resource.Id.container).FindViewById<TextView>(Resource.Id.licenseIndicator);
         }
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -61,7 +67,8 @@ namespace ReadyToUseUI.Droid
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.Main);
 
-            sdkInstance = new IO.Scanbot.Sdk.ScanbotSDK(this);
+            scanbotSDK = new IO.Scanbot.Sdk.ScanbotSDK(this);
+            pageStorage = scanbotSDK.CreatePageFileStorage();
 
             var container = (LinearLayout)FindViewById(Resource.Id.container);
 
@@ -70,37 +77,40 @@ namespace ReadyToUseUI.Droid
 
             progress = FindViewById<ProgressBar>(Resource.Id.progressBar);
 
-            var scanner = (LinearLayout)container.FindViewById(Resource.Id.document_scanner);
-            var scannerTitle = (TextView)scanner.FindViewById(Resource.Id.textView);
-            scannerTitle.Text = DocumentScanner.Instance.Title;
-            AddItemsTo(scanner, DocumentScanner.Instance.Items);
 
             var barcodes = (LinearLayout)container.FindViewById(Resource.Id.barcode_detectors);
             var barcodeTitle = (TextView)barcodes.FindViewById(Resource.Id.textView);
-            barcodeTitle.Text = BarcodeDetectors.Instance.Title;
-            AddItemsTo(barcodes, BarcodeDetectors.Instance.Items);
+            barcodeTitle.Text = "Barcode Scanner".ToUpper();
+            barcodes.AddChildren(buttons, new[]
+            {
+                new ListItemButton(this, "Scan Barcodes", BarcodeScanner),
+                new ListItemButton(this, "Scan Batch Barcodes", BatchBarcodeScanner),
+                new ListItemButton(this, "Import and Detect Barcodes", ImportBarcode)
+            });
+
+            var scanner = (LinearLayout)container.FindViewById(Resource.Id.document_scanner);
+            var scannerTitle = (TextView)scanner.FindViewById(Resource.Id.textView);
+            scannerTitle.Text = "Document Scanner".ToUpper();
+            scanner.AddChildren(buttons, new[]
+            {
+                new ListItemButton(this, "Scan Document", ScanDocument),
+                new ListItemButton(this, "Scan Document with Finder", ScanDocumentWithFinder),
+                new ListItemButton(this, "Import Image", ImportImage),
+                new ListItemButton(this, "View Images", ViewImages)
+            });
 
             var detectors = (LinearLayout)container.FindViewById(Resource.Id.data_detectors);
             var detectorsTitle = (TextView)detectors.FindViewById(Resource.Id.textView);
-            detectorsTitle.Text = DataDetectors.Instance.Title;
-            AddItemsTo(detectors, DataDetectors.Instance.Items);
+            detectorsTitle.Text = "Data Detectors".ToUpper();
+            detectors.AddChildren(buttons, new[]  
+            {
+                new ListItemButton(this, "Scan MRZ", ScanMrz),
+                new ListItemButton(this, "Scan Health Insurance card", ScanEhic),
+                new ListItemButton(this, "Generic Document Recognizer", ScanGenericDocument),
+                new ListItemButton(this, "Check Recognizer", RecogniseCheck),
+            });
 
             LicenseIndicator.Text = Texts.no_license_found_the_app_will_terminate_after_one_minute;
-        }
-
-        void AddItemsTo(LinearLayout container, List<ListItem> items)
-        {
-            foreach (ListItem item in items)
-            {
-                var child = new FragmentButton(this)
-                {
-                    Data = item,
-                    Text = item.Title,
-                    LayoutParameters = ViewUtils.GetParameters(this)
-                };
-                container.AddView(child);
-                buttons.Add(child);
-            }
         }
 
         protected override void OnResume()
@@ -125,22 +135,43 @@ namespace ReadyToUseUI.Droid
             }
         }
 
-        bool CheckLicense()
+        private void ViewImages()
         {
-            if (SBSDK.IsLicenseValid())
-            {
-                LicenseIndicator.Visibility = ViewStates.Gone;
-            }
-            else
-            {
-                LicenseIndicator.Visibility = ViewStates.Visible;
-                Alert.Toast(this, "Invalid or missing license");
-            }
-
-            return SBSDK.IsLicenseValid();
+            var intent = new Intent(this, typeof(PagePreviewActivity));
+            StartActivity(intent);
         }
 
-        void StartImportActivity(int resultConstant)
+        private void BarcodeScanner()
+        {
+            var configuration = new BarcodeScannerConfiguration();
+            configuration.SetFinderTextHint("Please align the QR-/Barcode in the frame above to scan it");
+            configuration.SetSelectionOverlayConfiguration(new SelectionOverlayConfiguration(
+                            overlayEnabled: true,
+                            automaticSelectionEnabled: false,
+                            textFormat: IO.Scanbot.Sdk.Barcode.UI.BarcodeOverlayTextFormat.CodeAndType,
+                            polygonColor: Color.Yellow,
+                            textColor: Color.Yellow,
+                            textContainerColor: Color.Black));
+            var intent = BarcodeScannerActivity.NewIntent(this, configuration);
+            StartActivityForResult(intent, QR_BARCODE_DEFAULT_UI_REQUEST_CODE);
+        }
+
+        private void BatchBarcodeScanner()
+        {
+            var configuration = new BatchBarcodeScannerConfiguration();
+            configuration.SetSelectionOverlayConfiguration(new SelectionOverlayConfiguration(
+                overlayEnabled: true,
+                automaticSelectionEnabled: false,
+                textFormat: IO.Scanbot.Sdk.Barcode.UI.BarcodeOverlayTextFormat.CodeAndType,
+                polygonColor: Color.Yellow,
+                textColor: Color.Yellow,
+                textContainerColor: Color.Black));
+            configuration.SetFinderTextHint("Please align the QR-/Barcode in the frame above to scan it");
+            var intent = BatchBarcodeScannerActivity.NewIntent(this, configuration, null);
+            StartActivityForResult(intent, QR_BARCODE_DEFAULT_UI_REQUEST_CODE);
+        }
+
+        private void ImportBarcode()
         {
             var intent = new Intent();
             intent.SetType("image/*");
@@ -149,120 +180,96 @@ namespace ReadyToUseUI.Droid
             intent.PutExtra(Intent.ExtraAllowMultiple, false);
 
             var chooser = Intent.CreateChooser(intent, Texts.share_title);
-            StartActivityForResult(chooser, resultConstant);
+            StartActivityForResult(chooser, IMPORT_BARCODE_REQUEST);
         }
-        /**
-         * Start Scanner or Import Activity
-         */
-        private void OnButtonClick(object sender, EventArgs e)
+
+        private void ScanDocument()
         {
-            if (!CheckLicense())
-            {
-                return;
-            }
+            var configuration = new DocumentScannerConfiguration();
 
-            var button = (FragmentButton)sender;
+            configuration.SetCameraPreviewMode(CameraPreviewMode.FitIn);
+            configuration.SetIgnoreBadAspectRatio(true);
+            configuration.SetMultiPageEnabled(true);
+            configuration.SetPageCounterButtonTitle("%d Page(s)");
+            configuration.SetTextHintOK("Don't move.\nScanning document...");
 
-            if (button.Data.Code == ListItemCode.ScanDocument)
-            {
-                var configuration = new DocumentScannerConfiguration();
+            // further configuration properties
+            //configuration.SetBottomBarBackgroundColor(Color.Blue);
+            //configuration.SetBottomBarButtonsColor(Color.White);
+            //configuration.SetFlashButtonHidden(true);
+            // and so on...
 
-                configuration.SetCameraPreviewMode(CameraPreviewMode.FitIn);
-                configuration.SetIgnoreBadAspectRatio(true);
-                configuration.SetMultiPageEnabled(true);
-                configuration.SetPageCounterButtonTitle("%d Page(s)");
-                configuration.SetTextHintOK("Don't move.\nScanning document...");
+            var intent = DocumentScannerActivity.NewIntent(this, configuration);
+            StartActivityForResult(intent, CAMERA_DEFAULT_UI_REQUEST_CODE);
+        }
 
-                // further configuration properties
-                //configuration.SetBottomBarBackgroundColor(Color.Blue);
-                //configuration.SetBottomBarButtonsColor(Color.White);
-                //configuration.SetFlashButtonHidden(true);
-                // and so on...
+        private void ScanDocumentWithFinder()
+        {
+            var configuration = new FinderDocumentScannerConfiguration();
 
-                var intent = DocumentScannerActivity.NewIntent(this, configuration);
-                StartActivityForResult(intent, Constants.CAMERA_DEFAULT_UI_REQUEST_CODE);
-            }
-            else if (button.Data.Code == ListItemCode.ScanDocumentWithFinder)
-            {
-                var configuration = new FinderDocumentScannerConfiguration();
+            configuration.SetCameraPreviewMode(CameraPreviewMode.FitIn);
+            configuration.SetIgnoreBadAspectRatio(true);
+            configuration.SetTextHintOK("Don't move.\nScanning document...");
+            configuration.SetOrientationLockMode(IO.Scanbot.Sdk.UI.View.Base.Configuration.CameraOrientationMode.Portrait);
+            configuration.SetFinderAspectRatio(new IO.Scanbot.Sdk.AspectRatio(21.0, 29.7)); // a4 portrait
 
-                configuration.SetCameraPreviewMode(CameraPreviewMode.FitIn);
-                configuration.SetIgnoreBadAspectRatio(true);
-                configuration.SetTextHintOK("Don't move.\nScanning document...");
-                configuration.SetOrientationLockMode(IO.Scanbot.Sdk.UI.View.Base.Configuration.CameraOrientationMode.Portrait);
-                configuration.SetFinderAspectRatio(new IO.Scanbot.Sdk.AspectRatio(21.0, 29.7)); // a4 portrait
+            // further configuration properties
+            //configuration.SetFinderLineColor(Color.Red);
+            //configuration.SetTopBarBackgroundColor(Color.Blue);
+            //configuration.SetFlashButtonHidden(true);
+            // and so on...
 
-                // further configuration properties
-                //configuration.SetFinderLineColor(Color.Red);
-                //configuration.SetTopBarBackgroundColor(Color.Blue);
-                //configuration.SetFlashButtonHidden(true);
-                // and so on...
+            var intent = FinderDocumentScannerActivity.NewIntent(this, configuration);
+            StartActivityForResult(intent, CAMERA_DEFAULT_UI_REQUEST_CODE);
+        }
 
-                var intent = FinderDocumentScannerActivity.NewIntent(this, configuration);
-                StartActivityForResult(intent, Constants.CAMERA_DEFAULT_UI_REQUEST_CODE);
-            }
-            else if (button.Data.Code == ListItemCode.ImportImage)
-            {
-                StartImportActivity(Constants.IMPORT_IMAGE_REQUEST);
-            }
-            else if (button.Data.Code == ListItemCode.ViewImages)
-            {
-                var intent = new Intent(this, typeof(PagePreviewActivity));
-                StartActivity(intent);
-            }
+        private void ImportImage()
+        {
+            var intent = new Intent();
+            intent.SetType("image/*");
+            intent.SetAction(Intent.ActionGetContent);
+            intent.PutExtra(Intent.ExtraLocalOnly, false);
+            intent.PutExtra(Intent.ExtraAllowMultiple, false);
 
-            // Barcode Detectors
-            else if (button.Data.Code == ListItemCode.ScannerBarcode)
-            {
-                var configuration = new BarcodeScannerConfiguration();
-                configuration.SetFinderTextHint("Please align the QR-/Barcode in the frame above to scan it");
-                configuration.SetSelectionOverlayConfiguration(GetSelectionOverlayConfiguration());
-                var intent = BarcodeScannerActivity.NewIntent(this, configuration);
-                StartActivityForResult(intent, Constants.QR_BARCODE_DEFAULT_UI_REQUEST_CODE);
-            }
-            else if (button.Data.Code == ListItemCode.ScannerBatchBarcode)
-            {
-                var configuration = new BatchBarcodeScannerConfiguration();
-                configuration.SetSelectionOverlayConfiguration(GetSelectionOverlayConfiguration());
-                configuration.SetFinderTextHint("Please align the QR-/Barcode in the frame above to scan it");
-                var intent = BatchBarcodeScannerActivity.NewIntent(this, configuration, null);
-                StartActivityForResult(intent, Constants.QR_BARCODE_DEFAULT_UI_REQUEST_CODE);
-            }
-            else if (button.Data.Code == ListItemCode.ScannerImportBarcode)
-            {
-                StartImportActivity(Constants.IMPORT_BARCODE_REQUEST);
-            }
-            else if (button.Data.Code == ListItemCode.ScannerMRZ)
-            {
-                var configuration = new MRZScannerConfiguration();
-                configuration.SetSuccessBeepEnabled(false);
+            var chooser = Intent.CreateChooser(intent, Texts.share_title);
+            StartActivityForResult(chooser, IMPORT_IMAGE_REQUEST);
+        }
 
-                var intent = MRZScannerActivity.NewIntent(this, configuration);
-                StartActivityForResult(intent, Constants.MRZ_DEFAULT_UI_REQUEST_CODE);
-            }
-            else if (button.Data.Code == ListItemCode.ScannerEHIC)
-            {
-                var config = new HealthInsuranceCardScannerConfiguration();
-                config.SetTopBarButtonsColor(Color.White);
+        private void ScanMrz()
+        {
+            var configuration = new MRZScannerConfiguration();
+            configuration.SetSuccessBeepEnabled(false);
 
-                var intent = HealthInsuranceCardScannerActivity.NewIntent(this, config);
-                StartActivityForResult(intent, Constants.REQUEST_EHIC_SCAN);
-            }
-            else if (button.Data.Code == ListItemCode.GenericDocumentRecognizer)
-            {
-                var config = new GenericDocumentRecognizerConfiguration();
-                config.SetAcceptedDocumentTypes(new List<RootDocumentType>
-                {
-                    RootDocumentType.DeIdCardFront,
-                    RootDocumentType.DeIdCardBack,
-                });
-                var intent = GenericDocumentRecognizerActivity.NewIntent(this, config);
-                StartActivityForResult(intent, Constants.GENERIC_DOCUMENT_RECOGNIZER_REQUEST);
-            }
-            else if (button.Data.Code == ListItemCode.CheckRecognizer)
-            {
-                var config = new CheckRecognizerConfiguration();
-                config.SetAcceptedCheckStandards(new List<IO.Scanbot.Check.Entity.RootDocumentType>
+            var intent = MRZScannerActivity.NewIntent(this, configuration);
+            StartActivityForResult(intent, MRZ_DEFAULT_UI_REQUEST_CODE);
+        }
+
+        private void ScanEhic()
+        {
+            var config = new HealthInsuranceCardScannerConfiguration();
+            config.SetTopBarButtonsColor(Color.White);
+
+            var intent = HealthInsuranceCardScannerActivity.NewIntent(this, config);
+            StartActivityForResult(intent, REQUEST_EHIC_SCAN);
+        }
+
+        private void ScanGenericDocument()
+        {
+            var config = new GenericDocumentRecognizerConfiguration();
+            config.SetAcceptedDocumentTypes(new List<RootDocumentType>
+                    {
+                        RootDocumentType.DeIdCardFront,
+                        RootDocumentType.DeIdCardBack,
+                    });
+
+            var intent = GenericDocumentRecognizerActivity.NewIntent(this, config);
+            StartActivityForResult(intent, GENERIC_DOCUMENT_RECOGNIZER_REQUEST);
+        }
+
+        private void RecogniseCheck()
+        {
+            var config = new CheckRecognizerConfiguration();
+            config.SetAcceptedCheckStandards(new List<IO.Scanbot.Check.Entity.RootDocumentType>
                 {
                     IO.Scanbot.Check.Entity.RootDocumentType.AUSCheck,
                     IO.Scanbot.Check.Entity.RootDocumentType.FRACheck,
@@ -270,16 +277,8 @@ namespace ReadyToUseUI.Droid
                     IO.Scanbot.Check.Entity.RootDocumentType.KWTCheck,
                     IO.Scanbot.Check.Entity.RootDocumentType.USACheck,
                 });
-                var intent = CheckRecognizerActivity.NewIntent(this, config);
-                StartActivityForResult(intent, Constants.CHECK_RECOGNIZER_REQUEST);
-            }
-        }
-
-        // Returns the selection overlay configuration
-        private SelectionOverlayConfiguration GetSelectionOverlayConfiguration()
-        {
-            return new SelectionOverlayConfiguration(true, false, IO.Scanbot.Sdk.Barcode.UI.BarcodeOverlayTextFormat.CodeAndType,
-                        Color.Yellow, Color.Yellow, Color.Black);
+            var intent = CheckRecognizerActivity.NewIntent(this, config);
+            StartActivityForResult(intent, CHECK_RECOGNIZER_REQUEST);
         }
 
         /**
@@ -294,141 +293,133 @@ namespace ReadyToUseUI.Droid
                 return;
             }
 
-            if (requestCode == Constants.CAMERA_DEFAULT_UI_REQUEST_CODE)
+            if (!scanbotSDK.LicenseInfo.IsValid)
             {
-                var parcelable = data.GetParcelableArrayExtra(RtuConstants.ExtraKeyRtuResult);
-                var pages = parcelable.Cast<Page>().ToList();
-
-                PageRepository.Add(pages);
-                var intent = new Intent(this, typeof(PagePreviewActivity));
-                StartActivity(intent);
+                Alert.ShowLicenseDialog(this);
+                return;
             }
-            else if (requestCode == Constants.IMPORT_IMAGE_REQUEST)
+
+            switch (requestCode)
             {
-                if (!SBSDK.IsLicenseValid())
+                case QR_BARCODE_DEFAULT_UI_REQUEST_CODE:
                 {
-                    Alert.ShowLicenseDialog(this);
+                    var result = (BarcodeScanningResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+                    var fragment = BarcodeDialogFragment.CreateInstance(result);
+                    fragment.Show(FragmentManager);
                     return;
                 }
-
-                progress.Visibility = ViewStates.Visible;
-                Alert.Toast(this, Texts.importing_and_processing);
-                Task.Run(delegate
-                {
-                    var result = Utils.ImageUtils.ProcessGalleryResult(this, data);
-
-                    var pageId = SBSDK.PageStorage.Add(result);
-                    var page = new Page(pageId, new List<PointF>(), DetectionStatus.Ok, ImageFilterType.None);
-                    page = SBSDK.PageProcessor.DetectDocument(page);
-                    PageRepository.Add(page);
-
-                    var intent = new Intent(this, typeof(PagePreviewActivity));
-                    RunOnUiThread(delegate
-                    {
-                        progress.Visibility = ViewStates.Gone;
-                        StartActivity(intent);
-                    });
-                });
-            }
-            else if (requestCode == Constants.IMPORT_BARCODE_REQUEST)
-            {
-                Task.Run(delegate
+                case IMPORT_BARCODE_REQUEST:
                 {
                     var bitmap = Utils.ImageUtils.ProcessGalleryResult(this, data);
-                    var detector = new IO.Scanbot.Sdk.ScanbotSDK(this).CreateBarcodeDetector();
+                    var detector = scanbotSDK.CreateBarcodeDetector();
                     var result = detector.DetectFromBitmap(bitmap, 0);
-                    var fragment = BarcodeDialogFragment.CreateInstance(result);
-
                     // Estimate blur of imported barcode
                     // Estimating blur on already cropped barcodes should
                     // normally yield the best results, as there is little empty space
-                    var estimator = new IO.Scanbot.Sdk.ScanbotSDK(this).CreateBlurEstimator();
-                    fragment.Blur = estimator.EstimateInBitmap(bitmap, 0);
-                    fragment.Show(this.FragmentManager, BarcodeDialogFragment.NAME);
+                    var estimator = scanbotSDK.CreateBlurEstimator();
 
-                });
-            }
-            else if (requestCode == Constants.QR_BARCODE_DEFAULT_UI_REQUEST_CODE)
-            {
-                var result = (BarcodeScanningResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
-                var fragment = BarcodeDialogFragment.CreateInstance(result);
-                fragment.Show(this.FragmentManager, BarcodeDialogFragment.NAME);
-            }
-            else if (requestCode == Constants.CROP_DEFAULT_UI_REQUEST)
-            {
-                var page = data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult) as Page;
-                PageRepository.Add(page);
-            }
-            else if (requestCode == Constants.MRZ_DEFAULT_UI_REQUEST_CODE)
-            {
-                var result = (MRZGenericDocument)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
-                var fragment = MRZDialogFragment.CreateInstance(result);
-                fragment.Show(this.FragmentManager, MRZDialogFragment.NAME);
-            }
-            else if (requestCode == Constants.REQUEST_EHIC_SCAN)
-            {
-                var result = (HealthInsuranceCardRecognitionResult)data.GetParcelableExtra(
-                    RtuConstants.ExtraKeyRtuResult);
-
-                var fragment = HealthInsuranceCardFragment.CreateInstance(result);
-                fragment.Show(this.FragmentManager, HealthInsuranceCardFragment.NAME);
-            }
-            else if (requestCode == Constants.GENERIC_DOCUMENT_RECOGNIZER_REQUEST)
-            {
-                var resultsArray = data.GetParcelableArrayListExtra(RtuConstants.ExtraKeyRtuResult);
-                if (resultsArray.Count == 0)
-                {
+                    var fragment = BarcodeDialogFragment.CreateInstance(result, estimator.EstimateInBitmap(bitmap, 0));
+                    fragment.Show(FragmentManager);
                     return;
                 }
+                case CAMERA_DEFAULT_UI_REQUEST_CODE:
+                {
+                     var parcelable = data.GetParcelableArrayExtra(RtuConstants.ExtraKeyRtuResult);
+                     var intent = new Intent(this, typeof(PagePreviewActivity));
+                     StartActivity(intent);
+                     return;
+                }
+                case IMPORT_IMAGE_REQUEST:
+                {
+                    progress.Visibility = ViewStates.Visible;
+                    Alert.Toast(this, Texts.importing_and_processing);
+                    var result = Utils.ImageUtils.ProcessGalleryResult(this, data);
 
-                var resultWrapper = (ResultWrapper)resultsArray[0];
-                var resultRepository = sdkInstance.ResultRepositoryForClass(resultWrapper.Clazz);
-                var genericDocument = (GenericDocument)resultRepository.GetResultAndErase(resultWrapper.ResultId);
-                var fields = genericDocument.Fields.Cast<Field>().ToList();
-                var description = string.Join(";\n", fields
-                    .Where(field => field != null)
-                    .Select((field) =>
+                    var pageId = pageStorage.Add(result);
+                    var page = new Page(pageId, new List<PointF>(), DetectionStatus.Ok, ImageFilterType.None);
+                    page = scanbotSDK.CreatePageProcessor().DetectDocument(page);
+
+                    var intent = new Intent(this, typeof(PagePreviewActivity));
+                    progress.Visibility = ViewStates.Gone;
+                    StartActivity(intent);
+                    return;
+                }
+                case MRZ_DEFAULT_UI_REQUEST_CODE:
+                {
+                    var result = (MRZGenericDocument)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+                    var fragment = MRZDialogFragment.CreateInstance(result);
+                    fragment.Show(FragmentManager, MRZDialogFragment.NAME);
+                    return;
+                }
+                case GENERIC_DOCUMENT_RECOGNIZER_REQUEST:
+                {
+                    var resultsArray = data.GetParcelableArrayListExtra(RtuConstants.ExtraKeyRtuResult);
+                    if (resultsArray.Count == 0)
                     {
-                        string outStr = "";
-                        if (field.GetType() != null && field.GetType().Name != null)
-                        {
-                            outStr += field.GetType().Name + " = ";
-                        }
-                        if (field.Value != null && field.Value.Text != null)
-                        {
-                            outStr += field.Value.Text;
-                        }
-                        return outStr;
-                    })
-                    .ToList()
-                );
-                Console.WriteLine("GDR Result: ", description);
-                ShowAlert("Result", description);
-            }
-            else if (requestCode == Constants.CHECK_RECOGNIZER_REQUEST)
-            {
-                var resultWrapper = (ResultWrapper)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
-                var resultRepository = sdkInstance.ResultRepositoryForClass(resultWrapper.Clazz);
-                var checkResult = (CheckRecognizerResult)resultRepository.GetResultAndErase(resultWrapper.ResultId);
-                var fields = checkResult.Check.Fields;
-                var description = string.Join(";\n", fields
-                    .Where(field => field != null)
-                    .Select((field) =>
-                    {
-                        string outStr = "";
-                        if (field.GetType() != null && field.GetType().Name != null)
-                        {
-                            outStr += field.GetType().Name + " = ";
-                        }
-                        if (field.Value != null && field.Value.Text != null)
-                        {
-                            outStr += field.Value.Text;
-                        }
-                        return outStr;
-                    })
-                    .ToList());
-                Console.WriteLine("Check Recognizer Result: ", description);
-                ShowAlert("Result", description);
+                        return;
+                    }
+
+                    var resultWrapper = (ResultWrapper)resultsArray[0];
+                    var resultRepository = scanbotSDK.ResultRepositoryForClass(resultWrapper.Clazz);
+                    var genericDocument = (GenericDocument)resultRepository.GetResultAndErase(resultWrapper.ResultId);
+                    var fields = genericDocument.Fields.Cast<Field>().ToList();
+                    var description = string.Join(";\n", fields
+                            .Where(field => field != null)
+                            .Select((field) =>
+                            {
+                                string outStr = "";
+                                if (field.GetType() != null && field.GetType().Name != null)
+                                {
+                                    outStr += field.GetType().Name + " = ";
+                                }
+                                if (field.Value != null && field.Value.Text != null)
+                                {
+                                    outStr += field.Value.Text;
+                                }
+                                return outStr;
+                            })
+                            .ToList()
+                        );
+
+                    Debug.WriteLine("GDR Result: ", description);
+                    ShowAlert("Result", description);
+                    return;
+                }
+                case REQUEST_EHIC_SCAN:
+                {
+                    var result = (HealthInsuranceCardRecognitionResult)data.GetParcelableExtra(
+                            RtuConstants.ExtraKeyRtuResult);
+
+                    var fragment = HealthInsuranceCardFragment.CreateInstance(result);
+                    fragment.Show(FragmentManager, HealthInsuranceCardFragment.NAME);
+                    return;
+                }
+                case CHECK_RECOGNIZER_REQUEST:
+                {
+                    var resultWrapper = (ResultWrapper)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+                    var resultRepository = scanbotSDK.ResultRepositoryForClass(resultWrapper.Clazz);
+                    var checkResult = (CheckRecognizerResult)resultRepository.GetResultAndErase(resultWrapper.ResultId);
+                    var fields = checkResult.Check.Fields;
+                    var description = string.Join(";\n", fields
+                            .Where(field => field != null)
+                            .Select((field) =>
+                            {
+                                string outStr = "";
+                                if (field.GetType() != null && field.GetType().Name != null)
+                                {
+                                    outStr += field.GetType().Name + " = ";
+                                }
+                                if (field.Value != null && field.Value.Text != null)
+                                {
+                                    outStr += field.Value.Text;
+                                }
+                                return outStr;
+                            })
+                            .ToList());
+                    Debug.WriteLine("Check Recognizer Result: ", description);
+                    ShowAlert("Result", description);
+                    return;                            
+                }
             }
         }
 
@@ -443,6 +434,34 @@ namespace ReadyToUseUI.Droid
                 alert.Dismiss();
             });
             alert.Show();
+        }
+
+        private bool CheckLicense()
+        {
+            if (scanbotSDK.LicenseInfo.IsValid)
+            {
+                LicenseIndicator.Visibility = ViewStates.Gone;
+            }
+            else
+            {
+                LicenseIndicator.Visibility = ViewStates.Visible;
+                Alert.Toast(this, "Invalid or missing license");
+            }
+
+            return scanbotSDK.LicenseInfo.IsValid;
+        }
+
+        private void OnButtonClick(object sender, EventArgs e)
+        {
+            if (!CheckLicense())
+            {
+                return;
+            }
+
+            if (sender is ListItemButton button && button.DoAction != null)
+            {
+                button.DoAction();
+            }
         }
     }
 }

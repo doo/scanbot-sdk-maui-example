@@ -4,7 +4,6 @@ namespace ReadyToUseUI.Droid.Utils
 {
     public class Alert
     {
-
         public static void ShowLicenseDialog(Context context)
         {
             var text =

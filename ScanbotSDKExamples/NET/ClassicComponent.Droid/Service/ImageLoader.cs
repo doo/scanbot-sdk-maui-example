@@ -8,9 +8,10 @@ namespace ClassicComponent.Droid
     {
         public static ImageLoader Instance;
 
-        Context context;
-        BitmapFactory.Options options;
-        IO.Scanbot.Sdk.ScanbotSDK SDK;
+        private Context context;
+        private BitmapFactory.Options options;
+        private IO.Scanbot.Sdk.ScanbotSDK SDK;
+
         public ImageLoader(Context context)
         {
             this.context = context;
