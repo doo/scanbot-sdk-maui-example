@@ -1,93 +1,20 @@
 using MobileCoreServices;
 using ScanbotSDK.iOS;
 using ClassicComponent.iOS.ViewControllers;
-using DocumentSDK.MAUI.Constants;
-using SBSDK = DocumentSDK.MAUI.Native.iOS.ScanbotSDK;
-using DocumentSDK.MAUI.Models;
+using System.Diagnostics;
 
 namespace ClassicComponent.iOS
 {
     public partial class MainSelectionTableViewController : UITableViewController
     {
-        class CameraDemoDelegateHandler : CameraDemoDelegate
-        {
-            public MainSelectionTableViewController parentController;
+        private CameraDemoDelegateHandler cameraHandler = new CameraDemoDelegateHandler();
+        private CroppingDemoDelegateHandler croppingHandler = new CroppingDemoDelegateHandler();
 
-            public override void DidCaptureDocumentImage(UIImage documentImage)
-            {
-                if (parentController != null)
-                {
-                    parentController.documentImage = documentImage;
-                    AppDelegate.TempImageStorage.AddImage(documentImage);
-                    parentController.ShowImageView(documentImage);
-                }
-            }
+        private GenericDocumentRecognizerDelegate gdrDelegate;
 
-            public override void DidCaptureOriginalImage(UIImage originalImage)
-            {
-                if (parentController != null)
-                {
-                    AppDelegate.TempImageStorage.AddImage(originalImage);
-                    parentController.originalImage = originalImage;
-                }
-            }
-        }
+        private UIImagePickerController imagePicker;
 
-        class CroppingDemoDelegateHandler : CroppingDemoDelegate
-        {
-            public MainSelectionTableViewController parentController;
-
-            public override void CropViewControllerDidFinish(UIImage croppedImage)
-            {
-                // Obtain cropped image from cropping view controller
-                if (parentController != null)
-                {
-                    AppDelegate.TempImageStorage.AddImage(croppedImage);
-                    parentController.documentImage = croppedImage;
-                    parentController.ShowImageView(croppedImage);
-                }
-            }
-        }
-
-        class GenericDocumentRecognizerDelegate : SBSDKUIGenericDocumentRecognizerViewControllerDelegate
-        {
-            public WeakReference<MainSelectionTableViewController> rootVc;
-            public GenericDocumentRecognizerDelegate(MainSelectionTableViewController rootVc)
-            {
-                this.rootVc = new WeakReference<MainSelectionTableViewController>(rootVc);
-            }
-
-            public override void DidFinishWithDocuments(SBSDKUIGenericDocumentRecognizerViewController viewController, SBSDKGenericDocument[] documents)
-            {
-                if (documents == null || documents.Length == 0)
-                {
-                    return;
-                }
-
-                // We only take the first document for simplicity
-                var firstDocument = documents.First();
-                var fields = firstDocument.Fields
-                    .Where((f) => f != null && f.Type != null && f.Type.Name != null && f.Value != null && f.Value.Text != null)
-                    .Select((f) => string.Format("{0}: {1}", f.Type.Name, f.Value.Text))
-                    .ToList();
-                var description = string.Join("\n", fields);
-
-                rootVc.TryGetTarget(out MainSelectionTableViewController vc);
-                if (vc != null)
-                {
-                    vc.ShowResultMessage(description);
-                }
-            }
-        }
-
-        CameraDemoDelegateHandler cameraHandler = new CameraDemoDelegateHandler();
-        CroppingDemoDelegateHandler croppingHandler = new CroppingDemoDelegateHandler();
-
-        GenericDocumentRecognizerDelegate gdrDelegate;
-
-        UIImagePickerController imagePicker;
-
-        UIImage documentImage, originalImage;
+        private UIImage documentImage, originalImage;
 
         public MainSelectionTableViewController(IntPtr handle) : base(handle)
         {
@@ -107,7 +34,7 @@ namespace ClassicComponent.iOS
 
             UIAlertController actionSheetAlert = UIAlertController.Create("Select filter type", "", UIAlertControllerStyle.ActionSheet);
 
-            foreach (ImageFilter filter in Enum.GetValues(typeof(ImageFilter)))
+            foreach (var filter in Enum.GetValues<SBSDKImageFilterType>())
             {
                 if (filter.ToString().ToLower() == "none") { continue; }
                 actionSheetAlert.AddAction(UIAlertAction.Create(filter.ToString(), UIAlertActionStyle.Default, (action) =>
@@ -120,13 +47,13 @@ namespace ClassicComponent.iOS
             PresentViewController(actionSheetAlert, true, null);
         }
 
-        protected void ApplyFilterOnDocumentImage(ImageFilter filter)
+        protected void ApplyFilterOnDocumentImage(SBSDKImageFilterType filter)
         {
             Task.Run(() =>
             {
                 // The SDK call is sync!
-                var resultImage = SBSDK.ApplyImageFilter(documentImage, filter);
-                DebugLog("Image filter result: " + resultImage);
+                var resultImage = documentImage.ImageFilteredByFilter(filter);
+                Debug.WriteLine("Image filter result: " + resultImage);
                 ShowImageView(resultImage);
             });
         }
@@ -139,12 +66,12 @@ namespace ClassicComponent.iOS
             Task.Run(() =>
             {
 
-                DebugLog("Performing OCR ...");
+                Debug.WriteLine("Performing OCR ...");
 
-                var images = AppDelegate.TempImageStorage.ImageURLs;
-                var result = SBSDK.PerformOCR(images, new[] { "en", "de" });
-                DebugLog("OCR result: " + result.RecognizedText);
-                ShowMessage("OCR Text", result.RecognizedText);
+                var images = SBSDKUIPageFileStorage.DefaultStorage.AllPageFileIDs;
+                //var result = SBSDK.PerformOCR(images, new[] { "en", "de" });
+                //Debug.WriteLine("OCR result: " + result.RecognizedText);
+                //ShowMessage("OCR Text", result.RecognizedText);
             });
         }
 
@@ -236,7 +163,7 @@ namespace ClassicComponent.iOS
 
         bool CheckSelectedImages()
         {
-            if (AppDelegate.TempImageStorage.ImageCount == 0)
+            if (SBSDKUIPageFileStorage.DefaultStorage.AllPageFileIDs.Length == 0)
             {
                 ShowErrorMessage("Please select at least one image from Gallery or via Camera UI");
                 return false;
@@ -246,7 +173,7 @@ namespace ClassicComponent.iOS
 
         bool CheckScanbotSDKLicense()
         {
-            if (SBSDK.IsLicenseValid())
+            if (ScanbotSDKGlobal.IsLicenseValid)
             {
                 // Trial period, valid trial license or valid production license.
                 return true;
@@ -276,17 +203,7 @@ namespace ClassicComponent.iOS
         public void ShowErrorMessage(string message)
         {
             ShowMessage("Error", message);
-        }
-
-        void ShowImageView(UIImage hiresImage)
-        {
-            var previewImage = ExampleImageUtils.MaxResizeImage(hiresImage, 900, 900);
-            InvokeOnMainThread(() =>
-            {
-                selectedImageView.Image = previewImage;
-                selectImageLabel.Hidden = true;
-            });
-        }
+        }        
 
         protected void Handle_FinishedPickingMedia(object sender, UIImagePickerMediaPickedEventArgs e)
         {
@@ -298,8 +215,8 @@ namespace ClassicComponent.iOS
                 UIImage originalImage = e.Info[UIImagePickerController.OriginalImage] as UIImage;
                 if (originalImage != null)
                 {
-                    DebugLog("Got the original image from gallery");
-                    AppDelegate.TempImageStorage.AddImage(originalImage);
+                    Debug.WriteLine("Got the original image from gallery");
+                    SBSDKUIPageFileStorage.DefaultStorage.AddImage(originalImage);
                     this.originalImage = originalImage;
                     ShowImageView(originalImage);
                     RunDocumentDetection(originalImage);
@@ -310,35 +227,35 @@ namespace ClassicComponent.iOS
             imagePicker.DismissModalViewController(true);
         }
 
-        void RunDocumentDetection(UIImage image)
+        async void RunDocumentDetection(UIImage image)
         {
-            Task.Run(() =>
+            var detectionResult = await Task.Run(() =>
             {
                 // The SDK call is sync!
-                var detectionResult = SBSDK.DetectDocument(image);
-                if (detectionResult.Status.IsOk())
-                {
-                    var imageResult = detectionResult.Image as UIImage;
-                    DebugLog("Detection result image: " + imageResult);
-                    AppDelegate.TempImageStorage.AddImage(imageResult);
-                    documentImage = imageResult;
-
-                    ShowImageView(imageResult);
-
-                    DebugLog("Detection result polygon: ");
-                    string resultString = "";
-                    foreach (var p in detectionResult.Polygon)
-                    {
-                        resultString += p + "\n";
-                    }
-                    DebugLog(resultString);
-                }
-                else
-                {
-                    DebugLog("No Document detected! DetectionStatus = " + detectionResult.Status);
-                    ShowErrorMessage("No Document detected! DetectionStatus = " + detectionResult.Status);
-                }
+                SBSDKDocumentDetector detector = new SBSDKDocumentDetector();
+                return detector.DetectDocumentPolygonOnImage(image, new CGRect(CGPoint.Empty, image.Size), false, false);
             });
+
+            if (detectionResult.Status == SBSDKDocumentDetectionStatus.Ok)
+            {
+                var imageResult = image;
+
+                if (detectionResult.Polygon != null && image != null)
+                {
+                    imageResult = image.ImageWarpedByPolygon(detectionResult.Polygon, imageScale: 1.0f);
+                }
+
+                Debug.WriteLine("Detection result image: " + imageResult);
+                SBSDKUIPageFileStorage.DefaultStorage.AddImage(imageResult);
+                documentImage = imageResult;
+
+                ShowImageView(imageResult);
+            }
+            else
+            {
+                Debug.WriteLine("No Document detected! DetectionStatus = " + detectionResult.Status);
+                ShowErrorMessage("No Document detected! DetectionStatus = " + detectionResult.Status);
+            }
         }
 
         partial void CreateTiffFileTouchUpInside(UIButton sender)
@@ -348,13 +265,42 @@ namespace ClassicComponent.iOS
 
             Task.Run(() =>
             {
-                DebugLog("Creating TIFF file ...");
-                var images = AppDelegate.TempImageStorage.ImageURLs;
+                Debug.WriteLine("Creating TIFF file ...");
+                var images = SBSDKUIPageFileStorage.DefaultStorage.AllPageFileIDs
+                            .Select(id => SBSDKUIPageFileStorage.DefaultStorage.ImageWithPageFileID(id, SBSDKUIPageFileType.Original))
+                            .ToArray();
+
                 var tiffOutputFileUrl = GenerateRandomFileUrlInDemoTempStorage(".tiff");
-                SBSDK.WriteTiff(images, tiffOutputFileUrl, new TiffOptions { OneBitEncoded = true });
-                DebugLog("TIFF file created: " + tiffOutputFileUrl);
+//                SBSDK.WriteTiff(images, tiffOutputFileUrl, new TiffOptions { OneBitEncoded = true });
+
+                var options = new SBSDKTIFFImageWriterParameters { Binarize = true };
+
+                bool success = false;
+
+                // TODO figure out if this is still needed
+                //if (ScanbotSDKUI.DefaultImageStoreEncrypter != null)
+                {
+                    //var encrypter = ScanbotSDKUI.DefaultImageStoreEncrypter;
+                    //success = SBSDKTIFFImageWriter.WriteTIFF(images.Select(i => UIImage.LoadFromData(encrypter.DecryptData(NSData.FromUrl(i)))).ToArray(), tiffOutputFileUrl, encrypter, options);
+                }
+                //else
+                {
+                    success = SBSDKTIFFImageWriter.WriteTIFF(images, tiffOutputFileUrl, options);
+                }
+
+                Debug.WriteLine("TIFF file created: " + tiffOutputFileUrl);
                 ShowMessage("TIFF file created", "" + tiffOutputFileUrl);
             });
+        }
+
+        public SBSDKIndexedImageStorage CreateStorage(NSUrl[] uris)
+        {
+            var url = SBSDKStorageLocation.ApplicationSupportFolderURL;
+            var tmp = NSUrl.FromFilename(string.Format("{0}/{1}", url.Scheme == "file" ? url.Path : url.AbsoluteString, Guid.NewGuid()));
+            var location = new SBSDKStorageLocation(tmp);
+            var format = SBSDKImageFileFormat.Jpeg;
+
+            return new SBSDKIndexedImageStorage(location, format, ScanbotSDKUI.DefaultImageStoreEncrypter, uris);
         }
 
         partial void CreatePdfTouchUpInside(UIButton sender)
@@ -364,11 +310,14 @@ namespace ClassicComponent.iOS
 
             Task.Run(() =>
             {
-                DebugLog("Creating PDF file ...");
-                var images = AppDelegate.TempImageStorage.ImageURLs;
+                Debug.WriteLine("Creating PDF file ...");
+                var images = SBSDKUIPageFileStorage.DefaultStorage.AllPageFileIDs
+                            .Select(id => SBSDKUIPageFileStorage.DefaultStorage.ImageURLWithPageFileID(id, SBSDKUIPageFileType.Original))
+                            .ToArray();
                 var pdfOutputFileUrl = GenerateRandomFileUrlInDemoTempStorage(".pdf");
-                SBSDK.CreatePDF(images, pdfOutputFileUrl, PDFPageSize.FixedA4);
-                DebugLog("PDF file created: " + pdfOutputFileUrl);
+
+                SBSDKPDFRenderer.RenderImageStorage(CreateStorage(images), null, SBSDKPDFRendererPageSize.FixedA4, ScanbotSDKUI.DefaultImageStoreEncrypter, pdfOutputFileUrl, out var error);
+                Debug.WriteLine("PDF file created: " + pdfOutputFileUrl);
                 ShowMessage("PDF file created", "" + pdfOutputFileUrl);
             });
         }
@@ -378,17 +327,92 @@ namespace ClassicComponent.iOS
             base.PrepareForSegue(segue, sender);
         }
 
-        void DebugLog(string msg)
+        private void ShowImageView(UIImage hiresImage)
         {
-            Console.WriteLine("Scanbot SDK Example: " + msg);
+            var previewImage = ExampleImageUtils.MaxResizeImage(hiresImage, 900, 900);
+            InvokeOnMainThread(() =>
+            {
+                selectedImageView.Image = previewImage;
+                selectImageLabel.Hidden = true;
+            });
         }
 
-
-        NSUrl GenerateRandomFileUrlInDemoTempStorage(string fileExtension)
+        private NSUrl GenerateRandomFileUrlInDemoTempStorage(string fileExtension)
         {
             var targetFile = System.IO.Path.Combine(
                 AppDelegate.Directory, new NSUuid().AsString().ToLower() + fileExtension);
             return NSUrl.FromFilename(targetFile);
+        }
+
+        private class CameraDemoDelegateHandler : CameraDemoDelegate
+        {
+            public MainSelectionTableViewController parentController;
+
+            public override void DidCaptureDocumentImage(UIImage documentImage)
+            {
+                if (parentController != null)
+                {
+                    parentController.documentImage = documentImage;
+                    SBSDKUIPageFileStorage.DefaultStorage.AddImage(documentImage);
+                    parentController.ShowImageView(documentImage);
+                }
+            }
+
+            public override void DidCaptureOriginalImage(UIImage originalImage)
+            {
+                if (parentController != null)
+                {
+                    SBSDKUIPageFileStorage.DefaultStorage.AddImage(originalImage);
+                    parentController.originalImage = originalImage;
+                }
+            }
+        }
+
+        private class CroppingDemoDelegateHandler : CroppingDemoDelegate
+        {
+            public MainSelectionTableViewController parentController;
+
+            public override void CropViewControllerDidFinish(UIImage croppedImage)
+            {
+                // Obtain cropped image from cropping view controller
+                if (parentController != null)
+                {
+                    SBSDKUIPageFileStorage.DefaultStorage.AddImage(croppedImage);
+                    parentController.documentImage = croppedImage;
+                    parentController.ShowImageView(croppedImage);
+                }
+            }
+        }
+
+        private class GenericDocumentRecognizerDelegate : SBSDKUIGenericDocumentRecognizerViewControllerDelegate
+        {
+            public WeakReference<MainSelectionTableViewController> rootVc;
+            public GenericDocumentRecognizerDelegate(MainSelectionTableViewController rootVc)
+            {
+                this.rootVc = new WeakReference<MainSelectionTableViewController>(rootVc);
+            }
+
+            public override void DidFinishWithDocuments(SBSDKUIGenericDocumentRecognizerViewController viewController, SBSDKGenericDocument[] documents)
+            {
+                if (documents == null || documents.Length == 0)
+                {
+                    return;
+                }
+
+                // We only take the first document for simplicity
+                var firstDocument = documents.First();
+                var fields = firstDocument.Fields
+                    .Where((f) => f != null && f.Type != null && f.Type.Name != null && f.Value != null && f.Value.Text != null)
+                    .Select((f) => string.Format("{0}: {1}", f.Type.Name, f.Value.Text))
+                    .ToList();
+                var description = string.Join("\n", fields);
+
+                rootVc.TryGetTarget(out MainSelectionTableViewController vc);
+                if (vc != null)
+                {
+                    vc.ShowResultMessage(description);
+                }
+            }
         }
     }
 }

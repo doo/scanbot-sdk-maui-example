@@ -2,18 +2,15 @@
 
 namespace ClassicComponent.iOS
 {
-    public abstract class CroppingDemoDelegate
-    {
-        public abstract void CropViewControllerDidFinish(UIImage croppedImage);
-    }
+    public delegate void CropViewControllerDidFinish(UIImage croppedImage);
 
     public class CroppingDemoNavigationController : UINavigationController
     {
-        UIImage Image;
+        private UIImage Image;
 
-        SBSDKImageEditingViewController imageEditingViewController;
+        private SBSDKImageEditingViewController imageEditingViewController;
 
-        public CroppingDemoDelegate croppingDelegate;
+        public CropViewControllerDidFinish croppingDelegate;
 
         public CroppingDemoNavigationController(UIImage image)
         {
@@ -37,9 +34,6 @@ namespace ClassicComponent.iOS
             PushViewController(imageEditingViewController, false);
         }
 
-
-        #region SBSDKImageEditingViewControllerDelegate
-
         [Export("imageEditingViewControllerToolbarStyle:")]
         public UIBarStyle ImageEditingViewControllerToolbarStyle(SBSDKImageEditingViewController editingViewController)
         {
@@ -61,11 +55,7 @@ namespace ClassicComponent.iOS
         [Export("imageEditingViewController:didApplyChangesWithPolygon:croppedImage:")]
         public void ImageEditingViewController(SBSDKImageEditingViewController editingViewController, SBSDKPolygon polygon, UIImage croppedImage)
         {
-            if (croppingDelegate != null)
-            {
-                croppingDelegate.CropViewControllerDidFinish(croppedImage);
-            }
-
+            croppingDelegate?.Invoke(croppedImage);
             DismissViewController(true, null);
         }
 
@@ -95,8 +85,5 @@ namespace ClassicComponent.iOS
                 imageEditingViewController.RotateInputImageClockwise(true, true);
             });
         }
-
-        #endregion
-
     }
 }

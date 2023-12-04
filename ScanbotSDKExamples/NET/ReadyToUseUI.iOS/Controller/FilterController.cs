@@ -8,9 +8,26 @@ namespace ReadyToUseUI.iOS.Controller
 {
     public class FilterController : UIViewController
     {
-        FilterView ContentView;
+        private FilterView ContentView;
+        private SBSDKImageFilterType Choice;
+        private SBSDKUIPage Temp;
 
-        SBSDKImageFilterType Choice;
+        private static readonly List<Filter> Filters = new List<Filter>
+        {
+            new Filter("None", SBSDKImageFilterType.None),
+            new Filter("Low Light Binarization", SBSDKImageFilterType.LowLightBinarization),
+            new Filter("Low Light Binarization 2", SBSDKImageFilterType.LowLightBinarization2),
+            new Filter("Edge Highlight", SBSDKImageFilterType.EdgeHighlight),
+            new Filter("Deep Binarization", SBSDKImageFilterType.DeepBinarization),
+            new Filter("Otsu Binarization", SBSDKImageFilterType.OtsuBinarization),
+            new Filter("Clean Background", SBSDKImageFilterType.BackgroundClean),
+            new Filter("Color Document", SBSDKImageFilterType.ColorDocument),
+            new Filter("Color", SBSDKImageFilterType.Color),
+            new Filter("Grayscale", SBSDKImageFilterType.Gray),
+            new Filter("Binarized", SBSDKImageFilterType.Binarized),
+            new Filter("Pure Binarized", SBSDKImageFilterType.PureBinarized),
+            new Filter("Black & White", SBSDKImageFilterType.BlackAndWhite)
+        };
 
         public override void ViewDidLoad()
         {
@@ -19,7 +36,7 @@ namespace ReadyToUseUI.iOS.Controller
             ContentView = new FilterView();
             View = ContentView;
 
-            ContentView.SetPickerModel(Filters.List);
+            ContentView.SetPickerModel(Filters);
             ContentView.ImageView.Image = PageRepository.Current.DocumentImage;
 
             Title = "Choose filter";
@@ -42,8 +59,6 @@ namespace ReadyToUseUI.iOS.Controller
             ContentView.Model.SelectionChanged -= OnFilterSelected;
         }
 
-        SBSDKUIPage Temp;
-
         private void OnFilterSelected(object sender, FilterEventArgs e)
         {
             Choice = e.Type;
@@ -62,6 +77,5 @@ namespace ReadyToUseUI.iOS.Controller
             PageRepository.Apply(Choice, PageRepository.Current);
             NavigationController.PopViewController(true);
         }
-
     }
 }

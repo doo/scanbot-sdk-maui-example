@@ -2,13 +2,8 @@
 
 namespace ReadyToUseUI.iOS.Model
 {
-    public class Filter
+    public struct Filter
     {
-        public Filter()
-        {
-
-        }
-
         public Filter(string title, SBSDKImageFilterType type)
         {
             Title = title;

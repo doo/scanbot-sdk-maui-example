@@ -7,15 +7,14 @@ namespace ReadyToUseUI.iOS.View
 {
     public class ScannerButton : UIView
     {
-        public EventHandler<EventArgs> Click;
-
+        public event EventHandler<EventArgs> Click;
         public ListItem Data { get; private set; }
 
-        UILabel title;
+        private UILabel title;
 
         public ScannerButton(ListItem data)
         {
-            Data = data;
+            this.Data = data;
 
             title = new UILabel();
             title.Text = data.Title;
@@ -24,7 +23,6 @@ namespace ReadyToUseUI.iOS.View
             
             AddSubview(title);
         }
-
 
         public override void LayoutSubviews()
         {

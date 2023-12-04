@@ -7,9 +7,8 @@ namespace ReadyToUseUI.iOS.Controller
     public class PdfViewController : UIViewController
     {
         public PdfContainerView ContentView { get; set; }
-
-        NSUrl uri;
-        bool ocr;
+        private NSUrl uri;
+        private bool ocr;
 
         public PdfViewController(NSUrl uri, bool ocr)
         {
@@ -18,8 +17,6 @@ namespace ReadyToUseUI.iOS.Controller
             
             ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
         }
-
-
 
         public override void ViewDidLoad()
         {

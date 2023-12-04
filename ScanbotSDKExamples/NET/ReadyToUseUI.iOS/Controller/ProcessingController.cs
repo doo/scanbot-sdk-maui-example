@@ -9,7 +9,7 @@ namespace ReadyToUseUI.iOS.Controller
     {
         public ProcessingView ContentView { get; private set; }
 
-        CroppingFinishedHandler handler;
+        private CroppingFinishedHandler handler;
 
         public override void ViewDidLoad()
         {

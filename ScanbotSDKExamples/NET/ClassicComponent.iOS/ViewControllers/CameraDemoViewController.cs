@@ -105,14 +105,14 @@ namespace ClassicComponent.iOS
             return UIStatusBarStyle.LightContent;
         }
 
-        void SetupDefaultShutterButtonColors()
+        private void SetupDefaultShutterButtonColors()
         {
             var shutterButton = documentScannerViewController.SnapButton;
             shutterButton.ButtonSearchingColor = UIColor.Red;
             shutterButton.ButtonDetectedColor = UIColor.Green;
         }
 
-        void AddAutosnapToggleButton()
+        private void AddAutosnapToggleButton()
         {
             autoSnapButton = new UIButton(new CGRect(40, bottomButtonsContainer.Frame.Height - 80, 40, 40));
             autoSnapButton.AddTarget(delegate
@@ -128,7 +128,7 @@ namespace ClassicComponent.iOS
             bottomButtonsContainer.BringSubviewToFront(autoSnapButton);
         }
 
-        void AddFlashToggleButton()
+        private void AddFlashToggleButton()
         {
             flashButton = new UIButton(new CGRect(bottomButtonsContainer.Frame.Width - 80, bottomButtonsContainer.Frame.Height - 80, 40, 40));
             flashButton.AddTarget(delegate
@@ -146,7 +146,7 @@ namespace ClassicComponent.iOS
             bottomButtonsContainer.BringSubviewToFront(flashButton);
         }
 
-        void SetAutoSnapEnabled(bool enabled)
+        private void SetAutoSnapEnabled(bool enabled)
         {
             autoSnapButton.Selected = enabled;
             documentScannerViewController.AutoSnappingMode = enabled ? SBSDKAutosnappingMode.Enabled : SBSDKAutosnappingMode.Disabled;
@@ -172,8 +172,7 @@ namespace ClassicComponent.iOS
     // ================================================================================================
     // Implementation of some delegate methods from "SBSDKDocumentScannerViewControllerDelegate":
     // ================================================================================================
-    #region
-    class DocumentScannerDelegate : SBSDKDocumentScannerViewControllerDelegate
+    private class DocumentScannerDelegate : SBSDKDocumentScannerViewControllerDelegate
     {
         private IDocumentCaptureInteraction documentCaptureInteraction;
         public DocumentScannerDelegate(IDocumentCaptureInteraction documentCaptureInteraction)
@@ -192,6 +191,4 @@ namespace ClassicComponent.iOS
             documentCaptureInteraction.DidDetectDocument(documentImage, originalImage, result, autoSnapped);
         }
     }
-
-    #endregion
 }
