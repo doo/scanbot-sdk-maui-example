@@ -5,8 +5,6 @@ namespace ClassicComponent.Maui.CustomViews
 {
     public partial class BarcodeCameraViewHandler : ViewHandler<BarcodeCameraView, BarcodeCameraView_iOS>
     {
-        #region Handler Overrides
-
         protected override BarcodeCameraView_iOS CreatePlatformView() => new BarcodeCameraView_iOS(this.VirtualView.Frame);
 
         protected override void ConnectHandler(BarcodeCameraView_iOS platformView)
@@ -30,10 +28,6 @@ namespace ClassicComponent.Maui.CustomViews
             base.RemoveContainer();
         }
 
-        #endregion
-
-        #region Properties Implementation
-
         public static void MapOverlayConfiguration(BarcodeCameraViewHandler current, BarcodeCameraView commonView)
         {
             current?.PlatformView?.MapOverlayConfiguration(commonView);
@@ -43,10 +37,6 @@ namespace ClassicComponent.Maui.CustomViews
         {
             current?.PlatformView?.MapIsFlashEnabled(commonView.IsFlashEnabled);
         }
-
-        #endregion
-
-        #region Event Handlers Implementation
 
         public static void MapStartDetectionHandler(BarcodeCameraViewHandler current, BarcodeCameraView commonView, object arg3)
         {
@@ -69,8 +59,6 @@ namespace ClassicComponent.Maui.CustomViews
             // This is the common method declared in BarcodeCameraViewHandler, and it is useful for the Android native component only.
             // Based on the MauiHandler concept, we have to define it on all the platforms.
         }
-
-        #endregion
     }
 }
 

@@ -1,64 +1,53 @@
-﻿using BarcodeSDK.MAUI.Constants;
+﻿using ScanbotSDK.MAUI.Constants;
 
 namespace ReadyToUseUI.Maui.Models
 {
     public class DocumentTypes
     {
-
         public static DocumentTypes Instance { get; private set; } = new DocumentTypes();
 
-        public Dictionary<BarcodeDocumentFormat, bool> List { get; private set; } = new Dictionary<BarcodeDocumentFormat, bool>();
+        public Dictionary<BarcodeDocumentFormat, bool> formats;
         public bool IsFilteringEnabled { get; set; } = false;
+
+        private DocumentTypes()
+        {
+            formats = All.Aggregate(new Dictionary<BarcodeDocumentFormat, bool>(), (dict, format) =>
+            {
+                dict.Add(format, true);
+                return dict;
+            });
+        }
 
         public List<BarcodeDocumentFormat> AcceptedTypes
         {
             get
             {
-                var result = new List<BarcodeDocumentFormat>();
-
                 if (!IsFilteringEnabled)
                 {
-                    return result;
+                    return new List<BarcodeDocumentFormat>();
                 }
 
-                foreach (var item in List)
-                {
-                    if (item.Value)
-                    {
-                        result.Add(item.Key);
-                    }
-                }
-
-                return result;
+                return formats.Where(i => i.Value)
+                           .Select(i => i.Key)
+                           .ToList();
             }
         }
 
         public bool IsChecked(BarcodeDocumentFormat lastCheckedFormat)
         {
-            return AcceptedTypes.Contains(lastCheckedFormat);
+           if (formats.TryGetValue(lastCheckedFormat, out var isChecked))
+           {
+                return isChecked;
+           }
+
+           return false;
         }
 
-        public List<BarcodeDocumentFormat> All =>
-            Enum.GetValues(typeof(BarcodeDocumentFormat)).Cast<BarcodeDocumentFormat>().ToList();
-
-        private DocumentTypes()
-        {
-            foreach (BarcodeDocumentFormat format in All)
-            {
-                List.Add(format, IsEnabledByDefault(format));
-            }
-        }
-
+        public List<BarcodeDocumentFormat> All => Enum.GetValues<BarcodeDocumentFormat>().ToList();
 
         public void Update(BarcodeDocumentFormat type, bool value)
         {
-            List[type] = value;
+            formats[type] = value;
         }
-
-        private bool IsEnabledByDefault(BarcodeDocumentFormat format)
-        {
-            return true;
-        }
-
     }
 }

@@ -1,10 +1,9 @@
-﻿using BarcodeSDK.MAUI.Configurations;
+﻿using ScanbotSDK.MAUI.Configurations;
 using Microsoft.Maui.Controls.PlatformConfiguration;
 using Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;
 
 namespace ClassicComponent.Maui
 {
-
     public partial class MainPage : ContentPage
     {
         private bool isDetectionOn;
@@ -24,7 +23,7 @@ namespace ClassicComponent.Maui
         /// <summary>
         /// Get the License of the SDK.
         /// </summary>
-        private bool IsLicenseValid => DocumentSDK.MAUI.ScanbotSDK.SDKService.IsLicenseValid;
+        private bool IsLicenseValid => ScanbotSDK.MAUI.ScanbotSDK.SDKService.IsLicenseValid;
 
         /// <summary>
         /// Constructor
@@ -40,12 +39,12 @@ namespace ClassicComponent.Maui
         /// </summary>
         private void SetupViews()
         {
-            cameraView.OverlayConfiguration = new SelectionOverlayConfiguration(true, BarcodeSDK.MAUI.Constants.BarcodeTextFormat.CodeAndType,
+            cameraView.OverlayConfiguration = new SelectionOverlayConfiguration(true, ScanbotSDK.MAUI.Constants.BarcodeTextFormat.CodeAndType,
                 Colors.Yellow, Colors.Yellow, Colors.Black, Colors.Red, Colors.Red, Colors.Black);
             cameraView.OnBarcodeScanResult = (result) =>
             {
                 string text = "";
-                foreach (BarcodeSDK.MAUI.Models.Barcode barcode in result.Barcodes)
+                foreach (ScanbotSDK.MAUI.Models.Barcode barcode in result.Barcodes)
                 {
                     text += string.Format("{0} ({1})\n", barcode.Text, barcode.Format.ToString().ToUpper());
                 }

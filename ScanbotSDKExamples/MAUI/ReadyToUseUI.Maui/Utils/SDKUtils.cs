@@ -1,8 +1,8 @@
 ﻿using System.Text;
-using DocumentSDK.MAUI.Models;
-using DocumentSDK.MAUI.Services;
-using BarcodeItem = BarcodeSDK.MAUI.Models.Barcode;
-using SBSDK = DocumentSDK.MAUI.ScanbotSDK;
+using ScanbotSDK.MAUI.Models;
+using ScanbotSDK.MAUI.Services;
+using BarcodeItem = ScanbotSDK.MAUI.Models.Barcode;
+using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
 
 namespace ReadyToUseUI.Maui.Utils
 {

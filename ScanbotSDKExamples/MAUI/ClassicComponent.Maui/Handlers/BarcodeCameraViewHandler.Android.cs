@@ -5,9 +5,9 @@ using Android.Views;
 using Android.Widget;
 using AndroidX.Core.App;
 using AndroidX.Core.Content;
-using BarcodeSDK.MAUI.Models;
-using DocumentSDK.MAUI.Droid;
-using DocumentSDK.MAUI.Droid.Utils;
+using ScanbotSDK.MAUI.Models;
+using ScanbotSDK.MAUI.Droid;
+using ScanbotSDK.MAUI.Droid.Utils;
 using IO.Scanbot.Sdk;
 using IO.Scanbot.Sdk.Barcode;
 using IO.Scanbot.Sdk.Barcode.Entity;
@@ -16,6 +16,7 @@ using IO.Scanbot.Sdk.Camera;
 using IO.Scanbot.Sdk.UI.Camera;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
+using IO.Scanbot.Barcodescanner.Model;
 
 namespace ClassicComponent.Maui.CustomViews
 {
@@ -25,8 +26,6 @@ namespace ClassicComponent.Maui.CustomViews
         protected BarcodeScannerView cameraViewDroid;
         private readonly int REQUEST_PERMISSION_CODE = 200;
         private bool toastShown = false;
-
-        #region Handler Overrides
 
         protected override FrameLayout CreatePlatformView()
         {
@@ -41,18 +40,38 @@ namespace ClassicComponent.Maui.CustomViews
             return cameraLayout;
         }
 
+        private void OnCameraOpen()
+        {
+            cameraViewDroid.ViewController.UseFlash(VirtualView.IsFlashEnabled);
+        }
+
+        private void OnSelectionOverlayBarcodeClicked(IO.Scanbot.Sdk.Barcode.Entity.BarcodeItem barcodeItem)
+        {
+            var outResult = new BarcodeResultBundle
+            {
+                Barcodes = new List<Barcode>() { barcodeItem.ToFormsBarcode() },
+                Image = barcodeItem.Image.ToImageSource()
+            };
+
+            VirtualView.OnBarcodeScanResult.Invoke(outResult);
+        }
+
         protected override void ConnectHandler(FrameLayout platformView)
         {
             base.ConnectHandler(platformView);
 
             var detector = new IO.Scanbot.Sdk.ScanbotSDK(Context.GetActivity()).CreateBarcodeDetector();
-            detector.ModifyConfig(new Function1Impl<BarcodeScannerConfigBuilder>((response) =>
+            detector.ModifyConfig((response) =>
             {
                 response.SetSaveCameraPreviewFrame(false);
-            }));
+            });
 
-            cameraViewDroid.InitCamera(new CameraUiSettings(false));
-            BarcodeScannerViewWrapper.InitDetectionBehavior(cameraViewDroid, detector, new SBResultHandler(HandleFrameHandlerResult), new BarcodeScannerViewCallback(VirtualView, cameraViewDroid));
+            cameraViewDroid.InitCamera(new CameraUiSettings(useCameraX: false));
+            cameraViewDroid.InitDetectionBehavior(detector, HandleFrameHandlerResult,
+                (onCameraOpen: OnCameraOpen,
+                onPictureTaken: (_, _) => { },
+                onSelectionOverlayBarcodeClicked: OnSelectionOverlayBarcodeClicked
+            ));
         }
 
         protected override void DisconnectHandler(FrameLayout platformView)
@@ -70,10 +89,6 @@ namespace ClassicComponent.Maui.CustomViews
             base.SetupContainer();
         }
 
-        #endregion
-
-        #region Properties Implementation
-
         public static void MapOverlayConfiguration(BarcodeCameraViewHandler current, BarcodeCameraView commonView)
         {
             current.SetSelectionOverlayConfiguration(commonView);
@@ -83,10 +98,6 @@ namespace ClassicComponent.Maui.CustomViews
         {
             current.cameraViewDroid.ViewController.UseFlash(commonView.IsFlashEnabled);
         }
-
-        #endregion
-
-        #region Event Handlers Implementation
 
         public static void MapStartDetectionHandler(BarcodeCameraViewHandler current, BarcodeCameraView commonView, object arg3)
         {
@@ -124,9 +135,6 @@ namespace ClassicComponent.Maui.CustomViews
                 ActivityCompat.RequestPermissions(activity, new string[] { Manifest.Permission.Camera }, REQUEST_PERMISSION_CODE);
             }
         }
-        #endregion
-
-        #region Support Methods
 
         public void SetSelectionOverlayConfiguration(BarcodeCameraView commonView)
         {
@@ -156,14 +164,14 @@ namespace ClassicComponent.Maui.CustomViews
 
         private bool HandleFrameHandlerResult(BarcodeScanningResult result, IO.Scanbot.Sdk.SdkLicenseError error)
         {
-            if (result == null && !DocumentSDK.MAUI.ScanbotSDK.SDKService.IsLicenseValid)
+            if (result == null && !ScanbotSDK.MAUI.ScanbotSDK.SDKService.IsLicenseValid)
             {
                 if (!toastShown)
                 {
                     cameraViewDroid.Post(() => Toast.MakeText(Context.GetActivity(), "License has expired!", ToastLength.Long).Show());
                     toastShown = true;
                 }
-                
+
                 return false;
             }
 
@@ -184,59 +192,6 @@ namespace ClassicComponent.Maui.CustomViews
         private static void InstallHierarchyFitter(ViewGroup viewGroup)
         {
             viewGroup.SetOnHierarchyChangeListener(new HierarchyChangeListener(viewGroup));
-        }
-
-        #endregion
-    }
-
-    internal class SBResultHandler : BarcodeDetectorResultHandlerWrapper
-    {
-        public delegate bool HandleFrameHandlerResult(BarcodeScanningResult result, SdkLicenseError error);
-        public readonly HandleFrameHandlerResult handleResultFunc;
-
-        public SBResultHandler(HandleFrameHandlerResult handleResultFunc)
-        {
-            this.handleResultFunc = handleResultFunc;
-        }
-
-        public override bool HandleResult(BarcodeScanningResult result, SdkLicenseError error)
-        {
-            handleResultFunc(result, error);
-            System.Diagnostics.Debug.WriteLine(result?.BarcodeItems);
-            return false;
-        }
-    }
-
-    internal class BarcodeScannerViewCallback : Java.Lang.Object, IBarcodeScannerViewCallback
-    {
-        private BarcodeCameraView virtualView;
-        private BarcodeScannerView cameraViewDroid;
-
-        public BarcodeScannerViewCallback(BarcodeCameraView virtualView, BarcodeScannerView cameraViewDroid)
-        {
-            this.virtualView = virtualView;
-            this.cameraViewDroid = cameraViewDroid;
-        }
-
-        public void OnSelectionOverlayBarcodeClicked(BarcodeItem barcodeItem)
-        {
-            var outResult = new BarcodeResultBundle
-            {
-                Barcodes = new List<Barcode>() { barcodeItem.ToFormsBarcode() },
-                Image = barcodeItem.Image.ToImageSource()
-            };
-
-            virtualView.OnBarcodeScanResult.Invoke(outResult);
-        }
-
-        public void OnCameraOpen()
-        {
-            cameraViewDroid.ViewController.UseFlash(virtualView.IsFlashEnabled);
-        }
-
-        public void OnPictureTaken(byte[] image, CaptureInfo captureInfo)
-        {
-            // get the image 
         }
     }
 
@@ -262,36 +217,6 @@ namespace ClassicComponent.Maui.CustomViews
         public void OnChildViewRemoved(Android.Views.View parent, Android.Views.View child)
         {
 
-        }
-    }
-
-    /**
-    * Snippet from: 
-    * https://stackoverflow.com/questions/64013415/pass-lambda-function-to-c-sharp-generated-code-of-kotlin-in-xamarin-android-bind
-    */
-    class Function1Impl<T> : Java.Lang.Object, Kotlin.Jvm.Functions.IFunction1 where T : Java.Lang.Object
-    {
-        private readonly Action<T> OnInvoked;
-
-        public Function1Impl(Action<T> onInvoked)
-        {
-            this.OnInvoked = onInvoked;
-        }
-
-        public Java.Lang.Object Invoke(Java.Lang.Object objParameter)
-        {
-            try
-            {
-                T parameter = (T)objParameter;
-                OnInvoked?.Invoke(parameter);
-                return null;
-            }
-            catch (Exception ex)
-            {
-                // Exception handling, if needed
-            }
-
-            return null;
         }
     }
 }

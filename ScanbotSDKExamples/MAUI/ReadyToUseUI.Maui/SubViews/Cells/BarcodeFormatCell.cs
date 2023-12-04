@@ -1,4 +1,4 @@
-﻿using BarcodeSDK.MAUI.Constants;
+﻿using ScanbotSDK.MAUI.Constants;
 using ReadyToUseUI.Maui.Models;
 
 namespace ReadyToUseUI.Maui.SubViews.Cells

@@ -1,13 +1,12 @@
-﻿using BarcodeSDK.MAUI.Constants;
-using DocumentSDK.MAUI.Constants;
+﻿using ScanbotSDK.MAUI.Constants;
 using ReadyToUseUI.Maui.Models;
 using ReadyToUseUI.Maui.SubViews.ActionBar;
 using ReadyToUseUI.Maui.SubViews.Cells;
 using ReadyToUseUI.Maui.Utils;
-using DocumentSDK.MAUI.Models;
-using DocumentSDK.MAUI.Services;
-using SBSDK = DocumentSDK.MAUI.ScanbotSDK;
-using DocumentSDK.MAUI;
+using ScanbotSDK.MAUI.Models;
+using ScanbotSDK.MAUI.Services;
+using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
+using ScanbotSDK.MAUI;
 using System.Collections.ObjectModel;
 
 namespace ReadyToUseUI.Maui.Pages
@@ -19,7 +18,7 @@ namespace ReadyToUseUI.Maui.Pages
         private BottomActionBar bottomBar;
         private ActivityIndicator loader;
 
-        private ObservableCollection<IScannedPageService> scannedPages = new ObservableCollection<IScannedPageService>();
+        private ObservableCollection<IScannedPage> scannedPages = new ObservableCollection<IScannedPage>();
 
         public ImageResultsPage()
         {
@@ -117,7 +116,7 @@ namespace ReadyToUseUI.Maui.Pages
 
         private void OnItemClick(object sender, ItemTappedEventArgs e)
         {
-            if (e.Item is IScannedPageService selectedPage && selectedPage != null)
+            if (e.Item is IScannedPage selectedPage && selectedPage != null)
             {
                 Navigation.PushAsync(new ImageDetailPage(selectedPage));
             }
@@ -179,8 +178,7 @@ namespace ReadyToUseUI.Maui.Pages
 
                 if (action.Equals(parameters[0]))
                 {
-                    var fileUri = await SBSDK.SDKService
-                    .CreatePdfAsync(documentSources, PDFPageSize.FixedA4);
+                    var fileUri = await SBSDK.SDKService.CreatePdfAsync(documentSources.OfType<FileImageSource>(), PDFPageSize.FixedA4);
                     ViewUtils.Alert(this, "Success: ", "Wrote documents to: " + fileUri.AbsolutePath);
                 }
                 else if (action.Equals(parameters[1]))
@@ -188,7 +186,7 @@ namespace ReadyToUseUI.Maui.Pages
                     string path = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
                     string pdfFilePath = Path.Combine(path, Guid.NewGuid() + ".pdf");
                     var languages = new[] { "en" };
-                    var result = await SBSDK.SDKService.PerformOcrAsync(documentSources, languages, pdfFilePath);
+                    var result = await SBSDK.SDKService.PerformOcrAsync(documentSources.OfType<FileImageSource>(), languages, pdfFilePath);
 
                     // You can access the results with: result.Pages
                     ViewUtils.Alert(this, "PDF with OCR layer stored: ", pdfFilePath);
@@ -196,7 +194,7 @@ namespace ReadyToUseUI.Maui.Pages
                 else if (action.Equals(parameters[2]))
                 {
                     var fileUri = await SBSDK.SDKService.WriteTiffAsync(
-                        documentSources,
+                        documentSources.OfType<FileImageSource>(),
                         new TiffOptions { OneBitEncoded = true, Dpi = 300, Compression = TiffCompressionOptions.CompressionCcittT6 }
                     );
                     ViewUtils.Alert(this, "Success: ", "Wrote documents to: " + fileUri.AbsolutePath);
