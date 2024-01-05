@@ -5,9 +5,7 @@ using ReadyToUseUI.iOS.View;
 using ReadyToUseUI.iOS.View.Collection;
 using ReadyToUseUI.iOS.Models;
 using UIKit;
-using DocumentSDK.MAUI.Constants;
-using SBSDK = DocumentSDK.MAUI.Native.iOS.ScanbotSDK;
-using DocumentSDK.MAUI.Models;
+using ScanbotSDK.iOS;
 
 namespace ReadyToUseUI.iOS.Controller
 {
@@ -61,6 +59,16 @@ namespace ReadyToUseUI.iOS.Controller
             NavigationController.PushViewController(controller, true);
         }
 
+        public SBSDKIndexedImageStorage CreateStorage(NSUrl[] uris)
+        {
+            var url = SBSDKStorageLocation.ApplicationSupportFolderURL;
+            var tmp = NSUrl.FromFilename(string.Format("{0}/{1}", url.Scheme == "file" ? url.Path : url.AbsoluteString, Guid.NewGuid()));
+            var location = new SBSDKStorageLocation(tmp);
+            var format = SBSDKImageFileFormat.Jpeg;
+
+            return new SBSDKIndexedImageStorage(location, format, ScanbotSDKUI.DefaultImageStoreEncrypter, uris);
+        }
+
         private void OnSaveButtonClick(object sender, EventArgs e)
         {
             if (PageRepository.DocumentImageURLs.Length == 0)
@@ -76,7 +84,7 @@ namespace ReadyToUseUI.iOS.Controller
             var title = "Oops!";
             var body = "Something went wrong with saving your file. Please try again";
 
-            if (!SBSDK.IsLicenseValid())
+            if (!ScanbotSDKGlobal.IsLicenseValid)
             {
                 title = "Oops";
                 body = "Your license has expired";
@@ -87,24 +95,43 @@ namespace ReadyToUseUI.iOS.Controller
             var pdf = CreateButton(Texts.save_without_ocr, delegate
             {
                 var output = new NSUrl(nsurl.AbsoluteString + Guid.NewGuid() + ".pdf");
-                SBSDK.CreatePDF(input, output, PDFPageSize.FixedA4);
+
+                SBSDKPDFRenderer.RenderImageStorage(CreateStorage(input), null, SBSDKPDFRendererPageSize.FixedA4, ScanbotSDKUI.DefaultImageStoreEncrypter, output, out var error);
+
+                if (error != null)
+                {
+                    body = error.LocalizedDescription;
+                    Alert.Show(this, title, body);
+                    return;
+                }
+
                 OpenDocument(output, false);
             });
 
             var ocr = CreateButton(Texts.save_with_ocr, delegate
             {
                 var output = new NSUrl(nsurl.AbsoluteString + Guid.NewGuid() + ".pdf");
-                var languages = SBSDK.GetOcrConfigs().InstalledLanguages;
-                try
+                var languages = SBSDKOpticalTextRecognizer.InstalledLanguages;
+
+                SBSDKOCRResult result = SBSDKOpticalTextRecognizer.RecognizeText(
+                    CreateStorage(input),
+                    null,
+                    string.Join("+", languages),
+                    ScanbotSDKUI.DefaultImageStoreEncrypter,
+                    output,
+                    out var error
+                );
+
+                if (error != null)
                 {
-                    SBSDK.PerformOCR(input, languages.ToArray(), output);
-                    OpenDocument(output, true);
-                }
-                catch (Exception ex)
-                {
-                    body = ex.Message;
+                    body = error.LocalizedDescription;
                     Alert.Show(this, title, body);
+                    return;
                 }
+
+                OpenDocument(output, true);
+
+           
             });
 
             var tiff = CreateButton(Texts.Tiff, delegate
@@ -112,9 +139,19 @@ namespace ReadyToUseUI.iOS.Controller
                 var output = new NSUrl(nsurl.AbsoluteString + Guid.NewGuid() + ".tiff");
 
                 // Please note that some compression types are only compatible for 1-bit encoded images (binarized black & white images)!
-                var options = new TiffOptions { OneBitEncoded = true, Compression = TiffCompressionOptions.CompressionCcittfax4, Dpi = 250 };
+                var options = new SBSDKTIFFImageWriterParameters { Binarize = true, Compression = SBSDKTIFFImageWriterCompressionOptions.Ccittfax4, Dpi = 250 };
 
-                bool success = SBSDK.WriteTiff(input, output, options);
+                bool success = false;
+
+                if (ScanbotSDKUI.DefaultImageStoreEncrypter != null)
+                {
+                    var encrypter = ScanbotSDKUI.DefaultImageStoreEncrypter;
+                    success = SBSDKTIFFImageWriter.WriteTIFF(input.Select(i => UIImage.LoadFromData(encrypter.DecryptData(NSData.FromUrl(i)))).ToArray(), output, encrypter, options);
+                }
+                else
+                {
+                    success = SBSDKTIFFImageWriter.WriteTIFF(input.Select(i => UIImage.LoadFromData(NSData.FromUrl(i))).ToArray(), output, options);
+                }
 
                 if (success)
                 {

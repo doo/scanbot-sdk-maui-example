@@ -20,11 +20,6 @@ namespace ReadyToUseUI.iOS.Repository
             Items.Remove(page);
         }
 
-        public static void Add(List<SBSDKUIPage> pages)
-        {
-            Items.AddRange(pages);
-        }
-
         public static void Add(SBSDKUIPage page)
         {
             Items.Add(page);
