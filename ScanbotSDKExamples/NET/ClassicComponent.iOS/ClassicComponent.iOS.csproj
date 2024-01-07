@@ -39,4 +39,24 @@
       <Folder Include="Models\" />
       <Folder Include="ViewControllers\TableViewCells\" />
     </ItemGroup>
+    <ItemGroup>
+      <ImageAsset Update="Assets.xcassets\tickIcon.imageset\tickIcon%402x.png">
+        <Link>Assets.xcassets\tickIcon.imageset\tickIcon%402x.png</Link>
+      </ImageAsset>
+      <ImageAsset Update="Assets.xcassets\tickIcon.imageset\tickIcon%403x.png">
+        <Link>Assets.xcassets\tickIcon.imageset\tickIcon%403x.png</Link>
+      </ImageAsset>
+      <ImageAsset Update="Assets.xcassets\closeIcon.imageset\closeIcon%402x.png">
+        <Link>Assets.xcassets\closeIcon.imageset\closeIcon%402x.png</Link>
+      </ImageAsset>
+      <ImageAsset Update="Assets.xcassets\closeIcon.imageset\closeIcon%403x.png">
+        <Link>Assets.xcassets\closeIcon.imageset\closeIcon%403x.png</Link>
+      </ImageAsset>
+      <ImageAsset Update="Assets.xcassets\rotateIcon.imageset\rotateIcon%402x.png">
+        <Link>Assets.xcassets\rotateIcon.imageset\rotateIcon%402x.png</Link>
+      </ImageAsset>
+      <ImageAsset Update="Assets.xcassets\rotateIcon.imageset\rotateIcon%403x.png">
+        <Link>Assets.xcassets\rotateIcon.imageset\rotateIcon%403x.png</Link>
+      </ImageAsset>
+    </ItemGroup>
 </Project>

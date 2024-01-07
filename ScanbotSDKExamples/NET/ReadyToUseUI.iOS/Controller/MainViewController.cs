@@ -45,7 +45,9 @@ namespace ReadyToUseUI.iOS.Controller
                 new ListItem("Scan MRZ",                      ScanMrz),
                 new ListItem("Scan Health Insurance card",    ScanEhic),
                 new ListItem("Generic Document Recognizer",   RecongnizeGenericDocument),
-                new ListItem("Check Recognizer",              RecognizeCheck)
+                new ListItem("Check Recognizer",              RecognizeCheck),
+                new ListItem("Text Data Recognizer",          TextDataRecognizerTapped),
+                new ListItem("VIN Recognizer",                VinRecognizerTapped)
             };
 
             contentView.AddContent("BARCODE DETECTORS", barcodeDetectors);
@@ -366,6 +368,37 @@ namespace ReadyToUseUI.iOS.Controller
                 ShowPopup(this, description);
             };
             PresentViewController(controller, false, null);
+        }
+
+        private void TextDataRecognizerTapped()
+        {
+            Debug.WriteLine("ScanbotSDK Demo: Starting text recognizer controller ...");
+
+            var configuration = SBSDKUITextDataScannerConfiguration.DefaultConfiguration;
+            configuration.TextConfiguration.CancelButtonTitle = "Done";
+            var scanner = SBSDKUITextDataScannerViewController.CreateNewWithConfiguration(configuration, null);
+            scanner.DidFinishStepWithResult += (_, args) =>
+            {
+                scanner.DismissViewController(true, () => Alert.Show(this, "Result Text:", args?.Result?.Text));
+            };
+
+            PresentViewController(scanner, true, null);
+        }
+
+        private void VinRecognizerTapped()
+        {
+            Debug.WriteLine("ScanbotSDK Demo: Starting VIN recognizer controller ...");
+
+            var configuration = SBSDKUIVINScannerConfiguration.DefaultConfiguration;
+            configuration.TextConfiguration.CancelButtonTitle = "Done";
+            configuration.TextConfiguration.GuidanceText = "Please place the finder over the VIN.";
+            configuration.UiConfiguration.FinderAspectRatio = new SBSDKAspectRatio(7, 1);
+            var scanner = SBSDKUIVINScannerViewController.CreateNewWithConfiguration(configuration, null);
+            scanner.DidFinishWithResult += (_, args) =>
+            {
+                scanner.DismissViewController(true, () => Alert.Show(this, "Result Text:", args?.Result?.Text));
+            };
+            PresentViewController(scanner, true, null);
         }
 
         private static bool IsPresented { get; set; }
