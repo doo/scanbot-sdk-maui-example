@@ -2,12 +2,6 @@
 
 namespace ClassicComponent.iOS
 {
-    public abstract class CameraDemoDelegate
-    {
-        public abstract void DidCaptureDocumentImage(UIImage documentImage);
-        public abstract void DidCaptureOriginalImage(UIImage originalImage);
-    }
-
     public interface IDocumentCaptureInteraction
     {
         void DidDetectDocument(UIImage documentImage, UIImage originalImage, SBSDKDocumentDetectorResult result, bool autoSnapped);
@@ -26,7 +20,7 @@ namespace ClassicComponent.iOS
 
         protected bool viewAppeared;
 
-        public CameraDemoDelegate cameraDelegate;
+        internal ICameraDemoViewControllerDelegate cameraViewControllerDelegate;
 
         public override void ViewDidLoad()
         {
@@ -158,13 +152,8 @@ namespace ClassicComponent.iOS
         {
             if (documentImage != null)
             {
-                cameraDelegate.DidCaptureDocumentImage(documentImage);
+                cameraViewControllerDelegate.DidCaptureDocumentImage(documentImage, originalImage);
                 this.NavigationController.PopViewController(true);
-            }
-
-            if (originalImage != null)
-            {
-                cameraDelegate.DidCaptureOriginalImage(documentImage);
             }
         }
     }
@@ -172,20 +161,14 @@ namespace ClassicComponent.iOS
     // ================================================================================================
     // Implementation of some delegate methods from "SBSDKDocumentScannerViewControllerDelegate":
     // ================================================================================================
-    private class DocumentScannerDelegate : SBSDKDocumentScannerViewControllerDelegate
+    internal class DocumentScannerDelegate : SBSDKDocumentScannerViewControllerDelegate
     {
-        private IDocumentCaptureInteraction documentCaptureInteraction;
+        internal IDocumentCaptureInteraction documentCaptureInteraction;
         public DocumentScannerDelegate(IDocumentCaptureInteraction documentCaptureInteraction)
         {
             this.documentCaptureInteraction = documentCaptureInteraction;
         }
-
-        [Export("documentScannerViewControllerDidFailSnappingImage:withError:")]
-        public void DocumentScannerViewControllerDidFailSnappingImage(SBSDKDocumentScannerViewController controller, NSError error)
-        {
-            throw new System.NotImplementedException();
-        }
-
+        
         public override void DidSnapDocumentImage(SBSDKDocumentScannerViewController controller, UIImage documentImage, UIImage originalImage, SBSDKDocumentDetectorResult result, bool autoSnapped)
         {
             documentCaptureInteraction.DidDetectDocument(documentImage, originalImage, result, autoSnapped);

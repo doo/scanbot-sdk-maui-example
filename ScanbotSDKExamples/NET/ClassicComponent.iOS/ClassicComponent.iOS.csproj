@@ -5,6 +5,7 @@
         <Nullable>disable</Nullable>
         <ImplicitUsings>true</ImplicitUsings>
         <SupportedOSPlatformVersion>13.0</SupportedOSPlatformVersion>
+        <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
         <!-- Display name -->
         <ApplicationTitle>NET Classic Component</ApplicationTitle>
         <AssemblyName>ClassicComponent.iOS</AssemblyName>
@@ -19,6 +20,23 @@
         <CreatePackage>false</CreatePackage>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="ScanbotSDK.NET" Version="2.3.1-beta.2" />
+        <PackageReference Include="ScanbotSDK.NET" Version="4.1.0-local.3" />
+        <PackageReference Include="Scanbot.Xamarin.ImagePicker" Version="0.0.3-beta.1" />
+    </ItemGroup>
+    <ItemGroup>
+      <InterfaceDefinition Remove="ViewControllers\ClassicComponents\ClassicComponentStoryboard.storyboard" />
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Condition=" '$(EnableDefaultCompileItems)' == 'true' " Update="ViewControllers\MainViewController.designer.cs">
+        <DependentUpon>MainViewController.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+    <ItemGroup>
+      <None Remove="Models\" />
+      <None Remove="ViewControllers\TableViewCells\" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Models\" />
+      <Folder Include="ViewControllers\TableViewCells\" />
     </ItemGroup>
 </Project>

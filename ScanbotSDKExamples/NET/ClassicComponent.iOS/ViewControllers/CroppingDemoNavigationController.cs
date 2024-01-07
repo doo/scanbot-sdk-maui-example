@@ -2,15 +2,12 @@
 
 namespace ClassicComponent.iOS
 {
-    public delegate void CropViewControllerDidFinish(UIImage croppedImage);
-
     public class CroppingDemoNavigationController : UINavigationController
     {
         private UIImage Image;
 
         private SBSDKImageEditingViewController imageEditingViewController;
-
-        public CropViewControllerDidFinish croppingDelegate;
+        internal IModifyDocumentContrllerDelegate modifyDocumentDelegate;
 
         public CroppingDemoNavigationController(UIImage image)
         {
@@ -55,7 +52,7 @@ namespace ClassicComponent.iOS
         [Export("imageEditingViewController:didApplyChangesWithPolygon:croppedImage:")]
         public void ImageEditingViewController(SBSDKImageEditingViewController editingViewController, SBSDKPolygon polygon, UIImage croppedImage)
         {
-            croppingDelegate?.Invoke(croppedImage);
+            modifyDocumentDelegate?.DidUpdateDocumentImage(croppedImage);
             DismissViewController(true, null);
         }
 
@@ -68,19 +65,19 @@ namespace ClassicComponent.iOS
         [Export("imageEditingViewControllerApplyButtonItem:")]
         UIBarButtonItem ImageEditingViewControllerApplyButtonItem(SBSDKImageEditingViewController editingViewController)
         {
-            return new UIBarButtonItem(UIImage.FromBundle("ui_action_checkmark"), UIBarButtonItemStyle.Plain, null);
+            return new UIBarButtonItem(UIImage.FromBundle("tickIcon"), UIBarButtonItemStyle.Plain, null);
         }
 
         [Export("imageEditingViewControllerCancelButtonItem:")]
         UIBarButtonItem ImageEditingViewControllerCancelButtonItem(SBSDKImageEditingViewController editingViewController)
         {
-            return new UIBarButtonItem(UIImage.FromBundle("ui_action_close"), UIBarButtonItemStyle.Plain, null);
+            return new UIBarButtonItem(UIImage.FromBundle("closeIcon"), UIBarButtonItemStyle.Plain, null);
         }
 
         [Export("imageEditingViewControllerRotateClockwiseToolbarItem:")]
         public UIBarButtonItem ImageEditingViewControllerRotateClockwiseToolbarItem(SBSDKImageEditingViewController editingViewController)
         {
-            return new UIBarButtonItem(UIImage.FromBundle("ui_edit_rotate"), UIBarButtonItemStyle.Plain, (sender, e) =>
+            return new UIBarButtonItem(UIImage.FromBundle("rotateIcon"), UIBarButtonItemStyle.Plain, (sender, e) =>
             {
                 imageEditingViewController.RotateInputImageClockwise(true, true);
             });
