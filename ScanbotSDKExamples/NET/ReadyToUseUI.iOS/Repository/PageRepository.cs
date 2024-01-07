@@ -1,6 +1,4 @@
-﻿using Foundation;
-using ScanbotSDK.iOS;
-using UIKit;
+﻿using ScanbotSDK.iOS;
 
 namespace ReadyToUseUI.iOS.Repository
 {

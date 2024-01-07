@@ -1,6 +1,6 @@
 ﻿using ScanbotSDK.iOS;
 
-namespace ReadyToUseUI.iOS.Model
+namespace ReadyToUseUI.iOS.Models
 {
     public struct Filter
     {

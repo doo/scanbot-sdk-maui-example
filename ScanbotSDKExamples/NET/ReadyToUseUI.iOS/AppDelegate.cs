@@ -1,15 +1,9 @@
 ﻿using ReadyToUseUI.iOS.Controller;
-//using SBSDK = DocumentSDK.MAUI.Native.iOS.ScanbotSDK;
-using Foundation;
-using UIKit;
 using ScanbotSDK.iOS;
-using System.Security.Cryptography.X509Certificates;
 using System.Diagnostics;
-//using DocumentSDK.MAUI.Constants;
 
 namespace ReadyToUseUI.iOS
 {
-
     [Register("AppDelegate")]
     public class AppDelegate : UIApplicationDelegate
     {
@@ -65,10 +59,8 @@ namespace ReadyToUseUI.iOS
 
             ScanbotSDKGlobal.SetLoggingEnabled(true);
             SBSDKUIPageFileStorage.DefaultStorage = new SBSDKUIPageFileStorage(80, new SBSDKStorageLocation(NSUrl.FromFilename(PageStoragePathForExample())));
-
-            ScanbotSDKUI.DefaultImageStoreEncrypter = new SBSDKAESEncrypter("S0m3W3irDL0ngPa$$w0rdino!!!!", SBSDKAESEncrypterMode.SBSDKAESEncrypterModeAES256);
+            //ScanbotSDKUI.DefaultImageStoreEncrypter = StorageEncryption.FromEncrypter(new SBSDKAESEncrypter("S0m3W3irDL0ngPa$$w0rdino!!!!", SBSDKAESEncrypterMode.SBSDKAESEncrypterModeAES128));
             ScanbotSDKUI.DefaultPDFEncrypter = ScanbotSDKUI.DefaultImageStoreEncrypter;
-
 
             if (!string.IsNullOrEmpty(LicenseKey))
             {
@@ -78,7 +70,6 @@ namespace ReadyToUseUI.iOS
             ScanbotSDKGlobal.SetupDefaultLicenseFailureHandler();
             ScanbotSDKGlobal.SharedApplication = application;
         }
-
 
         private static string PageStoragePathForExample()
         {

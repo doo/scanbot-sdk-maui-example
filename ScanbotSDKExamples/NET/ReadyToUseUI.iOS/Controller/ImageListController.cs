@@ -1,11 +1,13 @@
-﻿using Foundation;
-using ReadyToUseUI.iOS.Repository;
+﻿using ReadyToUseUI.iOS.Repository;
 using ReadyToUseUI.iOS.Utils;
 using ReadyToUseUI.iOS.View;
 using ReadyToUseUI.iOS.View.Collection;
 using ReadyToUseUI.iOS.Models;
-using UIKit;
 using ScanbotSDK.iOS;
+using DocumentSDK.MAUI.Native.iOS.Configurations;
+using ScanbotSDK.MAUI.Constants;
+using SBSDK = ScanbotSDK.MAUI.Native.iOS.ScanbotSDK;
+using ScanbotSDK.MAUI.Models;
 
 namespace ReadyToUseUI.iOS.Controller
 {
@@ -92,46 +94,44 @@ namespace ReadyToUseUI.iOS.Controller
                 return;
             }
 
-            var pdf = CreateButton(Texts.save_without_ocr, delegate
+            var pdf = CreateButton(Texts.save_without_ocr, async delegate
             {
                 var output = new NSUrl(nsurl.AbsoluteString + Guid.NewGuid() + ".pdf");
-
-                SBSDKPDFRenderer.RenderImageStorage(CreateStorage(input), null, SBSDKPDFRendererPageSize.FixedA4, ScanbotSDKUI.DefaultImageStoreEncrypter, output, out var error);
-
-                if (error != null)
+                var createPDFConfig = new CreatePDFConfiguration
                 {
-                    body = error.LocalizedDescription;
-                    Alert.Show(this, title, body);
-                    return;
-                }
+                    InputImageUrls = input,
+                    OutputUrl = output,
+                    PageSize = PDFPageSize.A4
+                };
 
+                await SBSDK.CreatePDF(createPDFConfig);
                 OpenDocument(output, false);
             });
 
-            var ocr = CreateButton(Texts.save_with_ocr, delegate
+            var ocr = CreateButton(Texts.save_with_ocr, async delegate
             {
                 var output = new NSUrl(nsurl.AbsoluteString + Guid.NewGuid() + ".pdf");
-                var languages = SBSDKOpticalTextRecognizer.InstalledLanguages;
-
-                SBSDKOCRResult result = SBSDKOpticalTextRecognizer.RecognizeText(
-                    CreateStorage(input),
-                    null,
-                    string.Join("+", languages),
-                    ScanbotSDKUI.DefaultImageStoreEncrypter,
-                    output,
-                    out var error
-                );
-
-                if (error != null)
+                try
                 {
-                    body = error.LocalizedDescription;
-                    Alert.Show(this, title, body);
-                    return;
+                    var ocrConfiguration = new OCRDetectionConfiguration
+                    {
+                        RecognitionMode = ScanbotSDK.iOS.SBSDKOpticalCharacterRecognitionMode.Legacy,
+                        // Languages property is only used in SBSDKOpticalCharacterRecognitionMode.Legacy
+                        Langauges = SBSDK.InstalledLanguages,
+                        InputImageUrls = input,
+                        ShouldGeneratePDF = true,
+                        OutputUrl = output,
+                        PageSize = PDFPageSize.A4,
+                    };
+                    var result = await SBSDK.PerformOCR(ocrConfiguration);
+
+                    OpenDocument(output, true, result.RecognizedText);
                 }
-
-                OpenDocument(output, true);
-
-           
+                catch (Exception ex)
+                {
+                    body = ex.Message;
+                    Alert.Show(this, title, body);
+                }
             });
 
             var tiff = CreateButton(Texts.Tiff, delegate
@@ -139,20 +139,9 @@ namespace ReadyToUseUI.iOS.Controller
                 var output = new NSUrl(nsurl.AbsoluteString + Guid.NewGuid() + ".tiff");
 
                 // Please note that some compression types are only compatible for 1-bit encoded images (binarized black & white images)!
-                var options = new SBSDKTIFFImageWriterParameters { Binarize = true, Compression = SBSDKTIFFImageWriterCompressionOptions.Ccittfax4, Dpi = 250 };
+                var options = new TiffOptions { OneBitEncoded = true, Compression = TiffCompressionOptions.CompressionCcittfax4, Dpi = 250 };
 
-                bool success = false;
-
-                if (ScanbotSDKUI.DefaultImageStoreEncrypter != null)
-                {
-                    var encrypter = ScanbotSDKUI.DefaultImageStoreEncrypter;
-                    success = SBSDKTIFFImageWriter.WriteTIFF(input.Select(i => UIImage.LoadFromData(encrypter.DecryptData(NSData.FromUrl(i)))).ToArray(), output, encrypter, options);
-                }
-                else
-                {
-                    success = SBSDKTIFFImageWriter.WriteTIFF(input.Select(i => UIImage.LoadFromData(NSData.FromUrl(i))).ToArray(), output, options);
-                }
-
+                bool success = SBSDK.WriteTiff(input, output, options);
                 if (success)
                 {
                     title = "Info";
@@ -180,9 +169,9 @@ namespace ReadyToUseUI.iOS.Controller
             PresentViewController(controller, true, null);
         }
 
-        void OpenDocument(NSUrl uri, bool ocr)
+        void OpenDocument(NSUrl uri, bool ocr, string ocrResult = null)
         {
-            var controller = new PdfViewController(uri, ocr);
+            var controller = new PdfViewController(uri, ocr, ocrResult);
             NavigationController.PushViewController(controller, true);
         }
 
@@ -191,6 +180,5 @@ namespace ReadyToUseUI.iOS.Controller
         {
             return UIAlertAction.Create(text, style, action);
         }
-
     }
 }

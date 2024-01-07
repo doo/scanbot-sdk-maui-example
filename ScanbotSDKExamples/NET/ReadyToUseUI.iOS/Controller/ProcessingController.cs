@@ -1,7 +1,6 @@
 ﻿using ReadyToUseUI.iOS.Repository;
 using ReadyToUseUI.iOS.View;
 using ScanbotSDK.iOS;
-using UIKit;
 
 namespace ReadyToUseUI.iOS.Controller
 {
@@ -93,5 +92,4 @@ namespace ReadyToUseUI.iOS.Controller
             Finished?.Invoke(this, new CroppingFinishedArgs { Page = changedPage });
         }
     }
-
 }

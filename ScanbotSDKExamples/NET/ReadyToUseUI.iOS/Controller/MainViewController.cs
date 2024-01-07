@@ -1,12 +1,10 @@
 using ReadyToUseUI.iOS.Repository;
-using ReadyToUseUI.iOS.Service;
 using ReadyToUseUI.iOS.Utils;
 using ReadyToUseUI.iOS.View;
 using ReadyToUseUI.iOS.Models;
 using ScanbotSDK.iOS;
-using UIKit;
-using CoreAudioKit;
 using System.Diagnostics;
+using Scanbot.ImagePicker.iOS;
 
 namespace ReadyToUseUI.iOS.Controller
 {
@@ -31,7 +29,7 @@ namespace ReadyToUseUI.iOS.Controller
             {
                 new ListItem("Scan Barcodes", ScanBarcode),
                 new ListItem("Scan Batch Barcodes", ScanBarcodesInBatch),
-                new ListItem("Import and Detect Barcodes", ImportBarcodes)
+                new ListItem("Import and Detect Barcodes", ImportAndDetectBarcode)
             };
 
             documentScanners = new List<ListItem>
@@ -101,12 +99,12 @@ namespace ReadyToUseUI.iOS.Controller
             var configuration = SBSDKUIBarcodeScannerConfiguration.DefaultConfiguration;
             var controller = SBSDKUIBarcodeScannerViewController.CreateNewWithConfiguration(configuration, null);
             controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
-            configuration.SelectionOverlayConfiguration.OverlayEnabled = true;
-            configuration.SelectionOverlayConfiguration.AutomaticSelectionEnabled = true;
-            configuration.SelectionOverlayConfiguration.OverlayTextFormat = SBSDKBarcodeOverlayFormat.Code;
-            configuration.SelectionOverlayConfiguration.PolygonColor = UIColor.Yellow;
-            configuration.SelectionOverlayConfiguration.TextColor = UIColor.Yellow;
-            configuration.SelectionOverlayConfiguration.TextContainerColor = UIColor.Black;
+            configuration.TrackingOverlayConfiguration.OverlayEnabled = true;
+            configuration.TrackingOverlayConfiguration.AutomaticSelectionEnabled = true;
+            configuration.TrackingOverlayConfiguration.OverlayTextFormat = SBSDKBarcodeOverlayFormat.Code;
+            configuration.TrackingOverlayConfiguration.PolygonColor = UIColor.Yellow;
+            configuration.TrackingOverlayConfiguration.TextColor = UIColor.Yellow;
+            configuration.TrackingOverlayConfiguration.TextContainerColor = UIColor.Black;
 
             controller.DidDetectResults += (_, args) =>
             {
@@ -136,12 +134,12 @@ namespace ReadyToUseUI.iOS.Controller
             var configuration = SBSDKUIBarcodesBatchScannerConfiguration.DefaultConfiguration;
             var controller = SBSDKUIBarcodesBatchScannerViewController.CreateNewWithConfiguration(configuration, null);
             controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
-            configuration.SelectionOverlayConfiguration.OverlayEnabled = true;
-            configuration.SelectionOverlayConfiguration.AutomaticSelectionEnabled = true;
-            configuration.SelectionOverlayConfiguration.OverlayTextFormat = SBSDKBarcodeOverlayFormat.Code;
-            configuration.SelectionOverlayConfiguration.PolygonColor = UIColor.Yellow;
-            configuration.SelectionOverlayConfiguration.TextColor = UIColor.Yellow;
-            configuration.SelectionOverlayConfiguration.TextContainerColor = UIColor.Black;
+            configuration.TrackingOverlayConfiguration.OverlayEnabled = true;
+            configuration.TrackingOverlayConfiguration.AutomaticSelectionEnabled = true;
+            configuration.TrackingOverlayConfiguration.OverlayTextFormat = SBSDKBarcodeOverlayFormat.Code;
+            configuration.TrackingOverlayConfiguration.PolygonColor = UIColor.Yellow;
+            configuration.TrackingOverlayConfiguration.TextColor = UIColor.Yellow;
+            configuration.TrackingOverlayConfiguration.TextContainerColor = UIColor.Black;
 
             controller.DidFinish += (_, args) =>
             {
@@ -164,23 +162,13 @@ namespace ReadyToUseUI.iOS.Controller
             PresentViewController(controller, false, null);
         }
 
-        private void ImportBarcodes()
+        private async void ImportAndDetectBarcode()
         {
-            ImagePicker.Instance.Controller.FinishedPickingMedia += BarcodeImported;
-            ImagePicker.Instance.Present(this);
-        }
-
-        private void BarcodeImported(object sender, UIImagePickerMediaPickedEventArgs e)
-        {
-            ImagePicker.Instance.Dismiss();
-            ImagePicker.Instance.Controller.FinishedPickingMedia -= BarcodeImported;
-
             var text = "No Barcode detected.";
-
-            if (e.OriginalImage is UIImage image)
+            var image = await ImagePicker.Instance.PickImageAsync();
+            if (image != null)
             {
                 SBSDKBarcodeScannerResult[] results = new SBSDKBarcodeScanner().DetectBarCodesOnImage(image);
-
                 if (results != null && results.Length > 0)
                 {
                     text = "";
@@ -189,7 +177,7 @@ namespace ReadyToUseUI.iOS.Controller
                         text += item.Type.ToString() + ": " + item.RawTextString + "\n";
                     }
 
-                    var blur = new SBSDKBlurrinessEstimator().EstimateImageBlurriness(image);
+                    var blur = new SBSDKDocumentQualityAnalyzer().AnalyzeOnImage(image);
                     Console.WriteLine("Blur of imported image: " + blur);
                     text += "(Additionally, blur: " + blur + ")";
                 }
@@ -266,18 +254,10 @@ namespace ReadyToUseUI.iOS.Controller
             OpenImageListController();
         }
 
-        private void ImportImage()
+        private async void ImportImage()
         {
-            ImagePicker.Instance.Present(this);
-            ImagePicker.Instance.Controller.FinishedPickingMedia += ImageImported;
-        }
-
-        private void ImageImported(object sender, UIImagePickerMediaPickedEventArgs e)
-        {
-            ImagePicker.Instance.Dismiss();
-            ImagePicker.Instance.Controller.FinishedPickingMedia -= ImageImported;
-
-            var page = PageRepository.Add(e.OriginalImage, new SBSDKPolygon());
+            var image = await ImagePicker.Instance.PickImageAsync();
+            var page = PageRepository.Add(image, new SBSDKPolygon());
             var result = page.DetectDocument(true);
             Console.WriteLine("Attempted document detection on imported page: " + result.Status);
 

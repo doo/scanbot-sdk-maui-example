@@ -1,8 +1,4 @@
-﻿using CoreGraphics;
-using Foundation;
-using UIKit;
-
-namespace ReadyToUseUI.iOS.View
+﻿namespace ReadyToUseUI.iOS.View
 {
     public class PopupView : UIView
     {

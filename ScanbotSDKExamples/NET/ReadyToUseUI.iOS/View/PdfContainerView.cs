@@ -1,9 +1,5 @@
-﻿using UIKit;
-using PdfKit;
-using Foundation;
-using CoreGraphics;
+﻿using PdfKit;
 using ScanbotSDK.iOS;
-//using SBSDK = DocumentSDK.MAUI.Native.iOS.ScanbotSDK;
 
 namespace ReadyToUseUI.iOS.View
 {

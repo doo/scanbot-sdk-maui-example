@@ -1,8 +1,7 @@
-﻿using ReadyToUseUI.iOS.Model;
+﻿using ReadyToUseUI.iOS.Models;
 using ReadyToUseUI.iOS.Repository;
 using ReadyToUseUI.iOS.View;
 using ScanbotSDK.iOS;
-using UIKit;
 
 namespace ReadyToUseUI.iOS.Controller
 {
