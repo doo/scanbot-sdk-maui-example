@@ -67,7 +67,10 @@ namespace ReadyToUseUI.iOS.View
 
                 ButtonContainers[2].Frame = new CGRect(x, y, w, h);
             }
-            ContentSize = new CGSize(Frame.Width, ButtonContainers[1].Frame.Bottom);
+
+            var lastContainerIndex = ButtonContainers.Count - 1;
+            var height = ButtonContainers[lastContainerIndex].Frame.Bottom + 10;
+            ContentSize = new CGSize(Frame.Width, height);
         }
 
         public void AddContent(string title, List<ListItem> items)

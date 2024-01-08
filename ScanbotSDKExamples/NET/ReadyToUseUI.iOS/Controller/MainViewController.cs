@@ -46,8 +46,10 @@ namespace ReadyToUseUI.iOS.Controller
                 new ListItem("Scan Health Insurance card",    ScanEhic),
                 new ListItem("Generic Document Recognizer",   RecongnizeGenericDocument),
                 new ListItem("Check Recognizer",              RecognizeCheck),
+                new ListItem("License Plate Recognizer",      LicensePlateRecognizer),
                 new ListItem("Text Data Recognizer",          TextDataRecognizerTapped),
-                new ListItem("VIN Recognizer",                VinRecognizerTapped)
+                new ListItem("VIN Recognizer",                VinRecognizerTapped),
+                new ListItem("License Plate Recognizer",      LicensePlateRecognizerTapped)
             };
 
             contentView.AddContent("BARCODE DETECTORS", barcodeDetectors);
@@ -128,6 +130,7 @@ namespace ReadyToUseUI.iOS.Controller
                     controller.RecognitionEnabled = true; // continue recognition
                 });
             };
+
             PresentViewController(controller, false, null);
         }
 
@@ -397,6 +400,19 @@ namespace ReadyToUseUI.iOS.Controller
             scanner.DidFinishWithResult += (_, args) =>
             {
                 scanner.DismissViewController(true, () => Alert.Show(this, "Result Text:", args?.Result?.Text));
+            };
+
+            PresentViewController(scanner, true, null);
+        }
+
+        private void LicensePlateRecognizerTapped()
+        {
+            var configuration = SBSDKUILicensePlateScannerConfiguration.DefaultConfiguration;
+            configuration.TextConfiguration.CancelButtonTitle = "Done";
+            var scanner = SBSDKUILicensePlateScannerViewController.CreateNewWithConfiguration(configuration, null);
+            scanner.DidRecognizeLicensePlate += (_, args) =>
+            {
+                Alert.Show(this, "Result Text:", args?.Result?.RawString);
             };
             PresentViewController(scanner, true, null);
         }
