@@ -10,6 +10,8 @@ namespace ReadyToUseUI.Droid.Fragments
         public const string MRZ_DATA = "MRZ_DATA";
         public const string NAME = "MRZDialogFragment";
 
+        MRZGenericDocument result;
+
         public static MRZDialogFragment CreateInstance(MRZGenericDocument data)
         {
             var fragment = new MRZDialogFragment();
@@ -19,8 +21,6 @@ namespace ReadyToUseUI.Droid.Fragments
 
             return fragment;
         }
-
-        MRZGenericDocument result;
 
         public override View AddContentView(LayoutInflater inflater, ViewGroup container)
         {

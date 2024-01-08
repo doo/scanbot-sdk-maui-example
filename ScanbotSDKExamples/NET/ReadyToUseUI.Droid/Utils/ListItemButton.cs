@@ -3,20 +3,22 @@ using Android.Views;
 
 namespace ReadyToUseUI.Droid.Utils
 {
-    public class ListItemButton : Android.Widget.Button
+    public class ListItemButton : Button
     {
-        public ListItemButton(Android.Content.Context context, string title, Action doAction) : base(context)
+        public ListItemButton(Context context, string title, Action doAction) : base(context)
         {
             Text = title;
             DoAction = doAction;
 
             var parameters = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MatchParent,
+                ViewGroup.LayoutParams.WrapContent,
                 ViewGroup.LayoutParams.WrapContent
             );
 
             var margin = (int)(3 * context.Resources.DisplayMetrics.Density);
             parameters.SetMargins(0, margin, 0, margin);
+
+            Background = null;
             LayoutParameters = parameters;
         }
 

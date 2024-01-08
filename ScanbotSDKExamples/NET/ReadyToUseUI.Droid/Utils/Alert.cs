@@ -16,5 +16,18 @@ namespace ReadyToUseUI.Droid.Utils
         {
             Android.Widget.Toast.MakeText(context, text, Android.Widget.ToastLength.Long).Show();
         }
+
+        public static void ShowAlert(Context context, string title, string message)
+        {
+            var dialog = new AndroidX.AppCompat.App.AlertDialog.Builder(context);
+            AndroidX.AppCompat.App.AlertDialog alert = dialog.Create();
+            alert.SetTitle(title);
+            alert.SetMessage(message);
+            alert.SetButton((int)DialogButtonType.Neutral, "OK", (c, ev) =>
+            {
+                alert.Dismiss();
+            });
+            alert.Show();
+        }
     }
 }

@@ -6,15 +6,12 @@ using Android.Views;
 using AndroidX.AppCompat.App;
 using IO.Scanbot.Sdk.Persistence;
 using IO.Scanbot.Sdk.Process;
-using IO.Scanbot.Sdk.UI.View.Base;
 using IO.Scanbot.Sdk.UI.View.Edit;
 using IO.Scanbot.Sdk.UI.View.Edit.Configuration;
 using ReadyToUseUI.Droid.Fragments;
 using ReadyToUseUI.Droid.Listeners;
 using ReadyToUseUI.Droid.Utils;
 using DocumentSDK.NET.Model;
-using IO.Scanbot.Sdk.Docprocessing;
-using IO.Scanbot.Sdk.Core.Processor;
 
 namespace ReadyToUseUI.Droid.Activities
 {
@@ -22,7 +19,10 @@ namespace ReadyToUseUI.Droid.Activities
     public class PageFilterActivity : AppCompatActivity, IFiltersListener
     {
         const string FILTERS_MENU_TAG = "FILTERS_MENU_TAG";
+        const string CHOOSE_FILTERS_DIALOG_TAG = "CHOOSE_FILTERS_DIALOG_TAG";
         const int CROP_DEFAULT_UI_REQUEST_CODE = 9999;
+
+        TextView crop, delete, filter;
 
         public static Intent CreateIntent(Context context, string pageId)
         {
@@ -49,31 +49,23 @@ namespace ReadyToUseUI.Droid.Activities
 
             SetContentView(Resource.Layout.activity_filters);
 
+            SetupToolbar();
+
             progress = FindViewById<ProgressBar>(Resource.Id.progress);
 
-            var toolbar = FindViewById<AndroidX.AppCompat.Widget.Toolbar>(Resource.Id.toolbar);
-            SetSupportActionBar(toolbar);
-
-            SupportActionBar.Title = Texts.page_title;
-            SupportActionBar.SetDisplayHomeAsUpEnabled(true);
-            SupportActionBar.SetDisplayShowHomeEnabled(true);
-
             selectedPageId = Intent.GetStringExtra(nameof(selectedPageId));
-//            selectedPage = pageRepository.Pages.FirstOrDefault(p => p.PageId == pageId);
 
-        //    selectedFilter = selectedPage.Filter;
-
-            var crop = FindViewById<TextView>(Resource.Id.action_crop_and_rotate);
+            crop = FindViewById<TextView>(Resource.Id.action_crop_and_rotate);
             crop.Text = Texts.crop_amp_rotate;
 
-            var filter = FindViewById<TextView>(Resource.Id.action_filter);
+            filter = FindViewById<TextView>(Resource.Id.action_filter);
             filter.Text = Texts.filter;
             filter.Click += delegate
             {
-                filterFragment.Show(SupportFragmentManager, "CHOOSE_FILTERS_DIALOG_TAG");
+                filterFragment.Show(SupportFragmentManager, CHOOSE_FILTERS_DIALOG_TAG);
             };
 
-            var delete = FindViewById<TextView>(Resource.Id.action_delete);
+            delete = FindViewById<TextView>(Resource.Id.action_delete);
             delete.Text = Texts.delete;
             delete.Click += delegate
             {
@@ -86,15 +78,15 @@ namespace ReadyToUseUI.Droid.Activities
                 var configuration = new CroppingConfiguration(new Page().Copy(pageId: selectedPageId));
                 configuration.SetPolygonColor(Color.Red);
                 configuration.SetPolygonColorMagnetic(Color.Blue);
-              //  var asdf = SelectedPage.Filter;
+
                 var intent = CroppingActivity.NewIntent(this, configuration);
                 StartActivityForResult(intent, CROP_DEFAULT_UI_REQUEST_CODE);
             };
 
-            var fragment = SupportFragmentManager.FindFragmentByTag(FILTERS_MENU_TAG);
-            if (fragment != null)
+            var fragmentFilterMenu = SupportFragmentManager.FindFragmentByTag(FILTERS_MENU_TAG);
+            if (fragmentFilterMenu != null)
             {
-                SupportFragmentManager.BeginTransaction().Remove(fragment).CommitNow();
+                SupportFragmentManager.BeginTransaction().Remove(fragmentFilterMenu).CommitNow();
             }
 
             filterFragment = new FilterBottomSheetMenuFragment();
@@ -105,20 +97,35 @@ namespace ReadyToUseUI.Droid.Activities
             }
             else
             {
-                // Generate preview image
-                progress.Visibility = ViewStates.Visible;
-                Task.Run(delegate
-                {
-                    var uri = pageStorage.GetFilteredPreviewImageURI(selectedPageId, selectedFilter);
-
-                    if (!File.Exists(uri.Path))
-                    {
-                        pageProcessor.GenerateFilteredPreview(new Page().Copy(pageId: selectedPageId), selectedFilter);
-                    }
-
-                    UpdateImage(uri);
-                });
+                GeneratePreviewImage();
             }
+        }
+
+        private void SetupToolbar()
+        {
+            var toolbar = FindViewById<AndroidX.AppCompat.Widget.Toolbar>(Resource.Id.toolbar);
+            SetSupportActionBar(toolbar);
+
+            SupportActionBar.Title = Texts.page_title;
+            SupportActionBar.SetDisplayHomeAsUpEnabled(true);
+            SupportActionBar.SetDisplayShowHomeEnabled(true);
+        }
+
+        private void GeneratePreviewImage()
+        {
+            progress.Visibility = ViewStates.Visible;
+
+            Task.Run(delegate
+            {
+                var uri = pageStorage.GetFilteredPreviewImageURI(selectedPageId, ImageFilterType.None);
+
+                if (!File.Exists(uri.Path))
+                {
+                    pageProcessor.GenerateFilteredPreview(new Page().Copy(pageId: selectedPageId), ImageFilterType.None);
+                }
+
+                UpdateImage(uri);
+            });
         }
 
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
@@ -132,8 +139,7 @@ namespace ReadyToUseUI.Droid.Activities
 
             if (requestCode == CROP_DEFAULT_UI_REQUEST_CODE)
             {
-//                var page = (Page)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
-  //              SelectedPage = pageRepository.Update(page);
+                selectedFilter = selectedFilter ?? ImageFilterType.None;
 
                 var uri = pageStorage.GetFilteredPreviewImageURI(selectedPageId, selectedFilter);
 
@@ -155,8 +161,6 @@ namespace ReadyToUseUI.Droid.Activities
             }
             return base.OnOptionsItemSelected(item);
         }
-
-        
 
         public void ApplyFilter(ImageFilterType type)
         {
