@@ -6,8 +6,6 @@ namespace ClassicComponent.Droid
 {
     public class ImageLoader
     {
-        public static ImageLoader Instance;
-
         private Context context;
         private BitmapFactory.Options options;
         private IO.Scanbot.Sdk.ScanbotSDK SDK;

@@ -1,8 +1,6 @@
 ﻿using AndroidNetUri = Android.Net.Uri;
 using AndroidFile = Java.IO.File;
 using Android.Graphics;
-using IO.Scanbot.Sdk.UI.Result;
-using static AndroidX.Core.Location.LocationRequestCompat;
 using IO.Scanbot.Sdk.Persistence.Fileio;
 
 namespace ClassicComponent.Droid

@@ -1,10 +1,10 @@
 ﻿using Android.Content;
 using AndroidX.AppCompat.App;
-
 using IO.Scanbot.Sdk;
 using IO.Scanbot.Sdk.Camera;
 using IO.Scanbot.Sdk.Check;
 using IO.Scanbot.Sdk.Check.Entity;
+using IO.Scanbot.Sdk.UI;
 using IO.Scanbot.Sdk.UI.Camera;
 
 namespace ClassicComponent.Droid.Activities
@@ -13,9 +13,8 @@ namespace ClassicComponent.Droid.Activities
     public class CheckRecognizerDemoActivity : AppCompatActivity
     {
         private ScanbotCameraXView cameraView;
-        private TextView resultView;
-        private CheckRecognizerFrameHandlerWrapper checkFrameHandlerWrapper;
         private IO.Scanbot.Sdk.ScanbotSDK scanbotSDK;
+        private FrameHandler checkFrameHandler;
         private bool isFlashEnabled = false;
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -24,21 +23,24 @@ namespace ClassicComponent.Droid.Activities
 
             cameraView = FindViewById<ScanbotCameraXView>(Resource.Id.camera);
             cameraView.SetPreviewMode(CameraPreviewMode.FitIn);
-            cameraView.SetCameraOpenCallback(() =>
+            cameraView.SetCameraOpenCallback(new CameraCallBack(() =>
             {
                 cameraView.PostDelayed(() =>
                 {
                     cameraView.UseFlash(isFlashEnabled);
                     cameraView.ContinuousFocus();
                 }, 700);
-            });
+            }));
 
-            resultView = FindViewById<TextView>(Resource.Id.result);
             scanbotSDK = new IO.Scanbot.Sdk.ScanbotSDK(this);
-            checkFrameHandlerWrapper = new CheckRecognizerFrameHandlerWrapper(scanbotSDK.CreateCheckRecognizer());
-            checkFrameHandlerWrapper.AddResultHandler(HandleCheckResult);
 
-            cameraView.Attach(checkFrameHandlerWrapper);
+            var checkScanner = scanbotSDK.CreateCheckRecognizer();
+
+            scanbotSDK = new IO.Scanbot.Sdk.ScanbotSDK(this);
+            var checkFrameHandlerWrapper = new CheckRecognizerFrameHandlerWrapper(checkScanner);
+            checkFrameHandler = checkFrameHandlerWrapper.FrameHandler;
+            checkFrameHandlerWrapper.AddResultHandler(new CheckScannResultHandler(this, checkFrameHandler));
+            ScanbotCameraXViewWrapper.Attach(cameraView, checkFrameHandlerWrapper);
 
             FindViewById<Button>(Resource.Id.flash).Click += (_, _) =>
             {
@@ -54,41 +56,53 @@ namespace ClassicComponent.Droid.Activities
         }
 
 
-        private bool HandleCheckResult(CheckRecognizerResult result, SdkLicenseError error)
-        {
-            if (!scanbotSDK.LicenseInfo.IsValid)
-            {
-                checkFrameHandlerWrapper.FrameHandler.Enabled = false;
-                RunOnUiThread(() =>
-                {
-                    Toast.MakeText(this, "License is expired", ToastLength.Long).Show();
-                    Finish();
-                });
-                return false;
-            }
-
-            if (result.Status == IO.Scanbot.Check.Model.CheckRecognizerStatus.Success)
-            {
-                checkFrameHandlerWrapper.FrameHandler.Enabled = false;
-                StartActivity(CheckRecognizerResultActivity.NewIntent(this, result));
-            }
-
-            return false;
-        }
-
         protected override void OnResume()
         {
             base.OnResume();
-
-            if (checkFrameHandlerWrapper?.FrameHandler != null)
-            {
-                checkFrameHandlerWrapper.FrameHandler.Enabled = true;
-            }
+            checkFrameHandler.Enabled = true;
         }
 
         public static Intent NewIntent(Context context)
         {
             return new Intent(context, typeof(CheckRecognizerDemoActivity));
+        }
+    }
+
+    public class CameraCallBack : Java.Lang.Object, ICameraOpenCallback
+    {
+        private Action _cameraOpened;
+
+        public CameraCallBack(Action cameraOpened)
+        {
+            _cameraOpened = cameraOpened;
+        }
+
+        public void OnCameraOpened()
+        {
+            _cameraOpened?.Invoke();
+        }
+    }
+
+    public class CheckScannResultHandler : CheckRecognizerResultHandlerWrapper
+    {
+        private Context _context;
+        private FrameHandler _frameHandler;
+
+        public CheckScannResultHandler(Context context, FrameHandler frameHandler) 
+        {
+            _context = context;
+            _frameHandler = frameHandler;
+        }
+
+        public override bool HandleResult(CheckRecognizerResult result, SdkLicenseError error)
+        {
+            if (result.Status == IO.Scanbot.Check.Model.CheckRecognizerStatus.Success)
+            {
+                _frameHandler.Enabled = false;
+                _context.StartActivity(CheckRecognizerResultActivity.NewIntent(_context, result));
+            }
+
+            return false;
         }
     }
 }

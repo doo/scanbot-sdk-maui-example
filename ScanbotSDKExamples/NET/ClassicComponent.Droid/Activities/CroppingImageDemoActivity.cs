@@ -28,6 +28,7 @@ namespace ClassicComponent.Droid
         private Android.Net.Uri imageUri;
         private Bitmap originalBitmap;
         private EditPolygonImageView editPolygonImageView;
+        private MagnifierView scanbotMagnifierView;
         private ProgressBar processImageProgressBar;
         private View cancelBtn, doneBtn, rotateCWButton;
 
@@ -51,6 +52,7 @@ namespace ClassicComponent.Droid
 
             editPolygonImageView = FindViewById<EditPolygonImageView>(Resource.Id.scanbotEditImageView);
             processImageProgressBar = FindViewById<ProgressBar>(Resource.Id.processImageProgressBar);
+            scanbotMagnifierView = FindViewById<MagnifierView>(Resource.Id.scanbotMagnifierView);
 
             cancelBtn = FindViewById<View>(Resource.Id.cancelButton);
             cancelBtn.Click += delegate
@@ -84,7 +86,7 @@ namespace ClassicComponent.Droid
                 string imageFileUri = Intent.Extras.GetString(EXTRAS_ARG_IMAGE_FILE_URI);
                 imageUri = Android.Net.Uri.Parse(imageFileUri);
 
-                originalBitmap = ImageLoader.Instance.Load(imageUri);
+                originalBitmap = new ImageLoader(this).Load(imageUri);
                 return ImageUtils.ResizeImage(originalBitmap, 1000, 1000);
             });
 
@@ -102,6 +104,10 @@ namespace ClassicComponent.Droid
 
             editPolygonImageView.Polygon = polygon;
             editPolygonImageView.SetLines(detectionResult.HorizontalLines, detectionResult.VerticalLines);
+            // important! first set the image and then the detected polygon and lines!
+            editPolygonImageView.SetImageBitmap(resizedBitmap);
+            // set up the MagnifierView every time when editPolygonView is set with a new image.
+            scanbotMagnifierView.SetupMagnifier(editPolygonImageView);
         }
 
         private async void CropAndSaveImage()
@@ -114,7 +120,7 @@ namespace ClassicComponent.Droid
             var documentImgUri = await Task.Run(() =>
             {
                 var detector = SDK.CreateContourDetector();
-                var documentImage = SDK.ImageProcessor().ProcessBitmap(originalBitmap, new CropOperation(editPolygonImageView.Polygon), false);
+                var documentImage = SDK.ImageProcessor().ProcessBitmap(originalBitmap, new CropOperation(editPolygonImageView.Polygon));
 
                 var matrix = new Matrix();
                 matrix.PostRotate(rotationDegrees);

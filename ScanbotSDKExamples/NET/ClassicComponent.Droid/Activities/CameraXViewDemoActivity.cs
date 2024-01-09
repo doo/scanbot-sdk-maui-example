@@ -12,9 +12,6 @@ using IO.Scanbot.Sdk.UI;
 using IO.Scanbot.Sdk.Core.Contourdetector;
 using IO.Scanbot.Sdk.Process;
 using IO.Scanbot.Sdk;
-using IO.Scanbot.Sdk.Check;
-using IO.Scanbot.Sdk.Check.Entity;
-
 
 namespace ClassicComponent.Droid
 {
@@ -67,9 +64,8 @@ namespace ClassicComponent.Droid
             imageProcessingProgress = FindViewById<ProgressBar>(Resource.Id.imageProcessingProgress);
 
             var contourDetector = scanbotSDK.CreateContourDetector();
-            var frameHandlerWrapper = new ContourDetectorFrameHandlerWrapper(cameraView.Context, contourDetector);
-            frameHandlerWrapper.AddResultHandler(ShowUserGuidance);
-            cameraView.Attach(frameHandlerWrapper);
+            var contourDetectorFrameHandler = ContourDetectorFrameHandler.Attach(cameraView, contourDetector);
+
 
             // Add an additional custom contour detector to add user guidance text
             polygonView = FindViewById<PolygonView>(Resource.Id.scanbotPolygonView);
@@ -77,16 +73,12 @@ namespace ClassicComponent.Droid
             polygonView.SetStrokeColorOK(Color.Green);
 
             // Attach the default polygon result handler, to draw the default polygon
-            frameHandlerWrapper.FrameHandler.AddResultHandler(polygonView.ContourDetectorResultHandler);
-
-            // See https://github.com/doo/Scanbot-SDK-Examples/wiki/Detecting-and-drawing-contours#contour-detection-parameters
-            frameHandlerWrapper.FrameHandler.SetAcceptedAngleScore(60);
-            frameHandlerWrapper.FrameHandler.SetAcceptedSizeScore(70);
+            contourDetectorFrameHandler.AddResultHandler(polygonView.ContourDetectorResultHandler);
 
             autoSnappingController = DocumentAutoSnappingController.Attach(cameraView, contourDetector);
-            autoSnappingController.SetIgnoreBadAspectRatio(ignoreBadAspectRatio);
-            cameraView.AddPictureCallback(ProcessTakenPicture);
-            cameraView.SetCameraOpenCallback(() =>
+
+            cameraView.AddPictureCallback(new PictureCallback(ProcessTakenPicture));
+            cameraView.SetCameraOpenCallback(new CameraOpenCallback(() =>
             {
                 cameraView.PostDelayed(() =>
                 {
@@ -97,7 +89,7 @@ namespace ClassicComponent.Droid
                     // Enable ContinuousFocus mode:
                     cameraView.ContinuousFocus();
                 }, 500);
-            });
+            }));
 
             shutterButton = FindViewById<ShutterButton>(Resource.Id.shutterButton);
             shutterButton.Click += delegate
@@ -186,13 +178,13 @@ namespace ClassicComponent.Droid
             return false;
         }
 
-        private void ProcessTakenPicture(byte[] image, CaptureInfo info)
+        private void ProcessTakenPicture(byte[] image, int imageOrientation)
         {
             // Here we get the full image from the camera and apply document detection on it.
             // Implement a suitable async(!) detection and image handling here.
             // This is just a demo showing detected image as downscaled preview image.
 
-            Log.Debug(LOG_TAG, "OnPictureTaken: imageOrientation = " + info.ImageOrientation);
+            Log.Debug(LOG_TAG, "OnPictureTaken: imageOrientation = " + imageOrientation);
 
             // Show progress spinner:
             RunOnUiThread(() =>
@@ -207,10 +199,10 @@ namespace ClassicComponent.Droid
             var originalBitmap = BitmapFactory.DecodeByteArray(image, 0, image.Length, options);
 
             // rotate original image if required:
-            if (info.ImageOrientation > 0)
+            if (imageOrientation > 0)
             {
                 Matrix matrix = new Matrix();
-                matrix.SetRotate(info.ImageOrientation, originalBitmap.Width / 2f, originalBitmap.Height / 2f);
+                matrix.SetRotate(imageOrientation, originalBitmap.Width / 2f, originalBitmap.Height / 2f);
                 originalBitmap = Bitmap.CreateBitmap(originalBitmap, 0, 0, originalBitmap.Width, originalBitmap.Height, matrix, false);
             }
 
@@ -221,12 +213,12 @@ namespace ClassicComponent.Droid
             // Run document detection on original image:
             var detector = scanbotSDK.CreateContourDetector();
             var sdkDetectionResult = detector.Detect(originalBitmap);
-          //  var detectionResult = ScanbotSDK.MAUI.Native.Droid.ScanbotSDK.DetectDocument(originalBitmap);
+            //  var detectionResult = ScanbotSDK.MAUI.Native.Droid.ScanbotSDK.DetectDocument(originalBitmap);
             if (sdkDetectionResult.Status == DetectionStatus.Ok)
             {
                 if (sdkDetectionResult.PolygonF != null)
                 {
-                    var resultImage = scanbotSDK.ImageProcessor().ProcessBitmap(originalBitmap, new CropOperation(sdkDetectionResult.PolygonF), false);
+                    var resultImage = scanbotSDK.ImageProcessor().ProcessBitmap(originalBitmap, new CropOperation(sdkDetectionResult.PolygonF));
                     documentImgUri = TempImageStorage.Instance.AddImage(resultImage);
                 }
                 else
@@ -239,8 +231,6 @@ namespace ClassicComponent.Droid
                 // No document detected! Use original image as document image, so user can try to apply manual cropping.
                 documentImgUri = originalImgUri;
             }
-
-            //this.detectedPolygon = detectionResult.Polygon;
 
             Bundle extras = new Bundle();
             extras.PutString(EXTRAS_ARG_DOC_IMAGE_FILE_URI, documentImgUri.ToString());
@@ -277,6 +267,36 @@ namespace ClassicComponent.Droid
                 shutterButton.ShowManualButton();
                 userGuidanceTextView.Visibility = ViewStates.Gone;
             }
+        }
+    }
+
+    public class PictureCallback : Java.Lang.Object, IBasePictureCallback
+    {
+        private Action<byte[], int> PictureTaken;
+
+        public PictureCallback(Action<byte[], int> pictureTaken)
+        {
+            PictureTaken = pictureTaken;
+        }
+
+        public void OnPictureTakenInternal(byte[] image, int imageOrientation, IList<PointF> finderRect, bool isCapturedAutomatically)
+        {
+            PictureTaken?.Invoke(image, imageOrientation);
+        }
+    }
+
+    public class CameraOpenCallback : Java.Lang.Object, ICameraOpenCallback
+    {
+        private Action _cameraOpened;
+
+        public CameraOpenCallback(Action cameraOpened)
+        {
+            _cameraOpened = cameraOpened;
+        }
+
+        public void OnCameraOpened()
+        {
+            _cameraOpened?.Invoke();
         }
     }
 }
