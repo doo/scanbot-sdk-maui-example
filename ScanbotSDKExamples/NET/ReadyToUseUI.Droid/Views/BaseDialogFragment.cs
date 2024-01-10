@@ -23,7 +23,7 @@ namespace ReadyToUseUI.Droid.Views
 
             builder.SetView(container);
 
-            builder.SetPositiveButton("Close", delegate
+            builder.SetPositiveButton("Close", (_, _) =>
             {
                 Dismiss();
             });

@@ -6,22 +6,23 @@ namespace ReadyToUseUI.Droid.Fragments
 {
     public class BarcodeDialogFragment : BaseDialogFragment
     {
-        public const string NAME = "BarcodeDialogFragment";
+        private const string dataTag = "BarcodeDialogFragment";
 
-        public float Blur { get; internal set; } = -1;
+        private float? blur;
 
-        public static BarcodeDialogFragment CreateInstance(BarcodeScanningResult data)
+        public static BarcodeDialogFragment CreateInstance(BarcodeScanningResult data, float? blur = null)
         {
             var fragment = new BarcodeDialogFragment();
             var args = new Bundle();
-            args.PutParcelable(NAME, data);
+            args.PutParcelable(dataTag, data);
             fragment.Arguments = args;
+            fragment.blur = blur;
             return fragment;
         }
 
         public override View AddContentView(LayoutInflater inflater, ViewGroup container)
         {
-            var data = (BarcodeScanningResult)Arguments.GetParcelable(NAME);
+            var data = (BarcodeScanningResult)Arguments.GetParcelable(dataTag);
             var view = inflater.Inflate(Resource.Layout.fragment_barcode_dialog, container);
 
             var content = view.FindViewById<TextView>(Resource.Id.barcode_result_values);
@@ -38,15 +39,20 @@ namespace ReadyToUseUI.Droid.Fragments
                 resultText += barcode.BarcodeFormat.Name() + ": " + barcode.Text + "\n";
             }
 
-            if (Blur != -1)
+            if (blur != null)
             {
-                resultText += "Estimated blur: " + Blur;
+                resultText += "Estimated blur: " + blur;
             }
             CopyText = resultText;
             content.Text = resultText;
 
 
             return view;
+        }
+
+        public void Show(FragmentManager manager)
+        {
+            Show(manager, dataTag);
         }
     }
 }

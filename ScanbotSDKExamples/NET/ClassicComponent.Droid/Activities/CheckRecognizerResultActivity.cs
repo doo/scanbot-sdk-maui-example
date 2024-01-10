@@ -4,7 +4,6 @@ using Android.Graphics;
 using Android.Content;
 using IO.Scanbot.Sdk.Check.Entity;
 
-
 namespace ClassicComponent.Droid.Activities
 {
     [Activity(Theme = "@style/Theme.AppCompat")]
