@@ -12,7 +12,7 @@ namespace ReadyToUseUI.Droid
     {
         public const bool USE_ENCRYPTION = false;
 
-        static readonly string LOG_TAG = typeof(MainApplication).Name;
+        static readonly string LOG_TAG = nameof(MainApplication);
 
         // TODO Add the Scanbot SDK license key here.
         // Please note: The Scanbot SDK will run without a license key for one minute per session!
@@ -20,7 +20,7 @@ namespace ReadyToUseUI.Droid
         // You can get an unrestricted "no-strings-attached" 30 day trial license key for free.
         // Please submit the trial license form (https://scanbot.io/sdk/trial.html) on our website by using
         // the app identifier "io.scanbot.example.sdk.maui.rtu" of this example app.
-        const string LicenseKey = "";
+        public const string LicenseKey = "";
 
         public MainApplication(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
         { }
