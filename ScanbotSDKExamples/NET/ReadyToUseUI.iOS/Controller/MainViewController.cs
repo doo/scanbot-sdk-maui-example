@@ -46,7 +46,6 @@ namespace ReadyToUseUI.iOS.Controller
                 new ListItem("Scan Health Insurance card",    ScanEhic),
                 new ListItem("Generic Document Recognizer",   RecongnizeGenericDocument),
                 new ListItem("Check Recognizer",              RecognizeCheck),
-                new ListItem("License Plate Recognizer",      LicensePlateRecognizer),
                 new ListItem("Text Data Recognizer",          TextDataRecognizerTapped),
                 new ListItem("VIN Recognizer",                VinRecognizerTapped),
                 new ListItem("License Plate Recognizer",      LicensePlateRecognizerTapped)
@@ -160,7 +159,7 @@ namespace ReadyToUseUI.iOS.Controller
                         text += code.Barcode.Type.Name + ": " + code.Barcode.RawTextString + "\n";
                     }
                 }
-                // the controller object is out of currnet view heirarchy as it is dismisssed.
+                // the controller object is out of the current view hierarchy as it is dismisssed.
                 ShowPopup(AppDelegate.NavigationController, text);
             };
 

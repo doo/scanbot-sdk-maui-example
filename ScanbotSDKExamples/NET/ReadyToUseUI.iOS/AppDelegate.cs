@@ -59,8 +59,8 @@ namespace ReadyToUseUI.iOS
 
             ScanbotSDKGlobal.SetLoggingEnabled(true);
             SBSDKUIPageFileStorage.DefaultStorage = new SBSDKUIPageFileStorage(80, new SBSDKStorageLocation(NSUrl.FromFilename(PageStoragePathForExample())));
-            //ScanbotSDKUI.DefaultImageStoreEncrypter = StorageEncryption.FromEncrypter(new SBSDKAESEncrypter("S0m3W3irDL0ngPa$$w0rdino!!!!", SBSDKAESEncrypterMode.SBSDKAESEncrypterModeAES128));
-            ScanbotSDKUI.DefaultPDFEncrypter = ScanbotSDKUI.DefaultImageStoreEncrypter;
+            // uncomment this code if you want to turn on encryption.
+            ScanbotSDKUI.DefaultImageStoreEncrypter = new SBSDKAESEncrypter("S0m3W3irDL0ngPa$$w0rdino!!!!", SBSDKAESEncrypterMode.SBSDKAESEncrypterModeAES128);
 
             if (!string.IsNullOrEmpty(LicenseKey))
             {

@@ -9,8 +9,7 @@ using Scanbot.ImagePicker.iOS;
 using ScanbotSDK.iOS;
 using ScanbotSDK.MAUI.Constants;
 using ScanbotSDK.MAUI.Models;
-using SBSDK = ScanbotSDK.MAUI.Native.iOS.ScanbotSDK;
-
+//using SBSDK = ScanbotSDK.MAUI.Native.iOS.ScanbotSDK;
 
 namespace ClassicComponent.iOS
 {
@@ -66,17 +65,16 @@ namespace ClassicComponent.iOS
         {
             SDKServices = new List<SDKService>
             {
-                new SDKService { Title = SDKServiceTitle.ScanningUI },
-                new SDKService { Title = SDKServiceTitle.CroppingUI },
-                new SDKService { Title = SDKServiceTitle.ImportImageFromLibrary },
-                new SDKService { Title = SDKServiceTitle.ApplyImageFilter },
-                new SDKService { Title = SDKServiceTitle.CreateTIFF },
-                new SDKService { Title = SDKServiceTitle.CreatePDF },
-                new SDKService { Title = SDKServiceTitle.PerformOCR },
-                new SDKService { Title = SDKServiceTitle.GenericDocumentRecognizer },
-                new SDKService { Title = SDKServiceTitle.CheckRecognizer },
-                new SDKService { Title = SDKServiceTitle.BarcodeScanAndCount },
-                new SDKService { Title = SDKServiceTitle.VINScanner },
+                new SDKService { Title = SDKServiceTitle.ScanningUI, ServiceAction = LaunchScanningUI },
+                new SDKService { Title = SDKServiceTitle.CroppingUI, ServiceAction = LaunchCroppingUI },
+                new SDKService { Title = SDKServiceTitle.ImportImageFromLibrary, ServiceAction = () => _ = LaunchImportImageFromLibrary() },
+                new SDKService { Title = SDKServiceTitle.ApplyImageFilter, ServiceAction = ApplyImageFilter },
+                new SDKService { Title = SDKServiceTitle.CreateTIFF, ServiceAction = CreateTIFF },
+                new SDKService { Title = SDKServiceTitle.CreatePDF, ServiceAction = CreatePDF },
+                new SDKService { Title = SDKServiceTitle.PerformOCR, ServiceAction = PerformOCR },
+                new SDKService { Title = SDKServiceTitle.CheckRecognizer, ServiceAction = () => NavigationController.PushViewController(new CheckRecognizerDemoViewController(), true)},
+                new SDKService { Title = SDKServiceTitle.BarcodeScanAndCount, ServiceAction = LaunchBarcodeScanAndCount },
+                new SDKService { Title = SDKServiceTitle.VINScanner, ServiceAction = LaunchVINScanner },
             };
         }
 
@@ -156,65 +154,20 @@ namespace ClassicComponent.iOS
                 return;
             }
 
-            var service = SDKServices[index];
-            switch (service.Title)
-            {
-                case SDKServiceTitle.ScanningUI:
-                    LaunchScanningUI();
-                    break;
-
-                case SDKServiceTitle.CroppingUI:
-                    LaunchCroppingUI();
-                    break;
-
-                case SDKServiceTitle.ImportImageFromLibrary:
-                    _ = LaunchImportImageFromLibrary();
-                    break;
-
-                case SDKServiceTitle.ApplyImageFilter:
-                    ApplyImageFilter();
-                    break;
-
-                case SDKServiceTitle.CreateTIFF:
-                    CreateTIFF();
-                    break;
-
-                case SDKServiceTitle.CreatePDF:
-                    CreatePDF();
-                    break;
-
-                case SDKServiceTitle.PerformOCR:
-                    PerformOCR();
-                    break;
-
-                case SDKServiceTitle.GenericDocumentRecognizer:
-
-                    break;
-
-                case SDKServiceTitle.CheckRecognizer:
-                    NavigationController.PushViewController(new CheckRecognizerDemoViewController(), true);
-                    break;
-
-                case SDKServiceTitle.BarcodeScanAndCount:
-                    {
-                        var viewController = Utilities.GetViewController<BarcodeScanAndCountViewController>(Texts.ClassicComponentStoryboard);
-                        NavigationController.PushViewController(viewController, true);
-                    }
-                    break;
-
-                case SDKServiceTitle.VINScanner:
-                    {
-                        var viewController = Utilities.GetViewController<VINScannerViewController>(Texts.ClassicComponentStoryboard);
-                        NavigationController.PushViewController(viewController, true);
-                    }
-                    break;
-
-                default:
-                    System.Diagnostics.Debug.WriteLine("The selected service is unavailable.");
-                    break;
-            }
+            SDKServices[index].ServiceAction?.Invoke();
         }
 
+        private void LaunchBarcodeScanAndCount()
+        {
+            var viewController = Utilities.GetViewController<BarcodeScanAndCountViewController>(Texts.ClassicComponentStoryboard);
+            NavigationController.PushViewController(viewController, true);
+        }
+
+        private void LaunchVINScanner()
+        {
+            var viewController = Utilities.GetViewController<VINScannerViewController>(Texts.ClassicComponentStoryboard);
+            NavigationController.PushViewController(viewController, true);
+        }
 
         #region Document Scanning UI
 
@@ -305,30 +258,6 @@ namespace ClassicComponent.iOS
 
         #region PDF, OCR and TIFF Processing
 
-        private void PerformOCR()
-        {
-            if (!CheckScanbotSDKLicense()) { return; }
-            if (!CheckOriginalImageUrl()) { return; }
-            Task.Run(async () =>
-            {
-                IsBusy = true;
-                var inputImages = SBSDKUIPageFileStorage.DefaultStorage.AllPageFileIDs
-            .Select(id => SBSDKUIPageFileStorage.DefaultStorage.ImageURLWithPageFileID(id, SBSDKUIPageFileType.Original))
-            .ToArray();
-                var ocrConfiguration = new OCRDetectionConfiguration
-                {
-                    RecognitionMode = ScanbotSDK.iOS.SBSDKOpticalCharacterRecognitionMode.Legacy,
-                    // Languages property is only used in SBSDKOpticalCharacterRecognitionMode.Legacy
-                    Langauges = SBSDK.InstalledLanguages,
-                    InputImageUrls = inputImages,
-                    ShouldGeneratePDF = false,
-                };
-                var result = await SBSDK.PerformOCR(ocrConfiguration);
-                IsBusy = false;
-                Utilities.ShowMessage("OCR Text", result.RecognizedText);
-            });
-        }
-
         private void CreatePDF()
         {
             if (!CheckScanbotSDKLicense()) { return; }
@@ -338,15 +267,47 @@ namespace ClassicComponent.iOS
             {
                 IsBusy = true;
                 Debug.WriteLine("Creating PDF file ...");
-                var images = SBSDKUIPageFileStorage.DefaultStorage.AllPageFileIDs
-                            .Select(id => SBSDKUIPageFileStorage.DefaultStorage.ImageURLWithPageFileID(id, SBSDKUIPageFileType.Original))
-                            .ToArray();
-                var pdfOutputFileUrl = Utilities.GenerateRandomFileUrlInDemoTempStorage(".pdf");
 
-                await SBSDK.CreatePDF(new CreatePDFConfiguration { InputImageUrls = images, OutputUrl = pdfOutputFileUrl, PageSize = ScanbotSDK.MAUI.Constants.PDFPageSize.A4 });
-                Debug.WriteLine("PDF file created: " + pdfOutputFileUrl);
+                var result = await DocumentUtilities.CreatePDFAsync(null, null, encrypter: ScanbotSDKUI.DefaultImageStoreEncrypter);
                 IsBusy = false;
-                Utilities.ShowMessage("PDF file created", "" + pdfOutputFileUrl);
+                Utilities.ShowMessage("PDF file created", "" + result.AbsoluteString);
+            });
+        }
+
+        private void PerformOCR()
+        {
+            if (!CheckScanbotSDKLicense()) { return; }
+            if (!CheckOriginalImageUrl()) { return; }
+            Task.Run(async () =>
+            {
+                var recognitionMode = SBSDKOpticalCharacterRecognitionMode.Ml;
+                // This is the new OCR configuration with ML which doesn't require the langauges.
+                SBSDKOpticalCharacterRecognizerConfiguration ocrConfiguration = SBSDKOpticalCharacterRecognizerConfiguration.MlConfiguration;
+
+                // to use legacy configuration we have to pass the installed languages.
+                if (recognitionMode == SBSDKOpticalCharacterRecognitionMode.Legacy)
+                {
+                    var installedLanguages = SBSDKResourcesManager.InstalledLanguages;
+                    ocrConfiguration = SBSDKOpticalCharacterRecognizerConfiguration.LegacyConfigurationWithLanguages(installedLanguages);
+                }
+
+                SBSDKOpticalCharacterRecognizer recognizer = new SBSDKOpticalCharacterRecognizer(ocrConfiguration);
+
+                try
+                {
+                    // Please check the default parameters
+                    var (ocrResult, outputPdfUrl) = await DocumentUtilities.PerformOCRAsync(ocrRecognizer: recognizer, inputUrls: null, outputUrl: null, shouldGeneratePdf: true, encrypter: ScanbotSDKUI.DefaultImageStoreEncrypter);
+                    IsBusy = false;
+                    if (ocrResult != null)
+                    {
+                        Utilities.ShowMessage("OCR Text", ocrResult.RecognizedText);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    IsBusy = false;
+                    Utilities.ShowMessage("OCR Text", ex.Message);
+                }
             });
         }
 
@@ -357,36 +318,18 @@ namespace ClassicComponent.iOS
             IsBusy = true;
             Debug.WriteLine("Creating TIFF file ...");
 
-            var inputUrls = SBSDKUIPageFileStorage.DefaultStorage.AllPageFileIDs
-                        .Select(id => SBSDKUIPageFileStorage.DefaultStorage.ImageURLWithPageFileID(id, SBSDKUIPageFileType.Original))
-                        .ToArray();
+            var options = SBSDKTIFFImageWriterParameters.DefaultParametersForBinaryImages();
+            options.Binarize = true;
+            options.Compression = SBSDKTIFFImageWriterCompressionOptions.Ccittfax4;
+            options.Dpi = 250;
 
-            var tiffOutputFileUrl = Utilities.GenerateRandomFileUrlInDemoTempStorage(".tiff");
-            //var options = new SBSDKTIFFImageWriterParameters { Binarize = true, Compression = SBSDKTIFFImageWriterCompressionOptions.Ccittfax4, Dpi = 250 };
-
-
-            var options = new TiffOptions { OneBitEncoded = true, Compression = TiffCompressionOptions.CompressionCcittfax4, Dpi = 250 };
-
-            bool success = SBSDK.WriteTiff(inputUrls, tiffOutputFileUrl, options);
-
-
-            // TODO figure out if this is still needed
-            //if (ScanbotSDKUI.DefaultImageStoreEncrypter != null)
-            //{
-            //var encrypter = ScanbotSDKUI.DefaultImageStoreEncrypter;
-            //success = SBSDKTIFFImageWriter.WriteTIFF(images.Select(i => UIImage.LoadFromData(encrypter.DecryptData(NSData.FromUrl(i)))).ToArray(), tiffOutputFileUrl, encrypter, options);
-            //}
-            //else
-            //{
-            //    success = SBSDKTIFFImageWriter.WriteTIFF(images, tiffOutputFileUrl, options);
-            //}
-
-            IsBusy = false;
-            Debug.WriteLine("TIFF file created: " + tiffOutputFileUrl);
+            var (success, outputTiffUrl) = DocumentUtilities.CreateTIFF(options, inputUrls: null, outputUrl: null, ScanbotSDKUI.DefaultImageStoreEncrypter);
             if (success)
             {
-                Utilities.ShowMessage("TIFF file created", "" + tiffOutputFileUrl);
+                Utilities.ShowMessage("TIFF file created", "" + outputTiffUrl.AbsoluteString);
             }
+
+            IsBusy = false;
         }
 
         #endregion
@@ -433,6 +376,9 @@ namespace ClassicComponent.iOS
             return cell;
         }
 
-        public override void RowSelected(UITableView tableView, NSIndexPath indexPath) => sourceDelegate?.RowSelected(indexPath.Row);
+        public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
+        {
+            sourceDelegate?.RowSelected(indexPath.Row);
+        }
     }
 }

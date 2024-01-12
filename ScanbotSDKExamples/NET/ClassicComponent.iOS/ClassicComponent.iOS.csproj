@@ -14,13 +14,14 @@
         <CreatePackage>false</CreatePackage>
         <CodesignProvision>Automatic</CodesignProvision>
         <CodesignKey>iPhone Developer</CodesignKey>
+        <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
         <MtouchLink>SdkOnly</MtouchLink>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
         <CreatePackage>false</CreatePackage>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="ScanbotSDK.NET" Version="4.1.0-local.3" />
+        <PackageReference Include="ScanbotSDK.NET" Version="4.2.0-local.1" />
         <PackageReference Include="Scanbot.Xamarin.ImagePicker" Version="0.0.3-beta.1" />
     </ItemGroup>
     <ItemGroup>

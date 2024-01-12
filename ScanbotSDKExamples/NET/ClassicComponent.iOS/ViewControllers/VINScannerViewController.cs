@@ -8,9 +8,10 @@ namespace ClassicComponent.iOS
     {
         void ShowResult(string result);
     }
-
+    
     public partial class VINScannerViewController : UIViewController, IVINScannerDelegate
     {
+        SBSDKVINScannerViewController vinScannerController;
         public VINScannerViewController(IntPtr handle) : base(handle)
         {
         }
@@ -19,7 +20,7 @@ namespace ClassicComponent.iOS
         {
             base.ViewDidLoad();
             var configuration = SBSDKVehicleIdentificationNumberScannerConfiguration.DefaultConfiguration();
-            _ = new SBSDKVINScannerViewController(parentViewController: this,
+            vinScannerController = new SBSDKVINScannerViewController(parentViewController: this,
                                                               parentView: containerView,
                                                               configuration: configuration,
                                                               new VINScannerDelegate(this));

@@ -7,6 +7,7 @@
     {
         public string Title { get; set; }
         public bool ShowService { get; set; } = true;
+        public Action ServiceAction { get; set; }
     }
 
     /// <summary>
