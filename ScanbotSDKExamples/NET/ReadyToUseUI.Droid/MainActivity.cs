@@ -52,7 +52,7 @@ namespace ReadyToUseUI.Droid
     public class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
     {
         private const int SCAN_DOCUMENT_REQUEST_CODE = 1000;
-        private const int SCAN_DOCUMENT_WITH_FINDER_REQUEST_CODE = 1001;
+
         private const int IMPORT_IMAGE_REQUEST = 2001;
         private const int IMPORT_PDF_REQUEST = 2002;
         private const int IMPORT_BARCODE_REQUEST = 2003;
@@ -178,7 +178,7 @@ namespace ReadyToUseUI.Droid
             // and so on...
 
             var intent = FinderDocumentScannerActivity.NewIntent(this, configuration);
-            StartActivityForResult(intent, SCAN_DOCUMENT_WITH_FINDER_REQUEST_CODE);
+            StartActivityForResult(intent, SCAN_DOCUMENT_REQUEST_CODE);
         }
 
         private void ImportImage()
@@ -298,18 +298,23 @@ namespace ReadyToUseUI.Droid
             {
                 RootDocumentType.DeIdCardFront,
                 RootDocumentType.DeIdCardBack,
+                RootDocumentType.DePassport,
+                RootDocumentType.Mrz,
             });
 
             configuration.SetTopBarButtonsInactiveColor(Color.White);
             configuration.SetTopBarBackgroundColor(Color.Black);
 
-            //configuration.SetFieldsDisplayConfiguration(
-            //    new Dictionary<string, FieldProperties>()
-            //    {
-            //        { DePassport.NormalizedFieldNames.Photo,  new FieldProperties("My passport photo", FieldProperties.DisplayState.AlwaysVisible) },
-            //        { MRZ.NormalizedFieldNames.CheckDigitGeneral,  new FieldProperties("Check digit general", FieldProperties.DisplayState.AlwaysVisible) },
-            //    }
-            //);
+            // Apply the parameters for fields
+            configuration.SetFieldsDisplayConfiguration(
+                // Use constants from NormalizedFieldNames objects from the corresponding document type
+                new Dictionary<string, FieldProperties>()
+                {
+                    { DeIdCardFront.NormalizedFieldNames.Photo,  new FieldProperties("My Id card photo", FieldProperties.DisplayState.AlwaysVisible) },
+                    { DePassport.NormalizedFieldNames.Photo,  new FieldProperties("My passport photo", FieldProperties.DisplayState.AlwaysVisible) },
+                    { MRZ.NormalizedFieldNames.CheckDigitGeneral,  new FieldProperties("Check digit general", FieldProperties.DisplayState.AlwaysVisible) },
+                }
+            );
 
             var intent = GenericDocumentRecognizerActivity.NewIntent(this, configuration);
             StartActivityForResult(intent, GENERIC_DOCUMENT_REQUEST);
@@ -362,7 +367,6 @@ namespace ReadyToUseUI.Droid
             var configuration = new HealthInsuranceCardScannerConfiguration();
             configuration.SetTopBarButtonsColor(Color.White);
             configuration.SetTopBarBackgroundColor(Color.Black);
-            // configuration.SetFinderTextHint("custom text");
 
             var intent = HealthInsuranceCardScannerActivity.NewIntent(this, configuration);
             StartActivityForResult(intent, SCAN_EHIC_REQUEST);
@@ -414,7 +418,6 @@ namespace ReadyToUseUI.Droid
             switch (requestCode)
             {
                 case SCAN_DOCUMENT_REQUEST_CODE:
-                case SCAN_DOCUMENT_WITH_FINDER_REQUEST_CODE:
                 {
                     var parcelable = data.GetParcelableArrayExtra(RtuConstants.ExtraKeyRtuResult);
 
