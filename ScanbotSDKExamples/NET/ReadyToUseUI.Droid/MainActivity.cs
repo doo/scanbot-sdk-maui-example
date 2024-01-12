@@ -93,7 +93,7 @@ namespace ReadyToUseUI.Droid
 
             var barcodeDetectors = (LinearLayout)container.FindViewById(Resource.Id.barcode_data_scanner);
             var barcodeDetectorsTitle = (TextView)barcodeDetectors.FindViewById(Resource.Id.textView);
-            barcodeDetectorsTitle.Text = "BARCODE DETECTORS".ToUpper();
+            barcodeDetectorsTitle.Text = "BARCODE DETECTORS";
             barcodeDetectors.AddChildren(buttons, new[]  
             {
                 new ListItemButton(this, "Scan QR-/Barcode", ScanBarcode),
@@ -105,7 +105,7 @@ namespace ReadyToUseUI.Droid
 
             var scanner = (LinearLayout)container.FindViewById(Resource.Id.document_scanner);
             var scannerTitle = (TextView)scanner.FindViewById(Resource.Id.textView);
-            scannerTitle.Text = "DOCUMENT SCANNER".ToUpper();
+            scannerTitle.Text = "DOCUMENT SCANNER";
             scanner.AddChildren(buttons, new[]
             {
                 new ListItemButton(this, "Scan Document", ScanDocument),
@@ -116,7 +116,7 @@ namespace ReadyToUseUI.Droid
 
             var detectors = (LinearLayout)container.FindViewById(Resource.Id.data_detectors);
             var detectorsTitle = (TextView)detectors.FindViewById(Resource.Id.textView);
-            detectorsTitle.Text = "DATA DETECTORS".ToUpper();
+            detectorsTitle.Text = "DATA DETECTORS";
             detectors.AddChildren(buttons, new[]  
             {
                 new ListItemButton(this, "Scan MRZ", ScanMrz),
