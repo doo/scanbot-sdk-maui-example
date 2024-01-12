@@ -129,7 +129,6 @@ namespace ClassicComponent.iOS
             {
                 var viewController = new ViewFullScreenDocumentViewController(editedDocumentImage);
                 NavigationController.PresentViewController(viewController, true, null);
-
             }));
         }
 
@@ -182,6 +181,8 @@ namespace ClassicComponent.iOS
             originalDocumentImage = originalImage;
             editedDocumentImage = documentImage;
             UpdateDocumentImageView(documentImage);
+
+            DocumentUtilities.GetTemporaryStorage().AddImage(originalDocumentImage);
         }
 
         #endregion
@@ -236,7 +237,7 @@ namespace ClassicComponent.iOS
 
                     Debug.WriteLine("Detection result image: " + imageResult);
 
-                    SBSDKUIPageFileStorage.DefaultStorage.AddImage(imageResult);
+                    //SBSDKUIPageFileStorage.DefaultStorage.AddImage(imageResult);
 
                     originalDocumentImage = imageResult;
                     UpdateDocumentImageView(imageResult);
@@ -267,8 +268,8 @@ namespace ClassicComponent.iOS
             {
                 IsBusy = true;
                 Debug.WriteLine("Creating PDF file ...");
-
-                var result = await DocumentUtilities.CreatePDFAsync(null, null, encrypter: ScanbotSDKUI.DefaultImageStoreEncrypter);
+                var urls = DocumentUtilities.GetTemporaryStorage().ImageURLs;
+                var result = await DocumentUtilities.CreatePDFAsync(encrypter: ScanbotSDKUI.DefaultImageStoreEncrypter);
                 IsBusy = false;
                 Utilities.ShowMessage("PDF file created", "" + result.AbsoluteString);
             });
@@ -280,6 +281,7 @@ namespace ClassicComponent.iOS
             if (!CheckOriginalImageUrl()) { return; }
             Task.Run(async () =>
             {
+                IsBusy = true;
                 var recognitionMode = SBSDKOpticalCharacterRecognitionMode.Ml;
                 // This is the new OCR configuration with ML which doesn't require the langauges.
                 SBSDKOpticalCharacterRecognizerConfiguration ocrConfiguration = SBSDKOpticalCharacterRecognizerConfiguration.MlConfiguration;
@@ -292,11 +294,12 @@ namespace ClassicComponent.iOS
                 }
 
                 SBSDKOpticalCharacterRecognizer recognizer = new SBSDKOpticalCharacterRecognizer(ocrConfiguration);
+                var urls = DocumentUtilities.GetTemporaryStorage().ImageURLs;
 
                 try
                 {
                     // Please check the default parameters
-                    var (ocrResult, outputPdfUrl) = await DocumentUtilities.PerformOCRAsync(ocrRecognizer: recognizer, inputUrls: null, outputUrl: null, shouldGeneratePdf: true, encrypter: ScanbotSDKUI.DefaultImageStoreEncrypter);
+                    var (ocrResult, outputPdfUrl) = await DocumentUtilities.PerformOCRAsync(ocrRecognizer: recognizer, shouldGeneratePdf: true, encrypter: ScanbotSDKUI.DefaultImageStoreEncrypter);
                     IsBusy = false;
                     if (ocrResult != null)
                     {
@@ -317,13 +320,13 @@ namespace ClassicComponent.iOS
             if (!CheckOriginalImageUrl()) { return; }
             IsBusy = true;
             Debug.WriteLine("Creating TIFF file ...");
-
+            var urls = DocumentUtilities.GetTemporaryStorage().ImageURLs;
             var options = SBSDKTIFFImageWriterParameters.DefaultParametersForBinaryImages();
             options.Binarize = true;
             options.Compression = SBSDKTIFFImageWriterCompressionOptions.Ccittfax4;
             options.Dpi = 250;
 
-            var (success, outputTiffUrl) = DocumentUtilities.CreateTIFF(options, inputUrls: null, outputUrl: null, ScanbotSDKUI.DefaultImageStoreEncrypter);
+            var (success, outputTiffUrl) = DocumentUtilities.CreateTIFF(options, inputUrls: urls, ScanbotSDKUI.DefaultImageStoreEncrypter);
             if (success)
             {
                 Utilities.ShowMessage("TIFF file created", "" + outputTiffUrl.AbsoluteString);
