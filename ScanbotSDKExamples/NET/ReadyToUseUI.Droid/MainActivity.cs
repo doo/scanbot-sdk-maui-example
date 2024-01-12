@@ -52,9 +52,10 @@ namespace ReadyToUseUI.Droid
     public class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
     {
         private const int SCAN_DOCUMENT_REQUEST_CODE = 1000;
-        private const int SCAN_DOCUMENT_WITH_FINDER_REQUEST_CODE = 1001;
+
         private const int IMPORT_IMAGE_REQUEST = 2001;
         private const int IMPORT_PDF_REQUEST = 2002;
+        private const int IMPORT_BARCODE_REQUEST = 2003;
 
         private const int QR_BARCODE_DEFAULT_REQUEST = 3001;
         private const int QR_BARCODE_WITH_IMAGE_REQUEST = 30002;
@@ -92,29 +93,30 @@ namespace ReadyToUseUI.Droid
 
             var barcodeDetectors = (LinearLayout)container.FindViewById(Resource.Id.barcode_data_scanner);
             var barcodeDetectorsTitle = (TextView)barcodeDetectors.FindViewById(Resource.Id.textView);
-            barcodeDetectorsTitle.Text = "BARCODE DETECTORS".ToUpper();
+            barcodeDetectorsTitle.Text = "BARCODE DETECTORS";
             barcodeDetectors.AddChildren(buttons, new[]  
             {
                 new ListItemButton(this, "Scan QR-/Barcode", ScanBarcode),
                 new ListItemButton(this, "Scan QR-/Barcode with image", ScanWithImageBarcode),
                 new ListItemButton(this, "Scan QR-/Barcode with selection overlay", ScanWithSelectionOverlayBarcode),
                 new ListItemButton(this, "Scan Multiple QR-/Barcodes", ScanMultipleBarcodes),
+                new ListItemButton(this, "Import Barcode Image", ImportBarcodeImage),
             });
 
             var scanner = (LinearLayout)container.FindViewById(Resource.Id.document_scanner);
             var scannerTitle = (TextView)scanner.FindViewById(Resource.Id.textView);
-            scannerTitle.Text = "DOCUMENT SCANNER".ToUpper();
+            scannerTitle.Text = "DOCUMENT SCANNER";
             scanner.AddChildren(buttons, new[]
             {
                 new ListItemButton(this, "Scan Document", ScanDocument),
                 new ListItemButton(this, "Scan Document with Finder", ScanDocumentWithFinder),
-                new ListItemButton(this, "Import Image", ImportImage),
+                new ListItemButton(this, "Import Document Image", ImportImage),
                 new ListItemButton(this, "View Images", ViewImages)
             });
 
             var detectors = (LinearLayout)container.FindViewById(Resource.Id.data_detectors);
             var detectorsTitle = (TextView)detectors.FindViewById(Resource.Id.textView);
-            detectorsTitle.Text = "DATA DETECTORS".ToUpper();
+            detectorsTitle.Text = "DATA DETECTORS";
             detectors.AddChildren(buttons, new[]  
             {
                 new ListItemButton(this, "Scan MRZ", ScanMrz),
@@ -176,7 +178,7 @@ namespace ReadyToUseUI.Droid
             // and so on...
 
             var intent = FinderDocumentScannerActivity.NewIntent(this, configuration);
-            StartActivityForResult(intent, SCAN_DOCUMENT_WITH_FINDER_REQUEST_CODE);
+            StartActivityForResult(intent, SCAN_DOCUMENT_REQUEST_CODE);
         }
 
         private void ImportImage()
@@ -189,6 +191,18 @@ namespace ReadyToUseUI.Droid
 
             var chooser = Intent.CreateChooser(intent, Texts.share_title);
             StartActivityForResult(chooser, IMPORT_IMAGE_REQUEST);
+        }
+
+        private void ImportBarcodeImage()
+        {
+            var intent = new Intent();
+            intent.SetType("image/*");
+            intent.SetAction(Intent.ActionGetContent);
+            intent.PutExtra(Intent.ExtraLocalOnly, false);
+            intent.PutExtra(Intent.ExtraAllowMultiple, false);
+
+            var chooser = Intent.CreateChooser(intent, Texts.share_title);
+            StartActivityForResult(chooser, IMPORT_BARCODE_REQUEST);
         }
 
         private void ImportPdf()
@@ -280,22 +294,28 @@ namespace ReadyToUseUI.Droid
         private void ScanGenericDocument()
         {
             var configuration = new GenericDocumentRecognizerConfiguration();
-            configuration.SetAcceptedDocumentTypes(new List<RootDocumentType>
-            {
-                RootDocumentType.DeIdCardFront,
-                RootDocumentType.DeIdCardBack,
-            });
+            // Specify accepted types if needed
+            
+            //configuration.SetAcceptedDocumentTypes(new List<RootDocumentType>
+            //{
+            //    RootDocumentType.DeIdCardFront,
+            //    RootDocumentType.DeIdCardBack,
+            //    RootDocumentType.DePassport,
+            //});
 
             configuration.SetTopBarButtonsInactiveColor(Color.White);
             configuration.SetTopBarBackgroundColor(Color.Black);
 
-            //configuration.SetFieldsDisplayConfiguration(
-            //    new Dictionary<string, FieldProperties>()
-            //    {
-            //        { DePassport.NormalizedFieldNames.Photo,  new FieldProperties("My passport photo", FieldProperties.DisplayState.AlwaysVisible) },
-            //        { MRZ.NormalizedFieldNames.CheckDigitGeneral,  new FieldProperties("Check digit general", FieldProperties.DisplayState.AlwaysVisible) },
-            //    }
-            //);
+            // Apply the parameters for fields
+            configuration.SetFieldsDisplayConfiguration(
+                // Use constants from NormalizedFieldNames objects from the corresponding document type
+                new Dictionary<string, FieldProperties>()
+                {
+                    { DeIdCardFront.NormalizedFieldNames.Photo,  new FieldProperties("My Id card photo", FieldProperties.DisplayState.AlwaysVisible) },
+                    { DePassport.NormalizedFieldNames.Photo,  new FieldProperties("My passport photo", FieldProperties.DisplayState.AlwaysVisible) },
+                    { MRZ.NormalizedFieldNames.CheckDigitGeneral,  new FieldProperties("Check digit general", FieldProperties.DisplayState.AlwaysVisible) },
+                }
+            );
 
             var intent = GenericDocumentRecognizerActivity.NewIntent(this, configuration);
             StartActivityForResult(intent, GENERIC_DOCUMENT_REQUEST);
@@ -348,7 +368,6 @@ namespace ReadyToUseUI.Droid
             var configuration = new HealthInsuranceCardScannerConfiguration();
             configuration.SetTopBarButtonsColor(Color.White);
             configuration.SetTopBarBackgroundColor(Color.Black);
-            // configuration.SetFinderTextHint("custom text");
 
             var intent = HealthInsuranceCardScannerActivity.NewIntent(this, configuration);
             StartActivityForResult(intent, SCAN_EHIC_REQUEST);
@@ -400,11 +419,22 @@ namespace ReadyToUseUI.Droid
             switch (requestCode)
             {
                 case SCAN_DOCUMENT_REQUEST_CODE:
-                case SCAN_DOCUMENT_WITH_FINDER_REQUEST_CODE:
                 {
                     var parcelable = data.GetParcelableArrayExtra(RtuConstants.ExtraKeyRtuResult);
-
                     StartActivity(new Intent(this, typeof(PagePreviewActivity)));
+                    return;
+                }
+                case IMPORT_BARCODE_REQUEST:
+                {
+                    var bitmap = Utils.ImageUtils.ProcessGalleryResult(this, data);
+                    var detector = scanbotSDK.CreateBarcodeDetector();
+                    var result = detector.DetectFromBitmap(bitmap, 0);
+
+                    var qualityAnalyzer = scanbotSDK.CreateDocumentQualityAnalyzer();
+                    var documentQualityResult = qualityAnalyzer.AnalyzeInBitmap(bitmap, 0);
+
+                    var fragment = BarcodeDialogFragment.CreateInstance(result, documentQualityResult);
+                    fragment.Show(FragmentManager);
                     return;
                 }
                 case IMPORT_IMAGE_REQUEST:

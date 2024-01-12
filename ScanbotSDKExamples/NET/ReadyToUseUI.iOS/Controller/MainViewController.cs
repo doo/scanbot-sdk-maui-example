@@ -276,7 +276,7 @@ namespace ReadyToUseUI.iOS.Controller
 
         private void ScanMrz()
         {
-            var config = new SBSDKUIMRZScannerConfiguration();
+            var config = SBSDKUIMRZScannerConfiguration.DefaultConfiguration;
             config.TextConfiguration.CancelButtonTitle = "Done";
             config.BehaviorConfiguration.FlashEnabled = true;
             config.UiConfiguration.TopBarButtonsColor = UIColor.Green;
