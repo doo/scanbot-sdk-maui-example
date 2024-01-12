@@ -294,13 +294,14 @@ namespace ReadyToUseUI.Droid
         private void ScanGenericDocument()
         {
             var configuration = new GenericDocumentRecognizerConfiguration();
-            configuration.SetAcceptedDocumentTypes(new List<RootDocumentType>
-            {
-                RootDocumentType.DeIdCardFront,
-                RootDocumentType.DeIdCardBack,
-                RootDocumentType.DePassport,
-                RootDocumentType.Mrz,
-            });
+            // Specify accepted types if needed
+            
+            //configuration.SetAcceptedDocumentTypes(new List<RootDocumentType>
+            //{
+            //    RootDocumentType.DeIdCardFront,
+            //    RootDocumentType.DeIdCardBack,
+            //    RootDocumentType.DePassport,
+            //});
 
             configuration.SetTopBarButtonsInactiveColor(Color.White);
             configuration.SetTopBarBackgroundColor(Color.Black);
@@ -420,7 +421,6 @@ namespace ReadyToUseUI.Droid
                 case SCAN_DOCUMENT_REQUEST_CODE:
                 {
                     var parcelable = data.GetParcelableArrayExtra(RtuConstants.ExtraKeyRtuResult);
-
                     StartActivity(new Intent(this, typeof(PagePreviewActivity)));
                     return;
                 }
