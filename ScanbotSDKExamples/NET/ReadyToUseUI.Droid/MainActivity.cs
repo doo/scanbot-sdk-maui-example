@@ -55,6 +55,7 @@ namespace ReadyToUseUI.Droid
         private const int SCAN_DOCUMENT_WITH_FINDER_REQUEST_CODE = 1001;
         private const int IMPORT_IMAGE_REQUEST = 2001;
         private const int IMPORT_PDF_REQUEST = 2002;
+        private const int IMPORT_BARCODE_REQUEST = 2003;
 
         private const int QR_BARCODE_DEFAULT_REQUEST = 3001;
         private const int QR_BARCODE_WITH_IMAGE_REQUEST = 30002;
@@ -99,6 +100,7 @@ namespace ReadyToUseUI.Droid
                 new ListItemButton(this, "Scan QR-/Barcode with image", ScanWithImageBarcode),
                 new ListItemButton(this, "Scan QR-/Barcode with selection overlay", ScanWithSelectionOverlayBarcode),
                 new ListItemButton(this, "Scan Multiple QR-/Barcodes", ScanMultipleBarcodes),
+                new ListItemButton(this, "Import Barcode Image", ImportBarcodeImage),
             });
 
             var scanner = (LinearLayout)container.FindViewById(Resource.Id.document_scanner);
@@ -108,7 +110,7 @@ namespace ReadyToUseUI.Droid
             {
                 new ListItemButton(this, "Scan Document", ScanDocument),
                 new ListItemButton(this, "Scan Document with Finder", ScanDocumentWithFinder),
-                new ListItemButton(this, "Import Image", ImportImage),
+                new ListItemButton(this, "Import Document Image", ImportImage),
                 new ListItemButton(this, "View Images", ViewImages)
             });
 
@@ -189,6 +191,18 @@ namespace ReadyToUseUI.Droid
 
             var chooser = Intent.CreateChooser(intent, Texts.share_title);
             StartActivityForResult(chooser, IMPORT_IMAGE_REQUEST);
+        }
+
+        private void ImportBarcodeImage()
+        {
+            var intent = new Intent();
+            intent.SetType("image/*");
+            intent.SetAction(Intent.ActionGetContent);
+            intent.PutExtra(Intent.ExtraLocalOnly, false);
+            intent.PutExtra(Intent.ExtraAllowMultiple, false);
+
+            var chooser = Intent.CreateChooser(intent, Texts.share_title);
+            StartActivityForResult(chooser, IMPORT_BARCODE_REQUEST);
         }
 
         private void ImportPdf()
@@ -405,6 +419,19 @@ namespace ReadyToUseUI.Droid
                     var parcelable = data.GetParcelableArrayExtra(RtuConstants.ExtraKeyRtuResult);
 
                     StartActivity(new Intent(this, typeof(PagePreviewActivity)));
+                    return;
+                }
+                case IMPORT_BARCODE_REQUEST:
+                {
+                    var bitmap = Utils.ImageUtils.ProcessGalleryResult(this, data);
+                    var detector = scanbotSDK.CreateBarcodeDetector();
+                    var result = detector.DetectFromBitmap(bitmap, 0);
+
+                    var qualityAnalyzer = scanbotSDK.CreateDocumentQualityAnalyzer();
+                    var documentQualityResult = qualityAnalyzer.AnalyzeInBitmap(bitmap, 0);
+
+                    var fragment = BarcodeDialogFragment.CreateInstance(result, documentQualityResult);
+                    fragment.Show(FragmentManager);
                     return;
                 }
                 case IMPORT_IMAGE_REQUEST:
