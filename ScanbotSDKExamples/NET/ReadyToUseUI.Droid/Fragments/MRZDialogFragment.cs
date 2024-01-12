@@ -10,7 +10,7 @@ namespace ReadyToUseUI.Droid.Fragments
         public const string MRZ_DATA = "MRZ_DATA";
         public const string NAME = "MRZDialogFragment";
 
-        MRZGenericDocument result;
+        private MRZGenericDocument result;
 
         public static MRZDialogFragment CreateInstance(MRZGenericDocument data)
         {

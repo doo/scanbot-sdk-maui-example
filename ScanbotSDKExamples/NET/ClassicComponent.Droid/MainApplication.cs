@@ -15,7 +15,7 @@ namespace ClassicComponent.Droid
 
         public static readonly AESEncryptedFileIOProcessor EncryptionFileIOProcessor = new AESEncryptedFileIOProcessor(EncryptionPassword, AESEncryptedFileIOProcessor.AESEncrypterMode.Aes256);
         
-        static readonly string LOG_TAG = typeof(MainApplication).Name;
+        static readonly string LOG_TAG = nameof(MainApplication);
 
         // TODO Add the Scanbot SDK license key here.
         // Please note: The Scanbot SDK will run without a license key for one minute per session!

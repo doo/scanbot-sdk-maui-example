@@ -14,7 +14,6 @@ namespace ClassicComponent.Droid
     public class CroppingImageDemoActivity : AppCompatActivity
     {
         public static string EXTRAS_ARG_IMAGE_FILE_URI = "EXTRAS_ARG_IMAGE_FILE_URI";
-        private static string LOG_TAG = typeof(CroppingImageDemoActivity).Name;   
 
         private static IList<PointF> defaultPolygon = new List<PointF>
         {

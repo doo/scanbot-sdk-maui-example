@@ -57,9 +57,7 @@ namespace ReadyToUseUI.Droid
         private const int IMPORT_PDF_REQUEST = 2002;
 
         private const int QR_BARCODE_DEFAULT_REQUEST = 3001;
-        private const int QR_BARCODE_WITH_IMAGE_REQUEST = 3002;
-        private const int QR_BARCODE_WITH_OVERLAY_REQUEST = 3003;
-        private const int MULTIPLE_QR_BARCODES_REQUEST = 3004;
+        private const int QR_BARCODE_WITH_IMAGE_REQUEST = 30002;
 
         private const int SCAN_MRZ_REQUEST = 4001;
         private const int GENERIC_DOCUMENT_REQUEST = 4002;
@@ -92,6 +90,17 @@ namespace ReadyToUseUI.Droid
             var title = container.FindViewById<TextView>(Resource.Id.textView);
             title.Text = Texts.scanbot_sdk_demo;
 
+            var barcodeDetectors = (LinearLayout)container.FindViewById(Resource.Id.barcode_data_scanner);
+            var barcodeDetectorsTitle = (TextView)barcodeDetectors.FindViewById(Resource.Id.textView);
+            barcodeDetectorsTitle.Text = "BARCODE DETECTORS".ToUpper();
+            barcodeDetectors.AddChildren(buttons, new[]  
+            {
+                new ListItemButton(this, "Scan QR-/Barcode", ScanBarcode),
+                new ListItemButton(this, "Scan QR-/Barcode with image", ScanWithImageBarcode),
+                new ListItemButton(this, "Scan QR-/Barcode with selection overlay", ScanWithSelectionOverlayBarcode),
+                new ListItemButton(this, "Scan Multiple QR-/Barcodes", ScanMultipleBarcodes),
+            });
+
             var scanner = (LinearLayout)container.FindViewById(Resource.Id.document_scanner);
             var scannerTitle = (TextView)scanner.FindViewById(Resource.Id.textView);
             scannerTitle.Text = "DOCUMENT SCANNER".ToUpper();
@@ -101,18 +110,13 @@ namespace ReadyToUseUI.Droid
                 new ListItemButton(this, "Scan Document with Finder", ScanDocumentWithFinder),
                 new ListItemButton(this, "Import Image", ImportImage),
                 new ListItemButton(this, "View Images", ViewImages)
-            }); 
+            });
 
             var detectors = (LinearLayout)container.FindViewById(Resource.Id.data_detectors);
             var detectorsTitle = (TextView)detectors.FindViewById(Resource.Id.textView);
             detectorsTitle.Text = "DATA DETECTORS".ToUpper();
             detectors.AddChildren(buttons, new[]  
             {
-                new ListItemButton(this, "Scan QR-/Barcode", ScanBarcode),
-                new ListItemButton(this, "Scan QR-/Barcode with image", ScanWithImageBarcode),
-                new ListItemButton(this, "Scan QR-/Barcode with selection overlay", ScanWithSelectionOverlayBarcode),
-                new ListItemButton(this, "Scan and Count Barcodes", ScanAndCountBarcodes),
-                new ListItemButton(this, "Scan Multiple QR-/Barcodes", ScanMultipleBarcodes),
                 new ListItemButton(this, "Scan MRZ", ScanMrz),
                 new ListItemButton(this, "Scan Generic Document", ScanGenericDocument),
                 new ListItemButton(this, "Scan data", ScanData),
@@ -127,31 +131,12 @@ namespace ReadyToUseUI.Droid
 
             licenseIndicator = container.FindViewById<TextView>(Resource.Id.licenseIndicator);
             licenseIndicator.Text = Texts.no_license_found_the_app_will_terminate_after_one_minute;
+            licenseIndicator.Visibility = string.IsNullOrEmpty(MainApplication.LicenseKey) ? ViewStates.Visible : ViewStates.Gone;
 
             foreach (var button in buttons)
             {
                 button.Click += OnButtonClick;
             }
-        }
-
-        private void ScanAndCountBarcodes()
-        {
-            var configuration = new DocumentScannerConfiguration();
-
-            configuration.SetCameraPreviewMode(CameraPreviewMode.FitIn);
-            configuration.SetIgnoreBadAspectRatio(true);
-            configuration.SetMultiPageEnabled(true);
-            configuration.SetPageCounterButtonTitle("%d Page(s)");
-            configuration.SetTextHintOK("Don't move.\nScanning document...");
-
-            // further configuration properties
-            //configuration.SetBottomBarBackgroundColor(Color.Blue);
-            //configuration.SetBottomBarButtonsColor(Color.White);
-            //configuration.SetFlashButtonHidden(true);
-            // and so on...
-
-            //var intent = BarcodeScna.NewIntent(this, configuration);
-            //StartActivityForResult(intent, SCAN_DOCUMENT_REQUEST_CODE);
         }
 
         private void ScanDocument()
@@ -278,7 +263,7 @@ namespace ReadyToUseUI.Droid
 
             configuration.SetFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.");
             var intent = BatchBarcodeScannerActivity.NewIntent(this, configuration);
-            StartActivityForResult(intent, MULTIPLE_QR_BARCODES_REQUEST);
+            StartActivityForResult(intent, QR_BARCODE_DEFAULT_REQUEST);
         }
 
         private void ScanMrz()
@@ -352,6 +337,7 @@ namespace ReadyToUseUI.Droid
                  unzoomedFinderHeight: 40f,
                  allowedSymbols: new List<Java.Lang.Character>(),
                  significantShakeDelay: 0);
+                 
             var config = new TextDataScannerConfiguration(step);
 
             StartActivityForResult(TextDataScannerActivity.NewIntent(this, config), SCAN_DATA_REQUEST);
@@ -439,8 +425,6 @@ namespace ReadyToUseUI.Droid
                     return;
                 }
                 case QR_BARCODE_DEFAULT_REQUEST:
-                case QR_BARCODE_WITH_OVERLAY_REQUEST:
-                case MULTIPLE_QR_BARCODES_REQUEST:
                 {
                     var result = (BarcodeScanningResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
                     var fragment = BarcodeDialogFragment.CreateInstance(result);
@@ -594,6 +578,7 @@ namespace ReadyToUseUI.Droid
             else
             {
                 licenseIndicator.Visibility = ViewStates.Visible;
+                licenseIndicator.Text = scanbotSDK.LicenseInfo.LicenseStatusMessage;
                 Alert.Toast(this, "Invalid or missing license");
             }
 

@@ -25,7 +25,7 @@ namespace ClassicComponent.Droid
               ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait)]
     public class MainActivity : Activity
     {
-        static readonly string LOG_TAG = typeof(MainActivity).Name;
+        static readonly string LOG_TAG = nameof(MainActivity);
 
         const int REQUEST_SB_SCANNING_UI = 4711;
         const int REQUEST_SB_CROPPING_UI = 4712;
