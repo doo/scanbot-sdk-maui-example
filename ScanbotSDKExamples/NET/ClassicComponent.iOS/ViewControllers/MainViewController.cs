@@ -4,12 +4,8 @@ using System.Diagnostics;
 using ClassicComponent.iOS.Models;
 using ClassicComponent.iOS.Utils;
 using ClassicComponent.iOS.ViewControllers;
-using DocumentSDK.MAUI.Native.iOS.Configurations;
 using Scanbot.ImagePicker.iOS;
 using ScanbotSDK.iOS;
-using ScanbotSDK.MAUI.Constants;
-using ScanbotSDK.MAUI.Models;
-//using SBSDK = ScanbotSDK.MAUI.Native.iOS.ScanbotSDK;
 
 namespace ClassicComponent.iOS
 {
@@ -19,20 +15,22 @@ namespace ClassicComponent.iOS
         void RowSelected(int index);
     }
 
-    interface IModifyDocumentContrllerDelegate
+    interface IModifyDocumentControllerDelegate
     {
-        void DidUpdateDocumentImage(UIImage updatedImage);
+        public void DidUpdateDocumentImage(SBSDKPolygon polygon = null, nint? rotation = null, SBSDKImageFilterType? filter = null);
     }
 
     internal interface ICameraDemoViewControllerDelegate
     {
-        void DidCaptureDocumentImage(UIImage documentImage, UIImage originalImage);
+        void DidCaptureDocumentImage(UIImage documentImage, UIImage originalImage, SBSDKPolygon polygon);
     }
 
-    public partial class MainViewController : UIViewController, ISDKServiceSource, ICameraDemoViewControllerDelegate, IModifyDocumentContrllerDelegate
+    public partial class MainViewController : UIViewController, ISDKServiceSource, ICameraDemoViewControllerDelegate, IModifyDocumentControllerDelegate
     {
         public List<SDKService> SDKServices { get; set; }
         public ProgressHUD ProgressIndicator { get; private set; }
+
+        private ImageProcessingParameters imageParameters;
 
         private bool _isBusy;
         public bool IsBusy
@@ -54,6 +52,7 @@ namespace ClassicComponent.iOS
             base.ViewDidLoad();
             this.NavigationItem.Title = Texts.AppTitle;
             ProgressIndicator = ProgressHUD.Load(View.Frame);
+            imageParameters = new ImageProcessingParameters();
             LoadFeatures();
             SetUpTableView();
             UpdateHintLabel(string.Empty);
@@ -176,12 +175,13 @@ namespace ClassicComponent.iOS
             NavigationController.PushViewController(cameraViewController, true);
         }
 
-        public void DidCaptureDocumentImage(UIImage documentImage, UIImage originalImage)
+        public void DidCaptureDocumentImage(UIImage documentImage, UIImage originalImage, SBSDKPolygon polygon)
         {
+            this.imageParameters = new ImageProcessingParameters { Polygon = polygon };
             originalDocumentImage = originalImage;
             editedDocumentImage = documentImage;
             UpdateDocumentImageView(documentImage);
-
+            
             DocumentUtilities.GetTemporaryStorage().AddImage(originalDocumentImage);
         }
 
@@ -192,13 +192,8 @@ namespace ClassicComponent.iOS
             if (!CheckScanbotSDKLicense()) { return; }
             if (!CheckOriginalImageUrl()) { return; }
 
-            var image = originalDocumentImage;
-            var cropViewController = new CroppingDemoNavigationController(image);
-            cropViewController.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
-            cropViewController.NavigationBar.BarStyle = UIBarStyle.Black;
-            cropViewController.NavigationBar.TintColor = UIColor.White;
-            cropViewController.modifyDocumentDelegate = this;
-            PresentViewController(cropViewController, true, null);
+            UINavigationController viewController = CroppingDemoController.GetViewController(originalDocumentImage, imageParameters, this);
+            NavigationController.PresentViewController(viewController, true, null);
         }
 
         private bool CheckOriginalImageUrl()
@@ -214,8 +209,8 @@ namespace ClassicComponent.iOS
 
         private async Task LaunchImportImageFromLibrary()
         {
-            var image = await ImagePicker.Instance.PickImageAsync();
-            if (image != null)
+            var originalImage = await ImagePicker.Instance.PickImageAsync();
+            if (originalImage != null)
             {
                 Debug.WriteLine("Got the original image from gallery");
                 IsBusy = true;
@@ -223,24 +218,21 @@ namespace ClassicComponent.iOS
                 {
                     // The SDK call is sync!
                     SBSDKDocumentDetector detector = new SBSDKDocumentDetector();
-                    return detector.DetectDocumentPolygonOnImage(image, new CGRect(CGPoint.Empty, image.Size), false, false);
+                    return detector.DetectDocumentPolygonOnImage(originalImage, new CGRect(CGPoint.Empty, originalImage.Size), false, false);
                 });
 
                 if (detectionResult.Status == SBSDKDocumentDetectionStatus.Ok)
                 {
-                    var imageResult = image;
+                    var documentImage = originalImage;
 
-                    if (detectionResult.Polygon != null && image != null)
+                    if (detectionResult.Polygon != null && originalImage != null)
                     {
-                        imageResult = image.ImageWarpedByPolygon(detectionResult.Polygon, imageScale: 1.0f);
+                        documentImage = originalImage.ImageWarpedByPolygon(detectionResult.Polygon, imageScale: 1.0f);
                     }
 
-                    Debug.WriteLine("Detection result image: " + imageResult);
+                    Debug.WriteLine("Detection result image: " + documentImage);
 
-                    //SBSDKUIPageFileStorage.DefaultStorage.AddImage(imageResult);
-
-                    originalDocumentImage = imageResult;
-                    UpdateDocumentImageView(imageResult);
+                    DidCaptureDocumentImage(documentImage, originalImage, detectionResult.Polygon);
                 }
                 else
                 {
@@ -251,9 +243,24 @@ namespace ClassicComponent.iOS
             }
         }
 
-        public void DidUpdateDocumentImage(UIImage updatedImage)
+        public void DidUpdateDocumentImage(SBSDKPolygon polygon = null, nint? rotation = null, SBSDKImageFilterType? filter = null)
         {
-            editedDocumentImage = updatedImage;
+            if (rotation != null)
+            {
+                imageParameters.Rotation = (int)rotation.Value;
+            }
+
+            if (polygon != null)
+            {
+                imageParameters.Polygon = polygon;
+            }
+
+            if (filter != null)
+            {
+                imageParameters.Filter = filter.Value;
+            }
+
+            editedDocumentImage = Utilities.GetProcessedImage(ref originalDocumentImage, imageParameters);
             UpdateDocumentImageView(editedDocumentImage);
         }
 
@@ -349,9 +356,7 @@ namespace ClassicComponent.iOS
                 if (filter.ToString().ToLower() == "none") { continue; }
                 actionSheetAlert.AddAction(UIAlertAction.Create(filter.ToString(), UIAlertActionStyle.Default, (action) =>
                 {
-                    var resultImage = editedDocumentImage?.ImageFilteredByFilter(filter);
-                    Debug.WriteLine("Image filter result: " + resultImage);
-                    UpdateDocumentImageView(resultImage);
+                    DidUpdateDocumentImage(filter: filter);
                 }));
             }
 

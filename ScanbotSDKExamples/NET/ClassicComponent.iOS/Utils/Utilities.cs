@@ -1,4 +1,7 @@
-﻿namespace ClassicComponent.iOS.Utils
+﻿using ClassicComponent.iOS.Models;
+using ScanbotSDK.iOS;
+
+namespace ClassicComponent.iOS.Utils
 {
     public class Utilities
 	{
@@ -57,6 +60,17 @@
             var targetFile = System.IO.Path.Combine(
                 AppDelegate.Directory, new NSUuid().AsString().ToLower() + fileExtension);
             return NSUrl.FromFilename(targetFile);
+        }
+
+        internal static UIImage GetProcessedImage(ref UIImage originalImage, ImageProcessingParameters parameters)
+        {
+            if (parameters.Rotation != 0)
+            {
+                originalImage = originalImage.ImageRotatedCounterClockwise(parameters.Rotation);
+            }
+            var image = originalImage.ImageWarpedByPolygon(parameters.Polygon, parameters.Filter, 1.0f);
+            parameters.Rotation = 0;
+            return image;
         }
     }
 }

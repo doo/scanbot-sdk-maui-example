@@ -152,7 +152,7 @@ namespace ClassicComponent.iOS
         {
             if (documentImage != null)
             {
-                cameraViewControllerDelegate.DidCaptureDocumentImage(documentImage, originalImage);
+                cameraViewControllerDelegate.DidCaptureDocumentImage(documentImage, originalImage, result.Polygon);
                 this.NavigationController.PopViewController(true);
             }
         }
