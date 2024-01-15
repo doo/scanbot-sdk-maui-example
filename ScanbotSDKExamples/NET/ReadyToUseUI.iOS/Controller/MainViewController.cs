@@ -180,7 +180,7 @@ namespace ReadyToUseUI.iOS.Controller
                     text = "";
                     foreach (var item in results)
                     {
-                        text += item.Type.ToString() + ": " + item.RawTextString + "\n";
+                        text += item.Type.Name + ": " + item.RawTextString + "\n";
                     }
 
                     var blur = new SBSDKDocumentQualityAnalyzer().AnalyzeOnImage(image);
