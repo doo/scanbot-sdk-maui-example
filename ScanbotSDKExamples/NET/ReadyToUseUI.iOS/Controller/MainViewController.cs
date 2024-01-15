@@ -100,14 +100,15 @@ namespace ReadyToUseUI.iOS.Controller
         private void ScanBarcode()
         {
             var configuration = SBSDKUIBarcodeScannerConfiguration.DefaultConfiguration;
-            var controller = SBSDKUIBarcodeScannerViewController.CreateNewWithConfiguration(configuration, null);
-            controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
             configuration.TrackingOverlayConfiguration.OverlayEnabled = true;
             configuration.TrackingOverlayConfiguration.AutomaticSelectionEnabled = true;
             configuration.TrackingOverlayConfiguration.OverlayTextFormat = SBSDKBarcodeOverlayFormat.Code;
             configuration.TrackingOverlayConfiguration.PolygonColor = UIColor.Yellow;
             configuration.TrackingOverlayConfiguration.TextColor = UIColor.Yellow;
             configuration.TrackingOverlayConfiguration.TextContainerColor = UIColor.Black;
+
+            var controller = SBSDKUIBarcodeScannerViewController.CreateNewWithConfiguration(configuration, null);
+            controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
 
             controller.DidDetectResults += (_, args) =>
             {
@@ -136,14 +137,15 @@ namespace ReadyToUseUI.iOS.Controller
         private void ScanBarcodesInBatch()
         {
             var configuration = SBSDKUIBarcodesBatchScannerConfiguration.DefaultConfiguration;
-            var controller = SBSDKUIBarcodesBatchScannerViewController.CreateNewWithConfiguration(configuration, null);
-            controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
             configuration.TrackingOverlayConfiguration.OverlayEnabled = true;
             configuration.TrackingOverlayConfiguration.AutomaticSelectionEnabled = true;
             configuration.TrackingOverlayConfiguration.OverlayTextFormat = SBSDKBarcodeOverlayFormat.Code;
             configuration.TrackingOverlayConfiguration.PolygonColor = UIColor.Yellow;
             configuration.TrackingOverlayConfiguration.TextColor = UIColor.Yellow;
             configuration.TrackingOverlayConfiguration.TextContainerColor = UIColor.Black;
+
+            var controller = SBSDKUIBarcodesBatchScannerViewController.CreateNewWithConfiguration(configuration, null);
+            controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
 
             controller.DidFinish += (_, args) =>
             {
