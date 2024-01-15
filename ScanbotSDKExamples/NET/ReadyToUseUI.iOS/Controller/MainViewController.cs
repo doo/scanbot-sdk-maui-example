@@ -100,9 +100,11 @@ namespace ReadyToUseUI.iOS.Controller
         private void ScanBarcode()
         {
             var configuration = SBSDKUIBarcodeScannerConfiguration.DefaultConfiguration;
+
+            // AR overlay configuration
             configuration.TrackingOverlayConfiguration.OverlayEnabled = true;
             configuration.TrackingOverlayConfiguration.AutomaticSelectionEnabled = true;
-            configuration.TrackingOverlayConfiguration.OverlayTextFormat = SBSDKBarcodeOverlayFormat.Code;
+            configuration.TrackingOverlayConfiguration.OverlayTextFormat = SBSDKBarcodeOverlayFormat.CodeAndType;
             configuration.TrackingOverlayConfiguration.PolygonColor = UIColor.Yellow;
             configuration.TrackingOverlayConfiguration.TextColor = UIColor.Yellow;
             configuration.TrackingOverlayConfiguration.TextContainerColor = UIColor.Black;
@@ -137,9 +139,11 @@ namespace ReadyToUseUI.iOS.Controller
         private void ScanBarcodesInBatch()
         {
             var configuration = SBSDKUIBarcodesBatchScannerConfiguration.DefaultConfiguration;
+
+            // AR overlay configuration
             configuration.TrackingOverlayConfiguration.OverlayEnabled = true;
             configuration.TrackingOverlayConfiguration.AutomaticSelectionEnabled = true;
-            configuration.TrackingOverlayConfiguration.OverlayTextFormat = SBSDKBarcodeOverlayFormat.Code;
+            configuration.TrackingOverlayConfiguration.OverlayTextFormat = SBSDKBarcodeOverlayFormat.CodeAndType;
             configuration.TrackingOverlayConfiguration.PolygonColor = UIColor.Yellow;
             configuration.TrackingOverlayConfiguration.TextColor = UIColor.Yellow;
             configuration.TrackingOverlayConfiguration.TextContainerColor = UIColor.Black;
@@ -280,8 +284,6 @@ namespace ReadyToUseUI.iOS.Controller
         {
             var config = SBSDKUIMRZScannerConfiguration.DefaultConfiguration;
             config.TextConfiguration.CancelButtonTitle = "Done";
-            config.BehaviorConfiguration.FlashEnabled = true;
-            config.UiConfiguration.TopBarButtonsColor = UIColor.Green;
             var controller = SBSDKUIMRZScannerViewController
                 .CreateNewWithConfiguration(config, null);
 
@@ -300,10 +302,7 @@ namespace ReadyToUseUI.iOS.Controller
         private void ScanEhic()
         {
             var configuration = SBSDKUIHealthInsuranceCardScannerConfiguration.DefaultConfiguration;
-
             configuration.TextConfiguration.CancelButtonTitle = "Done";
-            configuration.BehaviorConfiguration.FlashEnabled = true;
-            configuration.UiConfiguration.TopBarButtonsColor = UIColor.Green;
             var controller = SBSDKUIHealthInsuranceCardScannerViewController
                 .CreateNewWithConfiguration(configuration, null);
 
@@ -318,6 +317,7 @@ namespace ReadyToUseUI.iOS.Controller
         private void RecongnizeGenericDocument()
         {
             var configuration = SBSDKUIGenericDocumentRecognizerConfiguration.DefaultConfiguration;
+            configuration.TextConfiguration.CancelButtonTitle = "Done";
             configuration.BehaviorConfiguration.DocumentType = SBSDKUIDocumentType.IdCardFrontBackDE;
             var controller = SBSDKUIGenericDocumentRecognizerViewController.CreateNewWithConfiguration(configuration, null);
 
@@ -345,6 +345,7 @@ namespace ReadyToUseUI.iOS.Controller
         private void RecognizeCheck()
         {
             var configuration = SBSDKUICheckRecognizerConfiguration.DefaultConfiguration;
+            configuration.TextConfiguration.CancelButtonTitle = "Done";
             configuration.BehaviorConfiguration.AcceptedCheckStandards = new SBSDKCheckDocumentRootType[] {
                     SBSDKCheckDocumentRootType.AusCheck(),
                     SBSDKCheckDocumentRootType.FraCheck(),
@@ -395,8 +396,6 @@ namespace ReadyToUseUI.iOS.Controller
 
             var configuration = SBSDKUIVINScannerConfiguration.DefaultConfiguration;
             configuration.TextConfiguration.CancelButtonTitle = "Done";
-            configuration.TextConfiguration.GuidanceText = "Please place the finder over the VIN.";
-            configuration.UiConfiguration.FinderAspectRatio = new SBSDKAspectRatio(7, 1);
             var scanner = SBSDKUIVINScannerViewController.CreateNewWithConfiguration(configuration, null);
             scanner.DidFinishWithResult += (_, args) =>
             {
