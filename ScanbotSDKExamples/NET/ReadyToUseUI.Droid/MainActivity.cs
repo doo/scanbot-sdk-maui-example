@@ -40,7 +40,6 @@ using IO.Scanbot.Sdk.UI.View.Vin.Configuration;
 using IO.Scanbot.Sdk.UI.View.Vin;
 using IO.Scanbot.Sdk.UI.View.Licenseplate.Configuration;
 using IO.Scanbot.Sdk.UI.View.Licenseplate;
-using ReadyToUseUI.Droid.Model;
 using IO.Scanbot.Sdk.UI.View.MC;
 using IO.Scanbot.Sdk.Mcrecognizer.Entity;
 using IO.Scanbot.Sdk.UI.View.Generictext;
@@ -54,11 +53,9 @@ namespace ReadyToUseUI.Droid
         private const int SCAN_DOCUMENT_REQUEST_CODE = 1000;
 
         private const int IMPORT_IMAGE_REQUEST = 2001;
-        private const int IMPORT_PDF_REQUEST = 2002;
-        private const int IMPORT_BARCODE_REQUEST = 2003;
+        private const int IMPORT_BARCODE_REQUEST = 2002;
 
         private const int QR_BARCODE_DEFAULT_REQUEST = 3001;
-        private const int QR_BARCODE_WITH_IMAGE_REQUEST = 30002;
 
         private const int SCAN_MRZ_REQUEST = 4001;
         private const int GENERIC_DOCUMENT_REQUEST = 4002;
@@ -96,11 +93,9 @@ namespace ReadyToUseUI.Droid
             barcodeDetectorsTitle.Text = "BARCODE DETECTORS";
             barcodeDetectors.AddChildren(buttons, new[]  
             {
-                new ListItemButton(this, "Scan QR-/Barcode", ScanBarcode),
-                new ListItemButton(this, "Scan QR-/Barcode with image", ScanWithImageBarcode),
-                new ListItemButton(this, "Scan QR-/Barcode with selection overlay", ScanWithSelectionOverlayBarcode),
-                new ListItemButton(this, "Scan Multiple QR-/Barcodes", ScanMultipleBarcodes),
-                new ListItemButton(this, "Import Barcode Image", ImportBarcodeImage),
+                new ListItemButton(this, "Scan Barcodes", ScanBarcode),
+                new ListItemButton(this, "Scan Batch Barcodes", ScanBarcodesInBatch),
+                new ListItemButton(this, "Import and Detect Barcodes", ImportAndDetectBarcode),
             });
 
             var scanner = (LinearLayout)container.FindViewById(Resource.Id.document_scanner);
@@ -110,7 +105,7 @@ namespace ReadyToUseUI.Droid
             {
                 new ListItemButton(this, "Scan Document", ScanDocument),
                 new ListItemButton(this, "Scan Document with Finder", ScanDocumentWithFinder),
-                new ListItemButton(this, "Import Document Image", ImportImage),
+                new ListItemButton(this, "Import Image", ImportImage),
                 new ListItemButton(this, "View Images", ViewImages)
             });
 
@@ -120,13 +115,13 @@ namespace ReadyToUseUI.Droid
             detectors.AddChildren(buttons, new[]  
             {
                 new ListItemButton(this, "Scan MRZ", ScanMrz),
-                new ListItemButton(this, "Scan Generic Document", ScanGenericDocument),
-                new ListItemButton(this, "Scan data", ScanData),
-                new ListItemButton(this, "Scan VIN", ScanVIN),
-                new ListItemButton(this, "Scan EU license plate", ScanEULicensePlate),
-                new ListItemButton(this, "Scan European Health Insurance Card", ScanEhic),
-                new ListItemButton(this, "Medical Certificate recognizer", ScanMedicalCertificate),
+                new ListItemButton(this, "Scan Health Insurance card", ScanEhic),
+                new ListItemButton(this, "Generic Document Recognizer", RecongnizeGenericDocument),
                 new ListItemButton(this, "Check Recognizer", RecogniseCheck),
+                new ListItemButton(this, "Text Data Recognizer", TextDataRecognizerTapped),
+                new ListItemButton(this, "VIN Recognizer", VinRecognizerTapped),
+                new ListItemButton(this, "License Plate Recognizer", LicensePlateRecognizerTapped),
+                new ListItemButton(this, "Medical Certificate Recognizer", ScanMedicalCertificate),
             });
 
             progress = FindViewById<ProgressBar>(Resource.Id.progressBar);
@@ -139,6 +134,57 @@ namespace ReadyToUseUI.Droid
             {
                 button.Click += OnButtonClick;
             }
+        }
+
+        private void ScanBarcode()
+        {
+            var configuration = new BarcodeScannerConfiguration();
+            configuration.SetSelectionOverlayConfiguration(
+                new SelectionOverlayConfiguration(
+                   overlayEnabled: true,
+                   automaticSelectionEnabled: true,
+                   textFormat: IO.Scanbot.Sdk.Barcode.UI.BarcodeOverlayTextFormat.CodeAndType,
+                   polygonColor: Color.Yellow,
+                   textColor: Color.Yellow,
+                   textContainerColor: Color.Black));
+
+            configuration.SetFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.");
+            configuration.SetTopBarButtonsColor(Color.White);
+            configuration.SetTopBarBackgroundColor(Color.Black);
+
+            var intent = BarcodeScannerActivity.NewIntent(this, configuration);
+            StartActivityForResult(intent, QR_BARCODE_DEFAULT_REQUEST);
+        }
+
+        private void ScanBarcodesInBatch()
+        {
+            var configuration = new BatchBarcodeScannerConfiguration();
+            configuration.SetSelectionOverlayConfiguration(
+                new SelectionOverlayConfiguration(
+                    overlayEnabled: true,
+                    automaticSelectionEnabled: true,
+                    textFormat: IO.Scanbot.Sdk.Barcode.UI.BarcodeOverlayTextFormat.CodeAndType,
+                    polygonColor: Color.Yellow,
+                    textColor: Color.Yellow,
+                    textContainerColor: Color.Black));
+
+            configuration.SetOrientationLockMode(CameraOrientationMode.Portrait);
+
+            configuration.SetFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.");
+            var intent = BatchBarcodeScannerActivity.NewIntent(this, configuration);
+            StartActivityForResult(intent, QR_BARCODE_DEFAULT_REQUEST);
+        }
+
+        private void ImportAndDetectBarcode()
+        {
+            var intent = new Intent();
+            intent.SetType("image/*");
+            intent.SetAction(Intent.ActionGetContent);
+            intent.PutExtra(Intent.ExtraLocalOnly, false);
+            intent.PutExtra(Intent.ExtraAllowMultiple, false);
+
+            var chooser = Intent.CreateChooser(intent, Texts.share_title);
+            StartActivityForResult(chooser, IMPORT_BARCODE_REQUEST);
         }
 
         private void ScanDocument()
@@ -168,7 +214,7 @@ namespace ReadyToUseUI.Droid
             configuration.SetCameraPreviewMode(CameraPreviewMode.FitIn);
             configuration.SetIgnoreBadAspectRatio(true);
             configuration.SetTextHintOK("Don't move.\nScanning document...");
-            configuration.SetOrientationLockMode(IO.Scanbot.Sdk.UI.View.Base.Configuration.CameraOrientationMode.Portrait);
+            configuration.SetOrientationLockMode(CameraOrientationMode.Portrait);
             configuration.SetFinderAspectRatio(new IO.Scanbot.Sdk.AspectRatio(21.0, 29.7)); // a4 portrait
 
             // further configuration properties
@@ -193,158 +239,76 @@ namespace ReadyToUseUI.Droid
             StartActivityForResult(chooser, IMPORT_IMAGE_REQUEST);
         }
 
-        private void ImportBarcodeImage()
-        {
-            var intent = new Intent();
-            intent.SetType("image/*");
-            intent.SetAction(Intent.ActionGetContent);
-            intent.PutExtra(Intent.ExtraLocalOnly, false);
-            intent.PutExtra(Intent.ExtraAllowMultiple, false);
-
-            var chooser = Intent.CreateChooser(intent, Texts.share_title);
-            StartActivityForResult(chooser, IMPORT_BARCODE_REQUEST);
-        }
-
-        private void ImportPdf()
-        {
-            var intent = new Intent();
-            intent.SetType("application/pdf");
-            intent.SetAction(Intent.ActionGetContent);
-            intent.PutExtra(Intent.ExtraLocalOnly, false);
-            intent.PutExtra(Intent.ExtraAllowMultiple, false);
-
-            var chooser = Intent.CreateChooser(intent, Texts.share_title);
-            StartActivityForResult(chooser, IMPORT_PDF_REQUEST);
-        }
-
         private void ViewImages() => StartActivity(new Intent(this, typeof(PagePreviewActivity)));
-
-
-        private void ScanBarcode()
-        {
-            var configuration = new BarcodeScannerConfiguration();
-            configuration.SetFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.");
-            configuration.SetBarcodeImageGenerationType(BarcodeImageGenerationType.None);
-            configuration.SetTopBarButtonsColor(Color.White);
-            configuration.SetTopBarBackgroundColor(Color.Black);
-
-            var intent = BarcodeScannerActivity.NewIntent(this, configuration);
-            StartActivityForResult(intent, QR_BARCODE_DEFAULT_REQUEST);
-        }
-
-        private void ScanWithImageBarcode()
-        {
-            var configuration = new BarcodeScannerConfiguration();
-            configuration.SetFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.");
-            configuration.SetBarcodeImageGenerationType(BarcodeImageGenerationType.VideoFrame);
-            configuration.SetTopBarButtonsColor(Color.White);
-            configuration.SetTopBarBackgroundColor(Color.Black);
-
-            var intent = BarcodeScannerActivity.NewIntent(this, configuration);
-            StartActivityForResult(intent, QR_BARCODE_WITH_IMAGE_REQUEST);
-        }
-
-        private void ScanWithSelectionOverlayBarcode()
-        {
-            var configuration = new BarcodeScannerConfiguration();
-            configuration.SetTopBarButtonsColor(Color.White);
-            configuration.SetTopBarBackgroundColor(Color.Black);
-
-            configuration.SetSelectionOverlayConfiguration(new SelectionOverlayConfiguration(
-                overlayEnabled: true,
-                automaticSelectionEnabled: false,
-                textFormat: IO.Scanbot.Sdk.Barcode.UI.BarcodeOverlayTextFormat.CodeAndType
-            ));
-
-            var intent = BarcodeScannerActivity.NewIntent(this, configuration);
-            StartActivityForResult(intent, QR_BARCODE_DEFAULT_REQUEST);
-        }
-
-        private void ScanMultipleBarcodes()
-        {
-            var configuration = new BatchBarcodeScannerConfiguration();
-            configuration.SetCameraZoomRatio(1f);
-            configuration.SetTopBarButtonsColor(Color.White);
-            configuration.SetTopBarBackgroundColor(Color.Black);
-
-            configuration.SetDetailsBackgroundColor(Color.White);
-            configuration.SetDetailsActionColor(Color.White);
-            configuration.SetDetailsBackgroundColor(Color.Gray);
-            configuration.SetDetailsPrimaryColor(Color.White);
-            configuration.SetBarcodesCountTextColor(Color.White);
-
-            configuration.SetOrientationLockMode(CameraOrientationMode.Portrait);
-
-            configuration.SetFinderTextHint("Please align the QR-/Barcode in the frame above to scan it.");
-            var intent = BatchBarcodeScannerActivity.NewIntent(this, configuration);
-            StartActivityForResult(intent, QR_BARCODE_DEFAULT_REQUEST);
-        }
 
         private void ScanMrz()
         {
             var configuration = new MRZScannerConfiguration();
-            configuration.SetSuccessBeepEnabled(false);
-            configuration.SetTopBarButtonsColor(Color.White);
-            configuration.SetTopBarBackgroundColor(Color.Black);
+            configuration.SetCancelButtonTitle("Done");
 
             var intent = MRZScannerActivity.NewIntent(this, configuration);
             StartActivityForResult(intent, SCAN_MRZ_REQUEST);
         }
 
-        private void ScanGenericDocument()
+        private void ScanEhic()
+        {
+            var configuration = new HealthInsuranceCardScannerConfiguration();
+            configuration.SetCancelButtonTitle("Done");
+
+            var intent = HealthInsuranceCardScannerActivity.NewIntent(this, configuration);
+            StartActivityForResult(intent, SCAN_EHIC_REQUEST);
+        }
+
+        private void RecongnizeGenericDocument()
         {
             var configuration = new GenericDocumentRecognizerConfiguration();
-            // Specify accepted types if needed
-            
-            //configuration.SetAcceptedDocumentTypes(new List<RootDocumentType>
-            //{
-            //    RootDocumentType.DeIdCardFront,
-            //    RootDocumentType.DeIdCardBack,
-            //    RootDocumentType.DePassport,
-            //});
+            configuration.SetCancelButtonTitle("Done");
 
-            configuration.SetTopBarButtonsInactiveColor(Color.White);
-            configuration.SetTopBarBackgroundColor(Color.Black);
+            // Specify accepted types if needed
+            configuration.SetAcceptedDocumentTypes(new List<RootDocumentType>
+            {
+                RootDocumentType.DeIdCardFront,
+                //RootDocumentType.DeIdCardBack,
+                //RootDocumentType.DePassport,
+            });
 
             // Apply the parameters for fields
-            configuration.SetFieldsDisplayConfiguration(
-                // Use constants from NormalizedFieldNames objects from the corresponding document type
-                new Dictionary<string, FieldProperties>()
-                {
-                    { DeIdCardFront.NormalizedFieldNames.Photo,  new FieldProperties("My Id card photo", FieldProperties.DisplayState.AlwaysVisible) },
-                    { DePassport.NormalizedFieldNames.Photo,  new FieldProperties("My passport photo", FieldProperties.DisplayState.AlwaysVisible) },
-                    { MRZ.NormalizedFieldNames.CheckDigitGeneral,  new FieldProperties("Check digit general", FieldProperties.DisplayState.AlwaysVisible) },
-                }
-            );
+            // Use constants from NormalizedFieldNames objects from the corresponding document type
+
+            //configuration.SetFieldsDisplayConfiguration
+            //(
+            //    new Dictionary<string, FieldProperties>()
+            //    {
+            //        { DeIdCardFront.NormalizedFieldNames.Photo,  new FieldProperties("My Id card photo", FieldProperties.DisplayState.AlwaysVisible) },
+            //        { DePassport.NormalizedFieldNames.Photo,  new FieldProperties("My passport photo", FieldProperties.DisplayState.AlwaysVisible) },
+            //        { MRZ.NormalizedFieldNames.CheckDigitGeneral,  new FieldProperties("Check digit general", FieldProperties.DisplayState.AlwaysVisible) },
+            //    }
+            //);
 
             var intent = GenericDocumentRecognizerActivity.NewIntent(this, configuration);
             StartActivityForResult(intent, GENERIC_DOCUMENT_REQUEST);
         }
 
-        private void ScanVIN()
+        private void RecogniseCheck()
         {
-            var configuration = new VinScannerConfiguration();
-            configuration.SetTopBarButtonsColor(Color.Gray);
-            configuration.SetTopBarBackgroundColor(Color.Black);
-
-            var intent = VinScannerActivity.NewIntent(this, configuration);
-            StartActivityForResult(intent, SCAN_VIN_REQUEST);
+            var config = new CheckRecognizerConfiguration();
+            config.SetCancelButtonTitle("Done");
+            config.SetAcceptedCheckStandards(new List<IO.Scanbot.Check.Entity.RootDocumentType>
+                {
+                    IO.Scanbot.Check.Entity.RootDocumentType.AUSCheck,
+                    IO.Scanbot.Check.Entity.RootDocumentType.FRACheck,
+                    IO.Scanbot.Check.Entity.RootDocumentType.INDCheck,
+                    IO.Scanbot.Check.Entity.RootDocumentType.KWTCheck,
+                    IO.Scanbot.Check.Entity.RootDocumentType.USACheck,
+                });
+            var intent = CheckRecognizerActivity.NewIntent(this, config);
+            StartActivityForResult(intent, CHECK_RECOGNIZER_REQUEST);
         }
 
-        private void ScanEULicensePlate()
-        {
-            var configuration = new LicensePlateScannerConfiguration();
-            configuration.SetTopBarButtonsColor(Color.Gray);
-            configuration.SetTopBarBackgroundColor(Color.Black);
-
-            var intent = LicensePlateScannerActivity.NewIntent(this, configuration);
-            StartActivityForResult(intent, SCAN_EU_LICENSE_REQUEST);
-        }
-
-        private void ScanData()
+        private void TextDataRecognizerTapped()
         {
             // Launch the TextDataScanner UI
-            var step = new TextDataScannerStep(
+            var dataScannerStep = new TextDataScannerStep(
                  stepTag: "tag",
                  title: string.Empty,
                  guidanceText: string.Empty,
@@ -357,20 +321,31 @@ namespace ReadyToUseUI.Droid
                  unzoomedFinderHeight: 40f,
                  allowedSymbols: new List<Java.Lang.Character>(),
                  significantShakeDelay: 0);
-                 
-            var config = new TextDataScannerConfiguration(step);
+
+            var config = new TextDataScannerConfiguration(dataScannerStep);
+            config.SetCancelButtonTitle("Done");
 
             StartActivityForResult(TextDataScannerActivity.NewIntent(this, config), SCAN_DATA_REQUEST);
         }
 
-        private void ScanEhic()
+        private void VinRecognizerTapped()
         {
-            var configuration = new HealthInsuranceCardScannerConfiguration();
-            configuration.SetTopBarButtonsColor(Color.White);
+            var configuration = new VinScannerConfiguration();
+            configuration.SetCancelButtonTitle("Done");
+
+            var intent = VinScannerActivity.NewIntent(this, configuration);
+            StartActivityForResult(intent, SCAN_VIN_REQUEST);
+        }
+
+        private void LicensePlateRecognizerTapped()
+        {
+            var configuration = new LicensePlateScannerConfiguration();
+            configuration.SetCancelButtonTitle("Done");
+            configuration.SetTopBarButtonsColor(Color.Gray);
             configuration.SetTopBarBackgroundColor(Color.Black);
 
-            var intent = HealthInsuranceCardScannerActivity.NewIntent(this, configuration);
-            StartActivityForResult(intent, SCAN_EHIC_REQUEST);
+            var intent = LicensePlateScannerActivity.NewIntent(this, configuration);
+            StartActivityForResult(intent, SCAN_EU_LICENSE_REQUEST);
         }
 
         private void ScanMedicalCertificate()
@@ -378,24 +353,8 @@ namespace ReadyToUseUI.Droid
             var configuration = new MedicalCertificateRecognizerConfiguration();
             configuration.SetTopBarBackgroundColor(Color.Black);
 
-            
             var intent = MedicalCertificateRecognizerActivity.NewIntent(this, configuration);
             StartActivityForResult(intent, SCAN_MEDICAL_CERTIFICATE_REQUEST);
-        }
-
-        private void RecogniseCheck()
-        {
-            var config = new CheckRecognizerConfiguration();
-            config.SetAcceptedCheckStandards(new List<IO.Scanbot.Check.Entity.RootDocumentType>
-                {
-                    IO.Scanbot.Check.Entity.RootDocumentType.AUSCheck,
-                    IO.Scanbot.Check.Entity.RootDocumentType.FRACheck,
-                    IO.Scanbot.Check.Entity.RootDocumentType.INDCheck,
-                    IO.Scanbot.Check.Entity.RootDocumentType.KWTCheck,
-                    IO.Scanbot.Check.Entity.RootDocumentType.USACheck,
-                });
-            var intent = CheckRecognizerActivity.NewIntent(this, config);
-            StartActivityForResult(intent, CHECK_RECOGNIZER_REQUEST);
         }
 
         /**
@@ -459,23 +418,6 @@ namespace ReadyToUseUI.Droid
                     var result = (BarcodeScanningResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
                     var fragment = BarcodeDialogFragment.CreateInstance(result);
                     fragment.Show(FragmentManager);
-                    return;
-                }
-                case QR_BARCODE_WITH_IMAGE_REQUEST:
-                {
-                    var barcode = (BarcodeScanningResult)data.GetParcelableExtra(
-                    RtuConstants.ExtraKeyRtuResult);
-                    var imagePath = data.GetStringExtra(
-                        BarcodeScannerActivity.ScannedBarcodeImagePathExtra);
-
-                    var previewPath = data.GetStringExtra(
-                        BarcodeScannerActivity.ScannedBarcodePreviewFramePathExtra);
-
-                    BarcodeResultBundle.Instance.ScanningResult = barcode;
-                    BarcodeResultBundle.Instance.ImagePath = imagePath;
-                    BarcodeResultBundle.Instance.PreviewPath = previewPath;
-
-                    StartActivity(new Intent(this, typeof(BarcodeResultActivity)));
                     return;
                 }
                 case SCAN_MRZ_REQUEST:
