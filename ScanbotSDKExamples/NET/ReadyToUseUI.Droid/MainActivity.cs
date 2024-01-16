@@ -473,20 +473,25 @@ namespace ReadyToUseUI.Droid
                 }
                 case SCAN_DATA_REQUEST:
                 {
-                    var result = data.GetParcelableArrayExtra(RtuConstants.ExtraKeyRtuResult);
-                    if (result == null || result.Count() == 0)
+                    var results = data.GetParcelableArrayExtra(RtuConstants.ExtraKeyRtuResult);
+                    if (results == null || results.Length == 0)
                     {
                         return;
                     }
-                    var textDataScannerStepResult = result.First() as TextDataScannerStepResult;
+                    var textDataScannerStepResult = results.First() as TextDataScannerStepResult;
                     Alert.Toast(this, "Text Recognizer Result: " + textDataScannerStepResult.Text);
                     return;
                 }
                 case SCAN_EU_LICENSE_REQUEST:
                     {
-                    var resultsArray = data.GetParcelableArrayListExtra(RtuConstants.ExtraKeyRtuResult);
+                    var results = data.GetParcelableArrayListExtra(RtuConstants.ExtraKeyRtuResult);
 
-                    Alert.Toast(this, $"EU_LICENSE Scanned: {resultsArray[0]}");
+                    if (results == null || results.Count == 0)
+                    {
+                            return;
+                    }
+
+                    Alert.Toast(this, $"EU_LICENSE Scanned: {results[0]}");
                     return;
                 }
                 case SCAN_MEDICAL_CERTIFICATE_REQUEST:
