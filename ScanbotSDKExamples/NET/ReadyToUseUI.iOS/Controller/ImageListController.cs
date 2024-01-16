@@ -1,13 +1,9 @@
-﻿using Foundation;
-using ReadyToUseUI.iOS.Repository;
+﻿using ReadyToUseUI.iOS.Repository;
 using ReadyToUseUI.iOS.Utils;
 using ReadyToUseUI.iOS.View;
 using ReadyToUseUI.iOS.View.Collection;
 using ReadyToUseUI.iOS.Models;
-using UIKit;
-using DocumentSDK.MAUI.Constants;
-using SBSDK = DocumentSDK.MAUI.Native.iOS.ScanbotSDK;
-using DocumentSDK.MAUI.Models;
+using ScanbotSDK.iOS;
 
 namespace ReadyToUseUI.iOS.Controller
 {
@@ -67,86 +63,119 @@ namespace ReadyToUseUI.iOS.Controller
                 return;
 
             var input = PageRepository.DocumentImageURLs;
-
             var docs = NSSearchPathDirectory.DocumentDirectory;
-            var nsurl = NSFileManager.DefaultManager.GetUrls(docs, NSSearchPathDomain.User)[0];
-
-            var controller = UIAlertController.Create(Texts.save, Texts.SaveHow, UIAlertControllerStyle.ActionSheet);
-
-            var title = "Oops!";
-            var body = "Something went wrong with saving your file. Please try again";
-
-            if (!SBSDK.IsLicenseValid())
+            var url = NSFileManager.DefaultManager.GetUrls(docs, NSSearchPathDomain.User)[0];
+            var alertController = UIAlertController.Create(Texts.save, Texts.SaveHow, UIAlertControllerStyle.ActionSheet);
+            if (!ScanbotSDKGlobal.IsLicenseValid)
             {
-                title = "Oops";
-                body = "Your license has expired";
+                var title = "Oops";
+                var body = "Your license has expired";
                 Alert.Show(this, title, body);
                 return;
             }
 
-            var pdf = CreateButton(Texts.save_without_ocr, delegate
-            {
-                var output = new NSUrl(nsurl.AbsoluteString + Guid.NewGuid() + ".pdf");
-                SBSDK.CreatePDF(input, output, PDFPageSize.FixedA4);
-                OpenDocument(output, false);
-            });
-
-            var ocr = CreateButton(Texts.save_with_ocr, delegate
-            {
-                var output = new NSUrl(nsurl.AbsoluteString + Guid.NewGuid() + ".pdf");
-                var languages = SBSDK.GetOcrConfigs().InstalledLanguages;
-                try
-                {
-                    SBSDK.PerformOCR(input, languages.ToArray(), output);
-                    OpenDocument(output, true);
-                }
-                catch (Exception ex)
-                {
-                    body = ex.Message;
-                    Alert.Show(this, title, body);
-                }
-            });
-
-            var tiff = CreateButton(Texts.Tiff, delegate
-            {
-                var output = new NSUrl(nsurl.AbsoluteString + Guid.NewGuid() + ".tiff");
-
-                // Please note that some compression types are only compatible for 1-bit encoded images (binarized black & white images)!
-                var options = new TiffOptions { OneBitEncoded = true, Compression = TiffCompressionOptions.CompressionCcittfax4, Dpi = 250 };
-
-                bool success = SBSDK.WriteTiff(input, output, options);
-
-                if (success)
-                {
-                    title = "Info";
-                    body = "TIFF file saved to: " + output.Path;
-                }
-
-                Alert.Show(this, title, body);
-            });
-
+            var pdf = CreateButton(Texts.save_without_ocr, (action) => _ = CreatePDFAsync(input, url));
+            var ocr = CreateButton(Texts.save_with_ocr, (action) => _ = PerformOCRAndCreatePDFAsync(input, url));
+            var tiff = CreateButton(Texts.Tiff, (action) => WriteTIFF(input, url));
             var cancel = CreateButton("Cancel", delegate { }, UIAlertActionStyle.Cancel);
 
-            controller.AddAction(pdf);
-            controller.AddAction(ocr);
-            controller.AddAction(tiff);
+            alertController.AddAction(pdf);
+            alertController.AddAction(ocr);
+            alertController.AddAction(tiff);
+            alertController.AddAction(cancel);
 
-            controller.AddAction(cancel);
-
-            UIPopoverPresentationController presentationPopover = controller.PopoverPresentationController;
+            UIPopoverPresentationController presentationPopover = alertController.PopoverPresentationController;
             if (presentationPopover != null)
             {
                 presentationPopover.SourceView = View;
                 presentationPopover.PermittedArrowDirections = UIPopoverArrowDirection.Up;
             }
 
-            PresentViewController(controller, true, null);
+            PresentViewController(alertController, true, null);
         }
 
-        void OpenDocument(NSUrl uri, bool ocr)
+        private async Task CreatePDFAsync(NSUrl[] inputUrls, NSUrl outputUrl)
         {
-            var controller = new PdfViewController(uri, ocr);
-            NavigationController.PushViewController(controller, true);
+            try
+            {
+                var outputPdfUrl = await DocumentUtilities.CreatePDFAsync(inputUrls, outputUrl, SBSDKPDFRendererPageSize.A4, SBSDKPDFRendererPageOrientation.Auto, ScanbotSDKUI.DefaultImageStoreEncrypter);
+                if (outputPdfUrl != null)
+                {
+                    OpenDocument(outputPdfUrl, false);
+                }
+                else
+                {
+                    ShowErrorAlert();
+                }
+            }
+            catch (Exception ex)
+            {
+                Alert.Show(this, "Create PDF", ex.Message);
+            }
+        }
+
+        private async Task PerformOCRAndCreatePDFAsync(NSUrl[] inputUrls, NSUrl outputUrl)
+        {
+            var recognitionMode = SBSDKOpticalCharacterRecognitionMode.Ml;
+            // This is the new OCR configuration with ML which doesn't require the langauges.
+            SBSDKOpticalCharacterRecognizerConfiguration ocrConfiguration = SBSDKOpticalCharacterRecognizerConfiguration.MlConfiguration;
+
+            // to use legacy configuration we have to pass the installed languages.
+            if (recognitionMode == SBSDKOpticalCharacterRecognitionMode.Legacy)
+            {
+                var installedLanguages = SBSDKResourcesManager.InstalledLanguages;
+                ocrConfiguration = SBSDKOpticalCharacterRecognizerConfiguration.LegacyConfigurationWithLanguages(installedLanguages);
+            }
+
+            SBSDKOpticalCharacterRecognizer recognizer = new SBSDKOpticalCharacterRecognizer(ocrConfiguration);
+
+            try
+            {
+                // Please check the default parameters
+                var (ocrResult, outputPdfUrl) = await DocumentUtilities.PerformOCRAsync(ocrRecognizer: recognizer, inputUrls: inputUrls, outputUrl: outputUrl, shouldGeneratePdf: true, encrypter: ScanbotSDKUI.DefaultImageStoreEncrypter);
+                if (ocrResult != null)
+                {
+                    OpenDocument(outputPdfUrl, true, ocrResult.RecognizedText);
+                }
+                else
+                {
+                    ShowErrorAlert();
+                }
+            }
+            catch (Exception ex)
+            {
+                Alert.Show(this, "Perform OCR", ex.Message);
+            }
+        }
+
+        private void WriteTIFF(NSUrl[] inputUrls, NSUrl outputUrl)
+        {
+            // Please note that some compression types are only compatible for 1-bit encoded images (binarized black & white images)!
+            var options = SBSDKTIFFImageWriterParameters.DefaultParametersForBinaryImages();
+            options.Binarize = true;
+            options.Compression = SBSDKTIFFImageWriterCompressionOptions.Ccittfax4;
+            options.Dpi = 250;
+
+            var (success, outputTiffUrl) = DocumentUtilities.CreateTIFF(options, inputUrls, outputUrl, ScanbotSDKUI.DefaultImageStoreEncrypter);
+            if (success)
+            {
+                var title = "Write TIFF";
+                var body = "TIFF file saved to: " + outputTiffUrl;
+                Alert.Show(this, title, body);
+            }
+            else
+            {
+                ShowErrorAlert();
+            }
+        }
+
+        void OpenDocument(NSUrl uri, bool ocr, string ocrResult = null)
+        {
+            InvokeOnMainThread(() =>
+            {
+                var controller = new PdfViewController(uri, ocr, ocrResult);
+                NavigationController.PushViewController(controller, true);
+            });
         }
 
         UIAlertAction CreateButton(string text, Action<UIAlertAction> action,
@@ -155,5 +184,11 @@ namespace ReadyToUseUI.iOS.Controller
             return UIAlertAction.Create(text, style, action);
         }
 
+        private void ShowErrorAlert()
+        {
+            var title = "Oops!";
+            var body = "Something went wrong with saving your file. Please try again";
+            Alert.Show(this, title, body);
+        }
     }
 }

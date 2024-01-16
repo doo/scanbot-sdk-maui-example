@@ -1,7 +1,5 @@
-﻿using DocumentSDK.MAUI.Constants;
-using DocumentSDK.MAUI.Models;
+﻿using System.Diagnostics;
 using ScanbotSDK.iOS;
-using NativeiOS = DocumentSDK.MAUI.Native.iOS;
 
 namespace ClassicComponent.iOS
 {
@@ -12,7 +10,6 @@ namespace ClassicComponent.iOS
     {
         // Use a custom temp storage directory for demo purposes.
         public static string Directory { get; private set; }
-        public static SBSDKIndexedImageStorage TempImageStorage { get; private set; }
 
         // TODO Add the Scanbot SDK license key here.
         // Please note: The Scanbot SDK will run without a license key for one minute per session!
@@ -20,32 +17,33 @@ namespace ClassicComponent.iOS
         // or may be terminated. You can get an unrestricted "no-strings-attached" 30 day trial license key for free.
         // Please submit the trial license form (https://scanbot.io/sdk/trial.html) on our website by using
         // the app identifier "io.scanbot.example.sdk.net" of this example app.
-        const string LICENSE_KEY = null;
+        const string LicenseKey = null;
 
         public override UIWindow Window { get; set; }
 
         public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
         {
-
-            Console.WriteLine("Scanbot SDK Example: Initializing Scanbot SDK...");
-            NativeiOS.ScanbotSDK.Initialize(application, LICENSE_KEY, new NativeiOS.SBSDKConfiguration
-            {
-                EnableLogging = true,
-                Encryption = new SBSDKEncryption
-                {
-                    Mode = EncryptionMode.AES256,
-                    Password = "S0m3W3irDL0ngPa$$w0rdino!!!!"
-                }
-            });
-
-            Directory = GetExampleTempStorageDir();
-            var location = new SBSDKStorageLocation(NSUrl.FromFilename(Directory));
-            TempImageStorage = new SBSDKIndexedImageStorage(location, SBSDKImageFileFormat.Jpeg, NativeiOS.ScanbotSDK.Encrypter);
-
+            InitializeScanbotSdk(application);
             return true;
         }
 
-        private static string GetExampleTempStorageDir()
+        private static void InitializeScanbotSdk(UIApplication application)
+        {
+            Debug.WriteLine("Scanbot SDK Example: Initializing Scanbot SDK...");
+            Directory = PageStoragePathForExample();
+
+            ScanbotSDKGlobal.SetLoggingEnabled(true);
+            ScanbotSDKUI.DefaultImageStoreEncrypter = new SBSDKAESEncrypter("S0m3W3irDL0ngPa$$w0rdino!!!!", SBSDKAESEncrypterMode.SBSDKAESEncrypterModeAES256);
+            if (!string.IsNullOrEmpty(LicenseKey))
+            {
+                ScanbotSDKGlobal.SetLicense(LicenseKey);
+            }
+
+            ScanbotSDKGlobal.SetupDefaultLicenseFailureHandler();
+            ScanbotSDKGlobal.SharedApplication = application;
+        }
+
+        private static string PageStoragePathForExample()
         {
             // For demo purposes we use a sub-folder in the Documents folder in the Data Container of this App, since the contents can be shared via iTunes.
             // For more detais about the iOS file system see:

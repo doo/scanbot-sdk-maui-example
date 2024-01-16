@@ -1,7 +1,6 @@
 ﻿using Android.Runtime;
 using Android.Util;
-using DocumentSDK.MAUI.Constants;
-using DocumentSDK.MAUI.Native.Droid.Configurations;
+using IO.Scanbot.Sdk.Persistence.Fileio;
 
 namespace ReadyToUseUI.Droid
 {
@@ -11,7 +10,9 @@ namespace ReadyToUseUI.Droid
     [Application(LargeHeap = true)]
     public class MainApplication : Application
     {
-        static readonly string LOG_TAG = typeof(MainApplication).Name;
+        public const bool USE_ENCRYPTION = false;
+
+        static readonly string LOG_TAG = nameof(MainApplication);
 
         // TODO Add the Scanbot SDK license key here.
         // Please note: The Scanbot SDK will run without a license key for one minute per session!
@@ -19,7 +20,7 @@ namespace ReadyToUseUI.Droid
         // You can get an unrestricted "no-strings-attached" 30 day trial license key for free.
         // Please submit the trial license form (https://scanbot.io/sdk/trial.html) on our website by using
         // the app identifier "io.scanbot.example.sdk.maui.rtu" of this example app.
-        const string LICENSE_KEY = null;
+        public const string LicenseKey = "";
 
         public MainApplication(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
         { }
@@ -27,28 +28,33 @@ namespace ReadyToUseUI.Droid
         public override void OnCreate()
         {
             base.OnCreate();
-
-            Log.Debug(LOG_TAG, "Initializing Scanbot SDK...");
-
-            // Initialization with a custom, public(!) "StorageBaseDirectory" for demo purposes - see comments below!
-            DocumentSDK.MAUI.Native.Droid.ScanbotSDK.Initialize(this, LICENSE_KEY, new SBSDKConfiguration
-            {
-                EnableLogging = true,
-                StorageBaseDirectory = GetDemoStorageBaseDirectory(),
-                Encryption = new DocumentSDK.MAUI.Models.SBSDKEncryption
-                {
-                    Mode = EncryptionMode.AES256,
-                    Password = "S0m3W3irDL0ngPa$$w0rdino!!!!"
-                }
-            });
-
-            ImageLoader.Instance = new ImageLoader(this);
-
-            // Alternative initialization with the default "StorageBaseDirectory" which will be internal and secure (recommended).
-            //SBSDK.Initialize(this, LICENSE_KEY, new SBSDKConfiguration { EnableLogging = true });
+            InitializeScanbotSdk(this);
         }
 
-        private string GetDemoStorageBaseDirectory()
+        private static void InitializeScanbotSdk(Application app)
+        {
+            Log.Debug(LOG_TAG, "Initializing Scanbot SDK...");
+            var initializer = new IO.Scanbot.Sdk.ScanbotSDKInitializer();
+
+            initializer.WithLogging(useLog: true, enableNativeLogging: false);
+            initializer.SdkFilesDirectory(app, PageStoragePathForExample(app));
+            initializer.License(app, LicenseKey);
+
+            initializer.UsePageStorageSettings(new IO.Scanbot.Sdk.Persistence.PageStorageSettings.Builder()
+                                               .ImageQuality(80)
+                                               .ImageFormat(IO.Scanbot.Sdk.Persistence.CameraImageFormat.Jpg)
+                                               .PreviewTargetMax(1500) // max size for the preview images
+                                               .Build());
+            initializer.OcrBlobsPath(app, "SBSDKLanguageData");
+            initializer.PrepareOCRLanguagesBlobs(true);
+            initializer.UseFileEncryption(enableFileEncryption: USE_ENCRYPTION, new AESEncryptedFileIOProcessor(
+                    "S0m3W3irDL0ngPa$$w0rdino!!!!",
+                    AESEncryptedFileIOProcessor.AESEncrypterMode.Aes256
+                ));
+            initializer.Initialize(app);
+        }
+
+        private static Java.IO.File PageStoragePathForExample(Application app)
         {
             // !! Please note !!
             // In this demo app we use the "ExternalStorageDirectory" which is a public(!) storage directory.
@@ -61,11 +67,11 @@ namespace ReadyToUseUI.Droid
             // For more detais about the Android file system see:
             // - https://developer.android.com/guide/topics/data/data-storage
             // - https://docs.microsoft.com/en-us/xamarin/android/platform/files/
-            var external = GetExternalFilesDir(null).AbsolutePath;
+            var external = app.GetExternalFilesDir(null).AbsolutePath;
             var path = Path.Combine(external, "scanbot-sdk-example-net-rtu_demo-storage");
             Directory.CreateDirectory(path);
 
-            return path;
+            return new Java.IO.File(path);
         }
     }
 }

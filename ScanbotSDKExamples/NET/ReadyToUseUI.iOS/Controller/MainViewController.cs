@@ -1,56 +1,74 @@
 using ReadyToUseUI.iOS.Repository;
-using ReadyToUseUI.iOS.Service;
 using ReadyToUseUI.iOS.Utils;
 using ReadyToUseUI.iOS.View;
 using ReadyToUseUI.iOS.Models;
 using ScanbotSDK.iOS;
-using UIKit;
-using SBSDK = DocumentSDK.MAUI.Native.iOS.ScanbotSDK;
+using Scanbot.ImagePicker.iOS;
 
 namespace ReadyToUseUI.iOS.Controller
 {
     public class MainViewController : UIViewController
     {
-        public MainView ContentView { get; set; }
+        private MainView contentView;
+
+        private List<ListItem> barcodeDetectors;
+        private List<ListItem> documentScanners;
+        private List<ListItem> dataDetectors;
 
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
 
-            ContentView = new MainView();
-            View = ContentView;
+            contentView = new MainView();
+            View = contentView;
 
             Title = "Scanbot SDK RTU UI Example";
 
-            ContentView.AddContent(DocumentScanner.Instance);
-            ContentView.AddContent(BarcodeDetectors.Instance);
-            ContentView.AddContent(DataDetectors.Instance);
+            barcodeDetectors = new List<ListItem>
+            {
+                new ListItem("Scan Barcodes", ScanBarcode),
+                new ListItem("Scan Batch Barcodes", ScanBarcodesInBatch),
+                new ListItem("Import and Detect Barcodes", ImportAndDetectBarcode)
+            };
 
-            ContentView.LicenseIndicator.Text = Texts.no_license_found_the_app_will_terminate_after_one_minute;
+            documentScanners = new List<ListItem>
+            {
+                new ListItem("Scan Document", ScanDocument),
+                new ListItem("Scan Document with Finder", ScanDocumentWithFinder),
+                new ListItem("Import Image", ImportImage),
+                new ListItem("View Images", OpenImageListController)
+            };
+
+            dataDetectors = new List<ListItem>
+            {
+                new ListItem("Scan MRZ",                      ScanMrz),
+                new ListItem("Scan Health Insurance card",    ScanEhic),
+                new ListItem("Generic Document Recognizer",   RecongnizeGenericDocument),
+                new ListItem("Check Recognizer",              RecognizeCheck),
+                new ListItem("Text Data Recognizer",          TextDataRecognizerTapped),
+                new ListItem("VIN Recognizer",                VinRecognizerTapped),
+                new ListItem("License Plate Recognizer",      LicensePlateRecognizerTapped)
+            };
+
+            contentView.AddContent("BARCODE DETECTORS", barcodeDetectors);
+            contentView.AddContent("DOCUMENT SCANNER", documentScanners);
+            contentView.AddContent("DATA DETECTORS", dataDetectors);
+
+            contentView.LicenseIndicator.Text = Texts.no_license_found_the_app_will_terminate_after_one_minute;
         }
 
         public override void ViewWillAppear(bool animated)
         {
             base.ViewWillAppear(animated);
 
-            if (!SBSDK.IsLicenseValid())
+            if (!ScanbotSDKGlobal.IsLicenseValid)
             {
-                ContentView.LayoutSubviews();
+                contentView.LayoutSubviews();
             }
 
-            foreach (ScannerButton button in ContentView.DocumentScanner.Buttons)
+            foreach (var button in contentView.AllButtons)
             {
                 button.Click += OnScannerButtonClick;
-            }
-
-            foreach (ScannerButton button in ContentView.BarcodeDetectors.Buttons)
-            {
-                button.Click += OnBarcodeButtonClick;
-            }
-
-            foreach (ScannerButton button in ContentView.DataDetectors.Buttons)
-            {
-                button.Click += OnDataButtonClick;
             }
         }
 
@@ -58,139 +76,117 @@ namespace ReadyToUseUI.iOS.Controller
         {
             base.ViewWillDisappear(animated);
 
-            foreach (ScannerButton button in ContentView.DocumentScanner.Buttons)
+            foreach (var button in contentView.AllButtons)
             {
                 button.Click -= OnScannerButtonClick;
             }
-
-            foreach (ScannerButton button in ContentView.BarcodeDetectors.Buttons)
-            {
-                button.Click -= OnBarcodeButtonClick;
-            }
-
-            foreach (ScannerButton button in ContentView.DataDetectors.Buttons)
-            {
-                button.Click -= OnDataButtonClick;
-            }
-        }
-
-        private void OnScanComplete(PageEventArgs e)
-        {
-            if (e.Pages.Count == 0)
-            {
-                return;
-            }
-
-            foreach (var page in e.Pages)
-            {
-                var result = page.DetectDocument(true);
-                //Console.WriteLine("Attempted document detection on imported page: " + result.Status);
-            }
-            PageRepository.Add(e.Pages);
-            OpenImageListController();
         }
 
         private void OnScannerButtonClick(object sender, EventArgs e)
         {
-            if (!SBSDK.IsLicenseValid())
+            if (!ScanbotSDKGlobal.IsLicenseValid)
             {
-                ContentView.LayoutSubviews();
+                contentView.LayoutSubviews();
                 return;
             }
 
-            var button = (ScannerButton)sender;
-
-            if (button.Data.Code == ListItemCode.ScanDocument)
+            if (sender is ScannerButton button)
             {
-                var config = SBSDKUIDocumentScannerConfiguration.DefaultConfiguration;
-
-                config.BehaviorConfiguration.CameraPreviewMode = SBSDKVideoContentMode.FitIn;
-                config.BehaviorConfiguration.IgnoreBadAspectRatio = true;
-                config.BehaviorConfiguration.MultiPageEnabled = true;
-                config.TextConfiguration.PageCounterButtonTitle = "%d Page(s)";
-                config.TextConfiguration.TextHintOK = "Don't move.\nScanning document...";
-
-                // further configuration properties
-                //config.UiConfiguration.BottomBarBackgroundColor = UIColor.Blue;
-                //config.UiConfiguration.BottomBarButtonsColor = UIColor.White;
-                //config.UiConfiguration.FlashButtonHidden = true;
-                // and so on...
-
-                var controller = SBSDKUIDocumentScannerViewController
-                    .CreateNewWithConfiguration(config, new DocumentScannerCallback(OnScanComplete));
-                controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
-                PresentViewController(controller, false, null);
-            }
-            else if (button.Data.Code == ListItemCode.ScanDocumentWithFinder)
-            {
-                var config = SBSDKUIFinderDocumentScannerConfiguration.DefaultConfiguration;
-
-                config.BehaviorConfiguration.CameraPreviewMode = SBSDKVideoContentMode.FitIn;
-                config.BehaviorConfiguration.IgnoreBadAspectRatio = true;
-                config.TextConfiguration.TextHintOK = "Don't move.\nScanning document...";
-                config.UiConfiguration.OrientationLockMode = SBSDKOrientationLock.Portrait;
-                config.UiConfiguration.FinderAspectRatio = new SBSDKAspectRatio(21.0, 29.7); // a4 portrait
-
-                // further configuration properties
-                //config.UiConfiguration.FinderLineColor = UIColor.Red;
-                //config.UiConfiguration.TopBarBackgroundColor = UIColor.Blue;
-                //config.UiConfiguration.FlashButtonHidden = true;
-                // and so on...
-
-                var controller = SBSDKUIFinderDocumentScannerViewController
-                    .CreateNewWithConfiguration(config, new FinderDocumentScannerCallback(OnScanComplete));
-                controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
-                PresentViewController(controller, false, null);
-            }
-            else if (button.Data.Code == ListItemCode.ImportImage)
-            {
-                ImagePicker.Instance.Present(this);
-                ImagePicker.Instance.Controller.FinishedPickingMedia += ImageImported;
-            }
-            else if (button.Data.Code == ListItemCode.ViewImages)
-            {
-                OpenImageListController();
+                button.Data.DoAction();
             }
         }
 
-        private void ImageImported(object sender, UIImagePickerMediaPickedEventArgs e)
+        private void ScanBarcode()
         {
-            ImagePicker.Instance.Dismiss();
-            ImagePicker.Instance.Controller.FinishedPickingMedia -= ImageImported;
+            var configuration = SBSDKUIBarcodeScannerConfiguration.DefaultConfiguration;
 
-            var page = PageRepository.Add(e.OriginalImage, new SBSDKPolygon());
-            var result = page.DetectDocument(true);
-            Console.WriteLine("Attempted document detection on imported page: " + result.Status);
+            // AR overlay configuration
+            configuration.TrackingOverlayConfiguration.OverlayEnabled = true;
+            configuration.TrackingOverlayConfiguration.AutomaticSelectionEnabled = true;
+            configuration.TrackingOverlayConfiguration.OverlayTextFormat = SBSDKBarcodeOverlayFormat.CodeAndType;
+            configuration.TrackingOverlayConfiguration.PolygonColor = UIColor.Yellow;
+            configuration.TrackingOverlayConfiguration.TextColor = UIColor.Yellow;
+            configuration.TrackingOverlayConfiguration.TextContainerColor = UIColor.Black;
 
-            OpenImageListController();
+            var controller = SBSDKUIBarcodeScannerViewController.CreateNewWithConfiguration(configuration, null);
+            controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
+
+            controller.DidDetectResults += (_, args) =>
+            {
+                string text = "No barcode detected";
+                if (args.BarcodeResults.Length > 0)
+                {
+                    controller.RecognitionEnabled = false; // stop recognition
+                    var result = args.BarcodeResults[0];
+                    text = $"Found Barcode(s):\n\n";
+
+                    foreach (var code in args.BarcodeResults)
+                    {
+                        text += code.Type.Name + ": " + code.RawTextString + "\n";
+                    }
+                }
+
+                ShowPopup(controller, text, delegate
+                {
+                    controller.RecognitionEnabled = true; // continue recognition
+                });
+            };
+
+            PresentViewController(controller, false, null);
         }
 
-        void OpenImageListController()
+        private void ScanBarcodesInBatch()
         {
-            var controller = new ImageListController();
-            NavigationController.PushViewController(controller, true);
+            var configuration = SBSDKUIBarcodesBatchScannerConfiguration.DefaultConfiguration;
+
+            // AR overlay configuration
+            configuration.TrackingOverlayConfiguration.OverlayEnabled = true;
+            configuration.TrackingOverlayConfiguration.AutomaticSelectionEnabled = true;
+            configuration.TrackingOverlayConfiguration.OverlayTextFormat = SBSDKBarcodeOverlayFormat.CodeAndType;
+            configuration.TrackingOverlayConfiguration.PolygonColor = UIColor.Yellow;
+            configuration.TrackingOverlayConfiguration.TextColor = UIColor.Yellow;
+            configuration.TrackingOverlayConfiguration.TextContainerColor = UIColor.Black;
+
+            var controller = SBSDKUIBarcodesBatchScannerViewController.CreateNewWithConfiguration(configuration, null);
+            controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
+
+            controller.DidFinish += (_, args) =>
+            {
+                string text = "No barcode detected";
+                if (args.BarcodeResults.Length > 0)
+                {
+                    controller.RecognitionEnabled = false; // stop recognition
+                    var result = args.BarcodeResults[0];
+                    text = $"Found Barcode(s):\n\n";
+
+                    foreach (var code in args.BarcodeResults)
+                    {
+                        text += code.Barcode.Type.Name + ": " + code.Barcode.RawTextString + "\n";
+                    }
+                }
+                // the controller object is out of the current view hierarchy as it is dismisssed.
+                ShowPopup(AppDelegate.NavigationController, text);
+            };
+
+            PresentViewController(controller, false, null);
         }
 
-        private void BarcodeImported(object sender, UIImagePickerMediaPickedEventArgs e)
+        private async void ImportAndDetectBarcode()
         {
-            ImagePicker.Instance.Dismiss();
-            ImagePicker.Instance.Controller.FinishedPickingMedia -= BarcodeImported;
-
             var text = "No Barcode detected.";
-
-            if (e.OriginalImage is UIImage image)
+            var image = await ImagePicker.Instance.PickImageAsync();
+            if (image != null)
             {
                 SBSDKBarcodeScannerResult[] results = new SBSDKBarcodeScanner().DetectBarCodesOnImage(image);
-
                 if (results != null && results.Length > 0)
                 {
                     text = "";
                     foreach (var item in results)
                     {
-                        text += item.Type.ToString() + ": " + item.RawTextString + "\n";
+                        text += item.Type.Name + ": " + item.RawTextString + "\n";
                     }
 
-                    var blur = new SBSDKBlurrinessEstimator().EstimateImageBlurriness(image);
+                    var blur = new SBSDKDocumentQualityAnalyzer().AnalyzeOnImage(image);
                     Console.WriteLine("Blur of imported image: " + blur);
                     text += "(Additionally, blur: " + blur + ")";
                 }
@@ -203,150 +199,240 @@ namespace ReadyToUseUI.iOS.Controller
             Alert.Show(this, "Detected Barcodes", text);
         }
 
-        void OnBarcodeButtonClick(object sender, EventArgs e)
+        private void ScanDocument()
         {
-            var button = (ScannerButton)sender;
-            if (button.Data.Code == ListItemCode.ScannerBarcode)
-            {
-                var configuration = SBSDKUIBarcodeScannerConfiguration.DefaultConfiguration;
-                var controller = SBSDKUIBarcodeScannerViewController.CreateNewWithConfiguration(configuration, Delegates.Barcode);
-                controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
-                configuration.SelectionOverlayConfiguration.OverlayEnabled = true;
-                configuration.SelectionOverlayConfiguration.AutomaticSelectionEnabled = true;
-                configuration.SelectionOverlayConfiguration.OverlayTextFormat = SBSDKBarcodeOverlayFormat.Code;
-                configuration.SelectionOverlayConfiguration.PolygonColor = UIColor.Yellow;
-                configuration.SelectionOverlayConfiguration.TextColor = UIColor.Yellow;
-                configuration.SelectionOverlayConfiguration.TextContainerColor = UIColor.Black;
-                PresentViewController(controller, false, null);
-            }
-            else if (button.Data.Code == ListItemCode.ScannerBatchBarcode)
-            {
-                var configuration = SBSDKUIBarcodesBatchScannerConfiguration.DefaultConfiguration;
-                var controller = SBSDKUIBarcodesBatchScannerViewController.CreateNewWithConfiguration(configuration, Delegates.BatchBarcode);
-                controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
-                configuration.SelectionOverlayConfiguration.OverlayEnabled = true;
-                configuration.SelectionOverlayConfiguration.AutomaticSelectionEnabled = true;
-                configuration.SelectionOverlayConfiguration.OverlayTextFormat = SBSDKBarcodeOverlayFormat.Code;
-                configuration.SelectionOverlayConfiguration.PolygonColor = UIColor.Yellow;
-                configuration.SelectionOverlayConfiguration.TextColor = UIColor.Yellow;
-                configuration.SelectionOverlayConfiguration.TextContainerColor = UIColor.Black;
-                PresentViewController(controller, false, null);
-            }
-            else if (button.Data.Code == ListItemCode.ScannerImportBarcode)
-            {
-                ImagePicker.Instance.Controller.FinishedPickingMedia += BarcodeImported;
-                ImagePicker.Instance.Present(this);
-            }
+            var config = SBSDKUIDocumentScannerConfiguration.DefaultConfiguration;
+
+            config.BehaviorConfiguration.CameraPreviewMode = SBSDKVideoContentMode.FitIn;
+            config.BehaviorConfiguration.IgnoreBadAspectRatio = true;
+            config.BehaviorConfiguration.MultiPageEnabled = true;
+            config.TextConfiguration.PageCounterButtonTitle = "%d Page(s)";
+            config.TextConfiguration.TextHintOK = "Don't move.\nScanning document...";
+
+            // further configuration properties
+            //config.UiConfiguration.BottomBarBackgroundColor = UIColor.Blue;
+            //config.UiConfiguration.BottomBarButtonsColor = UIColor.White;
+            //config.UiConfiguration.FlashButtonHidden = true;
+            // and so on...
+
+            var controller = SBSDKUIDocumentScannerViewController
+                .CreateNewWithConfiguration(config, null);
+
+            controller.DidFinishWithDocument += OnScanComplete;
+            controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
+            PresentViewController(controller, false, null);
         }
 
-        SBSDKAspectRatio[] MRZRatios = { new SBSDKAspectRatio(85.0, 54.0) };
-
-        private void OnDataButtonClick(object sender, EventArgs e)
+        private void ScanDocumentWithFinder()
         {
-            if (!SBSDK.IsLicenseValid())
+            var config = SBSDKUIFinderDocumentScannerConfiguration.DefaultConfiguration;
+
+            config.BehaviorConfiguration.CameraPreviewMode = SBSDKVideoContentMode.FitIn;
+            config.BehaviorConfiguration.IgnoreBadAspectRatio = true;
+            config.TextConfiguration.TextHintOK = "Don't move.\nScanning document...";
+            config.UiConfiguration.OrientationLockMode = SBSDKOrientationLock.Portrait;
+            config.UiConfiguration.FinderAspectRatio = new SBSDKAspectRatio(21.0, 29.7); // a4 portrait
+
+            // further configuration properties
+            //config.UiConfiguration.FinderLineColor = UIColor.Red;
+            //config.UiConfiguration.TopBarBackgroundColor = UIColor.Blue;
+            //config.UiConfiguration.FlashButtonHidden = true;
+            // and so on...
+
+            var controller = SBSDKUIFinderDocumentScannerViewController
+                .CreateNewWithConfiguration(config, null);
+
+            controller.DidFinishWithDocument += OnScanComplete;
+            controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
+            PresentViewController(controller, false, null);
+        }
+
+        private void OnScanComplete(object _, DidFinishWithDocumentEventArgs args)
+        {
+            if (args.Document.NumberOfPages == 0)
             {
-                ContentView.LayoutSubviews();
                 return;
             }
 
-            var button = (ScannerButton)sender;
-
-            if (button.Data.Code == ListItemCode.ScannerMRZ)
+            for (int i = 0; i < args.Document.NumberOfPages; ++i)
             {
-                var config = new SBSDKUIMRZScannerConfiguration();
-                config.TextConfiguration.CancelButtonTitle = "Done";
-                config.BehaviorConfiguration.FlashEnabled = true;
-                config.UiConfiguration.TopBarButtonsColor = UIColor.Green;
-                var controller = SBSDKUIMRZScannerViewController
-                    .CreateNewWithConfiguration(config, Delegates.MRZ.WithViewController(this));
-                
-                PresentViewController(controller, true, null);
+                var page = args.Document.PageAtIndex(i);
+                var result = page.DetectDocument(applyPolygonIfOkay: true);
+                PageRepository.Add(page);
             }
-            else if (button.Data.Code == ListItemCode.ScannerEHIC)
-            {
-                var configuration = SBSDKUIHealthInsuranceCardScannerConfiguration.DefaultConfiguration;
+            OpenImageListController();
+        }
 
-                configuration.TextConfiguration.CancelButtonTitle = "Done";
-                configuration.BehaviorConfiguration.FlashEnabled = true;
-                configuration.UiConfiguration.TopBarButtonsColor = UIColor.Green;
-                var controller = SBSDKUIHealthInsuranceCardScannerViewController
-                    .CreateNewWithConfiguration(configuration, Delegates.EHIC);
+        private async void ImportImage()
+        {
+            var image = await ImagePicker.Instance.PickImageAsync();
+            var page = PageRepository.Add(image, new SBSDKPolygon());
+            var result = page.DetectDocument(true);
+            Console.WriteLine("Attempted document detection on imported page: " + result.Status);
 
-                controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
-                PresentViewController(controller, false, null);
-            }
-            else if (button.Data.Code == ListItemCode.GenericDocumentRecognizer)
+            OpenImageListController();
+        }
+
+        private void OpenImageListController()
+        {
+            var controller = new ImageListController();
+            NavigationController.PushViewController(controller, true);
+        }
+
+        private void ScanMrz()
+        {
+            var config = SBSDKUIMRZScannerConfiguration.DefaultConfiguration;
+            config.TextConfiguration.CancelButtonTitle = "Done";
+            var controller = SBSDKUIMRZScannerViewController
+                .CreateNewWithConfiguration(config, null);
+
+            controller.DidDetect += (viewController, args) =>
             {
-                var configuration = SBSDKUIGenericDocumentRecognizerConfiguration.DefaultConfiguration;
-                configuration.BehaviorConfiguration.DocumentType = SBSDKUIDocumentType.IdCardFrontBackDE;
-                var controller = SBSDKUIGenericDocumentRecognizerViewController.CreateNewWithConfiguration(configuration, Delegates.GDR.WithPresentingViewController(this));
-                PresentViewController(controller, false, null);
-            }
-            else if (button.Data.Code == ListItemCode.CheckRecognizer)
+                controller.RecognitionEnabled = false;
+                controller.DismissViewController(true, delegate
+                {
+                    ShowPopup(this, args.Zone.StringRepresentation);
+                });
+            };
+
+            PresentViewController(controller, true, null);
+        }
+
+        private void ScanEhic()
+        {
+            var configuration = SBSDKUIHealthInsuranceCardScannerConfiguration.DefaultConfiguration;
+            configuration.TextConfiguration.CancelButtonTitle = "Done";
+            var controller = SBSDKUIHealthInsuranceCardScannerViewController
+                .CreateNewWithConfiguration(configuration, null);
+
+            controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
+            controller.DidDetectCard += (_, args) =>
             {
-                var configuration = SBSDKUICheckRecognizerConfiguration.DefaultConfiguration;
-                configuration.BehaviorConfiguration.AcceptedCheckStandards = new SBSDKCheckDocumentRootType[] {
+                ShowPopup(controller, args.Card.StringRepresentation);
+            };
+            PresentViewController(controller, false, null);
+        }
+
+        private void RecongnizeGenericDocument()
+        {
+            var configuration = SBSDKUIGenericDocumentRecognizerConfiguration.DefaultConfiguration;
+            configuration.TextConfiguration.CancelButtonTitle = "Done";
+            configuration.BehaviorConfiguration.DocumentType = SBSDKUIDocumentType.IdCardFrontBackDE;
+            var controller = SBSDKUIGenericDocumentRecognizerViewController.CreateNewWithConfiguration(configuration, null);
+
+            controller.DidFinishWithDocuments += (_, args) =>
+            {
+                if (args.Documents == null || args.Documents.Length == 0)
+                {
+                    return;
+                }
+
+                // We only take the first document for simplicity
+                var firstDocument = args.Documents.First();
+                var fields = firstDocument.Fields
+                    .Where((f) => f != null && f.Type != null && f.Type.Name != null && f.Value != null && f.Value.Text != null)
+                    .Select((f) => string.Format("{0}: {1}", f.Type.Name, f.Value.Text))
+                    .ToList();
+                var description = string.Join("\n", fields);
+                ShowPopup(this, description);
+            };
+            PresentViewController(controller, false, null);
+        }
+
+        private void RecognizeCheck()
+        {
+            var configuration = SBSDKUICheckRecognizerConfiguration.DefaultConfiguration;
+            configuration.TextConfiguration.CancelButtonTitle = "Done";
+            configuration.BehaviorConfiguration.AcceptedCheckStandards = new SBSDKCheckDocumentRootType[] {
                     SBSDKCheckDocumentRootType.AusCheck(),
                     SBSDKCheckDocumentRootType.FraCheck(),
                     SBSDKCheckDocumentRootType.IndCheck(),
                     SBSDKCheckDocumentRootType.KwtCheck(),
                     SBSDKCheckDocumentRootType.UsaCheck(),
                 };
-                var controller = SBSDKUICheckRecognizerViewController.CreateNewWithConfiguration(configuration, Delegates.Check.WithPresentingViewController(this));
-                PresentViewController(controller, false, null);
-            }
-        }
-
-    }
-
-    public class PageEventArgs : EventArgs
-    {
-        public bool IsMultiPage => Pages.Count > 1;
-
-        public SBSDKUIPage Page => Pages[0];
-
-        public List<SBSDKUIPage> Pages { get; set; }
-    }
-
-    public class DocumentScannerCallback : SBSDKUIDocumentScannerViewControllerDelegate
-    {
-        private Action<PageEventArgs> selected;
-
-        public DocumentScannerCallback(Action<PageEventArgs> selected)
-        {
-            this.selected = selected;
-        }
-
-        public override void DidFinishWithDocument(SBSDKUIDocumentScannerViewController viewController, SBSDKUIDocument document)
-        {
-            selected?.Invoke(ToPageEventArgs(document));
-        }
-
-        public static PageEventArgs ToPageEventArgs(SBSDKUIDocument document)
-        {
-            var pages = new List<SBSDKUIPage>();
-            for (var i = 0; i < document.NumberOfPages; ++i)
+            var controller = SBSDKUICheckRecognizerViewController.CreateNewWithConfiguration(configuration, null);
+            controller.DidRecognizeCheck += (_, args) =>
             {
-                pages.Add(document.PageAtIndex(i));
+                if (args.Result == null || args.Result.Document == null)
+                {
+                    return;
+                }
+
+                var fields = args.Result.Document.Fields
+                    .Where((f) => f != null && f.Type != null && f.Type.Name != null && f.Value != null && f.Value.Text != null)
+                    .Select((f) => string.Format("{0}: {1}", f.Type.Name, f.Value.Text))
+                    .ToList();
+                var description = string.Join("\n", fields);
+                Console.WriteLine(description);
+
+                controller.DismissViewController(true, null);
+
+                ShowPopup(this, description);
+            };
+            PresentViewController(controller, false, null);
+        }
+
+        private void TextDataRecognizerTapped()
+        {
+            var configuration = SBSDKUITextDataScannerConfiguration.DefaultConfiguration;
+            configuration.TextConfiguration.CancelButtonTitle = "Done";
+            var scanner = SBSDKUITextDataScannerViewController.CreateNewWithConfiguration(configuration, null);
+            scanner.DidFinishStepWithResult += (_, args) =>
+            {
+                scanner.DismissViewController(true, () => Alert.Show(this, "Result Text:", args?.Result?.Text));
+            };
+
+            PresentViewController(scanner, true, null);
+        }
+
+        private void VinRecognizerTapped()
+        {
+            var configuration = SBSDKUIVINScannerConfiguration.DefaultConfiguration;
+            configuration.TextConfiguration.CancelButtonTitle = "Done";
+            var scanner = SBSDKUIVINScannerViewController.CreateNewWithConfiguration(configuration, null);
+            scanner.DidFinishWithResult += (_, args) =>
+            {
+                scanner.DismissViewController(true, () => Alert.Show(this, "Result Text:", args?.Result?.Text));
+            };
+
+            PresentViewController(scanner, true, null);
+        }
+
+        private void LicensePlateRecognizerTapped()
+        {
+            var configuration = SBSDKUILicensePlateScannerConfiguration.DefaultConfiguration;
+            configuration.TextConfiguration.CancelButtonTitle = "Done";
+            var scanner = SBSDKUILicensePlateScannerViewController.CreateNewWithConfiguration(configuration, null);
+            scanner.DidRecognizeLicensePlate += (_, args) =>
+            {
+                Alert.Show(this, "Result Text:", args?.Result?.RawString);
+            };
+            PresentViewController(scanner, true, null);
+        }
+
+        private static bool IsPresented { get; set; }
+
+        public static void ShowPopup(UIViewController controller, string text, Action onClose = null)
+        {
+            if (IsPresented)
+            {
+                return;
             }
 
-            return new PageEventArgs { Pages = pages };
+            IsPresented = true;
 
-        }
-    }
+            var images = new List<UIImage>();
+            var popover = new PopupController(text, images);
 
-    public class FinderDocumentScannerCallback : SBSDKUIFinderDocumentScannerViewControllerDelegate
-    {
-        private Action<PageEventArgs> selected;
-
-        public FinderDocumentScannerCallback(Action<PageEventArgs> selected)
-        {
-            this.selected = selected;
-        }
-
-        public override void DidFinishWithDocument(SBSDKUIFinderDocumentScannerViewController viewController, SBSDKUIDocument document)
-        {
-            selected?.Invoke(DocumentScannerCallback.ToPageEventArgs(document));
+            controller.PresentViewController(popover, true, delegate
+            {
+                popover.Content.CloseButton.Click += delegate
+                {
+                    IsPresented = false;
+                    popover.Dismiss();
+                    onClose?.Invoke();
+                };
+            });
         }
     }
 }

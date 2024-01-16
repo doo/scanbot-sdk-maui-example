@@ -1,7 +1,4 @@
-﻿using CoreGraphics;
-using Foundation;
-using ScanbotSDK.iOS;
-using UIKit;
+﻿using ScanbotSDK.iOS;
 
 namespace ReadyToUseUI.iOS.View.Collection
 {

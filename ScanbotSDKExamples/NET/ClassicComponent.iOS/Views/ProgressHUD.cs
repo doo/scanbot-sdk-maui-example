@@ -1,3 +1,4 @@
+using ClassicComponent.iOS.Utils;
 using ObjCRuntime;
 
 namespace ClassicComponent.iOS
@@ -8,31 +9,30 @@ namespace ClassicComponent.iOS
         {
         }
 
-        public static ProgressHUD Load()
+        public static ProgressHUD Load(CGRect frame)
         {
             var array = NSBundle.MainBundle.LoadNib("ProgressHUD", null, null);
-            return Runtime.GetNSObject<ProgressHUD>(array.ValueAt(0));
+            var view = Runtime.GetNSObject<ProgressHUD>(array.ValueAt(0));
+            view.Frame = frame;
+            view.BackgroundColor = UIColor.Black.ColorWithAlpha(0.5f);
+            Utilities.CreateRoundedCardView(view.loadingIndicator);
+            return view;
         }
 
-        public void Show()
+        public void ToggleLoading(bool isBusy)
         {
-            UIWindow mainWindow = UIApplication.SharedApplication.KeyWindow;
-            mainWindow.AddSubview(this);
-
-            Frame = mainWindow.Frame;
-            LayoutIfNeeded();
-        }
-
-        public void Hide()
-        {
-            UIWindow mainWindow = UIApplication.SharedApplication.KeyWindow;
-            foreach (UIView subView in mainWindow.Subviews)
+            InvokeOnMainThread(() =>
             {
-                if (subView.IsKindOfClass(Class))
+                if (isBusy)
                 {
-                    subView.RemoveFromSuperview();
+                    var window = (UIApplication.SharedApplication.Delegate as AppDelegate)?.Window;
+                    window?.AddSubview(this);
                 }
-            }
+                else
+                {
+                    this.RemoveFromSuperview();
+                }
+            });
         }
     }
 }

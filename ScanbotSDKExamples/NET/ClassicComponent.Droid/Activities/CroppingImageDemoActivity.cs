@@ -1,50 +1,45 @@
 ﻿using Android.Graphics;
 using Android.Views;
 using Android.Content;
-using Android.Util;
 
-using AndroidNetUri = Android.Net.Uri;
 using AndroidX.AppCompat.App;
 using IO.Scanbot.Sdk.UI;
 using IO.Scanbot.Sdk.Core.Contourdetector;
 using IO.Scanbot.Sdk.Process;
-
+using System.Diagnostics;
 
 namespace ClassicComponent.Droid
 {
     [Activity(Theme = "@style/Theme.AppCompat")]
     public class CroppingImageDemoActivity : AppCompatActivity
     {
-        static string LOG_TAG = typeof(CroppingImageDemoActivity).Name;
+        public static string EXTRAS_ARG_IMAGE_FILE_URI = "EXTRAS_ARG_IMAGE_FILE_URI";
 
-        public static String EXTRAS_ARG_IMAGE_FILE_URI = "EXTRAS_ARG_IMAGE_FILE_URI";
-
-        static IList<PointF> DEFAULT_POLYGON = new List<PointF>();
-
-        IO.Scanbot.Sdk.ScanbotSDK SDK;
-
-        static CroppingImageDemoActivity()
+        private static IList<PointF> defaultPolygon = new List<PointF>
         {
-            DEFAULT_POLYGON.Add(new PointF(0, 0));
-            DEFAULT_POLYGON.Add(new PointF(1, 0));
-            DEFAULT_POLYGON.Add(new PointF(1f, 1f));
-            DEFAULT_POLYGON.Add(new PointF(0, 1));
-        }
+            new PointF(0, 0),
+            new PointF(1, 0),
+            new PointF(1f, 1f),
+            new PointF(0, 1)
+        };
 
-        AndroidNetUri imageUri;
-        Bitmap originalBitmap;
-        EditPolygonImageView editPolygonImageView;
-        MagnifierView scanbotMagnifierView;
-        ProgressBar processImageProgressBar;
-        View cancelBtn, doneBtn, rotateCWButton;
+        private IO.Scanbot.Sdk.ScanbotSDK SDK;
+        private Android.Net.Uri imageUri;
+        private Bitmap originalBitmap;
+        private EditPolygonImageView editPolygonImageView;
+        private MagnifierView scanbotMagnifierView;
+        private ProgressBar processImageProgressBar;
+        private View cancelBtn, doneBtn, rotateCWButton;
 
-        int rotationDegrees = 0;
-        long lastRotationEventTs = 0L;
+        private int rotationDegrees = 0;
+        private long lastRotationEventTs = 0L;
 
 
-        protected override void OnCreate(Bundle savedInstanceState)
+        protected override async void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+
+            SDK = new IO.Scanbot.Sdk.ScanbotSDK(this);
 
             SetContentView(Resource.Layout.CroppingImageDemo);
 
@@ -55,8 +50,8 @@ namespace ClassicComponent.Droid
             SupportActionBar.SetCustomView(Resource.Layout.CroppingActionBarView);
 
             editPolygonImageView = FindViewById<EditPolygonImageView>(Resource.Id.scanbotEditImageView);
-            scanbotMagnifierView = FindViewById<MagnifierView>(Resource.Id.scanbotMagnifierView);
             processImageProgressBar = FindViewById<ProgressBar>(Resource.Id.processImageProgressBar);
+            scanbotMagnifierView = FindViewById<MagnifierView>(Resource.Id.scanbotMagnifierView);
 
             cancelBtn = FindViewById<View>(Resource.Id.cancelButton);
             cancelBtn.Click += delegate
@@ -85,104 +80,60 @@ namespace ClassicComponent.Droid
                 lastRotationEventTs = Java.Lang.JavaSystem.CurrentTimeMillis();
             };
 
-            string imageFileUri = Intent.Extras.GetString(EXTRAS_ARG_IMAGE_FILE_URI);
-            imageUri = AndroidNetUri.Parse(imageFileUri);
-            InitImageView();
-
-            SDK = new IO.Scanbot.Sdk.ScanbotSDK(this);
-        }
-
-        void InitImageView()
-        {
-            Task.Run(() =>
+            var resizedBitmap = await Task.Run(() =>
             {
-                try
-                {
-                    var polygon = DEFAULT_POLYGON;
+                string imageFileUri = Intent.Extras.GetString(EXTRAS_ARG_IMAGE_FILE_URI);
+                imageUri = Android.Net.Uri.Parse(imageFileUri);
 
-                    originalBitmap = ImageLoader.Instance.Load(imageUri);
-                    Bitmap resizedBitmap = ImageUtils.ResizeImage(originalBitmap, 1000, 1000);
-
-                    RunOnUiThread(() =>
-                    {
-                        // important! first set the image and then the detected polygon and lines!
-                        editPolygonImageView.SetImageBitmap(resizedBitmap);
-                        // set up the MagnifierView every time when editPolygonView is set with a new image.
-                        scanbotMagnifierView.SetupMagnifier(editPolygonImageView);
-                    });
-
-                    var detector = SDK.CreateContourDetector();
-                    // Since we just need detected polygon and lines here, we use ContourDetector class from the native SDK namespace.
-                    var detectionResult = detector.Detect(resizedBitmap);
-                    var detectionStatus = detectionResult.Status;
-                    if (detectionStatus == DetectionStatus.Ok || detectionStatus == DetectionStatus.OkButBadAngles ||
-                        detectionStatus == DetectionStatus.OkButTooSmall || detectionStatus == DetectionStatus.OkButBadAspectRatio)
-                    {
-                        polygon = detectionResult.PolygonF;
-                        DebugLog("Detected polygon: " + polygon);
-                    }
-
-                    RunOnUiThread(() =>
-                    {
-                        editPolygonImageView.Polygon = polygon;
-                        editPolygonImageView.SetLines(detectionResult.HorizontalLines, detectionResult.VerticalLines);
-                    });
-
-                }
-                catch (Exception e)
-                {
-                    ErrorLog("Could not initialize image view", e);
-                }
+                originalBitmap = new ImageLoader(this).Load(imageUri);
+                return ImageUtils.ResizeImage(originalBitmap, 1000, 1000);
             });
+
+            var polygon = defaultPolygon;
+            var detector = SDK.CreateContourDetector();
+            // Since we just need detected polygon and lines here, we use ContourDetector class from the native SDK namespace.
+            var detectionResult = detector.Detect(resizedBitmap);
+            var detectionStatus = detectionResult.Status;
+            if (detectionStatus == DetectionStatus.Ok || detectionStatus == DetectionStatus.OkButBadAngles ||
+                detectionStatus == DetectionStatus.OkButTooSmall || detectionStatus == DetectionStatus.OkButBadAspectRatio)
+            {
+                polygon = detectionResult.PolygonF;
+                Debug.WriteLine("Detected polygon: " + polygon);
+            }
+
+            editPolygonImageView.Polygon = polygon;
+            editPolygonImageView.SetLines(detectionResult.HorizontalLines, detectionResult.VerticalLines);
+            // important! first set the image and then the detected polygon and lines!
+            editPolygonImageView.SetImageBitmap(resizedBitmap);
+            // set up the MagnifierView every time when editPolygonView is set with a new image.
+            scanbotMagnifierView.SetupMagnifier(editPolygonImageView);
         }
 
-        void CropAndSaveImage()
+        private async void CropAndSaveImage()
         {
             processImageProgressBar.Visibility = ViewStates.Visible;
             cancelBtn.Visibility = ViewStates.Gone;
             doneBtn.Visibility = ViewStates.Gone;
             rotateCWButton.Visibility = ViewStates.Gone;
 
-            Task.Run(() =>
+            var documentImgUri = await Task.Run(() =>
             {
-                try
-                {
-                    var detector = SDK.CreateContourDetector();
-                    var documentImage = SDK.ImageProcessor().ProcessBitmap(originalBitmap, new CropOperation(editPolygonImageView.Polygon), false);
-                    documentImage = DocumentSDK.MAUI.Native.Droid.ScanbotSDK.RotateImage(documentImage, -rotationDegrees);
-                    var documentImgUri = MainApplication.TempImageStorage.AddImage(documentImage);
+                var detector = SDK.CreateContourDetector();
+                var documentImage = SDK.ImageProcessor().ProcessBitmap(originalBitmap, new CropOperation(editPolygonImageView.Polygon));
 
-                    RunOnUiThread(() =>
-                    {
-                        var extras = new Bundle();
-                        extras.PutString(EXTRAS_ARG_IMAGE_FILE_URI, documentImgUri.ToString());
-                        var intent = new Intent();
-                        intent.PutExtras(extras);
-                        SetResult(Result.Ok, intent);
-                        Finish();
-                    });
-                }
-                catch (Exception e)
-                {
-                    ErrorLog("Could not apply image changes", e);
-                }
+                var matrix = new Matrix();
+                matrix.PostRotate(rotationDegrees);
+                documentImage = Bitmap.CreateBitmap(documentImage, 0, 0, documentImage.Width, documentImage.Height, matrix, true);
+
+                return TempImageStorage.Instance.AddImage(documentImage);
             });
-        }
 
-
-        void DebugLog(string msg)
-        {
-            Log.Debug(LOG_TAG, msg);
-        }
-
-        void ErrorLog(string msg)
-        {
-            Log.Error(LOG_TAG, msg);
-        }
-
-        void ErrorLog(string msg, Exception ex)
-        {
-            Log.Error(LOG_TAG, Java.Lang.Throwable.FromException(ex), msg);
+            var extras = new Bundle();
+            extras.PutString(EXTRAS_ARG_IMAGE_FILE_URI, documentImgUri.ToString());
+            var intent = new Intent();
+            intent.PutExtras(extras);
+            SetResult(Result.Ok, intent);
+            Finish();   
         }
     }
 }

@@ -5,10 +5,12 @@ using ReadyToUseUI.Droid.Views;
 
 namespace ReadyToUseUI.Droid.Fragments
 {
-    public class MRZDialogFragment : BaseDialogFragment
+    internal class MRZDialogFragment : BaseDialogFragment
     {
         public const string MRZ_DATA = "MRZ_DATA";
         public const string NAME = "MRZDialogFragment";
+
+        private MRZGenericDocument result;
 
         public static MRZDialogFragment CreateInstance(MRZGenericDocument data)
         {
@@ -19,8 +21,6 @@ namespace ReadyToUseUI.Droid.Fragments
 
             return fragment;
         }
-
-        MRZGenericDocument result;
 
         public override View AddContentView(LayoutInflater inflater, ViewGroup container)
         {
