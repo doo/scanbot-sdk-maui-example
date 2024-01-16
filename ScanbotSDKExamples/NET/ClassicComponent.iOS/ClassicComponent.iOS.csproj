@@ -21,7 +21,7 @@
         <CreatePackage>false</CreatePackage>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="ScanbotSDK.NET" Version="4.2.0-alpha.1" />
+        <PackageReference Include="ScanbotSDK.NET" Version="4.2.0-alpha.2" />
         <PackageReference Include="Scanbot.Xamarin.ImagePicker" Version="0.0.3-beta.1" />
     </ItemGroup>
     <ItemGroup>
