@@ -96,7 +96,7 @@ namespace ClassicComponent.Droid.Activities
 
         public override bool HandleResult(CheckRecognizerResult result, SdkLicenseError error)
         {
-            if (result.Status == IO.Scanbot.Check.Model.CheckRecognizerStatus.Success)
+            if (result?.Status == IO.Scanbot.Check.Model.CheckRecognizerStatus.Success)
             {
                 _frameHandler.Enabled = false;
                 _context.StartActivity(CheckRecognizerResultActivity.NewIntent(_context, result));
