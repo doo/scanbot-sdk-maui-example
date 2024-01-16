@@ -64,8 +64,10 @@ namespace ClassicComponent.Droid
             imageProcessingProgress = FindViewById<ProgressBar>(Resource.Id.imageProcessingProgress);
 
             var contourDetector = scanbotSDK.CreateContourDetector();
-            var contourDetectorFrameHandler = ContourDetectorFrameHandler.Attach(cameraView, contourDetector);
-
+            var frameHandlerWrapper = new ContourDetectorFrameHandlerWrapper(cameraView.Context, contourDetector);
+            frameHandlerWrapper.AddResultHandler(ShowUserGuidance);
+            cameraView.Attach(frameHandlerWrapper);
+            ScanbotCameraXViewWrapper.Attach(cameraView, frameHandlerWrapper);
 
             // Add an additional custom contour detector to add user guidance text
             polygonView = FindViewById<PolygonView>(Resource.Id.scanbotPolygonView);
@@ -73,7 +75,7 @@ namespace ClassicComponent.Droid
             polygonView.SetStrokeColorOK(Color.Green);
 
             // Attach the default polygon result handler, to draw the default polygon
-            contourDetectorFrameHandler.AddResultHandler(polygonView.ContourDetectorResultHandler);
+            frameHandlerWrapper.FrameHandler.AddResultHandler(polygonView.ContourDetectorResultHandler);
 
             autoSnappingController = DocumentAutoSnappingController.Attach(cameraView, contourDetector);
 
@@ -178,7 +180,7 @@ namespace ClassicComponent.Droid
             return false;
         }
 
-        private void ProcessTakenPicture(byte[] image, int imageOrientation)
+        private void ProcessTakenPicture(byte[] image, int imageOrientation, IList<PointF> finderRect)
         {
             // Here we get the full image from the camera and apply document detection on it.
             // Implement a suitable async(!) detection and image handling here.
@@ -272,16 +274,16 @@ namespace ClassicComponent.Droid
 
     public class PictureCallback : Java.Lang.Object, IBasePictureCallback
     {
-        private Action<byte[], int> PictureTaken;
+        private Action<byte[], int, IList<PointF>> PictureTaken;
 
-        public PictureCallback(Action<byte[], int> pictureTaken)
+        public PictureCallback(Action<byte[], int, IList<PointF>> pictureTaken)
         {
             PictureTaken = pictureTaken;
         }
 
         public void OnPictureTakenInternal(byte[] image, int imageOrientation, IList<PointF> finderRect, bool isCapturedAutomatically)
         {
-            PictureTaken?.Invoke(image, imageOrientation);
+            PictureTaken?.Invoke(image, imageOrientation, finderRect);
         }
     }
 
