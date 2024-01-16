@@ -3,7 +3,6 @@ using ReadyToUseUI.iOS.Utils;
 using ReadyToUseUI.iOS.View;
 using ReadyToUseUI.iOS.Models;
 using ScanbotSDK.iOS;
-using System.Diagnostics;
 using Scanbot.ImagePicker.iOS;
 
 namespace ReadyToUseUI.iOS.Controller
@@ -335,8 +334,6 @@ namespace ReadyToUseUI.iOS.Controller
                     .Select((f) => string.Format("{0}: {1}", f.Type.Name, f.Value.Text))
                     .ToList();
                 var description = string.Join("\n", fields);
-                Debug.WriteLine(description);
-
                 ShowPopup(this, description);
             };
             PresentViewController(controller, false, null);
@@ -377,8 +374,6 @@ namespace ReadyToUseUI.iOS.Controller
 
         private void TextDataRecognizerTapped()
         {
-            Debug.WriteLine("ScanbotSDK Demo: Starting text recognizer controller ...");
-
             var configuration = SBSDKUITextDataScannerConfiguration.DefaultConfiguration;
             configuration.TextConfiguration.CancelButtonTitle = "Done";
             var scanner = SBSDKUITextDataScannerViewController.CreateNewWithConfiguration(configuration, null);
@@ -392,8 +387,6 @@ namespace ReadyToUseUI.iOS.Controller
 
         private void VinRecognizerTapped()
         {
-            Debug.WriteLine("ScanbotSDK Demo: Starting VIN recognizer controller ...");
-
             var configuration = SBSDKUIVINScannerConfiguration.DefaultConfiguration;
             configuration.TextConfiguration.CancelButtonTitle = "Done";
             var scanner = SBSDKUIVINScannerViewController.CreateNewWithConfiguration(configuration, null);

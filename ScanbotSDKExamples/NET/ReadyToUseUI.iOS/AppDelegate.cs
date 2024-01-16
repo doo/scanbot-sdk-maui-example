@@ -13,6 +13,8 @@ namespace ReadyToUseUI.iOS
 
         public override UIWindow Window { get; set; }
 
+        private const int ImageQuality = 80;
+
         /// <summary>
         /// Returns the navigation controller object throughout the app.
         /// </summary>
@@ -58,8 +60,7 @@ namespace ReadyToUseUI.iOS
             Debug.WriteLine("Scanbot SDK Example: Initializing Scanbot SDK...");
 
             ScanbotSDKGlobal.SetLoggingEnabled(true);
-            SBSDKUIPageFileStorage.DefaultStorage = new SBSDKUIPageFileStorage(80, new SBSDKStorageLocation(NSUrl.FromFilename(PageStoragePathForExample())));
-            // uncomment this code if you want to turn on encryption.
+            SBSDKUIPageFileStorage.DefaultStorage = new SBSDKUIPageFileStorage(ImageQuality, new SBSDKStorageLocation(NSUrl.FromFilename(PageStoragePathForExample())));
             ScanbotSDKUI.DefaultImageStoreEncrypter = new SBSDKAESEncrypter("S0m3W3irDL0ngPa$$w0rdino!!!!", SBSDKAESEncrypterMode.SBSDKAESEncrypterModeAES128);
 
             if (!string.IsNullOrEmpty(LicenseKey))
