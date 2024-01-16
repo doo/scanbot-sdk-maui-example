@@ -1,6 +1,4 @@
-﻿using Foundation;
-using ScanbotSDK.iOS;
-using UIKit;
+﻿using ScanbotSDK.iOS;
 
 namespace ReadyToUseUI.iOS.Repository
 {
@@ -18,11 +16,6 @@ namespace ReadyToUseUI.iOS.Repository
         {
             storage.RemovePageFileID(page.PageFileUUID);
             Items.Remove(page);
-        }
-
-        public static void Add(List<SBSDKUIPage> pages)
-        {
-            Items.AddRange(pages);
         }
 
         public static void Add(SBSDKUIPage page)

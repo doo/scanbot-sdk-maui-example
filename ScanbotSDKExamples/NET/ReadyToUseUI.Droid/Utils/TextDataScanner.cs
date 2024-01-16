@@ -1,6 +1,10 @@
-﻿namespace ReadyToUseUI.Droid.Utils
+﻿
+
+using static IO.Scanbot.Sdk.UI.View.Generictext.Entity.TextDataScannerStep;
+
+namespace ReadyToUseUI.Droid.Utils
 {
-    public class ValidationCallback : Java.Lang.Object //, IGenericTextRecognizerGenericTextValidationCallback
+    public class ValidationCallback : Java.Lang.Object, IGenericTextValidationCallback
     {
         public bool Validate(string text)
         {
@@ -9,7 +13,7 @@
         }
     }
 
-    public class RecognitionCallback : Java.Lang.Object //, IGenericTextRecognizerCleanRecognitionResultCallback
+    public class RecognitionCallback : Java.Lang.Object, ICleanRecognitionResultCallback
     {
         public string Process(string rawText)
         {

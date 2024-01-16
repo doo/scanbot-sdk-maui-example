@@ -1,28 +1,15 @@
 ﻿namespace ReadyToUseUI.iOS.Models
 {
-    public enum ListItemCode
+    public struct ListItem
     {
-        ScanDocument,
-        ScanDocumentWithFinder,
-        ImportImage,
-        ViewImages,
+        public ListItem(string title, Action listAction)
+        {
+            Title = title;
+            DoAction = listAction;
+        }
 
-        ScannerMRZ,
-        ScannerEHIC,
-        
-        ScannerBarcode,
-        ScannerBatchBarcode,
-        ScannerImportBarcode,
-        ScannerImportImagesFromBarcode,
+        public string Title { get; private set; }
 
-        GenericDocumentRecognizer,
-        CheckRecognizer
-    }
-
-    public class ListItem
-    {
-        public string Title { get; set; }
-
-        public ListItemCode Code { get; set; }
+        public Action DoAction { get; private set; }
     }
 }

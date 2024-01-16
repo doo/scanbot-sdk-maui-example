@@ -6,119 +6,126 @@ using Android.Views;
 using AndroidX.AppCompat.App;
 using IO.Scanbot.Sdk.Persistence;
 using IO.Scanbot.Sdk.Process;
-using IO.Scanbot.Sdk.UI.View.Base;
 using IO.Scanbot.Sdk.UI.View.Edit;
 using IO.Scanbot.Sdk.UI.View.Edit.Configuration;
 using ReadyToUseUI.Droid.Fragments;
 using ReadyToUseUI.Droid.Listeners;
-using ReadyToUseUI.Droid.Repository;
 using ReadyToUseUI.Droid.Utils;
 using DocumentSDK.NET.Model;
-using SBSDK = DocumentSDK.MAUI.Native.Droid.ScanbotSDK;
 
 namespace ReadyToUseUI.Droid.Activities
 {
     [Activity]
     public class PageFilterActivity : AppCompatActivity, IFiltersListener
     {
-        const string PAGE_DATA = "PAGE_DATA";
         const string FILTERS_MENU_TAG = "FILTERS_MENU_TAG";
+        const string CHOOSE_FILTERS_DIALOG_TAG = "CHOOSE_FILTERS_DIALOG_TAG";
         const int CROP_DEFAULT_UI_REQUEST_CODE = 9999;
 
-        public static Intent CreateIntent(Context context, Page page)
+        TextView crop, delete, filter;
+
+        public static Intent CreateIntent(Context context, string pageId)
         {
             var intent = new Intent(context, typeof(PageFilterActivity));
-            intent.PutExtra(PAGE_DATA, page as IParcelable);
+            intent.PutExtra(nameof(selectedPageId), pageId);
             return intent;
         }
 
-        Page selectedPage;
-        Page SelectedPage
-        {
-            get => selectedPage;
-            set => selectedPage = value;
-        }
-
-        ImageFilterType selectedFilter;
-        FilterBottomSheetMenuFragment filterFragment;
-        ProgressBar progress;
+        private string selectedPageId;
+        private ImageFilterType selectedFilter;
+        private FilterBottomSheetMenuFragment filterFragment;
+        private ProgressBar progress;
+        private IO.Scanbot.Sdk.ScanbotSDK scanbotSDK;
+        private IO.Scanbot.Sdk.Persistence.PageFileStorage pageStorage;
+        private IO.Scanbot.Sdk.Docprocessing.PageProcessor pageProcessor;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
+            scanbotSDK = new IO.Scanbot.Sdk.ScanbotSDK(this);
+            pageStorage = scanbotSDK.CreatePageFileStorage();
+            pageProcessor = scanbotSDK.CreatePageProcessor();
+
             SetContentView(Resource.Layout.activity_filters);
+
+            SetupToolbar();
 
             progress = FindViewById<ProgressBar>(Resource.Id.progress);
 
+            selectedPageId = Intent.GetStringExtra(nameof(selectedPageId));
+
+            crop = FindViewById<TextView>(Resource.Id.action_crop_and_rotate);
+            crop.Text = Texts.crop_amp_rotate;
+
+            filter = FindViewById<TextView>(Resource.Id.action_filter);
+            filter.Text = Texts.filter;
+            filter.Click += delegate
+            {
+                filterFragment.Show(SupportFragmentManager, CHOOSE_FILTERS_DIALOG_TAG);
+            };
+
+            delete = FindViewById<TextView>(Resource.Id.action_delete);
+            delete.Text = Texts.delete;
+            delete.Click += delegate
+            {
+                pageStorage.Remove(selectedPageId);
+                Finish();
+            };
+
+            FindViewById(Resource.Id.action_crop_and_rotate).Click += delegate
+            {
+                var configuration = new CroppingConfiguration(new Page().Copy(pageId: selectedPageId));
+                configuration.SetPolygonColor(Color.Red);
+                configuration.SetPolygonColorMagnetic(Color.Blue);
+
+                var intent = CroppingActivity.NewIntent(this, configuration);
+                StartActivityForResult(intent, CROP_DEFAULT_UI_REQUEST_CODE);
+            };
+
+            var fragmentFilterMenu = SupportFragmentManager.FindFragmentByTag(FILTERS_MENU_TAG);
+            if (fragmentFilterMenu != null)
+            {
+                SupportFragmentManager.BeginTransaction().Remove(fragmentFilterMenu).CommitNow();
+            }
+
+            filterFragment = new FilterBottomSheetMenuFragment();
+
+            if (!scanbotSDK.LicenseInfo.IsValid)
+            {
+                Alert.ShowLicenseDialog(this);
+            }
+            else
+            {
+                GeneratePreviewImage();
+            }
+        }
+
+        private void SetupToolbar()
+        {
             var toolbar = FindViewById<AndroidX.AppCompat.Widget.Toolbar>(Resource.Id.toolbar);
             SetSupportActionBar(toolbar);
 
             SupportActionBar.Title = Texts.page_title;
             SupportActionBar.SetDisplayHomeAsUpEnabled(true);
             SupportActionBar.SetDisplayShowHomeEnabled(true);
+        }
 
-            var pageId = (Intent.GetParcelableExtra(PAGE_DATA) as Page).PageId;
-            selectedPage = PageRepository.Pages.Find(p => p.PageId == pageId);
+        private void GeneratePreviewImage()
+        {
+            progress.Visibility = ViewStates.Visible;
 
-            selectedFilter = selectedPage.Filter;
-
-            var crop = FindViewById<TextView>(Resource.Id.action_crop_and_rotate);
-            crop.Text = Texts.crop_amp_rotate;
-
-            var filter = FindViewById<TextView>(Resource.Id.action_filter);
-            filter.Text = Texts.filter;
-            filter.Click += delegate
+            Task.Run(delegate
             {
-                filterFragment.Show(SupportFragmentManager, "CHOOSE_FILTERS_DIALOG_TAG");
-            };
+                var uri = pageStorage.GetFilteredPreviewImageURI(selectedPageId, ImageFilterType.None);
 
-            var delete = FindViewById<TextView>(Resource.Id.action_delete);
-            delete.Text = Texts.delete;
-            delete.Click += delegate
-            {
-                PageRepository.Remove(this, SelectedPage);
-                Finish();
-            };
-
-            FindViewById(Resource.Id.action_crop_and_rotate).Click += delegate
-            {
-                var configuration = new CroppingConfiguration(SelectedPage);
-                configuration.SetPolygonColor(Color.Red);
-                configuration.SetPolygonColorMagnetic(Color.Blue);
-                var asdf = SelectedPage.Filter;
-                var intent = CroppingActivity.NewIntent(this, configuration);
-                StartActivityForResult(intent, CROP_DEFAULT_UI_REQUEST_CODE);
-            };
-
-            var fragment = SupportFragmentManager.FindFragmentByTag(FILTERS_MENU_TAG);
-            if (fragment != null)
-            {
-                SupportFragmentManager.BeginTransaction().Remove(fragment).CommitNow();
-            }
-
-            filterFragment = new FilterBottomSheetMenuFragment();
-
-            if (!SBSDK.IsLicenseValid())
-            {
-                Alert.ShowLicenseDialog(this);
-            }
-            else
-            {
-                // Generate preview image
-                progress.Visibility = ViewStates.Visible;
-                Task.Run(delegate
+                if (!File.Exists(uri.Path))
                 {
-                    var uri = SBSDK.PageStorage.GetFilteredPreviewImageURI(selectedPage.PageId, selectedFilter);
+                    pageProcessor.GenerateFilteredPreview(new Page().Copy(pageId: selectedPageId), ImageFilterType.None);
+                }
 
-                    if (!File.Exists(uri.Path))
-                    {
-                        SBSDK.PageProcessor.GenerateFilteredPreview(selectedPage, selectedFilter);
-                    }
-
-                    UpdateImage(uri);
-                });
-            }
+                UpdateImage(uri);
+            });
         }
 
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
@@ -132,14 +139,13 @@ namespace ReadyToUseUI.Droid.Activities
 
             if (requestCode == CROP_DEFAULT_UI_REQUEST_CODE)
             {
-                var page = (Page)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
-                SelectedPage = PageRepository.Update(page);
+                selectedFilter = selectedFilter ?? ImageFilterType.None;
 
-                var uri = SBSDK.PageStorage.GetFilteredPreviewImageURI(SelectedPage.PageId, selectedFilter);
+                var uri = pageStorage.GetFilteredPreviewImageURI(selectedPageId, selectedFilter);
 
                 if (!File.Exists(uri.Path))
                 {
-                    SBSDK.PageProcessor.GenerateFilteredPreview(selectedPage, selectedFilter);
+                    scanbotSDK.CreatePageProcessor().GenerateFilteredPreview(new Page().Copy(pageId: selectedPageId), selectedFilter);
                 }
 
                 UpdateImage(uri);
@@ -156,90 +162,27 @@ namespace ReadyToUseUI.Droid.Activities
             return base.OnOptionsItemSelected(item);
         }
 
-        public void LowLightBinarizationFilter()
-        {
-            ApplyFilter(ImageFilterType.LowLightBinarization);
-        }
-
-        public void LowLightBinarizationFilter2()
-        {
-            ApplyFilter(ImageFilterType.LowLightBinarization2);
-        }
-
-        public void EdgeHighlightFilter()
-        {
-            ApplyFilter(ImageFilterType.EdgeHighlight);
-        }
-
-        public void DeepBinarizationFilter()
-        {
-            ApplyFilter(ImageFilterType.DeepBinarization);
-        }
-
-        public void OtsuBinarizationFilter()
-        {
-            ApplyFilter(ImageFilterType.OtsuBinarization);
-        }
-
-        public void CleanBackgroundFilter()
-        {
-            ApplyFilter(ImageFilterType.BackgroundClean);
-        }
-
-        public void ColorDocumentFilter()
-        {
-            ApplyFilter(ImageFilterType.ColorDocument);
-        }
-
-        public void ColorFilter()
-        {
-            ApplyFilter(ImageFilterType.ColorEnhanced);
-        }
-
-        public void GrayscaleFilter()
-        {
-            ApplyFilter(ImageFilterType.Grayscale);
-        }
-
-        public void BinarizedFilter()
-        {
-            ApplyFilter(ImageFilterType.Binarized);
-        }
-
-        public void PureBinarizedFilter()
-        {
-            ApplyFilter(ImageFilterType.PureBinarized);
-        }
-
-        public void BlackAndWhiteFilter()
-        {
-            ApplyFilter(ImageFilterType.BlackAndWhite);
-        }
-
-        public void NoneFilter()
-        {
-            ApplyFilter(ImageFilterType.None);
-        }
-
         public void ApplyFilter(ImageFilterType type)
         {
             progress.Visibility = ViewStates.Visible;
             selectedFilter = type;
             Task.Run(delegate
             {
-                selectedPage = PageRepository.Apply(selectedFilter, selectedPage);
-                var uri = SBSDK.PageStorage.GetFilteredPreviewImageURI(selectedPage.PageId, selectedFilter);
+                var pageToFilter = new Page().Copy(pageId: selectedPageId);
+                pageProcessor.ApplyFilter(pageToFilter, selectedFilter);
+                pageProcessor.GenerateFilteredPreview(pageToFilter, selectedFilter);
+                var uri = pageStorage.GetFilteredPreviewImageURI(selectedPageId, selectedFilter);
                 UpdateImage(uri);
             });
         }
 
-        void UpdateImage(Android.Net.Uri uri)
+        private void UpdateImage(Android.Net.Uri uri)
         {
             RunOnUiThread(delegate
             {
                 var image = FindViewById<ImageView>(Resource.Id.image);
                 image.SetImageBitmap(null);
-                image.SetImageBitmap(ImageLoader.Instance.Load(uri));
+                image.SetImageBitmap(scanbotSDK.FileIOProcessor().ReadImage(uri, new BitmapFactory.Options()));
                 progress.Visibility = ViewStates.Gone;
             });
         }

@@ -1,5 +1,4 @@
-﻿using UIKit;
-namespace ReadyToUseUI.iOS.Utils
+﻿namespace ReadyToUseUI.iOS.Utils
 {
     public class Alert
     {

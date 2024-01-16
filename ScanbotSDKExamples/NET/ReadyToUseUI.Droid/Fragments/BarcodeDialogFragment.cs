@@ -1,27 +1,30 @@
 ﻿using Android.Views;
 using IO.Scanbot.Sdk.Barcode.Entity;
+using IO.Scanbot.Sdk.Process.Model;
 using ReadyToUseUI.Droid.Views;
 
 namespace ReadyToUseUI.Droid.Fragments
 {
     public class BarcodeDialogFragment : BaseDialogFragment
     {
-        public const string NAME = "BarcodeDialogFragment";
+        private const string dataTag = "BarcodeDialogFragment";
 
-        public float Blur { get; internal set; } = -1;
+        private DocumentQualityResult _qualityResult;
 
-        public static BarcodeDialogFragment CreateInstance(BarcodeScanningResult data)
+        public static BarcodeDialogFragment CreateInstance(BarcodeScanningResult data, DocumentQualityResult qualityResult = null)
         {
             var fragment = new BarcodeDialogFragment();
             var args = new Bundle();
-            args.PutParcelable(NAME, data);
+            args.PutParcelable(dataTag, data);
+
             fragment.Arguments = args;
+            fragment._qualityResult = qualityResult;
             return fragment;
         }
 
         public override View AddContentView(LayoutInflater inflater, ViewGroup container)
         {
-            var data = (BarcodeScanningResult)Arguments.GetParcelable(NAME);
+            var data = (BarcodeScanningResult)Arguments.GetParcelable(dataTag);
             var view = inflater.Inflate(Resource.Layout.fragment_barcode_dialog, container);
 
             var content = view.FindViewById<TextView>(Resource.Id.barcode_result_values);
@@ -38,15 +41,20 @@ namespace ReadyToUseUI.Droid.Fragments
                 resultText += barcode.BarcodeFormat.Name() + ": " + barcode.Text + "\n";
             }
 
-            if (Blur != -1)
+            if (_qualityResult != null)
             {
-                resultText += "Estimated blur: " + Blur;
+                resultText += "Estimated image quality: " + _qualityResult.Name();
             }
             CopyText = resultText;
             content.Text = resultText;
 
 
             return view;
+        }
+
+        public void Show(FragmentManager manager)
+        {
+            Show(manager, dataTag);
         }
     }
 }
