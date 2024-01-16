@@ -64,7 +64,7 @@ namespace ClassicComponent.iOS
             {
                 new SDKService { Title = SDKServiceTitle.ScanningUI, ServiceAction = LaunchScanningUI },
                 new SDKService { Title = SDKServiceTitle.CroppingUI, ServiceAction = LaunchCroppingUI },
-                new SDKService { Title = SDKServiceTitle.ImportImageFromLibrary, ServiceAction = () => _ = LaunchImportImageFromLibrary() },
+                new SDKService { Title = SDKServiceTitle.ImportImageFromLibrary, ServiceAction = async () => await LaunchImportImageFromLibrary() },
                 new SDKService { Title = SDKServiceTitle.ApplyImageFilter, ServiceAction = ApplyImageFilter },
                 new SDKService { Title = SDKServiceTitle.CreateTIFF, ServiceAction = CreateTIFF },
                 new SDKService { Title = SDKServiceTitle.CreatePDF, ServiceAction = CreatePDF },
