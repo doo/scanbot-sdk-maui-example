@@ -28,9 +28,9 @@ public static class MauiProgram
             EnableLogging = true,
             // If no StorageBaseDirectory is specified, the default will be used
             StorageBaseDirectory = StorageBaseDirectoryForExampleApp(),
-            AllowGpuAcceleration = false,
-            AllowXnnpackAcceleration = false,
-            EnableNativeLogging = true
+            //AllowGpuAcceleration = false,
+            //AllowXnnpackAcceleration = false,
+            //EnableNativeLogging = true
         }
                 );
 

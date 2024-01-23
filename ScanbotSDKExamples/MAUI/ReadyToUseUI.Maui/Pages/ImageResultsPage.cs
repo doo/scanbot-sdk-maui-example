@@ -178,7 +178,7 @@ namespace ReadyToUseUI.Maui.Pages
 
                 if (action.Equals(parameters[0]))
                 {
-                    var fileUri = await SBSDK.SDKService.CreatePdfAsync(documentSources.OfType<FileImageSource>(), PDFPageSize.FixedA4);
+                    var fileUri = await SBSDK.SDKService.CreatePdfAsync(documentSources.OfType<FileImageSource>(), PDFPageSize.A4);
                     ViewUtils.Alert(this, "Success: ", "Wrote documents to: " + fileUri.AbsolutePath);
                 }
                 else if (action.Equals(parameters[1]))
@@ -186,7 +186,7 @@ namespace ReadyToUseUI.Maui.Pages
                     string path = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
                     string pdfFilePath = Path.Combine(path, Guid.NewGuid() + ".pdf");
                     var languages = new[] { "en" };
-                    var result = await SBSDK.SDKService.PerformOcrAsync(documentSources.OfType<FileImageSource>(), languages, pdfFilePath);
+                    var result = await SBSDK.SDKService.PerformOcrAsync(documentSources.OfType<FileImageSource>(), OcrConfig.From(languages), pdfFilePath);
 
                     // You can access the results with: result.Pages
                     ViewUtils.Alert(this, "PDF with OCR layer stored: ", pdfFilePath);

@@ -130,10 +130,10 @@ public partial class HomePage : ContentPage
     {
         var config = new BarcodeScannerConfiguration
         {
-            BarcodeFormats = BarcodeTypes.Instance.AcceptedTypes,
+            BarcodeFormats = Enum.GetValues<BarcodeFormat>().ToList(),
             CodeDensity = BarcodeDensity.High,
             EngineMode = EngineMode.NextGen,
-            AcceptedDocumentFormats = DocumentTypes.Instance.AcceptedTypes,            
+            AcceptedDocumentFormats = Enum.GetValues<BarcodeDocumentFormat>().ToList(),            
         };
 
         if (withImage)
@@ -173,7 +173,7 @@ public partial class HomePage : ContentPage
     {
         var config = new BatchBarcodeScannerConfiguration
         {
-            BarcodeFormats = BarcodeTypes.Instance.AcceptedTypes,
+            BarcodeFormats = Enum.GetValues<BarcodeFormat>().ToList(),
             OverlayConfiguration = new SelectionOverlayConfiguration(
                 automaticSelectionEnabled: true,
                 overlayFormat: BarcodeTextFormat.Code,

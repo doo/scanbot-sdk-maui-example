@@ -42,25 +42,25 @@ namespace ClassicComponent.Maui.Platforms.iOS.CustomViews
             var config = commonView.OverlayConfiguration;
             if (config.Enabled == true)
             {
-                cameraViewController.SelectionOverlayEnabled = true;
+                //cameraViewController.SelectionOverlayEnabled = true;
 
-                cameraViewController.SelectionPolygonColor = config.PolygonColor.ToNative();
-                cameraViewController.SelectionTextColor = config.TextColor.ToNative();
-                cameraViewController.SelectionTextContainerColor = config.TextContainerColor.ToNative();
-                if (config.HighlightedPolygonColor != null)
-                {
-                    cameraViewController.SelectionHighlightedPolygonColor = config.HighlightedPolygonColor?.ToNative();
-                }
+                //cameraViewController.SelectionPolygonColor = config.PolygonColor.ToNative();
+                //cameraViewController.SelectionTextColor = config.TextColor.ToNative();
+                //cameraViewController.SelectionTextContainerColor = config.TextContainerColor.ToNative();
+                //if (config.HighlightedPolygonColor != null)
+                //{
+                //    cameraViewController.SelectionHighlightedPolygonColor = config.HighlightedPolygonColor?.ToNative();
+                //}
 
-                if (config.HighlightedTextColor != null)
-                {
-                    cameraViewController.SelectionHighlightedTextColor = config.HighlightedTextColor?.ToNative();
-                }
+                //if (config.HighlightedTextColor != null)
+                //{
+                //    cameraViewController.SelectionHighlightedTextColor = config.HighlightedTextColor?.ToNative();
+                //}
 
-                if (config.HighlightedTextContainerColor != null)
-                {
-                    cameraViewController.SelectionHighlightedTextContainerColor = config.HighlightedTextContainerColor?.ToNative();
-                }
+                //if (config.HighlightedTextContainerColor != null)
+                //{
+                //    cameraViewController.SelectionHighlightedTextContainerColor = config.HighlightedTextContainerColor?.ToNative();
+                //}
             }
         }
 
@@ -102,7 +102,12 @@ namespace ClassicComponent.Maui.Platforms.iOS.CustomViews
                 codes = codes ?? Array.Empty<SBSDKBarcodeScannerResult>();
                 barcodeCameraViewHandler.VirtualView.OnBarcodeScanResult(new BarcodeResultBundle()
                 {
-                    Barcodes = codes.ToFormsBarcodes()
+                    Barcodes = codes.Select(b => new Barcode
+                    {
+                        Text = b.RawTextString,
+                        Format = b.Type.ToMaui(),
+                        RawBytes = b.RawBytes.ToArray()
+                    }).ToList()
                 });
             }
 

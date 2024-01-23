@@ -49,7 +49,7 @@ namespace ClassicComponent.Maui.CustomViews
         {
             var outResult = new BarcodeResultBundle
             {
-                Barcodes = new List<Barcode>() { barcodeItem.ToFormsBarcode() },
+                Barcodes = new List<Barcode>() { barcodeItem.ToMaui() },
                 Image = barcodeItem.Image.ToImageSource()
             };
 
@@ -141,24 +141,24 @@ namespace ClassicComponent.Maui.CustomViews
             if (commonView.OverlayConfiguration?.Enabled == true)
             {
                 cameraViewDroid.SelectionOverlayController.SetEnabled(commonView.OverlayConfiguration.Enabled);
-                cameraViewDroid.SelectionOverlayController.SetPolygonColor(commonView.OverlayConfiguration.PolygonColor.ToArgb());
-                cameraViewDroid.SelectionOverlayController.SetTextColor(commonView.OverlayConfiguration.TextColor.ToArgb());
-                cameraViewDroid.SelectionOverlayController.SetTextContainerColor(commonView.OverlayConfiguration.TextContainerColor.ToArgb());
+                //cameraViewDroid.SelectionOverlayController.SetPolygonColor(commonView.OverlayConfiguration.PolygonColor.ToArgb());
+                //cameraViewDroid.SelectionOverlayController.SetTextColor(commonView.OverlayConfiguration.TextColor.ToArgb());
+                //cameraViewDroid.SelectionOverlayController.SetTextContainerColor(commonView.OverlayConfiguration.TextContainerColor.ToArgb());
 
-                if (commonView.OverlayConfiguration.HighlightedPolygonColor != null)
-                {
-                    cameraViewDroid.SelectionOverlayController.SetPolygonHighlightedColor(commonView.OverlayConfiguration.HighlightedPolygonColor.ToArgb());
-                }
+                //if (commonView.OverlayConfiguration.HighlightedPolygonColor != null)
+                //{
+                //    cameraViewDroid.SelectionOverlayController.SetPolygonHighlightedColor(commonView.OverlayConfiguration.HighlightedPolygonColor.ToArgb());
+                //}
 
-                if (commonView.OverlayConfiguration.HighlightedTextColor != null)
-                {
-                    cameraViewDroid.SelectionOverlayController.SetTextHighlightedColor(commonView.OverlayConfiguration.HighlightedTextColor.ToArgb());
-                }
+                //if (commonView.OverlayConfiguration.HighlightedTextColor != null)
+                //{
+                //    cameraViewDroid.SelectionOverlayController.SetTextHighlightedColor(commonView.OverlayConfiguration.HighlightedTextColor.ToArgb());
+                //}
 
-                if (commonView.OverlayConfiguration.HighlightedTextContainerColor != null)
-                {
-                    cameraViewDroid.SelectionOverlayController.SetTextContainerHighlightedColor(commonView.OverlayConfiguration.HighlightedTextContainerColor.ToArgb());
-                }
+                //if (commonView.OverlayConfiguration.HighlightedTextContainerColor != null)
+                //{
+                //    cameraViewDroid.SelectionOverlayController.SetTextContainerHighlightedColor(commonView.OverlayConfiguration.HighlightedTextContainerColor.ToArgb());
+                //}
             }
         }
 
@@ -180,7 +180,7 @@ namespace ClassicComponent.Maui.CustomViews
             {
                 var outResult = new BarcodeResultBundle
                 {
-                    Barcodes = result.BarcodeItems.ToFormsBarcodeList(),
+                    Barcodes = result.BarcodeItems.Select(b => b.ToMaui()).ToList(),
                     Image = result.PreviewFrame.ToImageSource()
                 };
 
