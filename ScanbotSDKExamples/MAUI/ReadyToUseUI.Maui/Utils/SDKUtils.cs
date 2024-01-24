@@ -40,7 +40,7 @@ namespace ReadyToUseUI.Maui.Utils
             return builder.ToString();
         }
 
-        public static string ParseEHICResult(HealthInsuranceCardScannerResult result)
+        public static string ToAlertMessage(HealthInsuranceCardScannerResult result)
         {
             var builder = new StringBuilder();
             builder.AppendLine($"DocumentType: European Health insurance card");
@@ -51,11 +51,11 @@ namespace ReadyToUseUI.Maui.Utils
             return builder.ToString();
         }
 
-        public static string ParseGDRResult(GenericDocumentRecognizerResult result) {
+        public static string ToAlertMessage(GenericDocumentRecognizerResult result) {
             return GenericDocumentToString(result.Documents.First());
         }
 
-        public static string ParseCheckResult(CheckRecognizerResult result)
+        public static string ToAlertMessage(CheckRecognizerResult result)
         {
             return GenericDocumentToString(result.Document);
         }
