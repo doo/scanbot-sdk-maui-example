@@ -32,17 +32,17 @@ public partial class HomePage : ContentPage
     {
         sdkFeatures = new List<SdkFeature>
         {
-            new SdkFeature("DOCUMENT SCANNER"),
-            new SdkFeature("Scan Document", () => DocumentScannerClicked(withFinder: false)),
-            new SdkFeature("Scan Document with Finderr", () => DocumentScannerClicked(withFinder: false)),
-            new SdkFeature("Import image & Detect Document", ImportButtonClicked),
-            new SdkFeature("View Image Results", ViewImageResultsClicked),
-
             new SdkFeature("BARCODE DETECTOR"),
             new SdkFeature("Scan QR & Barcodes", () => BarcodeScannerClicked(withImage: false)),
             new SdkFeature("Scan QR & Barcodes With Image", () => BarcodeScannerClicked(withImage: true)),
             new SdkFeature("Scan Multiple QR & Barcodes", BatchBarcodeScannerClicked),
             new SdkFeature("Import Image & Detect Barcodes", ImportAndDetectBarcodesClicked),
+
+            new SdkFeature("DOCUMENT SCANNER"),
+            new SdkFeature("Scan Document", () => DocumentScannerClicked(withFinder: false)),
+            new SdkFeature("Scan Document with Finder", () => DocumentScannerClicked(withFinder: true)),
+            new SdkFeature("Import image & Detect Document", ImportButtonClicked),
+            new SdkFeature("View Image Results", ViewImageResultsClicked),
 
             new SdkFeature("DATA DETECTORS"),
             new SdkFeature("MRZ Scanner", MRZScannerClicked),
