@@ -65,7 +65,7 @@ public partial class HomePage : ContentPage
     /// Item Selected method invoked on the ListView item selection.
     async void SdkFeatureSelected(System.Object sender, Microsoft.Maui.Controls.SelectionChangedEventArgs e)
     {
-        if (e?.CurrentSelection?.FirstOrDefault() is SdkFeature feature)
+        if (e?.CurrentSelection?.FirstOrDefault() is SdkFeature feature && feature.DoTask != null)
         {
             if (!SDKUtils.CheckLicense(this)) { return; }
             await feature.DoTask();

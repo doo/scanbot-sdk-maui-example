@@ -12,8 +12,7 @@ namespace ReadyToUseUI.Maui.Pages
             {
                 BarcodeFormats = Enum.GetValues<BarcodeFormat>().ToList(),
                 CodeDensity = BarcodeDensity.High,
-                EngineMode = EngineMode.NextGen,
-                AcceptedDocumentFormats = Enum.GetValues<BarcodeDocumentFormat>().ToList(),
+                EngineMode = EngineMode.NextGen
             };
 
             if (withImage)
