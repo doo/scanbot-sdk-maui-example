@@ -104,7 +104,7 @@ namespace ReadyToUseUI.Maui.Pages
 
             if (result.Status == OperationResult.Ok)
             {
-                ViewUtils.Alert(this, $"Text Data Result", result.Text);
+                ViewUtils.Alert(this, $"Vin Scanner Result", result.Text);
             }
         }
 

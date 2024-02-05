@@ -1,8 +1,4 @@
-﻿using ScanbotSDK.MAUI;
-using ScanbotSDK.MAUI.Constants;
-using ScanbotSDK.MAUI.Models;
-
-namespace ReadyToUseUI.Maui
+﻿namespace ReadyToUseUI.Maui
 {
     public static partial class MauiProgram
     {

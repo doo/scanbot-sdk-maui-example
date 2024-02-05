@@ -4,8 +4,8 @@ using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
 
 namespace ReadyToUseUI.Maui.Pages
 {
-	public partial class HomePage
-	{
+    public partial class HomePage
+    {
         private async Task BarcodeScannerClicked(bool withImage)
         {
             var config = new BarcodeScannerConfiguration

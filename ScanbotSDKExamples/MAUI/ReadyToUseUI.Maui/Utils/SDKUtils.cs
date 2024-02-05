@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using ScanbotSDK.MAUI.Models;
-using ScanbotSDK.MAUI.Services;
 using BarcodeItem = ScanbotSDK.MAUI.Models.Barcode;
 using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
 

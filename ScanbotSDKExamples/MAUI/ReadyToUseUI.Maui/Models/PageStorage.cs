@@ -38,7 +38,7 @@ namespace ReadyToUseUI.Maui.Models
         }
 
 
-        private PageStorage() {}
+        private PageStorage() { }
 
 
         public async Task<int> CreateAsync(IScannedPage page)
@@ -146,7 +146,6 @@ namespace ReadyToUseUI.Maui.Models
                 new Point(X4, Y4)
             }.ToArray();
         }
-
     }
 }
 

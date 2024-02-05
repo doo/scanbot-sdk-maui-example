@@ -1,10 +1,13 @@
-﻿using ScanbotSDK.MAUI.Models;
+﻿using CoreGraphics;
+using UIKit;
+
+using ScanbotSDK.iOS;
+using ScanbotSDK.MAUI.Models;
+using ScanbotSDK.MAUI.iOS;
+using ScanbotSDK.MAUI.iOS.Utils;
+
 using ClassicComponent.Maui.CustomViews;
 using ClassicComponent.Maui.Platforms.iOS.Utils;
-using CoreGraphics;
-using ScanbotSDK.MAUI.iOS;
-using ScanbotSDK.iOS;
-using UIKit;
 
 namespace ClassicComponent.Maui.Platforms.iOS.CustomViews
 {
@@ -42,25 +45,28 @@ namespace ClassicComponent.Maui.Platforms.iOS.CustomViews
             var config = commonView.OverlayConfiguration;
             if (config.Enabled == true)
             {
-                //cameraViewController.SelectionOverlayEnabled = true;
+                cameraViewController.IsTrackingOverlayEnabled = true;
 
-                //cameraViewController.SelectionPolygonColor = config.PolygonColor.ToNative();
-                //cameraViewController.SelectionTextColor = config.TextColor.ToNative();
-                //cameraViewController.SelectionTextContainerColor = config.TextContainerColor.ToNative();
-                //if (config.HighlightedPolygonColor != null)
-                //{
-                //    cameraViewController.SelectionHighlightedPolygonColor = config.HighlightedPolygonColor?.ToNative();
-                //}
+                cameraViewController.IsTrackingOverlayEnabled = true;
+                cameraViewController.TrackingOverlayController.Configuration.IsAutomaticSelectionEnabled = config.AutomaticSelectionEnabled;
+                cameraViewController.TrackingOverlayController.Configuration.PolygonStyle.PolygonColor = config.PolygonColor.ToNative();
+                cameraViewController.TrackingOverlayController.Configuration.TextStyle.TextColor = config.TextColor.ToNative();
+                cameraViewController.TrackingOverlayController.Configuration.TextStyle.TextBackgroundColor = config.TextContainerColor.ToNative();
 
-                //if (config.HighlightedTextColor != null)
-                //{
-                //    cameraViewController.SelectionHighlightedTextColor = config.HighlightedTextColor?.ToNative();
-                //}
+                if (config.HighlightedPolygonColor != null)
+                {
+                    cameraViewController.TrackingOverlayController.Configuration.PolygonStyle.PolygonSelectedColor = config.HighlightedPolygonColor?.ToNative();
+                }
 
-                //if (config.HighlightedTextContainerColor != null)
-                //{
-                //    cameraViewController.SelectionHighlightedTextContainerColor = config.HighlightedTextContainerColor?.ToNative();
-                //}
+                if (config.HighlightedTextColor != null)
+                {
+                    cameraViewController.TrackingOverlayController.Configuration.TextStyle.SelectedTextColor = config.HighlightedTextColor?.ToNative();
+                }
+
+                if (config.HighlightedTextContainerColor != null)
+                {
+                    cameraViewController.TrackingOverlayController.Configuration.TextStyle.TextBackgroundSelectedColor = config.HighlightedTextContainerColor?.ToNative();
+                }
             }
         }
 

@@ -1,5 +1,5 @@
-﻿using ClassicComponent.Maui.Platforms.iOS.CustomViews;
-using Microsoft.Maui.Handlers;
+﻿using Microsoft.Maui.Handlers;
+using ClassicComponent.Maui.Platforms.iOS.CustomViews;
 
 namespace ClassicComponent.Maui.CustomViews
 {

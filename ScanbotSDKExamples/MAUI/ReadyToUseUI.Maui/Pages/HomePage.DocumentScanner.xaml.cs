@@ -5,8 +5,8 @@ using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
 
 namespace ReadyToUseUI.Maui.Pages
 {
-	public partial class HomePage
-	{
+    public partial class HomePage
+    {
         private async Task DocumentScannerClicked(bool withFinder = false)
         {
             ScanbotSDK.MAUI.Models.DocumentScannerResult result;

@@ -1,8 +1,4 @@
-﻿using ScanbotSDK.MAUI.iOS;
-using Foundation;
-using ScanbotSDK.MAUI.Constants;
-using ScanbotSDK.MAUI.Models;
-using ScanbotSDK.MAUI;
+﻿using Foundation;
 using UIKit;
 
 namespace ClassicComponent.Maui;

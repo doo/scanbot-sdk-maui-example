@@ -5,18 +5,18 @@ using Android.Views;
 using Android.Widget;
 using AndroidX.Core.App;
 using AndroidX.Core.Content;
-using ScanbotSDK.MAUI.Models;
-using ScanbotSDK.MAUI.Droid;
-using ScanbotSDK.MAUI.Droid.Utils;
-using IO.Scanbot.Sdk;
+
+using Microsoft.Maui.Handlers;
+using Microsoft.Maui.Platform;
+
 using IO.Scanbot.Sdk.Barcode;
 using IO.Scanbot.Sdk.Barcode.Entity;
 using IO.Scanbot.Sdk.Barcode.UI;
-using IO.Scanbot.Sdk.Camera;
 using IO.Scanbot.Sdk.UI.Camera;
-using Microsoft.Maui.Handlers;
-using Microsoft.Maui.Platform;
-using IO.Scanbot.Barcodescanner.Model;
+
+using ScanbotSDK.MAUI.Models;
+using ScanbotSDK.MAUI.Droid;
+using ScanbotSDK.MAUI.Droid.Utils;
 
 namespace ClassicComponent.Maui.CustomViews
 {
@@ -141,24 +141,19 @@ namespace ClassicComponent.Maui.CustomViews
             if (commonView.OverlayConfiguration?.Enabled == true)
             {
                 cameraViewDroid.SelectionOverlayController.SetEnabled(commonView.OverlayConfiguration.Enabled);
-                //cameraViewDroid.SelectionOverlayController.SetPolygonColor(commonView.OverlayConfiguration.PolygonColor.ToArgb());
-                //cameraViewDroid.SelectionOverlayController.SetTextColor(commonView.OverlayConfiguration.TextColor.ToArgb());
-                //cameraViewDroid.SelectionOverlayController.SetTextContainerColor(commonView.OverlayConfiguration.TextContainerColor.ToArgb());
-
-                //if (commonView.OverlayConfiguration.HighlightedPolygonColor != null)
-                //{
-                //    cameraViewDroid.SelectionOverlayController.SetPolygonHighlightedColor(commonView.OverlayConfiguration.HighlightedPolygonColor.ToArgb());
-                //}
-
-                //if (commonView.OverlayConfiguration.HighlightedTextColor != null)
-                //{
-                //    cameraViewDroid.SelectionOverlayController.SetTextHighlightedColor(commonView.OverlayConfiguration.HighlightedTextColor.ToArgb());
-                //}
-
-                //if (commonView.OverlayConfiguration.HighlightedTextContainerColor != null)
-                //{
-                //    cameraViewDroid.SelectionOverlayController.SetTextContainerHighlightedColor(commonView.OverlayConfiguration.HighlightedTextContainerColor.ToArgb());
-                //}
+                var config = commonView.OverlayConfiguration;
+                cameraViewDroid.SelectionOverlayController.SetEnabled(config.Enabled);
+                cameraViewDroid.SelectionOverlayController.SetBarcodeAppearanceDelegate(
+                (getPolygonStyle: (defaultStyle, _) => defaultStyle.Copy(
+                                                    fillColor: config.PolygonColor.ToPlatform(),
+                                                    fillHighlightedColor: config.HighlightedPolygonColor?.ToPlatform()),
+                getTextViewStyle: (defaultStyle, _) => defaultStyle.Copy(
+                            textFormat: config.OverlayTextFormat.ToNative(),
+                            textColor: config.TextColor.ToPlatform(),
+                            textContainerColor: config.TextContainerColor.ToPlatform(),
+                            textHighlightedColor: config.HighlightedTextColor?.ToPlatform(),
+                            textContainerHighlightedColor: config.HighlightedTextContainerColor?.ToPlatform()
+                            )));
             }
         }
 
