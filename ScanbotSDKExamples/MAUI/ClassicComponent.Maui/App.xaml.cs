@@ -1,6 +1,4 @@
-﻿using ScanbotSDK.MAUI;
-
-namespace ClassicComponent.Maui
+﻿namespace ClassicComponent.Maui
 {
     public partial class App : Application
     {
@@ -12,7 +10,4 @@ namespace ClassicComponent.Maui
             MainPage = new MainPage();
         }
     }
-
 }
-
-

@@ -11,9 +11,6 @@ public class AppDelegate : MauiUIApplicationDelegate
     /// </summary>
     public static UIWindow RootWindow => Current.Window;
 
-    protected override MauiApp CreateMauiApp()
-    {
-        return MauiProgram.CreateMauiApp();
-    }
+    protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 }
 
