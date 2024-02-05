@@ -1,12 +1,13 @@
 ﻿using ReadyToUseUI.Maui.Utils;
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Constants;
+using ScanbotSDK.MAUI.Models;
 using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
 
 namespace ReadyToUseUI.Maui.Pages
 {
-	public partial class HomePage
-	{
+    public partial class HomePage
+    {
         private async Task MRZScannerClicked()
         {
             var configuration = new MrzScannerConfiguration
@@ -77,7 +78,9 @@ namespace ReadyToUseUI.Maui.Pages
 
         private async Task TextDataRecognizerClicked()
         {
-            var configuration = new TextDataScannerConfiguration(new TextDataScannerStep("", "", 0, null))
+            // The AspectRatio is a required parameter for the Text Data Scanner.
+            var aspectRatio = new AspectRatio(5, 1);
+            var configuration = new TextDataScannerConfiguration(new TextDataScannerStep("", "", 0, aspectRatio))
             {
 
             };
