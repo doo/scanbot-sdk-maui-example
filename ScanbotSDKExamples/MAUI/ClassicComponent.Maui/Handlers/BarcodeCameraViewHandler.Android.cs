@@ -140,7 +140,6 @@ namespace ClassicComponent.Maui.CustomViews
         {
             if (commonView.OverlayConfiguration?.Enabled == true)
             {
-                cameraViewDroid.SelectionOverlayController.SetEnabled(commonView.OverlayConfiguration.Enabled);
                 var config = commonView.OverlayConfiguration;
                 cameraViewDroid.SelectionOverlayController.SetEnabled(config.Enabled);
                 cameraViewDroid.SelectionOverlayController.SetBarcodeAppearanceDelegate(
@@ -159,7 +158,7 @@ namespace ClassicComponent.Maui.CustomViews
 
         private bool HandleFrameHandlerResult(BarcodeScanningResult result, IO.Scanbot.Sdk.SdkLicenseError error)
         {
-            if (result == null && !ScanbotSDK.MAUI.ScanbotSDK.SDKService.IsLicenseValid)
+            if (!ScanbotSDK.MAUI.ScanbotSDK.SDKService.IsLicenseValid)
             {
                 if (!toastShown)
                 {
@@ -170,8 +169,13 @@ namespace ClassicComponent.Maui.CustomViews
                 return false;
             }
 
+            if (result == null)
+            {
+                return false;
+            }
+
             var overlayEnabled = VirtualView.OverlayConfiguration?.Enabled ?? false;
-            if (overlayEnabled == false)
+            if (overlayEnabled == false || VirtualView.OverlayConfiguration?.AutomaticSelectionEnabled == true)
             {
                 var outResult = new BarcodeResultBundle
                 {
@@ -181,7 +185,7 @@ namespace ClassicComponent.Maui.CustomViews
 
                 VirtualView.OnBarcodeScanResult?.Invoke(outResult);
             }
-            return true;
+            return false;
         }
 
         private static void InstallHierarchyFitter(ViewGroup viewGroup)

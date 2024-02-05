@@ -29,6 +29,10 @@
         <MtouchLink>SdkOnly</MtouchLink>
         <CreatePackage>false</CreatePackage>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net7.0-android'">
+         <!-- Added this flag to disable the fast assembly deployment option. Otherwise it fails to run on Android device.-->
+         <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+    </PropertyGroup>
     <!-- ===================== Application Resources =====================  -->
     <ItemGroup>
         <!-- App Icon -->
@@ -57,7 +61,7 @@
         <PackageReference Include="SQLitePCLRaw.core" Version="2.1.4" />
         <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.4" />
         <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
-        <PackageReference Include="ScanbotSDK.MAUI" Version="4.2.0-alpha.3" />
+        <PackageReference Include="ScanbotSDK.MAUI" Version="4.2.0-alpha.5" />
     </ItemGroup>
     
     <!-- ===================== IOS OCR Data Files =====================  -->
