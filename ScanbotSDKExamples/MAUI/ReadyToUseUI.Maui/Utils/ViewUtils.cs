@@ -10,7 +10,7 @@
             });
         }
 
-        public static ViewCell CreateCell(string title, EventHandler action, Color? color = null)
+        public static ViewCell CreateCell(string title, EventHandler action, Color color = null)
         {
             if (color == null)
             {
@@ -25,7 +25,7 @@
                     VerticalTextAlignment = TextAlignment.Center,
                     Margin = new Thickness(20, 0, 0, 0),
                     FontSize = 14,
-                    TextColor = (Color)color
+                    TextColor = color
                 }
             };
 

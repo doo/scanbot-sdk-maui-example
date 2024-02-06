@@ -1,10 +1,10 @@
-﻿using DocumentSDK.MAUI.Services;
+﻿using ScanbotSDK.MAUI.Services;
 
 namespace ReadyToUseUI.Maui.SubViews.Cells
 {
     public class ImageResultCell : ViewCell
     {
-        public IScannedPageService Source { get; private set; }
+        public IScannedPage Source { get; private set; }
 
         Image Document { get; set; }
 
@@ -34,7 +34,7 @@ namespace ReadyToUseUI.Maui.SubViews.Cells
             {
                 return;
             }
-            Source = (IScannedPageService)BindingContext;
+            Source = (IScannedPage)BindingContext;
             // If encryption is enabled, load the decrypted document.
             // Else accessible via page.Document
             Document.Source = await Source.DecryptedDocumentPreview();
