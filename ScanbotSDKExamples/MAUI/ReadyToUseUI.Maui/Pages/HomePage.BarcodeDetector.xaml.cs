@@ -55,7 +55,13 @@ namespace ReadyToUseUI.Maui.Pages
                     overlayFormat: BarcodeTextFormat.Code,
                     polygon: Colors.Yellow,
                     text: Colors.Yellow,
-                    textContainer: Colors.Black)
+                    textContainer: Colors.Black,
+                    highlightedPolygonColor: Colors.Red,
+                    highlightedTextColor: Colors.Red,
+                    highlightedTextContainerColor: Colors.Black),
+                SuccessBeepEnabled = true,
+                CodeDensity = BarcodeDensity.High,
+                EngineMode = EngineMode.NextGen
             };
 
             var result = await SBSDK.ReadyToUseUIService.OpenBatchBarcodeScannerView(config);
