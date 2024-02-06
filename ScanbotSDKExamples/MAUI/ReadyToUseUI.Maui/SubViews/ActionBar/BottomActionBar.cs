@@ -1,4 +1,4 @@
-﻿using BarcodeSDK.MAUI.Constants;
+﻿using ScanbotSDK.MAUI.Constants;
 
 namespace ReadyToUseUI.Maui.SubViews.ActionBar
 {

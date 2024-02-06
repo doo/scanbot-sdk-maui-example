@@ -1,8 +1,7 @@
 ﻿using System.Text;
-using DocumentSDK.MAUI.Models;
-using DocumentSDK.MAUI.Services;
-using BarcodeItem = BarcodeSDK.MAUI.Models.Barcode;
-using SBSDK = DocumentSDK.MAUI.ScanbotSDK;
+using ScanbotSDK.MAUI.Models;
+using BarcodeItem = ScanbotSDK.MAUI.Models.Barcode;
+using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
 
 namespace ReadyToUseUI.Maui.Utils
 {
@@ -40,7 +39,7 @@ namespace ReadyToUseUI.Maui.Utils
             return builder.ToString();
         }
 
-        public static string ParseEHICResult(HealthInsuranceCardScannerResult result)
+        public static string ToAlertMessage(HealthInsuranceCardScannerResult result)
         {
             var builder = new StringBuilder();
             builder.AppendLine($"DocumentType: European Health insurance card");
@@ -51,11 +50,11 @@ namespace ReadyToUseUI.Maui.Utils
             return builder.ToString();
         }
 
-        public static string ParseGDRResult(GenericDocumentRecognizerResult result) {
+        public static string ToAlertMessage(GenericDocumentRecognizerResult result) {
             return GenericDocumentToString(result.Documents.First());
         }
 
-        public static string ParseCheckResult(CheckRecognizerResult result)
+        public static string ToAlertMessage(CheckRecognizerResult result)
         {
             return GenericDocumentToString(result.Document);
         }
