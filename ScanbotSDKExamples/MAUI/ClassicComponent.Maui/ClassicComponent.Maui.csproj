@@ -28,6 +28,10 @@
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">
       <CreatePackage>false</CreatePackage>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net7.0-android'">
+         <!-- Added this flag to disable the fast assembly deployment option. Otherwise it fails to run on Android device.-->
+         <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+    </PropertyGroup>
     <ItemGroup>
         <!-- App Icon -->
         <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
@@ -54,7 +58,7 @@
         <None Include="**\**\*.iOS.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
     </ItemGroup>
     <ItemGroup>
-      <PackageReference Include="ScanbotSDK.MAUI" Version="2.3.1-beta.2" />
+      <PackageReference Include="ScanbotSDK.MAUI" Version="4.2.0-alpha.5" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Platforms\Android\Resources\" />

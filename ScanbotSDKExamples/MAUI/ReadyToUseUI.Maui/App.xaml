@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:ReadyToUseUI.Maui"
              x:Class="ReadyToUseUI.Maui.App"
-             xmlns:color="clr-namespace:BarcodeSDK.MAUI.Constants;assembly=BarcodeSDK.MAUI">
+             xmlns:color="clr-namespace:ScanbotSDK.MAUI.Constants;assembly=ScanbotSDK.Shared">
     <Application.Resources>
         <ResourceDictionary>
              <Style TargetType="NavigationPage">

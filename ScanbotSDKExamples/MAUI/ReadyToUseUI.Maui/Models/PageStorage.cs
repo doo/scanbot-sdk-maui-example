@@ -1,5 +1,5 @@
-﻿using DocumentSDK.MAUI.Constants;
-using DocumentSDK.MAUI.Services;
+﻿using ScanbotSDK.MAUI.Constants;
+using ScanbotSDK.MAUI.Services;
 using SQLite;
 
 namespace ReadyToUseUI.Maui.Models
@@ -38,28 +38,28 @@ namespace ReadyToUseUI.Maui.Models
         }
 
 
-        private PageStorage() {}
+        private PageStorage() { }
 
 
-        public async Task<int> CreateAsync(IScannedPageService page)
+        public async Task<int> CreateAsync(IScannedPage page)
         {
             var dbPage = DBPage.From(page);
             return await (await GetDatabaseAsync()).InsertAsync(dbPage);
         }
 
-        public async Task<int> UpdateAsync(IScannedPageService page)
+        public async Task<int> UpdateAsync(IScannedPage page)
         {
             return await (await GetDatabaseAsync()).UpdateAsync(DBPage.From(page));
         }
 
-        public async Task<List<IScannedPageService>> LoadAsync()
+        public async Task<List<IScannedPage>> LoadAsync()
         {
             var db = await GetDatabaseAsync();
             var dbPages = await db.Table<DBPage>().ToListAsync();
 
             return dbPages.Select(page =>
             {
-                return DocumentSDK.MAUI.ScanbotSDK.SDKService.ReconstructPage(
+                return ScanbotSDK.MAUI.ScanbotSDK.SDKService.ReconstructPage(
                     page.Id,
                     page.CreatePolygon(),
                     (ImageFilter)page.Filter,
@@ -68,7 +68,7 @@ namespace ReadyToUseUI.Maui.Models
             }).ToList();
         }
 
-        public async Task<int> DeleteAsync(IScannedPageService page)
+        public async Task<int> DeleteAsync(IScannedPage page)
         {
             return await (await GetDatabaseAsync()).DeleteAsync(DBPage.From(page));
         }
@@ -105,7 +105,7 @@ namespace ReadyToUseUI.Maui.Models
         public double X4 { get; set; }
         public double Y4 { get; set; }
 
-        public static DBPage From(IScannedPageService page)
+        public static DBPage From(IScannedPage page)
         {
 
             var result = new DBPage
@@ -146,7 +146,6 @@ namespace ReadyToUseUI.Maui.Models
                 new Point(X4, Y4)
             }.ToArray();
         }
-
     }
 }
 

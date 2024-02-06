@@ -2,14 +2,14 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ReadyToUseUI.Maui.Pages.HomePage"
-             xmlns:color="clr-namespace:BarcodeSDK.MAUI.Constants;assembly=BarcodeSDK.MAUI"
+             xmlns:color="clr-namespace:ScanbotSDK.MAUI.Constants;assembly=ScanbotSDK.Shared"
              Title="Scanbot SDK MAUI">
     <ScrollView>
         <StackLayout>
             <CollectionView
-            x:Name="CollectionViewSDKServices"
-            ItemsSource="{Binding SDKServices}"
-            SelectionChanged="CollectionViewSDKServices_ItemSelected"
+            x:Name="FeaturesCollectionView"
+            ItemsSource="{Binding SDKFeatures}"
+            SelectionChanged="SdkFeatureSelected"
             SelectionMode="Single"
             VerticalScrollBarVisibility="Default" >
                 <CollectionView.ItemTemplate>
@@ -17,7 +17,7 @@
                         <StackLayout>
                             <Label
                                 Padding="10,0"
-                                IsVisible="{Binding ShowSection}"
+                                IsVisible="{Binding ShowHeading}"
                                 HeightRequest="55"
                                 IsEnabled="False"
                                 FontSize="Medium"
@@ -28,7 +28,7 @@
                                 BackgroundColor="{Binding Source={x:Static color:SBColors.ScanbotRed}}" />
                             <Label
                                 Padding="10,0"
-                                IsVisible="{Binding ShowService}"
+                                IsVisible="{Binding ShowFeature}"
                                 HeightRequest="45"
                                 IsEnabled="True"
                                 FontSize="15"
