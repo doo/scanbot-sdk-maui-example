@@ -82,7 +82,7 @@ namespace ReadyToUseUI.Maui.Pages
             var aspectRatio = new AspectRatio(5, 1);
             var configuration = new TextDataScannerConfiguration(new TextDataScannerStep("", "", 0, aspectRatio))
             {
-
+                // specify custom colors or settings here
             };
 
             var result = await SBSDK.ReadyToUseUIService.LaunchTextDataScannerAsync(configuration);
@@ -97,7 +97,7 @@ namespace ReadyToUseUI.Maui.Pages
         {
             var configuration = new VINScannerConfiguration
             {
-
+                // specify custom colors or settings here
             };
 
             var result = await SBSDK.ReadyToUseUIService.LaunchVINScannerAsync(configuration);
