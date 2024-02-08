@@ -33,7 +33,10 @@ namespace ClassicComponent.iOS
             Directory = PageStoragePathForExample();
 
             ScanbotSDKGlobal.SetLoggingEnabled(true);
-            ScanbotSDKUI.DefaultImageStoreEncrypter = new SBSDKAESEncrypter("S0m3W3irDL0ngPa$$w0rdino!!!!", SBSDKAESEncrypterMode.SBSDKAESEncrypterModeAES256);
+
+            // Uncomment the below to test our encyption functionality.
+            //ScanbotSDKUI.DefaultImageStoreEncrypter = new SBSDKAESEncrypter("S0m3W3irDL0ngPa$$w0rdino!!!!", SBSDKAESEncrypterMode.SBSDKAESEncrypterModeAES256);
+
             if (!string.IsNullOrEmpty(LicenseKey))
             {
                 ScanbotSDKGlobal.SetLicense(LicenseKey);

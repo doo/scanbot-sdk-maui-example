@@ -26,11 +26,12 @@ namespace ReadyToUseUI.Maui
                 StorageImageFormat = CameraImageFormat.Jpg,
                 StorageImageQuality = 50,
                 DetectorType = DocumentDetectorType.MLBased,
-                Encryption = new SBSDKEncryption
-                {
-                    Password = "SomeSecretPa$$w0rdForFileEncryption",
-                    Mode = EncryptionMode.AES256
-                }
+                // Uncomment the below to test our encyption functionality.
+                //Encryption = new SBSDKEncryption
+                //{
+                //    Password = "SomeSecretPa$$w0rdForFileEncryption",
+                //    Mode = EncryptionMode.AES256
+                //}
             });
 
             return builder.Build();
