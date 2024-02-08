@@ -36,6 +36,9 @@ namespace ClassicComponent.iOS
 
             // Uncomment the below to test our encyption functionality.
             //ScanbotSDKUI.DefaultImageStoreEncrypter = new SBSDKAESEncrypter("S0m3W3irDL0ngPa$$w0rdino!!!!", SBSDKAESEncrypterMode.SBSDKAESEncrypterModeAES256);
+            // Note: all the images and files exported through the SDK will
+            // not be openable from external applications, since they will be
+            // encrypted.
 
             if (!string.IsNullOrEmpty(LicenseKey))
             {

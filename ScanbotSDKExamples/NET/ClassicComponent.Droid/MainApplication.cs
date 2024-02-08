@@ -14,6 +14,9 @@ namespace ClassicComponent.Droid
         public const bool USE_ENCRYPTION = false;
         private const string EncryptionPassword = "S0m3W3irDL0ngPa$$w0rdino!!!!";
         public static readonly AESEncryptedFileIOProcessor EncryptionFileIOProcessor = new AESEncryptedFileIOProcessor(EncryptionPassword, AESEncryptedFileIOProcessor.AESEncrypterMode.Aes256);
+        // Note: all the images and files exported through the SDK will
+        // not be openable from external applications, since they will be
+        // encrypted.
 
         static readonly string LOG_TAG = nameof(MainApplication);
 
