@@ -10,7 +10,11 @@ namespace ReadyToUseUI.Droid
     [Application(LargeHeap = true)]
     public class MainApplication : Application
     {
+        // Set the below to true to test our encryption functionality.
         public const bool USE_ENCRYPTION = false;
+        // Note: all the images and files exported through the SDK will
+        // not be openable from external applications, since they will be
+        // encrypted.
 
         static readonly string LOG_TAG = nameof(MainApplication);
 
@@ -47,10 +51,16 @@ namespace ReadyToUseUI.Droid
                                                .Build());
             initializer.OcrBlobsPath(app, "SBSDKLanguageData");
             initializer.PrepareOCRLanguagesBlobs(true);
-            initializer.UseFileEncryption(enableFileEncryption: USE_ENCRYPTION, new AESEncryptedFileIOProcessor(
-                    "S0m3W3irDL0ngPa$$w0rdino!!!!",
-                    AESEncryptedFileIOProcessor.AESEncrypterMode.Aes256
-                ));
+
+            // You can enable encryption by uncommenting the following lines:
+            //initializer.UseFileEncryption(enableFileEncryption: USE_ENCRYPTION, new AESEncryptedFileIOProcessor(
+            //        "S0m3W3irDL0ngPa$$w0rdino!!!!",
+            //        AESEncryptedFileIOProcessor.AESEncrypterMode.Aes256
+            //    ));
+            // Note: all the images and files exported through the SDK will
+            // not be openable from external applications, since they will be
+            // encrypted.
+
             initializer.Initialize(app);
         }
 
