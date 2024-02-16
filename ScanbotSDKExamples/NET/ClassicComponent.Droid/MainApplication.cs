@@ -10,11 +10,14 @@ namespace ClassicComponent.Droid
     [Application(LargeHeap = true, Theme = "@style/AppTheme")]
     public class MainApplication : Application
     {
+        // Set the below to true to test our encryption functionality.
         public const bool USE_ENCRYPTION = false;
-        const string EncryptionPassword = "S0m3W3irDL0ngPa$$w0rdino!!!!";
-
+        private const string EncryptionPassword = "S0m3W3irDL0ngPa$$w0rdino!!!!";
         public static readonly AESEncryptedFileIOProcessor EncryptionFileIOProcessor = new AESEncryptedFileIOProcessor(EncryptionPassword, AESEncryptedFileIOProcessor.AESEncrypterMode.Aes256);
-        
+        // Note: all the images and files exported through the SDK will
+        // not be openable from external applications, since they will be
+        // encrypted.
+
         static readonly string LOG_TAG = nameof(MainApplication);
 
         // TODO Add the Scanbot SDK license key here.
@@ -50,6 +53,7 @@ namespace ClassicComponent.Droid
                                                .Build());
             initializer.OcrBlobsPath(app, "SBSDKLanguageData");
             initializer.PrepareOCRLanguagesBlobs(true);
+
             initializer.UseFileEncryption(enableFileEncryption: USE_ENCRYPTION, EncryptionFileIOProcessor);
             initializer.Initialize(app);
         }
