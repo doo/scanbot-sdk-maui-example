@@ -12,6 +12,6 @@
         <ApplicationTitle>NET RTU UI</ApplicationTitle>
     </PropertyGroup>
     <ItemGroup>
-      <PackageReference Include="ScanbotSDK.NET" Version="4.2.0-beta.1" />
+        <PackageReference Include="ScanbotSDK.NET" Version="4.2.0-beta.3" />
     </ItemGroup>
 </Project>
