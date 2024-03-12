@@ -47,7 +47,8 @@ namespace ReadyToUseUI.iOS.Controller
                 new ListItem("Check Recognizer",              RecognizeCheck),
                 new ListItem("Text Data Recognizer",          TextDataRecognizerTapped),
                 new ListItem("VIN Recognizer",                VinRecognizerTapped),
-                new ListItem("License Plate Recognizer",      LicensePlateRecognizerTapped)
+                new ListItem("License Plate Recognizer",      LicensePlateRecognizerTapped),
+                new ListItem("Medical Certificate Recognizer", MedicalCertificateRecognizerTapped),
             };
 
             contentView.AddContent("BARCODE DETECTORS", barcodeDetectors);
@@ -406,6 +407,18 @@ namespace ReadyToUseUI.iOS.Controller
             scanner.DidRecognizeLicensePlate += (_, args) =>
             {
                 Alert.Show(this, "Result Text:", args?.Result?.RawString);
+            };
+            PresentViewController(scanner, true, null);
+        }
+
+        private void MedicalCertificateRecognizerTapped()
+        {
+             var configuration = SBSDKUIMedicalCertificateScannerConfiguration.DefaultConfiguration;
+            configuration.TextConfiguration.CancelButtonTitle = "Done";
+            var scanner = SBSDKUIMedicalCertificateScannerViewController.CreateNewWithConfiguration(configuration, null);
+            scanner.DidFinishWithCertificateResult  += (_, args) =>
+            {
+                Alert.Show(this, "Result Text:", args.Result.StringRepresentation);
             };
             PresentViewController(scanner, true, null);
         }
