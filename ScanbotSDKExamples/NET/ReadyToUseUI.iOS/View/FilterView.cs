@@ -74,7 +74,7 @@ namespace ReadyToUseUI.iOS.View
         }
 
         [Export("pickerView:attributedTitleForRow:forComponent:")]
-        public NSAttributedString GetAttributedTitle(UIPickerView pickerView, nint row, nint component)
+        public override NSAttributedString GetAttributedTitle(UIPickerView pickerView, nint row, nint component)
         {
             var text = Items[(int)row].Title;
             var attributed = new NSAttributedString(text, null, Models.Colors.AppleBlue);
