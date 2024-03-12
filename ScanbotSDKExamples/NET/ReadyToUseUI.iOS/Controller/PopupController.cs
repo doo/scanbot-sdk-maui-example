@@ -42,7 +42,7 @@ namespace ReadyToUseUI.iOS.Controller
 
         public void Dismiss()
         {
-            DismissModalViewController(true);
+            DismissViewController(true, null);
             Content.CloseButton.Click = null;
         }
     }
