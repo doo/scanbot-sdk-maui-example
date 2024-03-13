@@ -122,6 +122,21 @@ namespace ReadyToUseUI.Maui.Pages
                 ViewUtils.Alert(this, $"License Plate Result", result.Text);
             }
         }
+        
+        private async Task MedicalCertificateRecognizerClicked()
+        {
+            var configuration = new MedicalCertificateRecognizerConfiguration
+            {
+
+            };
+
+            var result = await SBSDK.ReadyToUseUIService.LaunchMedicalCertificateScannerAsync(configuration);
+
+            if (result.Status == OperationResult.Ok)
+            {
+                ViewUtils.Alert(this, $"Medical Certificate Recognition Result", result.Type.GetType()?.Name);
+            }
+        }
     }
 }
 
