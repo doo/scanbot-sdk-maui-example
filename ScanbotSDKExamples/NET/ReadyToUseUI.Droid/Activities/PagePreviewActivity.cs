@@ -185,7 +185,7 @@ namespace ReadyToUseUI.Droid.Activities
                     output = GetOutputUri(".tiff");
                     // Please note that some compression types are only compatible for 1-bit encoded images (binarized black & white images)!
                     var options = new IO.Scanbot.Sdk.Tiff.Model.TIFFImageWriterParameters(
-                        ImageFilterType.PureBinarized,
+                        new IO.Scanbot.Imagefilters.LegacyFilter(ImageFilterType.PureBinarized.Code),
                         250,
                         IO.Scanbot.Sdk.Tiff.Model.TIFFImageWriterCompressionOptions.CompressionCcittfax4,
                         Array.Empty<TIFFImageWriterUserDefinedField>());
@@ -272,7 +272,7 @@ namespace ReadyToUseUI.Droid.Activities
             {
                 foreach (var pageId in pageStorage.StoredPages)
                 {
-                    pageProcessor.ApplyFilter(new Page().Copy(pageId: pageId), type);
+                    pageProcessor.ApplyFilter(new Page().Copy(pageId: pageId), new IO.Scanbot.Imagefilters.LegacyFilter(type.Code));
                 }
 
                 RunOnUiThread(delegate
