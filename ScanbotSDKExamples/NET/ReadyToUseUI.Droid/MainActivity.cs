@@ -44,12 +44,16 @@ using IO.Scanbot.Sdk.UI.View.MC;
 using IO.Scanbot.Sdk.Mcrecognizer.Entity;
 using IO.Scanbot.Sdk.UI.View.Generictext;
 using IO.Scanbot.Sdk.Vin;
+using ReadyToUseUI.Droid.Snippets;
+using BarcodeScannerActivityV2 = IO.Scanbot.Sdk.Ui_v2.Barcode.BarcodeScannerActivity;
 
 namespace ReadyToUseUI.Droid
 {
     [Activity(Label = "NET RTU UI", MainLauncher = true, Icon = "@mipmap/icon")]
     public class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
     {
+        private const int BARCODE_DEFAULT_UI_REQUEST_CODE_V2 = 911;
+
         private const int SCAN_DOCUMENT_REQUEST_CODE = 1000;
 
         private const int IMPORT_IMAGE_REQUEST = 2001;
@@ -90,12 +94,26 @@ namespace ReadyToUseUI.Droid
 
             var barcodeDetectors = (LinearLayout)container.FindViewById(Resource.Id.barcode_data_scanner);
             var barcodeDetectorsTitle = (TextView)barcodeDetectors.FindViewById(Resource.Id.textView);
-            barcodeDetectorsTitle.Text = "BARCODE DETECTORS";
+            barcodeDetectorsTitle.Text = "BARCODE DETECTORS V1";
             barcodeDetectors.AddChildren(buttons, new[]  
             {
                 new ListItemButton(this, "Scan Barcodes", ScanBarcode),
                 new ListItemButton(this, "Scan Batch Barcodes", ScanBarcodesInBatch),
                 new ListItemButton(this, "Import and Detect Barcodes", ImportAndDetectBarcode),
+            });
+
+            var barcodeDetectorV2 = (LinearLayout)container.FindViewById(Resource.Id.barcode_data_scanner_v2);
+            var barcodeDetectorV2Title = (TextView)barcodeDetectorV2.FindViewById(Resource.Id.textView);
+            barcodeDetectorV2Title.Text = "BARCODE DETECTORS V2";
+            barcodeDetectorV2.AddChildren(buttons, new[]
+            {
+                new ListItemButton(this, "Barcode Scanner ArOverlay", ScanBarcodeV2_AR_Overlay),
+                new ListItemButton(this, "Barcode Scanner ItemMapping", ScanBarcodeV2_ItemMapping),
+                new ListItemButton(this, "Barcode Scanner MultipleScanning Preview", ScanBatchBarcodeV2_MultiScanning_Preview),
+                new ListItemButton(this, "Barcode Scanner MultipleScanning", ScanBatchBarcodeV2_MultiScanning),
+                new ListItemButton(this, "Barcode Scanner SingleScanning", ScanBarcodeV2_SingleScan),
+                new ListItemButton(this, "Barcode Scanner TopBar", ScanBarcodeV2_TopBar),
+                new ListItemButton(this, "Barcode Scanner UserGuidance", ScanBarcodeV2_UserGuidance)
             });
 
             var scanner = (LinearLayout)container.FindViewById(Resource.Id.document_scanner);
@@ -135,6 +153,84 @@ namespace ReadyToUseUI.Droid
                 button.Click += OnButtonClick;
             }
         }
+
+        private void ScanBarcodeV2_SingleScan()
+        {
+            if (!CheckLicense())
+            {
+                return;
+            }
+
+            var intent = BarcodeScannerActivityV2.NewIntent(this, new SingleScanningUseCaseSnippet().GetSingleScanningUseCaseSnippetConfiguration());
+            StartActivityForResult(intent, BARCODE_DEFAULT_UI_REQUEST_CODE_V2);
+        }
+
+        private void ScanBarcodeV2_AR_Overlay()
+        {
+            if (!CheckLicense())
+            {
+                return;
+            }
+
+            var intent = BarcodeScannerActivityV2.NewIntent(this, new ArOverlayUseCaseSnippet().GetArOverlayUseCaseSnippetConfiguration());
+            StartActivityForResult(intent, BARCODE_DEFAULT_UI_REQUEST_CODE_V2);
+        }
+
+        private void ScanBarcodeV2_ItemMapping()
+        {
+            if (!CheckLicense())
+            {
+                return;
+            }
+
+            var intent = BarcodeScannerActivityV2.NewIntent(this, new ItemMappingConfigSnippet().GetItemMappingConfigSnippetConfiguration());
+            StartActivityForResult(intent, BARCODE_DEFAULT_UI_REQUEST_CODE_V2);
+        }
+
+        private void ScanBarcodeV2_UserGuidance()
+        {
+            if (!CheckLicense())
+            {
+                return;
+            }
+
+            var intent = BarcodeScannerActivityV2.NewIntent(this, new UserGuidanceConfigSnippet().GetUserGuidanceConfigSnippetConfiguration());
+            StartActivityForResult(intent, BARCODE_DEFAULT_UI_REQUEST_CODE_V2);
+        }
+
+        private void ScanBarcodeV2_TopBar()
+        {
+            if (!CheckLicense())
+            {
+                return;
+            }
+
+            var intent = BarcodeScannerActivityV2.NewIntent(this, new TopBarConfigSnippet().GetTopBarConfigSnippetConfiguration());
+            StartActivityForResult(intent, BARCODE_DEFAULT_UI_REQUEST_CODE_V2);
+        }
+
+        private void ScanBatchBarcodeV2_MultiScanning()
+        {
+            if (!CheckLicense())
+            {
+                return;
+            }
+
+            var intent = BarcodeScannerActivityV2.NewIntent(this, new MultipleScanningUseCaseSnippet().GetMultipleScanningPreviewConfigSnippetConfiguration());
+            StartActivityForResult(intent, BARCODE_DEFAULT_UI_REQUEST_CODE_V2);
+        }
+
+        private void ScanBatchBarcodeV2_MultiScanning_Preview()
+        {
+            if (!CheckLicense())
+            {
+                return;
+            }
+
+            var intent = BarcodeScannerActivityV2.NewIntent(this, new MultipleScanningPreviewConfigSnippet().GetMultipleScanningPreviewConfigSnippetConfiguration());
+            StartActivityForResult(intent, BARCODE_DEFAULT_UI_REQUEST_CODE_V2);
+        }
+
 
         private void ScanBarcode()
         {

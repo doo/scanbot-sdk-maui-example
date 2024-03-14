@@ -49,6 +49,7 @@
             android:gravity="center"
             android:textStyle="normal"/>
 
+        <!--Barcode Detectors -->
         <LinearLayout
             android:id="@+id/barcode_data_scanner"
             android:layout_width="match_parent"
@@ -65,6 +66,24 @@
                 android:textStyle="normal"/>
         </LinearLayout>
 
+        <!--Barcode Detectors - V2 -->
+        <LinearLayout
+            android:id="@+id/barcode_data_scanner_v2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="5dp"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="13dp"
+                android:textStyle="normal"/>
+        </LinearLayout>
+
+        <!--Document Scanners -->
         <LinearLayout
             android:id="@+id/document_scanner"
             android:layout_width="match_parent"
@@ -81,6 +100,7 @@
                 android:textStyle="normal"/>
         </LinearLayout>
 
+        <!--Data Detectors -->
         <LinearLayout
             android:id="@+id/data_detectors"
             android:layout_width="match_parent"
@@ -98,5 +118,4 @@
         </LinearLayout>
 
     </LinearLayout>
-
 </ScrollView>
