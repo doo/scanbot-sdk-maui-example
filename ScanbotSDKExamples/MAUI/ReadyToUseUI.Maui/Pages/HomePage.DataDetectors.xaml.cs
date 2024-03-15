@@ -1,4 +1,5 @@
-﻿using ReadyToUseUI.Maui.Utils;
+﻿using System.Text;
+using ReadyToUseUI.Maui.Utils;
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Constants;
 using ScanbotSDK.MAUI.Models;
@@ -129,13 +130,39 @@ namespace ReadyToUseUI.Maui.Pages
             {
 
             };
-
+            
             var result = await SBSDK.ReadyToUseUIService.LaunchMedicalCertificateScannerAsync(configuration);
-
             if (result.Status == OperationResult.Ok)
             {
-                ViewUtils.Alert(this, $"Medical Certificate Recognition Result", result.Type.GetType()?.Name);
+                ViewUtils.Alert(this, $"Medical Certificate Recognition Result", FormatMedicalCertificateRecognitionResult(result));
             }
+        }
+
+        private string FormatMedicalCertificateRecognitionResult(MedicalCertificateResult result)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            
+            stringBuilder.Append("Type: ").Append(result.Checkboxes?.FirstOrDefault(medicalCertificateInfoBox => medicalCertificateInfoBox.Type == MedicalCertificateCheckboxType.InitialCertificate) != null ? "Initial" :
+                result.Checkboxes?.FirstOrDefault(medicalCertificateInfoBox => medicalCertificateInfoBox.Type == MedicalCertificateCheckboxType.RenewedCertificate) != null ? "Renewed" : "Unknown").Append("\n");
+            
+            stringBuilder.Append("Work Accident: ").Append(result.Checkboxes
+                ?.FirstOrDefault(medicalCertificateInfoBox => medicalCertificateInfoBox.Type == MedicalCertificateCheckboxType.WorkAccident) != null ? "Yes" : "No").Append("\n");
+            
+            stringBuilder.Append("Accident Consultant: ").Append(result.Checkboxes
+                ?.FirstOrDefault(medicalCertificateInfoBox => medicalCertificateInfoBox.Type == MedicalCertificateCheckboxType.AssignedToAccidentInsuranceDoctor)
+                != null ? "Yes" : "No").Append("\n");
+            
+            stringBuilder.Append("Start Date: ").Append(result.Dates?.FirstOrDefault(dateRecord => dateRecord.Type == MedicalCertificateDateType.IncapableOfWorkSince)?.DateString).Append("\n");
+            
+            stringBuilder.Append("End Date: ").Append(result.Dates?.FirstOrDefault(dateRecord => dateRecord.Type ==  MedicalCertificateDateType.IncapableOfWorkUntil)?.DateString).Append("\n");
+            
+            stringBuilder.Append("Issue Date: ").Append(result.Dates?.FirstOrDefault(dateRecord => dateRecord.Type == MedicalCertificateDateType.DiagnosedOn)?.DateString).Append("\n");
+            
+            stringBuilder.Append($"Form type: {result.Type}").Append("\n");
+            
+            stringBuilder.Append(string.Join("\n", result.PatientFields.ToList().ConvertAll(field => $"{field.Type}: {field.Value}")));
+            
+            return stringBuilder?.ToString();
         }
     }
 }
