@@ -52,6 +52,7 @@ public partial class HomePage : ContentPage
             new SdkFeature("Text Data Recognizer", TextDataRecognizerClicked),
             new SdkFeature("VIN Recognizer", VinRecognizerClicked),
             new SdkFeature("License Plate Recognizer", LicensePlateRecognizerClicked),
+            new SdkFeature("Medical Certificate Recognizer", MedicalCertificateRecognizerClicked),
 
             new SdkFeature("MISCELLANEOUS"),
             new SdkFeature("View License Info", ViewLicenseInfoClicked),
