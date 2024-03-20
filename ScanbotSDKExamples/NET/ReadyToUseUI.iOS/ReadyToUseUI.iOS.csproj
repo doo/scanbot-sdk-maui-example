@@ -23,7 +23,6 @@
         <MtouchDebug>true</MtouchDebug>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="ScanbotSDK.NET" Version="4.2.0-beta.3" />
         <PackageReference Include="Scanbot.Xamarin.ImagePicker" Version="0.0.3-beta.1" />
     </ItemGroup>
     <ItemGroup>
@@ -80,5 +79,8 @@
       <ImageAsset Update="Assets.xcassets\AppIcon.appiconset\Icon87.png">
         <Link>Assets.xcassets\AppIcon.appiconset\Icon87.png</Link>
       </ImageAsset>
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\..\scanbot-sdk-maui\DocumentSDK\Shared\DocumentSDK.Binding.iOS\DocumentSDK.iOS.csproj" />
     </ItemGroup>
 </Project>

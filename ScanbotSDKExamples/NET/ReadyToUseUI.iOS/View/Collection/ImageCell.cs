@@ -9,7 +9,7 @@ namespace ReadyToUseUI.iOS.View.Collection
 
         public UIImageView ImageView { get; private set; }
 
-        public SBSDKUIPage Page { get; private set; }
+        public SBSDKDocumentPage Page { get; private set; }
 
         public ImageCell(NativeHandle handle) : base(handle)
         {
@@ -41,7 +41,7 @@ namespace ReadyToUseUI.iOS.View.Collection
             ImageView.Frame = new CGRect(x, y, w, h);
         }
 
-        public void Update(SBSDKUIPage page)
+        public void Update(SBSDKDocumentPage page)
         {
             ImageView.Image = page.DocumentImage;
             Page = page;

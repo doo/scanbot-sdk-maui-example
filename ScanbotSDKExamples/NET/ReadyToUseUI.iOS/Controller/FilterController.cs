@@ -9,7 +9,7 @@ namespace ReadyToUseUI.iOS.Controller
     {
         private FilterView ContentView;
         private SBSDKImageFilterType Choice;
-        private SBSDKUIPage Temp;
+        private SBSDKDocumentPage Temp;
 
         private static readonly List<Filter> Filters = new List<Filter>
         {

@@ -11,7 +11,7 @@ public class DocumentUtilities
         var location = new SBSDKStorageLocation(tmp);
         var format = SBSDKImageFileFormat.Jpeg;
 
-        return new SBSDKIndexedImageStorage(location, format, encrypter, uris);
+        return new SBSDKIndexedImageStorage(location);
     }
 
     internal static Task<NSUrl> CreatePDFAsync(NSUrl[] inputUrls, NSUrl outputUrl, SBSDKPDFRendererPageSize pageSize = SBSDKPDFRendererPageSize.Custom,
@@ -24,15 +24,19 @@ public class DocumentUtilities
         var outputPdfUrl = new NSUrl(outputUrl.AbsoluteString + Guid.NewGuid() + ".pdf");
         // Create the PDF rendering options.
         var options = new SBSDKPDFRendererOptions(pageSize: pageSize,
+                                                pageFitMode: SBSDKPDFRendererPageFitMode.FitIn,
                                                 pageOrientation: orientation,
-                                                ocrConfiguration: ocrConfiguration);
+                                                ocrConfiguration: ocrConfiguration,
+                                                dpi: 300,
+                                                resample: true,
+                                                jpegQuality: 80);
 
         // Create the PDF renderer and pass the PDF options to it.
         var renderer = new SBSDKPDFRenderer(options);
 
         if (encrypter != null)
         {
-            renderer.RenderImageStorage(storage, indices: null, encrypter: encrypter, pdfOutputURL: outputPdfUrl, completion: (isComplete, error) =>
+            renderer.RenderImageStorage(storage, indexSet: null, encrypter: encrypter, output: outputPdfUrl, completion: (isComplete, error) =>
             {
                 storage.RemoveAllImages();
                 if (error != null)
@@ -44,7 +48,7 @@ public class DocumentUtilities
         }
         else
         {
-            renderer.RenderImageStorage(storage, indices: null, pdfOutputURL: outputPdfUrl, completion: (isComplete, error) =>
+            renderer.RenderImageStorage(storage, indexSet: null, output: outputPdfUrl, encrypter: null, completion: (isComplete, error) =>
             {
                 storage.RemoveAllImages();
                 if (error != null)
@@ -63,12 +67,12 @@ public class DocumentUtilities
                                                                     SBSDKPDFRendererPageOrientation orientation = SBSDKPDFRendererPageOrientation.Auto, SBSDKStorageCrypting encrypter = null)
     {
         var storage = CreateStorage(inputUrls, encrypter);
-        var (ocrResult, error) = await RecognizeText(ocrRecognizer, storage);
+        var result = await RecognizeText(ocrRecognizer, storage);
 
-        if (error != null)
+        if (result.error != null)
         {
             storage.RemoveAllImages();
-            throw new NSErrorException(error);
+            throw new NSErrorException(result.error);
         }
 
         if (shouldGeneratePdf)
@@ -76,13 +80,13 @@ public class DocumentUtilities
             outputUrl = await CreatePDFAsync(inputUrls, outputUrl, pageSize, orientation, encrypter, ocrRecognizer.Configuration);
         }
         storage.RemoveAllImages();
-        return (ocrResult, outputUrl);
+        return (result.result, outputUrl);
     }
 
     private static Task<(SBSDKOCRResult result, NSError error)> RecognizeText(SBSDKOpticalCharacterRecognizer opticalCharacterRecognizer, SBSDKImageStoring storage)
     {
         TaskCompletionSource<(SBSDKOCRResult, NSError)> task = new TaskCompletionSource<(SBSDKOCRResult, NSError)>();
-        opticalCharacterRecognizer.RecognizeText(storage, completion: (result, error) =>
+        opticalCharacterRecognizer.RecognizeOnImageStorage(storage, completion: (result, error) =>
         {
             task.SetResult((result, error));
         });
@@ -96,14 +100,9 @@ public class DocumentUtilities
 
         var images = LoadImagesFromUrl(inputUrls.ToList()).ToArray();
 
-        if (encrypter != null)
-        {
-            success = SBSDKTIFFImageWriter.WriteTIFF(images, outputTiffUrl, encrypter, parameters);
-        }
-        else
-        {
-            success = SBSDKTIFFImageWriter.WriteTIFF(images, outputTiffUrl, parameters);
-        }
+        var write = new SBSDKTIFFImageWriter(parameters, encrypter);
+
+        success = write.WriteTIFFWithToFile(images, outputTiffUrl);
         return (success, outputTiffUrl);
     }
 

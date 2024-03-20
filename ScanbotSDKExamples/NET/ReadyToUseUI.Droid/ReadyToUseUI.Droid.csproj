@@ -1,4 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\..\scanbot-sdk-maui\DocumentSDK\Shared\DocumentSDK.Binding.Droid\DocumentSDK.Droid.csproj" />
+    </ItemGroup>
     <PropertyGroup>
         <TargetFramework>net7.0-android</TargetFramework>
         <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
@@ -11,7 +14,4 @@
         <AssemblyName>ReadyToUseUI.Droid</AssemblyName>
         <ApplicationTitle>NET RTU UI</ApplicationTitle>
     </PropertyGroup>
-    <ItemGroup>
-        <PackageReference Include="ScanbotSDK.NET" Version="4.2.0-beta.3" />
-    </ItemGroup>
 </Project>

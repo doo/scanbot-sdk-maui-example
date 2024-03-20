@@ -18,6 +18,6 @@
     <AndroidAsset Include="Assets\SBSDKLanguageData\osd.traineddata" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ScanbotSDK.NET" Version="4.2.0-beta.3" />
+    <ProjectReference Include="..\..\..\..\scanbot-sdk-maui\DocumentSDK\Shared\DocumentSDK.Binding.Droid\DocumentSDK.Droid.csproj" />
   </ItemGroup>
 </Project>
