@@ -49,13 +49,13 @@ namespace ClassicComponent.Maui.Platforms.iOS.CustomViews
 
                 cameraViewController.IsTrackingOverlayEnabled = true;
                 cameraViewController.TrackingOverlayController.Configuration.IsAutomaticSelectionEnabled = config.AutomaticSelectionEnabled;
-                cameraViewController.TrackingOverlayController.Configuration.PolygonStyle.PolygonColor = config.PolygonColor.ToNative();
+                cameraViewController.TrackingOverlayController.Configuration.PolygonStyle.PolygonColor = config.PolygonBackgroundColor.ToNative();
                 cameraViewController.TrackingOverlayController.Configuration.TextStyle.TextColor = config.TextColor.ToNative();
                 cameraViewController.TrackingOverlayController.Configuration.TextStyle.TextBackgroundColor = config.TextContainerColor.ToNative();
 
-                if (config.HighlightedPolygonColor != null)
+                if (config.PolygonBackgroundHighlightedColor != null)
                 {
-                    cameraViewController.TrackingOverlayController.Configuration.PolygonStyle.PolygonSelectedColor = config.HighlightedPolygonColor?.ToNative();
+                    cameraViewController.TrackingOverlayController.Configuration.PolygonStyle.PolygonSelectedColor = config.PolygonBackgroundHighlightedColor?.ToNative();
                 }
 
                 if (config.HighlightedTextColor != null)
