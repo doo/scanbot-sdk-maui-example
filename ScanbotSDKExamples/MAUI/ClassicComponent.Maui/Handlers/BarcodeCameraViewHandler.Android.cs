@@ -144,8 +144,8 @@ namespace ClassicComponent.Maui.CustomViews
                 cameraViewDroid.SelectionOverlayController.SetEnabled(config.Enabled);
                 cameraViewDroid.SelectionOverlayController.SetBarcodeAppearanceDelegate(
                 (getPolygonStyle: (defaultStyle, _) => defaultStyle.Copy(
-                                                    fillColor: config.PolygonColor.ToPlatform(),
-                                                    fillHighlightedColor: config.HighlightedPolygonColor?.ToPlatform()),
+                                                    fillColor: config.PolygonBackgroundColor.ToPlatform(),
+                                                    fillHighlightedColor: config.PolygonBackgroundHighlightedColor?.ToPlatform()),
                 getTextViewStyle: (defaultStyle, _) => defaultStyle.Copy(
                             textFormat: config.OverlayTextFormat.ToNative(),
                             textColor: config.TextColor.ToPlatform(),
