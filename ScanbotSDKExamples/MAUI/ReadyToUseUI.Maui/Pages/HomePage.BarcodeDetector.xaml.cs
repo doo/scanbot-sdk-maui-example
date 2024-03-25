@@ -23,9 +23,9 @@ namespace ReadyToUseUI.Maui.Pages
             config.OverlayConfiguration = new SelectionOverlayConfiguration(
                 automaticSelectionEnabled: true,
                 overlayFormat: BarcodeTextFormat.Code,
-                polygon: Colors.Yellow,
-                text: Colors.Yellow,
-                textContainer: Colors.Black);
+                polygonBackgroundColor: Colors.Yellow,
+                textColor: Colors.Yellow,
+                textContainerColor: Colors.Black);
 
             // To see the confirmation dialog in action, uncomment the below and comment out the config.OverlayConfiguration line above.
             //config.ConfirmationDialogConfiguration = new BarcodeConfirmationDialogConfiguration
@@ -53,10 +53,10 @@ namespace ReadyToUseUI.Maui.Pages
                 OverlayConfiguration = new SelectionOverlayConfiguration(
                     automaticSelectionEnabled: true,
                     overlayFormat: BarcodeTextFormat.Code,
-                    polygon: Colors.Yellow,
-                    text: Colors.Yellow,
-                    textContainer: Colors.Black,
-                    highlightedPolygonColor: Colors.Red,
+                    polygonBackgroundColor: Colors.Yellow,
+                    textColor: Colors.Yellow,
+                    textContainerColor: Colors.Black,
+                    polygonBackgroundHighlightedColor: Colors.Red,
                     highlightedTextColor: Colors.Red,
                     highlightedTextContainerColor: Colors.Black),
                 SuccessBeepEnabled = true,
