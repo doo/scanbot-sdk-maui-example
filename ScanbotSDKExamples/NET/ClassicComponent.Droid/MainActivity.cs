@@ -265,7 +265,7 @@ namespace ClassicComponent.Droid
 
                         var ocrResult = scanbotSDK.CreateOcrRecognizer().RecognizeTextWithPdfFromUris(
                             images.ToList(),
-                            false,
+                            MainApplication.USE_ENCRYPTION,
                             PdfConfig.DefaultConfig());
 
 
