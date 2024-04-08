@@ -204,7 +204,7 @@ namespace ReadyToUseUI.Droid.Activities
                         return;
                     }
 
-                    var pdfFile = ocrRecognizer.RecognizeTextWithPdfFromUris(pagesUri, false, IO.Scanbot.Pdf.Model.PdfConfig.DefaultConfig());
+                    var pdfFile = ocrRecognizer.RecognizeTextWithPdfFromUris(pagesUri, MainApplication.USE_ENCRYPTION, IO.Scanbot.Pdf.Model.PdfConfig.DefaultConfig());
                     File.Move(pdfFile.SandwichedPdfDocumentFile.AbsolutePath, new Java.IO.File(output.Path).AbsolutePath);
                 }
                 else
@@ -322,8 +322,8 @@ namespace ReadyToUseUI.Droid.Activities
 
             foreach (string pageId in pageIds)
             {
-                var documentUri = pageStorage.GetPreviewImageURI(pageId, PageFileStorage.PageFileType.Document);
-                var originalUri = pageStorage.GetPreviewImageURI(pageId, PageFileStorage.PageFileType.Original);
+                var documentUri = pageStorage.GetImageURI(pageId, PageFileStorage.PageFileType.Document);
+                var originalUri = pageStorage.GetImageURI(pageId, PageFileStorage.PageFileType.Original);
                 if (File.Exists(documentUri.Path))
                 {
                     uris.Add(documentUri);
