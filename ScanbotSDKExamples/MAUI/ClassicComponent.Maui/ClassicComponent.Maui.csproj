@@ -58,7 +58,7 @@
         <None Include="**\**\*.iOS.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
     </ItemGroup>
     <ItemGroup>
-      <PackageReference Include="ScanbotSDK.MAUI" Version="4.2.0-beta.5" />
+      <PackageReference Include="ScanbotSDK.MAUI" Version="4.2.0-beta.6" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Platforms\Android\Resources\" />
