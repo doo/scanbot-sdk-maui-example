@@ -201,6 +201,12 @@ namespace ReadyToUseUI.Maui.Pages
                 }
 
             }
+            catch (Exception ex)
+            {
+                // Making the error prettier.
+                var errorMessage = ex.Message.Substring(ex.Message.LastIndexOf(':')).Trim('{', '}');
+                ViewUtils.Alert(this, "Error: ", $"An error occurred while saving the document: {errorMessage}");
+            }
             finally
             {
                 isLoading = false;
