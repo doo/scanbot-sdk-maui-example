@@ -56,19 +56,8 @@ namespace ReadyToUseUI.Maui.Pages
 
             documentImage.Source = await PageDocument();
         }
-
-
-        private async Task<ImageSource> PageDocument()
-        {
-            // If encryption is enabled, load the decrypted document.
-            if (ScanbotSDK.MAUI.ScanbotSDK.SDKService.IsEncryptionEnabled)
-            {
-                return await selectedPage.DecryptedDocument();
-            }
-            
-            // Else accessible via Document or DocumentPreview (uncomment as needed).
-            return selectedPage.Document;
-        }
+        
+        private async Task<ImageSource> PageDocument() =>  await selectedPage.DecryptedDocument();
 
         private async void OnCropButtonClick(object sender, EventArgs e)
         {
