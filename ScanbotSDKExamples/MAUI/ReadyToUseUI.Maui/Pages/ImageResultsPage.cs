@@ -35,7 +35,7 @@ namespace ReadyToUseUI.Maui.Pages
                 ItemsSource = scannedPages
             };
 
-            bottomBar = new BottomActionBar(false);
+            bottomBar = new BottomActionBar(isDetailPage: false);
             bottomBar.VerticalOptions = LayoutOptions.End;
 
             loader = new ActivityIndicator
@@ -72,9 +72,9 @@ namespace ReadyToUseUI.Maui.Pages
                 HorizontalOptions = LayoutOptions.Fill
             };
 
-            bottomBar.AddClickEvent(bottomBar.AddButton, OnAddButtonClick);
-            bottomBar.AddClickEvent(bottomBar.SaveButton, OnSaveButtonClick);
-            bottomBar.AddClickEvent(bottomBar.DeleteAllButton, OnDeleteButtonClick);
+            bottomBar.AddTappedEvent(bottomBar.AddButton, OnAddButtonTapped);
+            bottomBar.AddTappedEvent(bottomBar.SaveButton, OnSaveButtonTapped);
+            bottomBar.AddTappedEvent(bottomBar.DeleteAllButton, OnDeleteButtonTapped);
 
             resultList.ItemTapped += OnItemClick;
         }
@@ -118,11 +118,11 @@ namespace ReadyToUseUI.Maui.Pages
         {
             if (e.Item is IScannedPage selectedPage && selectedPage != null)
             {
-                Navigation.PushAsync(new ImageDetailPage(selectedPage));
+                Navigation.PushAsync(new ImageDetailPage(selectedPage, SBSDK.SDKService));
             }
         }
 
-        async void OnAddButtonClick(object sender, EventArgs e)
+        async void OnAddButtonTapped(object sender, EventArgs e)
         {
             if (!SDKUtils.CheckLicense(this)) { return; }
 
@@ -149,7 +149,7 @@ namespace ReadyToUseUI.Maui.Pages
             }
         }
 
-        async void OnSaveButtonClick(object sender, EventArgs e)
+        async void OnSaveButtonTapped(object sender, EventArgs e)
         {
             if (!SDKUtils.CheckLicense(this)) { return; }
 
@@ -213,7 +213,7 @@ namespace ReadyToUseUI.Maui.Pages
             }            
         }
 
-        private async void OnDeleteButtonClick(object sender, EventArgs e)
+        private async void OnDeleteButtonTapped(object sender, EventArgs e)
         {
             var message = "Do you really want to delete all image data?";
             var result = await this.DisplayAlert("Attention!", message, "Yes", "No");
