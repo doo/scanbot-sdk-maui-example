@@ -11,10 +11,13 @@ namespace ReadyToUseUI.Maui.Pages
         private Image documentImage;
         private BottomActionBar bottomBar;
         private IScannedPage selectedPage;
+        private IScanbotSDKService scanbotDocumentService; // for document quality detection
 
-        public ImageDetailPage(IScannedPage selectedPage)
+        public ImageDetailPage(IScannedPage selectedPage, IScanbotSDKService service)
         {
             this.selectedPage = selectedPage;
+            this.scanbotDocumentService = service;
+
             documentImage = new Image
             {
                 HorizontalOptions = LayoutOptions.Fill,
@@ -27,7 +30,7 @@ namespace ReadyToUseUI.Maui.Pages
                 documentImage.HeightRequest = Content.Height / 3 * 2;
             };
 
-            bottomBar = new BottomActionBar(true);
+            bottomBar = new BottomActionBar(isDetailPage: true);
 
             var gridView = new Grid
             {
@@ -45,9 +48,10 @@ namespace ReadyToUseUI.Maui.Pages
             gridView.SetRow(bottomBar, 1);
             Content = gridView;
 
-            bottomBar.AddClickEvent(bottomBar.CropButton, OnCropButtonClick);
-            bottomBar.AddClickEvent(bottomBar.FilterButton, OnFilterButtonClick);
-            bottomBar.AddClickEvent(bottomBar.DeleteButton, OnDeleteButtonClick);
+            bottomBar.AddTappedEvent(bottomBar.CropButton, OnCropButtonTapped);
+            bottomBar.AddTappedEvent(bottomBar.FilterButton, OnFilterButtonTapped);
+            bottomBar.AddTappedEvent(bottomBar.AnalyzeQualityButton, OnAnalyzeQualityTapped);
+            bottomBar.AddTappedEvent(bottomBar.DeleteButton, OnDeleteButtonTapped);
         }
 
         protected override async void OnAppearing()
@@ -59,7 +63,7 @@ namespace ReadyToUseUI.Maui.Pages
         
         private async Task<ImageSource> PageDocument() =>  await selectedPage.DecryptedDocument();
 
-        private async void OnCropButtonClick(object sender, EventArgs e)
+        private async void OnCropButtonTapped(object sender, EventArgs e)
         {
             if (!SDKUtils.CheckLicense(this)) { return; }
 
@@ -73,7 +77,8 @@ namespace ReadyToUseUI.Maui.Pages
             }
         }
 
-        private async void OnFilterButtonClick(object sender, EventArgs e)
+
+        private async void OnFilterButtonTapped(object sender, EventArgs e)
         {
             if (!SDKUtils.CheckLicense(this)) { return; }
 
@@ -90,7 +95,16 @@ namespace ReadyToUseUI.Maui.Pages
             }
         }
 
-        private async void OnDeleteButtonClick(object sender, EventArgs e)
+        private async void OnAnalyzeQualityTapped(object sender, EventArgs e)
+        {
+            if (!SDKUtils.CheckLicense(this)) { return; }
+
+            DocumentQuality quality = await scanbotDocumentService.DetectDocumentQualityAsync(documentImage.Source);
+
+            ViewUtils.Alert(this, "Document Quality", $"Detected quality is: {quality}");
+        }
+
+        private async void OnDeleteButtonTapped(object sender, EventArgs e)
         {
             documentImage.Source = null;
             await Task.WhenAll(PageStorage.Instance.DeleteAsync(selectedPage), Navigation.PopAsync());
