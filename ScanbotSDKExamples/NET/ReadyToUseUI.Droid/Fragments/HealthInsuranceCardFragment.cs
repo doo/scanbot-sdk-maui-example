@@ -9,7 +9,7 @@ namespace ReadyToUseUI.Droid.Fragments
     {
         public const string NAME = "HealthInsuranceCardFragment";
 
-        internal static HealthInsuranceCardFragment CreateInstance(HealthInsuranceCardRecognitionResult result)
+        public static HealthInsuranceCardFragment CreateInstance(HealthInsuranceCardRecognitionResult result)
         {
             var fragment = new HealthInsuranceCardFragment();
 

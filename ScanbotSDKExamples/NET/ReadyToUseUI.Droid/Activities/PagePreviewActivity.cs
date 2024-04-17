@@ -7,18 +7,16 @@ using AndroidX.Core.Content;
 using AndroidX.RecyclerView.Widget;
 using IO.Scanbot.Sdk.Persistence;
 using IO.Scanbot.Sdk.Process;
-using IO.Scanbot.Sdk.UI.View.Base;
 using IO.Scanbot.Sdk.UI.View.Camera;
 using IO.Scanbot.Sdk.UI.View.Camera.Configuration;
 using IO.Scanbot.Sdk.Util.Thread;
 using ReadyToUseUI.Droid.Fragments;
 using ReadyToUseUI.Droid.Listeners;
-using ReadyToUseUI.Droid.Repository;
 using ReadyToUseUI.Droid.Utils;
 using DocumentSDK.NET.Model;
-using SBSDK = DocumentSDK.MAUI.Native.Droid.ScanbotSDK;
-using DocumentSDK.MAUI.Models;
-using DocumentSDK.MAUI.Constants;
+using IO.Scanbot.Sdk.Tiff.Model;
+using ReadyToUseUI.Droid.Model;
+using static Java.Interop.JniEnvironment;
 
 namespace ReadyToUseUI.Droid.Activities
 {
@@ -31,7 +29,9 @@ namespace ReadyToUseUI.Droid.Activities
         const string FILTERS_MENU_TAG = "FILTERS_MENU_TAG";
         const string SAVE_MENU_TAG = "SAVE_MENU_TAG";
 
-        Page selectedPage;
+        private IO.Scanbot.Sdk.ScanbotSDK scanbotSDK;
+        private IO.Scanbot.Sdk.Persistence.PageFileStorage pageStorage;
+        private IO.Scanbot.Sdk.Docprocessing.PageProcessor pageProcessor;
 
         PageAdapter adapter;
         RecyclerView recycleView;
@@ -40,53 +40,47 @@ namespace ReadyToUseUI.Droid.Activities
         SaveBottomSheetMenuFragment saveFragment;
 
         ProgressBar progress;
-        TextView delete, filter;
+        TextView delete, filter, addPage, results;
         Button save;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            scanbotSDK = new IO.Scanbot.Sdk.ScanbotSDK(this);
+            pageStorage = scanbotSDK.CreatePageFileStorage();
+            pageProcessor = scanbotSDK.CreatePageProcessor();
+
             SetContentView(Resource.Layout.activity_page_preview);
 
-            var toolbar = FindViewById<AndroidX.AppCompat.Widget.Toolbar>(Resource.Id.toolbar);
-            SetSupportActionBar(toolbar);
-            
-            SupportActionBar.Title = Texts.scan_results;
-            SupportActionBar.SetDisplayHomeAsUpEnabled(true);
-            SupportActionBar.SetDisplayShowHomeEnabled(true);
-
-            var fragment = SupportFragmentManager.FindFragmentByTag(FILTERS_MENU_TAG);
-            if (fragment != null)
-            {
-                SupportFragmentManager.BeginTransaction().Remove(fragment).CommitNow();
-            }
+            SetupToolbar();
 
             filterFragment = new FilterBottomSheetMenuFragment();
-
-            var fragment2 = SupportFragmentManager.FindFragmentByTag(SAVE_MENU_TAG);
-            if (fragment2 != null)
-            {
-                SupportFragmentManager.BeginTransaction().Remove(fragment2).CommitNow();
-            }
-
             saveFragment = new SaveBottomSheetMenuFragment();
 
-            adapter = new PageAdapter();
+            var fragmentFilterMenu = SupportFragmentManager.FindFragmentByTag(FILTERS_MENU_TAG);
+            if (fragmentFilterMenu != null)
+            {
+                SupportFragmentManager.BeginTransaction().Remove(fragmentFilterMenu).CommitNow();
+            }
+
+            var fragmentSaveMenu = SupportFragmentManager.FindFragmentByTag(SAVE_MENU_TAG);
+            if (fragmentSaveMenu != null)
+            {
+                SupportFragmentManager.BeginTransaction().Remove(fragmentSaveMenu).CommitNow();
+            }
+
+            progress = FindViewById<ProgressBar>(Resource.Id.progressBar);
+
+            adapter = new PageAdapter(scanbotSDK.FileIOProcessor(), pageStorage);
             adapter.HasStableIds = true;
             adapter.Context = this;
 
             recycleView = FindViewById<RecyclerView>(Resource.Id.pages_preview);
             recycleView.HasFixedSize = true;
             recycleView.SetAdapter(adapter);
-            
-            var layout = new GridLayoutManager(this, 3);
-            recycleView.SetLayoutManager(layout);
+            recycleView.SetLayoutManager(new GridLayoutManager(this, 3));
 
-            adapter.SetItems(PageRepository.Pages);
-            
-            progress = FindViewById<ProgressBar>(Resource.Id.progressBar);
-
-            var addPage = FindViewById<TextView>(Resource.Id.action_add_page);
+            addPage = FindViewById<TextView>(Resource.Id.action_add_page);
             addPage.Text = Texts.add_page;
             addPage.Click += delegate
             {
@@ -97,16 +91,15 @@ namespace ReadyToUseUI.Droid.Activities
                 StartActivityForResult(intent, CAMERA_ACTIVITY);
             };
 
-            var results = FindViewById<TextView>(Resource.Id.scan_results);
+            results = FindViewById<TextView>(Resource.Id.scan_results);
             results.Text = Texts.scan_results;
 
             delete = FindViewById<TextView>(Resource.Id.action_delete_all);
             delete.Text = Texts.delete_all;
             delete.Click += delegate
             {
-                PageRepository.Clear();
-                adapter.Items.Clear();
-                adapter.NotifyDataSetChanged();
+                pageStorage.RemoveAll();
+                adapter.Refresh();
                 delete.Enabled = false;
                 filter.Enabled = false;
                 save.Enabled = false;
@@ -129,17 +122,21 @@ namespace ReadyToUseUI.Droid.Activities
             };
         }
 
+        private void SetupToolbar()
+        {
+            var toolbar = FindViewById<AndroidX.AppCompat.Widget.Toolbar>(Resource.Id.toolbar);
+            SetSupportActionBar(toolbar);
+
+            SupportActionBar.Title = Texts.scan_results;
+            SupportActionBar.SetDisplayHomeAsUpEnabled(true);
+            SupportActionBar.SetDisplayShowHomeEnabled(true);
+        }
+
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
         {
             base.OnActivityResult(requestCode, resultCode, data);
 
-            if (resultCode == Result.Ok && requestCode == CAMERA_ACTIVITY)
-            {
-                var pages = data.GetParcelableArrayExtra(RtuConstants.ExtraKeyRtuResult).Cast<Page>().ToList();
-                PageRepository.Add(pages);
-            }
-            adapter.SetItems(PageRepository.Pages);
-            adapter.NotifyDataSetChanged();
+            adapter.Refresh();
             UpdateVisibility();
         }
 
@@ -147,7 +144,7 @@ namespace ReadyToUseUI.Droid.Activities
         {
             base.OnResume();
 
-            if (!SBSDK.IsLicenseValid())
+            if (!scanbotSDK.LicenseInfo.IsValid)
             {
                 Alert.ShowLicenseDialog(this);
             }
@@ -162,31 +159,15 @@ namespace ReadyToUseUI.Droid.Activities
             save.Enabled = !adapter.IsEmpty;
         }
 
-        enum SaveType
-        {
-            Plain,
-            OCR,
-            TIFF
-        }
+        public void SaveTiff() => SaveDocument(SaveType.TIFF);
 
-        public void SaveWithOcr()
-        {
-            SaveDocument(SaveType.OCR);
-        }
-
-        public void SaveWithoutOcr()
-        {
-            SaveDocument(SaveType.Plain);
-        }
-
-        public void SaveTiff()
-        {
-            SaveDocument(SaveType.TIFF);
-        }
+        public void SaveWithOcr() => SaveDocument(SaveType.OCR);
+        
+        public void SaveWithoutOcr() => SaveDocument(SaveType.Plain);
 
         void SaveDocument(SaveType type)
         {
-            if (!SBSDK.IsLicenseValid())
+            if (!scanbotSDK.LicenseInfo.IsValid)
             {
                 Alert.ShowLicenseDialog(this);
                 return;
@@ -194,21 +175,27 @@ namespace ReadyToUseUI.Droid.Activities
 
             Task.Run(delegate
             {
-                var input = adapter.GetDocumentUris().ToArray();
+                var pagesUri = adapter.GetDocumentUris();
                 var output = GetOutputUri(".pdf");
 
                 if (type == SaveType.TIFF)
                 {
                     output = GetOutputUri(".tiff");
                     // Please note that some compression types are only compatible for 1-bit encoded images (binarized black & white images)!
-                    var options = new TiffOptions { OneBitEncoded = true, Compression = TiffCompressionOptions.CompressionCcittfax4, Dpi = 250 };
-                    bool success = SBSDK.WriteTiff(input, output, options);
+                    var options = new IO.Scanbot.Sdk.Tiff.Model.TIFFImageWriterParameters(
+                        ImageFilterType.PureBinarized,
+                        250,
+                        IO.Scanbot.Sdk.Tiff.Model.TIFFImageWriterCompressionOptions.CompressionCcittfax4,
+                        Array.Empty<TIFFImageWriterUserDefinedField>());
+
+                    scanbotSDK.CreateTiffWriter().WriteTIFFFromFiles(pagesUri.Select(i => new Java.IO.File(i.Path)).ToArray(), false, new Java.IO.File(output.Path), options);
                 }
                 else if (type == SaveType.OCR)
                 {
-                    var languages = SBSDK.GetOcrConfigs().InstalledLanguages.ToArray();
+                    var ocrRecognizer = scanbotSDK.CreateOcrRecognizer();
 
-                    if (languages.Length == 0)
+                    var languages = ocrRecognizer.InstalledLanguages;
+                    if (languages.Count == 0)
                     {
                         RunOnUiThread(delegate
                         {
@@ -216,20 +203,23 @@ namespace ReadyToUseUI.Droid.Activities
                         });
                         return;
                     }
-                    SBSDK.PerformOCR(input, languages, output);
+
+                    var pdfFile = ocrRecognizer.RecognizeTextWithPdfFromUris(pagesUri, MainApplication.USE_ENCRYPTION, IO.Scanbot.Pdf.Model.PdfConfig.DefaultConfig());
+                    File.Move(pdfFile.SandwichedPdfDocumentFile.AbsolutePath, new Java.IO.File(output.Path).AbsolutePath);
                 }
                 else
                 {
-                    SBSDK.CreatePDF(input, output, DocumentSDK.MAUI.Constants.PDFPageSize.FixedA4);
+                    var pdfFile = scanbotSDK.CreatePdfRenderer().RenderDocumentFromImages(pagesUri, false, IO.Scanbot.Pdf.Model.PdfConfig.DefaultConfig());
+                    File.Move(pdfFile.AbsolutePath, new Java.IO.File(output.Path).AbsolutePath);
                 }
 
                 Java.IO.File file = Copier.Copy(this, output);
 
                 var intent = new Intent(Intent.ActionView, output);
-                
+                 
                 var authority = ApplicationContext.PackageName + ".provider";
                 var uri = FileProvider.GetUriForFile(this, authority, file);
-                
+
                 intent.SetDataAndType(uri, MimeUtils.GetMimeByName(file.Name));
                 intent.SetFlags(ActivityFlags.ClearWhenTaskReset | ActivityFlags.NewTask);
                 intent.AddFlags(ActivityFlags.GrantReadUriPermission | ActivityFlags.GrantWriteUriPermission);
@@ -242,7 +232,7 @@ namespace ReadyToUseUI.Droid.Activities
             });
         }
 
-        Android.Net.Uri GetOutputUri(string extension)
+        private Android.Net.Uri GetOutputUri(string extension)
         {
             var external = GetExternalFilesDir(null).AbsolutePath;
             var filename = Guid.NewGuid() + extension;
@@ -252,13 +242,12 @@ namespace ReadyToUseUI.Droid.Activities
 
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
-            
             if (item.ItemId == Android.Resource.Id.Home)
             {
                 base.OnBackPressed();
                 return true;
             }
-            return base.OnOptionsItemSelected(item);
+            return base.OnOptionsItemSelected(item); 
         }
 
         public void ApplyFilter(ImageFilterType type)
@@ -266,8 +255,13 @@ namespace ReadyToUseUI.Droid.Activities
             progress.Visibility = ViewStates.Visible;
             Task.Run(delegate
             {
-                PageRepository.Apply(type);
-                RunOnUiThread(delegate {
+                foreach (var pageId in pageStorage.StoredPages)
+                {
+                    pageProcessor.ApplyFilter(new Page().Copy(pageId: pageId), type);
+                }
+
+                RunOnUiThread(delegate
+                {
                     adapter.NotifyDataSetChanged();
                     progress.Visibility = ViewStates.Gone;
                 });
@@ -277,81 +271,38 @@ namespace ReadyToUseUI.Droid.Activities
         public void OnRecycleViewItemClick(View v)
         {
             var position = recycleView.GetChildLayoutPosition(v);
-            selectedPage = adapter.Items[position];
-
-            var intent = PageFilterActivity.CreateIntent(this, selectedPage);
+            var intent = PageFilterActivity.CreateIntent(this, adapter.PageIdForIndex(position));
             StartActivityForResult(intent, FILTER_UI_REQUEST_CODE);
-        }
-
-        public void LowLightBinarizationFilter()
-        {
-            ApplyFilter(ImageFilterType.LowLightBinarization);
-        }
-
-        public void LowLightBinarizationFilter2()
-        {
-            ApplyFilter(ImageFilterType.LowLightBinarization2);
-        }
-
-        public void EdgeHighlightFilter()
-        {
-            ApplyFilter(ImageFilterType.EdgeHighlight);
-        }
-
-        public void DeepBinarizationFilter()
-        {
-            ApplyFilter(ImageFilterType.DeepBinarization);
-        }
-
-        public void OtsuBinarizationFilter()
-        {
-            ApplyFilter(ImageFilterType.OtsuBinarization);
-        }
-
-        public void CleanBackgroundFilter()
-        {
-            ApplyFilter(ImageFilterType.BackgroundClean);
-        }
-
-        public void ColorDocumentFilter()
-        {
-            ApplyFilter(ImageFilterType.ColorDocument);
-        }
-
-        public void ColorFilter()
-        {
-            ApplyFilter(ImageFilterType.ColorEnhanced);
-        }
-
-        public void GrayscaleFilter()
-        {
-            ApplyFilter(ImageFilterType.Grayscale);
-        }
-
-        public void BinarizedFilter()
-        {
-            ApplyFilter(ImageFilterType.Binarized);
-        }
-
-        public void PureBinarizedFilter()
-        {
-            ApplyFilter(ImageFilterType.PureBinarized);
-        }
-
-        public void BlackAndWhiteFilter()
-        {
-            ApplyFilter(ImageFilterType.BlackAndWhite);
-        }
-
-        public void NoneFilter()
-        {
-            ApplyFilter(ImageFilterType.None);
         }
     }
 
-    class PageAdapter : RecyclerView.Adapter
+    class PageAdapter :  RecyclerView.Adapter
     {
-        Context context;
+        private IO.Scanbot.Sdk.Persistence.Fileio.IFileIOProcessor fileProcessor;
+        private IO.Scanbot.Sdk.Persistence.PageFileStorage pageStorage;
+        private IList<string> pageIds;
+
+        RecyclerViewItemClick listener;
+
+        public PageAdapter(IO.Scanbot.Sdk.Persistence.Fileio.IFileIOProcessor fileProcessor, IO.Scanbot.Sdk.Persistence.PageFileStorage pageStorage)
+        {
+            this.fileProcessor = fileProcessor;
+            this.pageStorage = pageStorage;
+            Refresh();
+        }
+
+        public void Refresh()
+        {
+            pageIds = pageStorage.StoredPages ?? new List<string>();
+            NotifyDataSetChanged();
+        }
+
+        public string PageIdForIndex(int index)
+        {
+            return pageIds[index];
+        }
+
+        private Context context;
         public Context Context
         {
             get => context;
@@ -361,29 +312,18 @@ namespace ReadyToUseUI.Droid.Activities
                 listener = new RecyclerViewItemClick(Context as PagePreviewActivity);
             }
         }
-
-        public List<Page> Items { get; private set; } = new List<Page>();
-
-        public override int ItemCount => Items.Count;
+        public override int ItemCount => pageIds.Count;
 
         public bool IsEmpty { get => ItemCount == 0; }
-
-        RecyclerViewItemClick listener;
-
-        public void SetItems(List<Page> pages)
-        {
-            Items.Clear();
-            Items.AddRange(pages);
-            NotifyDataSetChanged();
-        }
 
         public List<Android.Net.Uri> GetDocumentUris()
         {
             var uris = new List<Android.Net.Uri>();
-            foreach (Page page in Items)
+
+            foreach (string pageId in pageIds)
             {
-                var documentUri = GetUri(page, PageFileStorage.PageFileType.Document);
-                var originalUri = GetUri(page, PageFileStorage.PageFileType.Original);
+                var documentUri = pageStorage.GetImageURI(pageId, PageFileStorage.PageFileType.Document);
+                var originalUri = pageStorage.GetImageURI(pageId, PageFileStorage.PageFileType.Original);
                 if (File.Exists(documentUri.Path))
                 {
                     uris.Add(documentUri);
@@ -399,7 +339,7 @@ namespace ReadyToUseUI.Droid.Activities
 
         public override long GetItemId(int position)
         {
-            return Items[position].GetHashCode();
+            return pageIds[position].GetHashCode();
         }
 
         public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
@@ -411,35 +351,24 @@ namespace ReadyToUseUI.Droid.Activities
 
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
-            var page = Items[position];
-            var path = GetPreviewUri(page, PageFileStorage.PageFileType.Document);
-            var original = GetPreviewUri(page, PageFileStorage.PageFileType.Original);
+            var pageId = pageIds[position];
+            var path = pageStorage.GetPreviewImageURI(pageId, PageFileStorage.PageFileType.Document);
+            var original = pageStorage.GetPreviewImageURI(pageId, PageFileStorage.PageFileType.Original);
 
             (holder as PageViewHolder).image.SetImageResource(0);
 
             var options = new BitmapFactory.Options();
             if (File.Exists(path.Path))
             {
-                var bitmap = ImageLoader.Instance.Load(path);
+                var bitmap = fileProcessor.ReadImage(path, options);
+
                 (holder as PageViewHolder).image.SetImageBitmap(bitmap);
             }
             else
             {
-                var bitmap = ImageLoader.Instance.Load(original);
+                var bitmap = fileProcessor.ReadImage(original, options);
                 (holder as PageViewHolder).image.SetImageBitmap(bitmap);
             }
-        }
-
-        Android.Net.Uri GetPreviewUri(Page page, PageFileStorage.PageFileType type)
-        {
-            // preview URI (low-res!)
-            return SBSDK.PageStorage.GetPreviewImageURI(page.PageId, type);
-        }
-
-        Android.Net.Uri GetUri(Page page, PageFileStorage.PageFileType type)
-        {
-            // hi-res(!) URI
-            return SBSDK.PageStorage.GetImageURI(page.PageId, type);
         }
     }
 
@@ -454,7 +383,6 @@ namespace ReadyToUseUI.Droid.Activities
 
     class RecyclerViewItemClick : Java.Lang.Object, View.IOnClickListener
     {
-
         public PagePreviewActivity Context { get; private set; }
 
         public RecyclerViewItemClick(PagePreviewActivity context)

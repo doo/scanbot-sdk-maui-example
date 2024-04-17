@@ -1,4 +1,4 @@
-﻿using BarcodeSDK.MAUI.Constants;
+﻿using ScanbotSDK.MAUI.Constants;
 
 namespace ReadyToUseUI.Maui.SubViews.ActionBar
 {
@@ -15,6 +15,7 @@ namespace ReadyToUseUI.Maui.SubViews.ActionBar
         // Whereas these are initialized in Image Details Page
         public BottomActionButton CropButton { get; private set; }
         public BottomActionButton FilterButton { get; private set; }
+        public BottomActionButton AnalyzeQualityButton { get; private set; }
         public BottomActionButton DeleteButton { get; private set; }
 
         public BottomActionBar(bool isDetailPage)
@@ -27,38 +28,52 @@ namespace ReadyToUseUI.Maui.SubViews.ActionBar
 
             if (isDetailPage)
             {
-                CropButton = new BottomActionButton("crop.png", "CROP");
-                CreateButton(CropButton);
-                FilterButton = new BottomActionButton("filter.png", "FILTER");
-                CreateButton(FilterButton);
-                DeleteButton = new BottomActionButton("delete.png", "DELETE");
-                CreateButton(DeleteButton, true);
+                Children.Add(CropButton = new BottomActionButton("CROP")
+                {
+                    HeightRequest = HEIGHT
+                });
+
+                Children.Add(FilterButton = new BottomActionButton("FILTER")
+                {
+                    HeightRequest = HEIGHT
+                });
+
+                Children.Add(AnalyzeQualityButton = new BottomActionButton("ANALYZE QUALITY")
+                {
+                    HeightRequest = HEIGHT
+                });
+
+                Children.Add(DeleteButton = new BottomActionButton("DELETE")
+                {
+                    HeightRequest = HEIGHT,
+                    HorizontalOptions = LayoutOptions.End
+                });
             }
             else
             {
-                AddButton = new BottomActionButton("add.png", "ADD");
-                CreateButton(AddButton);
-                SaveButton = new BottomActionButton("save.png", "SAVE");
-                CreateButton(SaveButton);
-                DeleteAllButton = new BottomActionButton("delete.png", "DELETE ALL");
-                CreateButton(DeleteAllButton, true);
+                Children.Add(AddButton = new BottomActionButton("ADD")
+                {
+                    HeightRequest = HEIGHT
+                });
+
+                Children.Add(SaveButton = new BottomActionButton("SAVE")
+                {
+                    HeightRequest = HEIGHT
+                });
+
+                Children.Add(DeleteAllButton = new BottomActionButton("DELETE ALL")
+                {
+                    HeightRequest = HEIGHT,
+                    HorizontalOptions = LayoutOptions.End
+                });
             }
         }
 
-        void CreateButton(BottomActionButton button, bool alignRight = false)
+        public void AddTappedEvent(BottomActionButton button, EventHandler<TappedEventArgs> action)
         {
-            button.HeightRequest = HEIGHT;
-            if (alignRight)
+            var recognizer = new TapGestureRecognizer
             {
-                button.HorizontalOptions = LayoutOptions.End;
-            }
-
-            Children.Add(button);
-        }
-
-        public void AddClickEvent(BottomActionButton button, EventHandler<TappedEventArgs> action)
-        {
-            var recognizer = new TapGestureRecognizer();
+            };
             recognizer.Tapped += action;
 
             button.GestureRecognizers.Add(recognizer);

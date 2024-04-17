@@ -1,17 +1,46 @@
-﻿namespace ReadyToUseUI.Maui;
-public static class MauiProgram
+﻿using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Constants;
+using ScanbotSDK.MAUI.Models;
+
+namespace ReadyToUseUI.Maui
 {
-    public static MauiApp CreateMauiApp()
+    public static partial class MauiProgram
     {
-        var builder = MauiApp.CreateBuilder();
-        builder
-            .UseMauiApp<App>()
-            .ConfigureFonts(fonts =>
+        internal const string LICENSE_KEY = null;
+
+        public static MauiApp CreateMauiApp()
+        {
+            var builder = MauiApp.CreateBuilder();
+            builder
+                .UseMauiApp<App>()
+                .ConfigureFonts(fonts =>
+                {
+                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                });
+
+            SBSDKInitializer.Initialize(LICENSE_KEY, new ScanbotSDK.MAUI.SBSDKConfiguration
             {
-                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                EnableLogging = true,
+                StorageBaseDirectory = StorageBaseDirectoryForExampleApp(),
+                StorageImageFormat = CameraImageFormat.Jpg,
+                StorageImageQuality = 50,
+                DetectorType = DocumentDetectorType.MLBased,
+                // You can enable encryption by uncommenting the following lines:
+                //Encryption = new SBSDKEncryption
+                //{
+                //    Password = "SomeSecretPa$$w0rdForFileEncryption",
+                //    Mode = EncryptionMode.AES256
+                //}
+                // Note: all the images and files exported through the SDK will
+                // not be openable from external applications, since they will be
+                // encrypted.
             });
 
-        return builder.Build();
+            return builder.Build();
+        }
+
+        private static partial string StorageBaseDirectoryForExampleApp();
     }
 }
+

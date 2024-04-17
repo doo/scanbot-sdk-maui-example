@@ -1,6 +1,4 @@
-﻿using CoreGraphics;
-using ReadyToUseUI.iOS.View.Collection;
-using UIKit;
+﻿using ReadyToUseUI.iOS.View.Collection;
 
 namespace ReadyToUseUI.iOS.View
 {

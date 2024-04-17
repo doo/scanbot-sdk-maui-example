@@ -1,6 +1,5 @@
-﻿using CoreGraphics;
-using ReadyToUseUI.iOS.Models;
-using UIKit;
+﻿using ReadyToUseUI.iOS.Models;
+using ScanbotSDK.iOS;
 
 namespace ReadyToUseUI.iOS.View
 {
@@ -8,11 +7,13 @@ namespace ReadyToUseUI.iOS.View
     {
         public UILabel LicenseIndicator { get; private set; }
 
-        public ButtonContainer DocumentScanner { get; private set; }
-        
-        public ButtonContainer BarcodeDetectors { get; private set; }
+        public List<ButtonContainer> ButtonContainers { get; private set; } = new List<ButtonContainer> { };
 
-        public ButtonContainer DataDetectors { get; private set; }
+        public List<ScannerButton> AllButtons => ButtonContainers.Aggregate(new List<ScannerButton>(), (buttons, container) =>
+            {
+                buttons.AddRange(container.Buttons);
+                return buttons;
+            });
 
         public MainView()
         {
@@ -41,7 +42,7 @@ namespace ReadyToUseUI.iOS.View
             float w = (float)(float)Frame.Width - 2 * x;
             float h = (float)(float)Frame.Width / 6;
 
-            if (DocumentSDK.MAUI.Native.iOS.ScanbotSDK.IsLicenseValid())
+            if (ScanbotSDKGlobal.IsLicenseValid)
             {
                 h = 0;
             }
@@ -51,40 +52,32 @@ namespace ReadyToUseUI.iOS.View
             x = 0;
             y += h + largePadding;
             w = (float)(float)Frame.Width;
-            h = DocumentScanner.Height;
+            h = ButtonContainers[0].Height;
 
-            DocumentScanner.Frame = new CGRect(x, y, w, h);
+            ButtonContainers[0].Frame = new CGRect(x, y, w, h);
 
             y += h + largePadding;
-            h = BarcodeDetectors.Height;
+            h = ButtonContainers[1].Height;
 
-            BarcodeDetectors.Frame = new CGRect(x, y, w, h);
-            if (DataDetectors != null)
+            ButtonContainers[1].Frame = new CGRect(x, y, w, h);
+            if (ButtonContainers.Count >= 3)
             {
                 y += h + largePadding;
-                h = DataDetectors?.Height ?? 0;
+                h = ButtonContainers[2]?.Height ?? 0;
 
-                DataDetectors.Frame = new CGRect(x, y, w, h);
+                ButtonContainers[2].Frame = new CGRect(x, y, w, h);
             }
-            ContentSize = new CGSize(Frame.Width, BarcodeDetectors.Frame.Bottom);
+
+            var lastContainerIndex = ButtonContainers.Count - 1;
+            var height = ButtonContainers[lastContainerIndex].Frame.Bottom + 10;
+            ContentSize = new CGSize(Frame.Width, height);
         }
 
-        public void AddContent(DocumentScanner instance)
+        public void AddContent(string title, List<ListItem> items)
         {
-            DocumentScanner = new ButtonContainer(instance.Title, instance.Items);
-            AddSubview(DocumentScanner);
-        }
-
-        public void AddContent(BarcodeDetectors instance)
-        {
-            BarcodeDetectors = new ButtonContainer(instance.Title, instance.Items);
-            AddSubview(BarcodeDetectors);
-        }
-
-        public void AddContent(DataDetectors instance)
-        {
-            DataDetectors = new ButtonContainer(instance.Title, instance.Items);
-            AddSubview(DataDetectors);
+            var container = new ButtonContainer(title, items);
+            ButtonContainers.Add(container);
+            AddSubview(container);
         }
     }
 }

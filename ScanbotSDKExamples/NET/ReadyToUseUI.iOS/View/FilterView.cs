@@ -1,8 +1,5 @@
-﻿using CoreGraphics;
-using Foundation;
-using ReadyToUseUI.iOS.Model;
+﻿using ReadyToUseUI.iOS.Models;
 using ScanbotSDK.iOS;
-using UIKit;
 
 namespace ReadyToUseUI.iOS.View
 {
@@ -20,9 +17,9 @@ namespace ReadyToUseUI.iOS.View
 
             ImageView = new UIImageView();
             ImageView.ContentMode = UIViewContentMode.ScaleAspectFit;
-            ImageView.Layer.BorderColor = Models.Colors.LightGray.CGColor;
+            ImageView.Layer.BorderColor = Colors.LightGray.CGColor;
             ImageView.Layer.BorderWidth = 1;
-            ImageView.BackgroundColor = Models.Colors.NearWhite;
+            ImageView.BackgroundColor = Colors.NearWhite;
             AddSubview(ImageView);
 
             Filters = new UIPickerView();
@@ -77,7 +74,7 @@ namespace ReadyToUseUI.iOS.View
         }
 
         [Export("pickerView:attributedTitleForRow:forComponent:")]
-        public NSAttributedString GetAttributedTitle(UIPickerView pickerView, nint row, nint component)
+        public override NSAttributedString GetAttributedTitle(UIPickerView pickerView, nint row, nint component)
         {
             var text = Items[(int)row].Title;
             var attributed = new NSAttributedString(text, null, Models.Colors.AppleBlue);

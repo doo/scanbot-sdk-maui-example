@@ -1,5 +1,5 @@
-﻿using BarcodeSDK.MAUI.Configurations;
-using BarcodeSDK.MAUI.Models;
+﻿using ScanbotSDK.MAUI.Configurations;
+using ScanbotSDK.MAUI.Models;
 
 namespace ClassicComponent.Maui.CustomViews
 {        /*

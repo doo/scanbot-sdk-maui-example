@@ -1,17 +1,20 @@
-﻿using BarcodeSDK.MAUI.Models;
+﻿using CoreGraphics;
+using UIKit;
+
+using ScanbotSDK.iOS;
+using ScanbotSDK.MAUI.Models;
+using ScanbotSDK.MAUI.iOS;
+using ScanbotSDK.MAUI.iOS.Utils;
+
 using ClassicComponent.Maui.CustomViews;
 using ClassicComponent.Maui.Platforms.iOS.Utils;
-using CoreGraphics;
-using DocumentSDK.MAUI.iOS;
-using ScanbotSDK.iOS;
-using UIKit;
 
 namespace ClassicComponent.Maui.Platforms.iOS.CustomViews
 {
     public class BarcodeCameraView_iOS : UIView
 	{
-        BarcodeCameraViewHandler barcodeCameraViewHandler;
-        SBSDKBarcodeScannerViewController cameraViewController;
+        private BarcodeCameraViewHandler barcodeCameraViewHandler;
+        private SBSDKBarcodeScannerViewController cameraViewController;
         public BarcodeCameraView_iOS(CGRect frame) : base(frame) { }
 
         internal async void ConnectHandler(BarcodeCameraViewHandler barcodeCameraViewHandler)
@@ -21,16 +24,11 @@ namespace ClassicComponent.Maui.Platforms.iOS.CustomViews
             if (visibleViewController != null)
             {
                 cameraViewController = new SBSDKBarcodeScannerViewController(visibleViewController, barcodeCameraViewHandler.PlatformView);
-                cameraViewController.Delegate = new BarcodeScannerDelegate
-                {
-                    OnDetect = HandleBarcodeScannerResults
-                };
+                cameraViewController.Delegate = new BarcodeScannerDelegate(barcodeCameraViewHandler);
                 cameraViewController.BarcodeImageGenerationType = SBSDKBarcodeImageGenerationType.None;
                 SetConfigurations();
             }
         }
-
-        #region Properties Implementation
 
         internal void MapIsFlashEnabled(bool isFlashEnabled)
         {
@@ -47,31 +45,54 @@ namespace ClassicComponent.Maui.Platforms.iOS.CustomViews
             var config = commonView.OverlayConfiguration;
             if (config.Enabled == true)
             {
-                cameraViewController.SelectionOverlayEnabled = true;
+                cameraViewController.IsTrackingOverlayEnabled = true;
 
-                cameraViewController.SelectionPolygonColor = config.PolygonColor.ToNative();
-                cameraViewController.SelectionTextColor = config.TextColor.ToNative();
-                cameraViewController.SelectionTextContainerColor = config.TextContainerColor.ToNative();
-                if (config.HighlightedPolygonColor != null)
+                if (config.AutomaticSelectionEnabled != null)
                 {
-                    cameraViewController.SelectionHighlightedPolygonColor = config.HighlightedPolygonColor?.ToNative();
+                    cameraViewController.TrackingOverlayController.Configuration.IsAutomaticSelectionEnabled = config.AutomaticSelectionEnabled.Value;
+                }
+                
+                if (config.StrokeColor != null)
+                {
+                    cameraViewController.TrackingOverlayController.Configuration.PolygonStyle.PolygonColor = config.StrokeColor.ToNative();
+                }
+
+                if (config.TextColor != null)
+                {
+                    cameraViewController.TrackingOverlayController.Configuration.TextStyle.TextColor = config.TextColor.ToNative();
+                }
+
+                if (config.TextContainerColor != null)
+                {
+                    cameraViewController.TrackingOverlayController.Configuration.TextStyle.TextBackgroundColor = config.TextContainerColor.ToNative();
+                }
+
+                if (config.HighlightedStrokeColor != null)
+                {
+                    cameraViewController.TrackingOverlayController.Configuration.PolygonStyle.PolygonSelectedColor = config.HighlightedStrokeColor.ToNative();
                 }
 
                 if (config.HighlightedTextColor != null)
                 {
-                    cameraViewController.SelectionHighlightedTextColor = config.HighlightedTextColor?.ToNative();
+                    cameraViewController.TrackingOverlayController.Configuration.TextStyle.SelectedTextColor = config.HighlightedTextColor.ToNative();
                 }
 
                 if (config.HighlightedTextContainerColor != null)
                 {
-                    cameraViewController.SelectionHighlightedTextContainerColor = config.HighlightedTextContainerColor?.ToNative();
+                    cameraViewController.TrackingOverlayController.Configuration.TextStyle.TextBackgroundSelectedColor = config.HighlightedTextContainerColor.ToNative();
+                }
+
+                if (config.PolygonBackgroundColor != null)
+                {
+                    cameraViewController.TrackingOverlayController.Configuration.PolygonStyle.PolygonBackgroundColor = config.PolygonBackgroundColor.ToNative();
+                }
+
+                if (config.PolygonBackgroundHighlightedColor != null)
+                {
+                    cameraViewController.TrackingOverlayController.Configuration.PolygonStyle.PolygonBackgroundSelectedColor = config.PolygonBackgroundHighlightedColor.ToNative();
                 }
             }
         }
-
-        #endregion
-
-        #region Event Handlers Implementation
 
         internal void MapStartDetectionHandler()
         {
@@ -85,19 +106,6 @@ namespace ClassicComponent.Maui.Platforms.iOS.CustomViews
             cameraViewController.RecognitionEnabled = false;
         }
 
-        // -----------------------------------------
-        // Invokes results for the Common MAUI side
-        // -----------------------------------------
-        internal void HandleBarcodeScannerResults(SBSDKBarcodeScannerResult[] codes)
-        {
-            barcodeCameraViewHandler.VirtualView.OnBarcodeScanResult(new BarcodeResultBundle()
-            {
-                Barcodes = codes?.ToFormsBarcodes()
-            });
-        }
-
-        #endregion
-
         /// <summary>
         /// Set the configuration again after the view is initialised.
         /// </summary>
@@ -106,37 +114,49 @@ namespace ClassicComponent.Maui.Platforms.iOS.CustomViews
             MapIsFlashEnabled(barcodeCameraViewHandler.VirtualView.IsFlashEnabled);
             MapOverlayConfiguration(barcodeCameraViewHandler.VirtualView);
         }
-    }
 
-    // Since we cannot directly inherit from SBSDKBarcodeScannerViewControllerDelegate in our ViewRenderer,
-    // we have created this wrapper class to allow binding to its events through the use of delegates
-    class BarcodeScannerDelegate : SBSDKBarcodeScannerViewControllerDelegate
-    {
-        public delegate void OnDetectHandler(SBSDKBarcodeScannerResult[] codes);
-        public OnDetectHandler OnDetect;
-
-        private bool alertShown = false;
-
-        public override void DidDetectBarcodes(SBSDKBarcodeScannerViewController controller, SBSDKBarcodeScannerResult[] codes)
+        // Since we cannot directly inherit from SBSDKBarcodeScannerViewControllerDelegate in our ViewRenderer,
+        // we have created this wrapper class to allow binding to its events through the use of delegates
+        private class BarcodeScannerDelegate : SBSDKBarcodeScannerViewControllerDelegate
         {
-            OnDetect?.Invoke(codes);
-        }
+            private BarcodeCameraViewHandler barcodeCameraViewHandler;
+            private bool alertShown = false;
 
-        public override bool ShouldDetectBarcodes(SBSDKBarcodeScannerViewController controller)
-        {
-            if (DocumentSDK.MAUI.ScanbotSDK.SDKService.IsLicenseValid)
+            public BarcodeScannerDelegate(BarcodeCameraViewHandler barcodeCameraViewHandler)
             {
-                return true;
+                this.barcodeCameraViewHandler = barcodeCameraViewHandler;
             }
-            else
+
+            public override void DidDetectBarcodes(SBSDKBarcodeScannerViewController controller, SBSDKBarcodeScannerResult[] codes)
             {
-                if (!alertShown)
+                codes = codes ?? Array.Empty<SBSDKBarcodeScannerResult>();
+                barcodeCameraViewHandler.VirtualView.OnBarcodeScanResult(new BarcodeResultBundle()
                 {
-                    ViewUtils.ShowAlert("License Expired!", "Ok");
-                    alertShown = true;
+                    Barcodes = codes.Select(b => new Barcode
+                    {
+                        Text = b.RawTextString,
+                        Format = b.Type.ToMaui(),
+                        RawBytes = b.RawBytes.ToArray()
+                    }).ToList()
+                });
+            }
+
+            public override bool ShouldDetectBarcodes(SBSDKBarcodeScannerViewController controller)
+            {
+                if (ScanbotSDK.MAUI.ScanbotSDK.SDKService.IsLicenseValid)
+                {
+                    return true;
                 }
-                
-                return false;
+                else
+                {
+                    if (!alertShown)
+                    {
+                        ViewUtils.ShowAlert("License Expired!", "Ok");
+                        alertShown = true;
+                    }
+
+                    return false;
+                }
             }
         }
     }

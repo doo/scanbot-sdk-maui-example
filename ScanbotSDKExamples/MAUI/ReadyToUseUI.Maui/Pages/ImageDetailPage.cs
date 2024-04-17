@@ -1,40 +1,42 @@
-﻿using DocumentSDK.MAUI.Constants;
+﻿using ScanbotSDK.MAUI.Constants;
 using ReadyToUseUI.Maui.Utils;
 using ReadyToUseUI.Maui.SubViews.ActionBar;
-using DocumentSDK.MAUI.Services;
+using ScanbotSDK.MAUI.Services;
 using ReadyToUseUI.Maui.Models;
 
 namespace ReadyToUseUI.Maui.Pages
 {
-
     public class ImageDetailPage : ContentPage
     {
-        private Image image;
+        private Image documentImage;
         private BottomActionBar bottomBar;
-        private IScannedPageService selectedPage;
+        private IScannedPage selectedPage;
+        private IScanbotSDKService scanbotDocumentService; // for document quality detection
 
-        public ImageDetailPage(IScannedPageService selectedPage)
+        public ImageDetailPage(IScannedPage selectedPage, IScanbotSDKService service)
         {
             this.selectedPage = selectedPage;
-            image = new Image
+            this.scanbotDocumentService = service;
+
+            documentImage = new Image
             {
                 HorizontalOptions = LayoutOptions.Fill,
                 BackgroundColor = Colors.LightGray,
                 Aspect = Aspect.AspectFit,
             };
-            image.SizeChanged += delegate
+            documentImage.SizeChanged += delegate
             {
                 // Don't allow images larger than 2/3 of the screen
-                image.HeightRequest = Content.Height / 3 * 2;
+                documentImage.HeightRequest = Content.Height / 3 * 2;
             };
 
-            bottomBar = new BottomActionBar(true);
+            bottomBar = new BottomActionBar(isDetailPage: true);
 
             var gridView = new Grid
             {
                 VerticalOptions = LayoutOptions.Fill,
                 HorizontalOptions = LayoutOptions.Fill,
-                Children = { image, bottomBar },
+                Children = { documentImage, bottomBar },
                 RowDefinitions = new RowDefinitionCollection
                 {
                     new RowDefinition(GridLength.Star),
@@ -42,43 +44,41 @@ namespace ReadyToUseUI.Maui.Pages
                 }
             };
 
-            gridView.SetRow(image, 0);
+            gridView.SetRow(documentImage, 0);
             gridView.SetRow(bottomBar, 1);
             Content = gridView;
 
-            bottomBar.AddClickEvent(bottomBar.CropButton, OnCropButtonClick);
-            bottomBar.AddClickEvent(bottomBar.FilterButton, OnFilterButtonClick);
-            bottomBar.AddClickEvent(bottomBar.DeleteButton, OnDeleteButtonClick);
+            bottomBar.AddTappedEvent(bottomBar.CropButton, OnCropButtonTapped);
+            bottomBar.AddTappedEvent(bottomBar.FilterButton, OnFilterButtonTapped);
+            bottomBar.AddTappedEvent(bottomBar.AnalyzeQualityButton, OnAnalyzeQualityTapped);
+            bottomBar.AddTappedEvent(bottomBar.DeleteButton, OnDeleteButtonTapped);
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
 
-            image.Source = await PageDocument();
+            documentImage.Source = await PageDocument();
         }
+        
+        private async Task<ImageSource> PageDocument() =>  await selectedPage.DecryptedDocument();
 
-
-        async Task<ImageSource> PageDocument()
-        {
-            // If encryption is enabled, load the decrypted document.
-             return await selectedPage.DecryptedDocument();
-
-            // Else accessible via Document or DocumentPreview (uncomment as needed).
-            //return selectedPage.Document;
-        }
-
-        async void OnCropButtonClick(object sender, EventArgs e)
+        private async void OnCropButtonTapped(object sender, EventArgs e)
         {
             if (!SDKUtils.CheckLicense(this)) { return; }
 
-            image.Source = null;
-            await DocumentSDK.MAUI.ScanbotSDK.ReadyToUseUIService.LaunchCroppingScreenAsync(selectedPage);
-            await PageStorage.Instance.UpdateAsync(selectedPage);
-            image.Source = await PageDocument();
+            var result = await ScanbotSDK.MAUI.ScanbotSDK.ReadyToUseUIService.LaunchCroppingScreenAsync(selectedPage);
+
+            if (result.Status == OperationResult.Ok)
+            {
+                documentImage.Source = null;
+                await PageStorage.Instance.UpdateAsync(selectedPage);
+                documentImage.Source = await PageDocument();
+            }
         }
 
-        async void OnFilterButtonClick(object sender, EventArgs e)
+
+        private async void OnFilterButtonTapped(object sender, EventArgs e)
         {
             if (!SDKUtils.CheckLicense(this)) { return; }
 
@@ -87,21 +87,28 @@ namespace ReadyToUseUI.Maui.Pages
 
             if (Enum.TryParse<ImageFilter>(action, out var filter))
             {
-                image.Source = null;
+                documentImage.Source = null;
                 await selectedPage.SetFilterAsync(filter);
                 await PageStorage.Instance.UpdateAsync(selectedPage);
 
-                image.Source = await PageDocument();
+                documentImage.Source = await PageDocument();
             }
         }
 
-        async void OnDeleteButtonClick(object sender, EventArgs e)
+        private async void OnAnalyzeQualityTapped(object sender, EventArgs e)
         {
-            image.Source = null;
+            if (!SDKUtils.CheckLicense(this)) { return; }
+
+            DocumentQuality quality = await scanbotDocumentService.DetectDocumentQualityAsync(documentImage.Source);
+
+            ViewUtils.Alert(this, "Document Quality", $"Detected quality is: {quality}");
+        }
+
+        private async void OnDeleteButtonTapped(object sender, EventArgs e)
+        {
+            documentImage.Source = null;
             await Task.WhenAll(PageStorage.Instance.DeleteAsync(selectedPage), Navigation.PopAsync());
             selectedPage = null;
         }
-
     }
-
 }

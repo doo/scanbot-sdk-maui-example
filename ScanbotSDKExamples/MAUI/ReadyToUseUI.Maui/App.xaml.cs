@@ -4,11 +4,9 @@ namespace ReadyToUseUI.Maui
 {
     public partial class App : Application
     {
-        public const string LICENSE_KEY = null;
-
         public App()
         {
-            InitializeComponent();
+            InitializeComponent();            
             MainPage = new NavigationPage(new HomePage());
         }
     }

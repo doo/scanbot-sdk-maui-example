@@ -1,7 +1,4 @@
-﻿using CoreGraphics;
-using Foundation;
-using ReadyToUseUI.iOS.Models;
-using UIKit;
+﻿using ReadyToUseUI.iOS.Models;
 
 namespace ReadyToUseUI.iOS.View
 {

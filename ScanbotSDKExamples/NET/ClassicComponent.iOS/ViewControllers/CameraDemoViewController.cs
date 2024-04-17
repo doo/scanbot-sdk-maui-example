@@ -2,12 +2,6 @@
 
 namespace ClassicComponent.iOS
 {
-    public abstract class CameraDemoDelegate
-    {
-        public abstract void DidCaptureDocumentImage(UIImage documentImage);
-        public abstract void DidCaptureOriginalImage(UIImage originalImage);
-    }
-
     public interface IDocumentCaptureInteraction
     {
         void DidDetectDocument(UIImage documentImage, UIImage originalImage, SBSDKDocumentDetectorResult result, bool autoSnapped);
@@ -26,7 +20,7 @@ namespace ClassicComponent.iOS
 
         protected bool viewAppeared;
 
-        public CameraDemoDelegate cameraDelegate;
+        internal ICameraDemoViewControllerDelegate cameraViewControllerDelegate;
 
         public override void ViewDidLoad()
         {
@@ -105,14 +99,14 @@ namespace ClassicComponent.iOS
             return UIStatusBarStyle.LightContent;
         }
 
-        void SetupDefaultShutterButtonColors()
+        private void SetupDefaultShutterButtonColors()
         {
             var shutterButton = documentScannerViewController.SnapButton;
             shutterButton.ButtonSearchingColor = UIColor.Red;
             shutterButton.ButtonDetectedColor = UIColor.Green;
         }
 
-        void AddAutosnapToggleButton()
+        private void AddAutosnapToggleButton()
         {
             autoSnapButton = new UIButton(new CGRect(40, bottomButtonsContainer.Frame.Height - 80, 40, 40));
             autoSnapButton.AddTarget(delegate
@@ -128,7 +122,7 @@ namespace ClassicComponent.iOS
             bottomButtonsContainer.BringSubviewToFront(autoSnapButton);
         }
 
-        void AddFlashToggleButton()
+        private void AddFlashToggleButton()
         {
             flashButton = new UIButton(new CGRect(bottomButtonsContainer.Frame.Width - 80, bottomButtonsContainer.Frame.Height - 80, 40, 40));
             flashButton.AddTarget(delegate
@@ -146,7 +140,7 @@ namespace ClassicComponent.iOS
             bottomButtonsContainer.BringSubviewToFront(flashButton);
         }
 
-        void SetAutoSnapEnabled(bool enabled)
+        private void SetAutoSnapEnabled(bool enabled)
         {
             autoSnapButton.Selected = enabled;
             documentScannerViewController.AutoSnappingMode = enabled ? SBSDKAutosnappingMode.Enabled : SBSDKAutosnappingMode.Disabled;
@@ -158,13 +152,8 @@ namespace ClassicComponent.iOS
         {
             if (documentImage != null)
             {
-                cameraDelegate.DidCaptureDocumentImage(documentImage);
+                cameraViewControllerDelegate.DidCaptureDocumentImage(documentImage, originalImage, result.Polygon);
                 this.NavigationController.PopViewController(true);
-            }
-
-            if (originalImage != null)
-            {
-                cameraDelegate.DidCaptureOriginalImage(documentImage);
             }
         }
     }
@@ -172,26 +161,17 @@ namespace ClassicComponent.iOS
     // ================================================================================================
     // Implementation of some delegate methods from "SBSDKDocumentScannerViewControllerDelegate":
     // ================================================================================================
-    #region
-    class DocumentScannerDelegate : SBSDKDocumentScannerViewControllerDelegate
+    internal class DocumentScannerDelegate : SBSDKDocumentScannerViewControllerDelegate
     {
-        private IDocumentCaptureInteraction documentCaptureInteraction;
+        internal IDocumentCaptureInteraction documentCaptureInteraction;
         public DocumentScannerDelegate(IDocumentCaptureInteraction documentCaptureInteraction)
         {
             this.documentCaptureInteraction = documentCaptureInteraction;
         }
-
-        [Export("documentScannerViewControllerDidFailSnappingImage:withError:")]
-        public void DocumentScannerViewControllerDidFailSnappingImage(SBSDKDocumentScannerViewController controller, NSError error)
-        {
-            throw new System.NotImplementedException();
-        }
-
+        
         public override void DidSnapDocumentImage(SBSDKDocumentScannerViewController controller, UIImage documentImage, UIImage originalImage, SBSDKDocumentDetectorResult result, bool autoSnapped)
         {
             documentCaptureInteraction.DidDetectDocument(documentImage, originalImage, result, autoSnapped);
         }
     }
-
-    #endregion
 }

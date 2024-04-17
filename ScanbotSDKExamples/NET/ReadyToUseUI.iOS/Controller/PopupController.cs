@@ -1,14 +1,12 @@
-﻿using CoreGraphics;
-using ReadyToUseUI.iOS.View;
-using UIKit;
+﻿using ReadyToUseUI.iOS.View;
 
 namespace ReadyToUseUI.iOS.Controller
 {
     public class PopupController : UIViewController
     {
         public PopupView Content { get; set; }
-        string text;
-        List<UIImage> images;
+        private string text;
+        private List<UIImage> images;
 
         public PopupController(string text)
         {
@@ -44,7 +42,7 @@ namespace ReadyToUseUI.iOS.Controller
 
         public void Dismiss()
         {
-            DismissModalViewController(true);
+            DismissViewController(true, null);
             Content.CloseButton.Click = null;
         }
     }
