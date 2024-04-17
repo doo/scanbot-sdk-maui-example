@@ -1,7 +1,4 @@
-﻿using CoreGraphics;
-using UIKit;
-
-namespace ReadyToUseUI.iOS.View
+﻿namespace ReadyToUseUI.iOS.View
 {
     public class ProcessingView : UIView
     {

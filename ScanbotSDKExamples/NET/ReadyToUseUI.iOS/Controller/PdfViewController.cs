@@ -1,25 +1,21 @@
-﻿using UIKit;
-using Foundation;
-using ReadyToUseUI.iOS.View;
+﻿using ReadyToUseUI.iOS.View;
 
 namespace ReadyToUseUI.iOS.Controller
 {
     public class PdfViewController : UIViewController
     {
         public PdfContainerView ContentView { get; set; }
-
         NSUrl uri;
         bool ocr;
+        string ocrResult;
 
-        public PdfViewController(NSUrl uri, bool ocr)
+        public PdfViewController(NSUrl uri, bool ocr, string ocrResult)
         {
             this.uri = uri;
             this.ocr = ocr;
-            
+            this.ocrResult = ocrResult;
             ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
         }
-
-
 
         public override void ViewDidLoad()
         {
@@ -29,6 +25,15 @@ namespace ReadyToUseUI.iOS.Controller
             View = ContentView;
 
             Title = uri.LastPathComponent;
+        }
+
+        public override void ViewDidAppear(bool animated)
+        {
+            base.ViewDidAppear(animated);
+            if (!string.IsNullOrEmpty(ocrResult))
+            {
+                Utils.Alert.Show(this, title: "Info", body: ocrResult);
+            }
         }
     }
 }

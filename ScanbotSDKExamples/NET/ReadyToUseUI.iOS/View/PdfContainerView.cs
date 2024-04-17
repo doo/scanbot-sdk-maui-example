@@ -1,8 +1,5 @@
-﻿using UIKit;
-using PdfKit;
-using Foundation;
-using CoreGraphics;
-using SBSDK = DocumentSDK.MAUI.Native.iOS.ScanbotSDK;
+﻿using PdfKit;
+using ScanbotSDK.iOS;
 
 namespace ReadyToUseUI.iOS.View
 {
@@ -30,9 +27,9 @@ namespace ReadyToUseUI.iOS.View
             var data = NSData.FromFile(uri.Path);
             // If data is encrypted, SBSDK.Encrypter will be evaluated.
             // In that case, use it to decrypt the data
-            if (SBSDK.Encrypter != null)
+            if (ScanbotSDKUI.DefaultImageStoreEncrypter != null)
             {
-                data = SBSDK.Encrypter.DecryptData(data);
+                data = ScanbotSDKUI.DefaultImageStoreEncrypter.DecryptData(data);
             }
             content.Document = new PdfDocument(data);
             

@@ -4,7 +4,7 @@ namespace ReadyToUseUI.Droid.Utils
 {
     public class Copier
     {
-        const string SNAPPING_DOCUMENTS_DIR_NAME = "snapping_documents";
+        private const string SNAPPING_DOCUMENTS_DIR_NAME = "snapping_documents";
 
         public static Java.IO.File Copy(Context context, Android.Net.Uri uri)
         {

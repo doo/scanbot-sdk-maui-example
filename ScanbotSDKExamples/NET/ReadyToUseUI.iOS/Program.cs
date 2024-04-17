@@ -1,7 +1,4 @@
-﻿using ObjCRuntime;
-using UIKit;
-
-namespace ReadyToUseUI.iOS;
+﻿namespace ReadyToUseUI.iOS;
 
 public class Program
 {

@@ -9,10 +9,7 @@ namespace ClassicComponent.iOS.ViewControllers
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
-            recognizerViewController = new SBSDKCheckRecognizerViewController(this, View, new Delegate((result) =>
-            {
-                ShowResult(result);
-            }));
+            recognizerViewController = new SBSDKCheckRecognizerViewController(this, View, new Delegate((result) => ShowResult(result)));
         }
 
         private void ShowResult(SBSDKCheckRecognizerResult result)

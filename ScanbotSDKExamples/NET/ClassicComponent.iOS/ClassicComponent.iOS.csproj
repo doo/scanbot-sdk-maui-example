@@ -5,6 +5,7 @@
         <Nullable>disable</Nullable>
         <ImplicitUsings>true</ImplicitUsings>
         <SupportedOSPlatformVersion>13.0</SupportedOSPlatformVersion>
+        <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
         <!-- Display name -->
         <ApplicationTitle>NET Classic Component</ApplicationTitle>
         <AssemblyName>ClassicComponent.iOS</AssemblyName>
@@ -13,12 +14,50 @@
         <CreatePackage>false</CreatePackage>
         <CodesignProvision>Automatic</CodesignProvision>
         <CodesignKey>iPhone Developer</CodesignKey>
+        <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
         <MtouchLink>SdkOnly</MtouchLink>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
         <CreatePackage>false</CreatePackage>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="ScanbotSDK.NET" Version="2.3.1" />
+        <PackageReference Include="ScanbotSDK.NET" Version="4.2.0-alpha.2" />
+        <PackageReference Include="Scanbot.Xamarin.ImagePicker" Version="0.0.3-beta.1" />
+    </ItemGroup>
+    <ItemGroup>
+      <InterfaceDefinition Remove="ViewControllers\ClassicComponents\ClassicComponentStoryboard.storyboard" />
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Condition=" '$(EnableDefaultCompileItems)' == 'true' " Update="ViewControllers\MainViewController.designer.cs">
+        <DependentUpon>MainViewController.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+    <ItemGroup>
+      <None Remove="Models\" />
+      <None Remove="ViewControllers\TableViewCells\" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Models\" />
+      <Folder Include="ViewControllers\TableViewCells\" />
+    </ItemGroup>
+    <ItemGroup>
+      <ImageAsset Update="Assets.xcassets\tickIcon.imageset\tickIcon%402x.png">
+        <Link>Assets.xcassets\tickIcon.imageset\tickIcon%402x.png</Link>
+      </ImageAsset>
+      <ImageAsset Update="Assets.xcassets\tickIcon.imageset\tickIcon%403x.png">
+        <Link>Assets.xcassets\tickIcon.imageset\tickIcon%403x.png</Link>
+      </ImageAsset>
+      <ImageAsset Update="Assets.xcassets\closeIcon.imageset\closeIcon%402x.png">
+        <Link>Assets.xcassets\closeIcon.imageset\closeIcon%402x.png</Link>
+      </ImageAsset>
+      <ImageAsset Update="Assets.xcassets\closeIcon.imageset\closeIcon%403x.png">
+        <Link>Assets.xcassets\closeIcon.imageset\closeIcon%403x.png</Link>
+      </ImageAsset>
+      <ImageAsset Update="Assets.xcassets\rotateIcon.imageset\rotateIcon%402x.png">
+        <Link>Assets.xcassets\rotateIcon.imageset\rotateIcon%402x.png</Link>
+      </ImageAsset>
+      <ImageAsset Update="Assets.xcassets\rotateIcon.imageset\rotateIcon%403x.png">
+        <Link>Assets.xcassets\rotateIcon.imageset\rotateIcon%403x.png</Link>
+      </ImageAsset>
     </ItemGroup>
 </Project>

@@ -1,6 +1,5 @@
-﻿using CoreGraphics;
+﻿using ObjCRuntime;
 using ScanbotSDK.iOS;
-using UIKit;
 
 namespace ReadyToUseUI.iOS.View.Collection
 {
@@ -11,12 +10,13 @@ namespace ReadyToUseUI.iOS.View.Collection
         public UIImageView ImageView { get; private set; }
 
         public SBSDKUIPage Page { get; private set; }
-        public ImageCell()
+
+        public ImageCell(NativeHandle handle) : base(handle)
         {
             Initialize();
         }
 
-        public ImageCell(IntPtr handle) : base (handle)
+        public ImageCell()
         {
             Initialize();
         }
