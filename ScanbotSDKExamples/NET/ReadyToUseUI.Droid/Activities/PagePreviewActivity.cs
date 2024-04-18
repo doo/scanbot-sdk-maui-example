@@ -17,6 +17,8 @@ using DocumentSDK.NET.Model;
 using IO.Scanbot.Sdk.Tiff.Model;
 using ReadyToUseUI.Droid.Model;
 using static Java.Interop.JniEnvironment;
+using IO.Scanbot.Sdk.Ocr;
+using static IO.Scanbot.Sdk.Ocr.IOpticalCharacterRecognizer;
 
 namespace ReadyToUseUI.Droid.Activities
 {
@@ -192,19 +194,32 @@ namespace ReadyToUseUI.Droid.Activities
                 }
                 else if (type == SaveType.OCR)
                 {
-                    var ocrRecognizer = scanbotSDK.CreateOcrRecognizer();
+                    // This is the new OCR configuration with ML which doesn't require the langauges.
+                    var recognitionMode = IOpticalCharacterRecognizer.EngineMode.Tesseract;
+                    var recognizer = scanbotSDK.CreateOcrRecognizer();
 
-                    var languages = ocrRecognizer.InstalledLanguages;
-                    if (languages.Count == 0)
+                    // to use legacy configuration we have to pass the installed languages.
+                    if (recognitionMode == IOpticalCharacterRecognizer.EngineMode.Tesseract)
                     {
-                        RunOnUiThread(delegate
+                        var languages = recognizer.InstalledLanguages;
+                        if (languages.Count == 0)
                         {
-                            Alert.Toast(this, "OCR languages blobs are not available");
-                        });
-                        return;
+                            RunOnUiThread(delegate
+                            {
+                                Alert.Toast(this, "OCR languages blobs are not available");
+                            });
+                            return;
+                        }
+
+                        var ocrConfig = new OcrConfig(IOpticalCharacterRecognizer.EngineMode.Tesseract, recognizer.InstalledLanguages);
+                        recognizer.SetOcrConfig(ocrConfig);
+                    }
+                    else
+                    {
+                        recognizer.SetOcrConfig(new OcrConfig(IOpticalCharacterRecognizer.EngineMode.ScanbotOcr));
                     }
 
-                    var pdfFile = ocrRecognizer.RecognizeTextWithPdfFromUris(pagesUri, MainApplication.USE_ENCRYPTION, IO.Scanbot.Pdf.Model.PdfConfig.DefaultConfig());
+                    var pdfFile = recognizer.RecognizeTextWithPdfFromUris(pagesUri, MainApplication.USE_ENCRYPTION, IO.Scanbot.Pdf.Model.PdfConfig.DefaultConfig());
                     File.Move(pdfFile.SandwichedPdfDocumentFile.AbsolutePath, new Java.IO.File(output.Path).AbsolutePath);
                 }
                 else

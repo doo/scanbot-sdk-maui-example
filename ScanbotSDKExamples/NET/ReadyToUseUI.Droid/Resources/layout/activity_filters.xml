@@ -95,6 +95,19 @@
             android:textColor="@color/greyColor"
             android:textSize="14sp"
             android:textStyle="normal" />
+
+        <TextView
+            android:id="@+id/action_check_quality"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center_horizontal"
+            android:letterSpacing="0.09"
+            android:lineSpacingExtra="2sp"
+            android:textColor="@color/greyColor"
+            android:textSize="14sp"
+            android:textStyle="normal" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
