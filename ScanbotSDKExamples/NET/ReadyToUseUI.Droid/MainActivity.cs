@@ -391,7 +391,7 @@ namespace ReadyToUseUI.Droid
 
                     var qualityAnalyzer = scanbotSDK.CreateDocumentQualityAnalyzer();
                     var documentQualityResult = qualityAnalyzer.AnalyzeInBitmap(bitmap, 0);
-
+                    Console.WriteLine("The quality of the imported image: " + documentQualityResult.ToString());
                     var fragment = BarcodeDialogFragment.CreateInstance(result, documentQualityResult);
                     fragment.Show(FragmentManager);
                     return;
