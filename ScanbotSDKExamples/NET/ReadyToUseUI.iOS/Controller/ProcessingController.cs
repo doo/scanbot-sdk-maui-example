@@ -16,11 +16,11 @@ namespace ReadyToUseUI.iOS.Controller
             
             handler = new CroppingFinishedHandler();
 
-            SetUpPerview();
+            SetUpPreview();
             SetupToolbar();
         }
 
-        private void SetUpPerview()
+        private void SetUpPreview()
         {
             View.BackgroundColor = UIColor.White;
 
