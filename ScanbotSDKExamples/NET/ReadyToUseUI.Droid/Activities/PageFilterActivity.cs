@@ -22,7 +22,7 @@ namespace ReadyToUseUI.Droid.Activities
         const string CHOOSE_FILTERS_DIALOG_TAG = "CHOOSE_FILTERS_DIALOG_TAG";
         const int CROP_DEFAULT_UI_REQUEST_CODE = 9999;
 
-        TextView crop, delete, filter;
+        TextView crop, delete, checkQuality, filter;
 
         public static Intent CreateIntent(Context context, string pageId)
         {
@@ -71,6 +71,16 @@ namespace ReadyToUseUI.Droid.Activities
             {
                 pageStorage.Remove(selectedPageId);
                 Finish();
+            };
+
+            checkQuality = FindViewById<TextView>(Resource.Id.action_check_quality);
+            checkQuality.Text = Texts.check_document_quality;
+            checkQuality.Click += delegate
+            {
+                var bitmap = pageStorage.GetPreviewImage(selectedPageId, PageFileStorage.PageFileType.Document, null);
+                var qualityAnalyzer = scanbotSDK.CreateDocumentQualityAnalyzer();
+                var documentQualityResult = qualityAnalyzer.AnalyzeInBitmap(bitmap, 0);
+                Alert.ShowAlert(this, "Document Quality", documentQualityResult.Name());
             };
 
             FindViewById(Resource.Id.action_crop_and_rotate).Click += delegate

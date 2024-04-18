@@ -72,6 +72,8 @@
 
         public const string delete = "DELETE";
 
+        public const string check_document_quality = "CHECK QUALITY";
+
         public const string page_title = "Page";
 
         public const string the_demo_expired = "The demo app will terminate because of the missing license key. Get your free 30-day license today!";
