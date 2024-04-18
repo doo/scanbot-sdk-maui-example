@@ -44,7 +44,6 @@ using IO.Scanbot.Sdk.UI.View.MC;
 using IO.Scanbot.Sdk.Mcrecognizer.Entity;
 using IO.Scanbot.Sdk.UI.View.Generictext;
 using IO.Scanbot.Sdk.Vin;
-using static AndroidX.Core.Location.LocationRequestCompat;
 
 namespace ReadyToUseUI.Droid
 {
