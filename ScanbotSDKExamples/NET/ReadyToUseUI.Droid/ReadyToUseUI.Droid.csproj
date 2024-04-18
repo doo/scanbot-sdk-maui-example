@@ -10,6 +10,7 @@
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
         <AssemblyName>ReadyToUseUI.Droid</AssemblyName>
         <ApplicationTitle>NET RTU UI</ApplicationTitle>
+        <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="ScanbotSDK.NET" Version="4.2.0" />
