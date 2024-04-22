@@ -194,7 +194,7 @@ namespace ReadyToUseUI.Droid.Activities
                 }
                 else if (type == SaveType.OCR)
                 {
-                    // This is the new OCR configuration with ML which doesn't require the langauges.
+                    // This is the new OCR configuration with ML which doesn't require the languages.
                     var recognitionMode = IOpticalCharacterRecognizer.EngineMode.Tesseract;
                     var recognizer = scanbotSDK.CreateOcrRecognizer();
 
