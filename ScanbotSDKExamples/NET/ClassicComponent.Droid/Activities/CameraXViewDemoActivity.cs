@@ -220,7 +220,7 @@ namespace ClassicComponent.Droid
             {
                 if (sdkDetectionResult.PolygonF != null)
                 {
-                    var resultImage = scanbotSDK.ImageProcessor().ProcessBitmap(originalBitmap, new CropOperation(sdkDetectionResult.PolygonF));
+                    var resultImage = new ImageProcessor(originalBitmap).Crop(sdkDetectionResult.PolygonF).ProcessedBitmap();
                     documentImgUri = TempImageStorage.Instance.AddImage(resultImage);
                 }
                 else

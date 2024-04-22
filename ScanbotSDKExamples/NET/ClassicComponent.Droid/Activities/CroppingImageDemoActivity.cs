@@ -119,8 +119,7 @@ namespace ClassicComponent.Droid
             var documentImgUri = await Task.Run(() =>
             {
                 var detector = SDK.CreateContourDetector();
-                var documentImage = SDK.ImageProcessor().ProcessBitmap(originalBitmap, new CropOperation(editPolygonImageView.Polygon));
-
+                var documentImage = new ImageProcessor(originalBitmap).Crop(editPolygonImageView.Polygon).ProcessedBitmap();
                 var matrix = new Matrix();
                 matrix.PostRotate(rotationDegrees);
                 documentImage = Bitmap.CreateBitmap(documentImage, 0, 0, documentImage.Width, documentImage.Height, matrix, true);
