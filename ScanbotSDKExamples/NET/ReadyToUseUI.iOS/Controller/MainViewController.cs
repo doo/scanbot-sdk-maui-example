@@ -12,6 +12,7 @@ namespace ReadyToUseUI.iOS.Controller
         private MainView contentView;
 
         private List<ListItem> barcodeDetectors;
+        private List<ListItem> barcodeV2Detectors;
         private List<ListItem> documentScanners;
         private List<ListItem> dataDetectors;
 
@@ -28,7 +29,17 @@ namespace ReadyToUseUI.iOS.Controller
             {
                 new ListItem("Scan Barcodes", ScanBarcode),
                 new ListItem("Scan Batch Barcodes", ScanBarcodesInBatch),
-                new ListItem("Import and Detect Barcodes", ImportAndDetectBarcode)
+                new ListItem("Import and Detect Barcodes", ImportAndDetectBarcode),
+            };
+            
+            barcodeV2Detectors = new List<ListItem>
+            {
+                new ListItem("Single RTUUI V2", ShowSingleBarcodeScannerFromRTUUI),
+                new ListItem("Single AR RTUUI V2", ShowSingleARBarcodeScannerFromRTUUI),
+                new ListItem("Single AR AUTO_SELECT RTUUI V2", ShowSingleARAutoSelectBarcodeScannerFromRTUUI),
+                new ListItem("Multiple RTUUI V2", ShowMultiBarcodeScannerFromRTUUI),
+                new ListItem("Multiple SHEET RTUUI V2", ShowMultiSheetBarcodeScannerFromRTUUI),
+                new ListItem("Multiple SHEET AR COUNT RTUUI V2", ShowMultiSheetARCountAutoSelectBarcodeScannerFromRTUUI),
             };
 
             documentScanners = new List<ListItem>
@@ -52,6 +63,7 @@ namespace ReadyToUseUI.iOS.Controller
             };
 
             contentView.AddContent("BARCODE DETECTORS", barcodeDetectors);
+            contentView.AddContent("BARCODE DETECTORS V2", barcodeV2Detectors);
             contentView.AddContent("DOCUMENT SCANNER", documentScanners);
             contentView.AddContent("DATA DETECTORS", dataDetectors);
 
@@ -97,6 +109,229 @@ namespace ReadyToUseUI.iOS.Controller
             }
         }
 
+        private void ShowSingleBarcodeScannerFromRTUUI()
+        {
+            // Create the default configuration object.
+            var configuration = new SBSDKUI2BarcodeScannerConfiguration();
+            
+            configuration.RecognizerConfiguration.BarcodeTypes =
+                new[] { SBSDKBarcodeType.AustraliaPost, SBSDKBarcodeType.Aztec };
+            
+            var usecases = SBSDKUI2BarcodeUseCase.SingleScanningMode;
+            usecases.ConfirmationSheetEnabled = true;
+            usecases.ArOverlay.Visible = false;
+            usecases.ArOverlay.AutomaticSelectionEnabled = false;
+
+            configuration.UseCase = usecases;
+            
+            var controller = SBSDKUI2BarcodeScannerViewController.CreateNew(configuration,
+                (viewController, cancelled, error, result) =>
+                {
+                    if (!cancelled)
+                    {
+                        viewController.DismissViewController(true, delegate
+                        {
+                            ShowPopup(this, result?.ToJson());
+                        });
+                    }
+                    else
+                    {
+                        viewController.DismissViewController(true, () => { });
+                    }
+                });
+
+            PresentViewController(controller, false, null);
+        }
+        
+        private void ShowSingleARBarcodeScannerFromRTUUI()
+        {
+            // Create the default configuration object.
+            var configuration = new SBSDKUI2BarcodeScannerConfiguration();
+            
+            var usecases = SBSDKUI2BarcodeUseCase.SingleScanningMode;
+            usecases.ConfirmationSheetEnabled = true;
+            usecases.ArOverlay.Visible = true;
+            usecases.ArOverlay.AutomaticSelectionEnabled = false;
+
+            configuration.UseCase = usecases;
+            
+            
+            var controller = SBSDKUI2BarcodeScannerViewController.CreateNew(configuration,
+                (viewController, cancelled, error, result) =>
+                {
+                    if (!cancelled)
+                    {
+                        viewController.DismissViewController(true, delegate
+                        {
+                            ShowPopup(this, result?.ToJson());
+                        });
+                    }
+                    else
+                    {
+                        viewController.DismissViewController(true, () => { });
+                    }
+                });
+
+            PresentViewController(controller, false, null);
+        }
+
+        private void ShowSingleARAutoSelectBarcodeScannerFromRTUUI()
+        {
+            // Create the default configuration object.
+            var configuration = new SBSDKUI2BarcodeScannerConfiguration();
+            
+            var usecases = SBSDKUI2BarcodeUseCase.SingleScanningMode;
+            usecases.ConfirmationSheetEnabled = true;
+            usecases.ArOverlay.Visible = true;
+            usecases.ArOverlay.AutomaticSelectionEnabled = true;
+            
+            configuration.UseCase = usecases;
+            
+            var controller = SBSDKUI2BarcodeScannerViewController.CreateNew(configuration,
+                (viewController, cancelled, error, result) =>
+                {
+                    if (!cancelled)
+                    {
+                        viewController.DismissViewController(true, delegate
+                        {
+                            ShowPopup(this, result?.ToJson());
+                        });
+                    }
+                    else
+                    {
+                        viewController.DismissViewController(true, () => { });
+                    }
+                });
+
+            PresentViewController(controller, false, null);
+        }
+
+        private void ShowMultiBarcodeScannerFromRTUUI()
+        {
+            // Create the default configuration object.
+            var configuration = new SBSDKUI2BarcodeScannerConfiguration();
+            
+            var usecases = SBSDKUI2BarcodeUseCase.MultipleScanningMode;
+            usecases.Mode = SBSDKUI2MultipleBarcodesScanningMode.Unique;
+            usecases.Sheet.Mode = SBSDKUI2SheetMode.Button;
+            usecases.ArOverlay.Visible = true;
+            
+            configuration.UseCase = usecases;
+            
+            var controller = SBSDKUI2BarcodeScannerViewController.CreateNew(configuration,
+                (viewController, cancelled, error, result) =>
+                {
+                    if (!cancelled)
+                    {
+                        viewController.DismissViewController(true, delegate
+                        {
+                            ShowPopup(this, result?.ToJson());
+                        });
+                    }
+                    else
+                    {
+                        viewController.DismissViewController(true, () => { });
+                    }
+                });
+
+            PresentViewController(controller, false, null);
+        }
+
+        private void ShowMultiSheetBarcodeScannerFromRTUUI()
+        {
+            var configuration = new SBSDKUI2BarcodeScannerConfiguration();
+
+            configuration.RecognizerConfiguration.BarcodeTypes =
+                new[] { SBSDKBarcodeType.AustraliaPost, SBSDKBarcodeType.Aztec };
+            
+            var usecases = SBSDKUI2BarcodeUseCase.MultipleScanningMode;
+            usecases.Mode = SBSDKUI2MultipleBarcodesScanningMode.Unique;
+            usecases.Sheet.Mode = SBSDKUI2SheetMode.CollapsedSheet;
+            usecases.ArOverlay.Visible = false;
+            
+            configuration.UseCase = usecases;
+            
+            var controller = SBSDKUI2BarcodeScannerViewController.CreateNew(configuration,
+                (viewController, cancelled, error, result) =>
+                {
+                    if (!cancelled)
+                    {
+                        viewController.DismissViewController(true, delegate
+                        {
+                            ShowPopup(this, result?.ToJson());
+                        });
+                    }
+                    else
+                    {
+                        viewController.DismissViewController(true, () => { });
+                    }
+                });
+
+            PresentViewController(controller, false, null);
+        }
+
+        private void ShowMultiSheetARCountAutoSelectBarcodeScannerFromRTUUI()
+        {
+            var configuration = new SBSDKUI2BarcodeScannerConfiguration();
+            
+            var usecases = SBSDKUI2BarcodeUseCase.MultipleScanningMode;
+            usecases.Mode = SBSDKUI2MultipleBarcodesScanningMode.Counting;
+            usecases.Sheet.Mode = SBSDKUI2SheetMode.CollapsedSheet;
+            usecases.Sheet.CollapsedVisibleHeight = SBSDKUI2CollapsedVisibleHeight.Large;
+            usecases.SheetContent.ManualCountChangeEnabled = true;
+            usecases.ArOverlay.Visible = true;
+            usecases.ArOverlay.AutomaticSelectionEnabled = true;
+            
+            configuration.UseCase = usecases; 
+            
+            var controller = SBSDKUI2BarcodeScannerViewController.CreateNew(configuration,
+                (viewController, cancelled, error, result) =>
+                {
+                    if (!cancelled)
+                    {
+                        viewController.DismissViewController(true, delegate
+                        {
+                            ShowPopup(this, result?.ToJson());
+                        });
+                    }
+                    else
+                    {
+                        viewController.DismissViewController(true, () => { });
+                    }
+                });
+
+            PresentViewController(controller, false, null);
+        }
+        
+        private void ConfigurePaletteV2Barcode(SBSDKUI2BarcodeScannerConfiguration configuration)
+        {
+            // Retrieve the instance of the palette from the configuration object.
+            var palette = configuration.Palette;
+
+            // Configure the colors.
+            // The palette already has the default colors set, so you don't have to always set all the colors.
+            palette.SbColorPrimary = new SBSDKUI2Color(colorString: "#C8193C");
+            palette.SbColorPrimaryDisabled = new SBSDKUI2Color(colorString: "#F5F5F5");
+            palette.SbColorNegative = new SBSDKUI2Color(colorString: "#FF3737");
+            palette.SbColorPositive = new SBSDKUI2Color(colorString: "#4EFFB4");
+            palette.SbColorWarning = new SBSDKUI2Color(colorString: "#FFCE5C");
+            palette.SbColorSecondary = new SBSDKUI2Color(colorString: "#FFEDEE");
+            palette.SbColorSecondaryDisabled = new  SBSDKUI2Color(colorString: "#F5F5F5");
+            palette.SbColorOnPrimary = new SBSDKUI2Color(colorString: "#FFFFFF");
+            palette.SbColorOnSecondary = new SBSDKUI2Color(colorString: "#C8193C");;
+            palette.SbColorSurface = new SBSDKUI2Color(colorString: "#FFFFFF");
+            palette.SbColorOutline = new SBSDKUI2Color(colorString: "#EFEFEF");
+            palette.SbColorOnSurfaceVariant =new SBSDKUI2Color(colorString: "#707070");
+            palette.SbColorOnSurface = new SBSDKUI2Color(colorString: "#000000");
+            palette.SbColorSurfaceLow = new SBSDKUI2Color(colorString: "#26000000");
+            palette.SbColorSurfaceHigh = new SBSDKUI2Color(colorString: "#7A000000");
+            palette.SbColorModalOverlay = new SBSDKUI2Color(colorString: "#A3000000");
+            
+            // Set the palette in the barcode scanner configuration object.
+            configuration.Palette = palette;
+        }
+        
+
         private void ScanBarcode()
         {
             var configuration = SBSDKUIBarcodeScannerConfiguration.DefaultConfiguration;
@@ -109,7 +344,7 @@ namespace ReadyToUseUI.iOS.Controller
             configuration.TrackingOverlayConfiguration.TextColor = UIColor.Yellow;
             configuration.TrackingOverlayConfiguration.TextContainerColor = UIColor.Black;
 
-            var controller = SBSDKUIBarcodeScannerViewController.CreateNewWithConfiguration(configuration, null);
+            var controller = SBSDKUIBarcodeScannerViewController.CreateWithConfiguration(configuration,  @delegate: null);
             controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
 
             controller.DidDetectResults += (_, args) =>
@@ -117,7 +352,7 @@ namespace ReadyToUseUI.iOS.Controller
                 string text = "No barcode detected";
                 if (args.BarcodeResults.Length > 0)
                 {
-                    controller.RecognitionEnabled = false; // stop recognition
+                    controller.IsRecognitionEnabled = false; // stop recognition
                     var result = args.BarcodeResults[0];
                     text = $"Found Barcode(s):\n\n";
 
@@ -129,7 +364,7 @@ namespace ReadyToUseUI.iOS.Controller
 
                 ShowPopup(controller, text, delegate
                 {
-                    controller.RecognitionEnabled = true; // continue recognition
+                    controller.IsRecognitionEnabled = true; // continue recognition
                 });
             };
 
@@ -148,15 +383,15 @@ namespace ReadyToUseUI.iOS.Controller
             configuration.TrackingOverlayConfiguration.TextColor = UIColor.Yellow;
             configuration.TrackingOverlayConfiguration.TextContainerColor = UIColor.Black;
 
-            var controller = SBSDKUIBarcodesBatchScannerViewController.CreateNewWithConfiguration(configuration, null);
+            var controller = SBSDKUIBarcodesBatchScannerViewController.CreateNew(configuration: configuration, @delegate: null);
             controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
 
-            controller.DidFinish += (_, args) =>
+            controller.DidFinishWithResults += (_, args) =>
             {
                 string text = "No barcode detected";
                 if (args.BarcodeResults.Length > 0)
                 {
-                    controller.RecognitionEnabled = false; // stop recognition
+                    controller.IsRecognitionEnabled = false; // stop recognition
                     var result = args.BarcodeResults[0];
                     text = $"Found Barcode(s):\n\n";
 
@@ -206,7 +441,7 @@ namespace ReadyToUseUI.iOS.Controller
 
             config.BehaviorConfiguration.CameraPreviewMode = SBSDKVideoContentMode.FitIn;
             config.BehaviorConfiguration.IgnoreBadAspectRatio = true;
-            config.BehaviorConfiguration.MultiPageEnabled = true;
+            config.BehaviorConfiguration.IsMultiPageEnabled = true;
             config.TextConfiguration.PageCounterButtonTitle = "%d Page(s)";
             config.TextConfiguration.TextHintOK = "Don't move.\nScanning document...";
 
@@ -217,7 +452,7 @@ namespace ReadyToUseUI.iOS.Controller
             // and so on...
 
             var controller = SBSDKUIDocumentScannerViewController
-                .CreateNewWithConfiguration(config, null);
+                .CreateNew(configuration: config, @delegate: null);
 
             controller.DidFinishWithDocument += OnScanComplete;
             controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
@@ -241,14 +476,14 @@ namespace ReadyToUseUI.iOS.Controller
             // and so on...
 
             var controller = SBSDKUIFinderDocumentScannerViewController
-                .CreateNewWithConfiguration(config, null);
+                .CreateNew(configuration: config, @delegate: null);
 
             controller.DidFinishWithDocument += OnScanComplete;
             controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
             PresentViewController(controller, false, null);
         }
 
-        private void OnScanComplete(object _, DidFinishWithDocumentEventArgs args)
+        private void OnScanComplete(object _, FinishWithDocumentEventArgs args)
         {
             if (args.Document.NumberOfPages == 0)
             {
@@ -258,7 +493,7 @@ namespace ReadyToUseUI.iOS.Controller
             for (int i = 0; i < args.Document.NumberOfPages; ++i)
             {
                 var page = args.Document.PageAtIndex(i);
-                var result = page.DetectDocument(applyPolygonIfOkay: true);
+                var result = page.DetectDocumentAndApplyPolygonIfOkay(true);
                 PageRepository.Add(page);
             }
             OpenImageListController();
@@ -268,7 +503,7 @@ namespace ReadyToUseUI.iOS.Controller
         {
             var image = await ImagePicker.Instance.PickImageAsync();
             var page = PageRepository.Add(image, new SBSDKPolygon());
-            var result = page.DetectDocument(true);
+            var result = page.DetectDocumentAndApplyPolygonIfOkay(true);
             Console.WriteLine("Attempted document detection on imported page: " + result.Status);
 
             OpenImageListController();
@@ -285,11 +520,11 @@ namespace ReadyToUseUI.iOS.Controller
             var config = SBSDKUIMRZScannerConfiguration.DefaultConfiguration;
             config.TextConfiguration.CancelButtonTitle = "Done";
             var controller = SBSDKUIMRZScannerViewController
-                .CreateNewWithConfiguration(config, null);
+                .CreateWithConfiguration(config, null);
 
             controller.DidDetect += (viewController, args) =>
             {
-                controller.RecognitionEnabled = false;
+                controller.IsRecognitionEnabled = false;
                 controller.DismissViewController(true, delegate
                 {
                     ShowPopup(this, args.Zone.StringRepresentation);
@@ -304,7 +539,7 @@ namespace ReadyToUseUI.iOS.Controller
             var configuration = SBSDKUIHealthInsuranceCardScannerConfiguration.DefaultConfiguration;
             configuration.TextConfiguration.CancelButtonTitle = "Done";
             var controller = SBSDKUIHealthInsuranceCardScannerViewController
-                .CreateNewWithConfiguration(configuration, null);
+                .CreateWithConfiguration(configuration, null);
 
             controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
             controller.DidDetectCard += (_, args) =>
@@ -319,7 +554,7 @@ namespace ReadyToUseUI.iOS.Controller
             var configuration = SBSDKUIGenericDocumentRecognizerConfiguration.DefaultConfiguration;
             configuration.TextConfiguration.CancelButtonTitle = "Done";
             configuration.BehaviorConfiguration.DocumentType = SBSDKUIDocumentType.IdCardFrontBackDE;
-            var controller = SBSDKUIGenericDocumentRecognizerViewController.CreateNewWithConfiguration(configuration, null);
+            var controller = SBSDKUIGenericDocumentRecognizerViewController.CreateWithConfigurationAndDelegate(configuration, null);
 
             controller.DidFinishWithDocuments += (_, args) =>
             {
@@ -345,13 +580,13 @@ namespace ReadyToUseUI.iOS.Controller
             var configuration = SBSDKUICheckRecognizerConfiguration.DefaultConfiguration;
             configuration.TextConfiguration.CancelButtonTitle = "Done";
             configuration.BehaviorConfiguration.AcceptedCheckStandards = new SBSDKCheckDocumentRootType[] {
-                    SBSDKCheckDocumentRootType.AusCheck(),
-                    SBSDKCheckDocumentRootType.FraCheck(),
-                    SBSDKCheckDocumentRootType.IndCheck(),
-                    SBSDKCheckDocumentRootType.KwtCheck(),
-                    SBSDKCheckDocumentRootType.UsaCheck(),
+                    SBSDKCheckDocumentRootType.AusCheck,
+                    SBSDKCheckDocumentRootType.FraCheck,
+                    SBSDKCheckDocumentRootType.IndCheck,
+                    SBSDKCheckDocumentRootType.KwtCheck,
+                    SBSDKCheckDocumentRootType.UsaCheck,
                 };
-            var controller = SBSDKUICheckRecognizerViewController.CreateNewWithConfiguration(configuration, null);
+            var controller = SBSDKUICheckRecognizerViewController.CreateWithConfiguration(configuration, null);
             controller.DidRecognizeCheck += (_, args) =>
             {
                 if (args.Result == null || args.Result.Document == null)
@@ -377,7 +612,7 @@ namespace ReadyToUseUI.iOS.Controller
         {
             var configuration = SBSDKUITextDataScannerConfiguration.DefaultConfiguration;
             configuration.TextConfiguration.CancelButtonTitle = "Done";
-            var scanner = SBSDKUITextDataScannerViewController.CreateNewWithConfiguration(configuration, null);
+            var scanner = SBSDKUITextDataScannerViewController.CreateWithConfiguration(configuration, null);
             scanner.DidFinishStepWithResult += (_, args) =>
             {
                 scanner.DismissViewController(true, () => Alert.Show(this, "Result Text:", args?.Result?.Text));
@@ -390,7 +625,7 @@ namespace ReadyToUseUI.iOS.Controller
         {
             var configuration = SBSDKUIVINScannerConfiguration.DefaultConfiguration;
             configuration.TextConfiguration.CancelButtonTitle = "Done";
-            var scanner = SBSDKUIVINScannerViewController.CreateNewWithConfiguration(configuration, null);
+            var scanner = SBSDKUIVINScannerViewController.CreateNew(configuration: configuration, @delegate: null);
             scanner.DidFinishWithResult += (_, args) =>
             {
                 scanner.DismissViewController(true, () => Alert.Show(this, "Result Text:", args?.Result?.Text));
@@ -403,7 +638,7 @@ namespace ReadyToUseUI.iOS.Controller
         {
             var configuration = SBSDKUILicensePlateScannerConfiguration.DefaultConfiguration;
             configuration.TextConfiguration.CancelButtonTitle = "Done";
-            var scanner = SBSDKUILicensePlateScannerViewController.CreateNewWithConfiguration(configuration, null);
+            var scanner = SBSDKUILicensePlateScannerViewController.CreateNew(configuration: configuration, @delegate: null);
             scanner.DidRecognizeLicensePlate += (_, args) =>
             {
                 Alert.Show(this, "Result Text:", args?.Result?.RawString);
@@ -411,12 +646,12 @@ namespace ReadyToUseUI.iOS.Controller
             PresentViewController(scanner, true, null);
         }
 
-        private void MedicalCertificateRecognizerTapped()
+          private void MedicalCertificateRecognizerTapped()
         {
              var configuration = SBSDKUIMedicalCertificateScannerConfiguration.DefaultConfiguration;
             configuration.TextConfiguration.CancelButtonTitle = "Done";
-            var scanner = SBSDKUIMedicalCertificateScannerViewController.CreateNewWithConfiguration(configuration, null);
-            scanner.DidFinishWithCertificateResult  += (_, args) =>
+            var scanner = SBSDKUIMedicalCertificateScannerViewController.CreateWithConfiguration(configuration, null);
+            scanner.DidFinishWithResult  += (_, args) =>
             {
                 Alert.Show(this, "Result Text:", args.Result.StringRepresentation);
             };

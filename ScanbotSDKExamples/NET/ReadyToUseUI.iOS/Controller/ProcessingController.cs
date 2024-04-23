@@ -73,7 +73,7 @@ namespace ReadyToUseUI.iOS.Controller
         private void CropAndRotate(object sender, EventArgs e)
         {
             var config = SBSDKUICroppingScreenConfiguration.DefaultConfiguration;
-            var controller = SBSDKUICroppingViewController.CreateNewWithPage(PageRepository.Current, config, handler);
+            var controller = SBSDKUICroppingViewController.CreateWithPage(PageRepository.Current, config, handler);
             controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
             PresentViewController(controller, false, null);
         }
@@ -99,14 +99,14 @@ namespace ReadyToUseUI.iOS.Controller
 
     public class CroppingFinishedArgs : EventArgs
     {
-        public SBSDKUIPage Page { get; set; }
+        public SBSDKDocumentPage Page { get; set; }
     }
 
     public class CroppingFinishedHandler : SBSDKUICroppingViewControllerDelegate
     {
         public EventHandler<CroppingFinishedArgs> Finished;
 
-        public override void DidFinish(SBSDKUICroppingViewController viewController, SBSDKUIPage changedPage)
+        public override void DidFinish(SBSDKUICroppingViewController viewController, SBSDKDocumentPage changedPage)
         {
             Finished?.Invoke(this, new CroppingFinishedArgs { Page = changedPage });
         }
