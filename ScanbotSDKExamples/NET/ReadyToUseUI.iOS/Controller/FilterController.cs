@@ -74,6 +74,7 @@ namespace ReadyToUseUI.iOS.Controller
         private void FilterChosen(object sender, EventArgs e)
         {
             PageRepository.Apply(Choice, PageRepository.Current);
+            PageRepository.UpdateCurrent(PageRepository.Current.OriginalImage, PageRepository.Current.Polygon);
             NavigationController.PopViewController(true);
         }
     }

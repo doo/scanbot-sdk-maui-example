@@ -63,7 +63,7 @@ namespace ReadyToUseUI.iOS
             SBSDKDocumentPageFileStorage.DefaultStorage = new SBSDKDocumentPageFileStorage(SBSDKImageFileFormat.Jpeg, (nuint)ImageQuality, new SBSDKStorageLocation(NSUrl.FromFilename(PageStoragePathForExample())));
 
             // Uncomment the below to test our encyption functionality.
-            //ScanbotSDKUI.DefaultImageStoreEncrypter = new SBSDKAESEncrypter("S0m3W3irDL0ngPa$$w0rdino!!!!", SBSDKAESEncrypterMode.SBSDKAESEncrypterModeAES128);
+            // ScanbotUI.DefaultImageStoreEncrypter = new SBSDKAESEncrypter("S0m3W3irDL0ngPa$$w0rdino!!!!", SBSDKAESEncrypterMode.SBSDKAESEncrypterModeAES128);
             // Note: all the images and files exported through the SDK will
             // not be openable from external applications, since they will be
             // encrypted.
