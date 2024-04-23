@@ -98,7 +98,7 @@ namespace ReadyToUseUI.iOS.Controller
         {
             try
             {
-                var outputPdfUrl = await DocumentUtilities.CreatePDFAsync(inputUrls, outputUrl, SBSDKPDFRendererPageSize.A4, SBSDKPDFRendererPageOrientation.Auto, ScanbotSDKUI.DefaultImageStoreEncrypter);
+                var outputPdfUrl = await DocumentUtilities.CreatePDFAsync(inputUrls, outputUrl, SBSDKPDFRendererPageSize.A4, SBSDKPDFRendererPageOrientation.Auto, ScanbotUI.DefaultImageStoreEncrypter);
                 if (outputPdfUrl != null)
                 {
                     OpenDocument(outputPdfUrl, false);
@@ -116,23 +116,22 @@ namespace ReadyToUseUI.iOS.Controller
 
         private async Task PerformOCRAndCreatePDFAsync(NSUrl[] inputUrls, NSUrl outputUrl)
         {
-            var recognitionMode = SBSDKOpticalCharacterRecognitionMode.Ml;
+            var recognitionMode = SBSDKOpticalCharacterRecognitionMode.ScanbotOCR;
             // This is the new OCR configuration with ML which doesn't require the langauges.
-            SBSDKOpticalCharacterRecognizerConfiguration ocrConfiguration = SBSDKOpticalCharacterRecognizerConfiguration.MlConfiguration;
+            SBSDKOpticalCharacterRecognizerConfiguration ocrConfiguration = SBSDKOpticalCharacterRecognizerConfiguration.ScanbotOCR;
 
             // to use legacy configuration we have to pass the installed languages.
-            if (recognitionMode == SBSDKOpticalCharacterRecognitionMode.Legacy)
+            if (recognitionMode == SBSDKOpticalCharacterRecognitionMode.Tesseract)
             {
-                var installedLanguages = SBSDKResourcesManager.InstalledLanguages;
-                ocrConfiguration = SBSDKOpticalCharacterRecognizerConfiguration.LegacyConfigurationWithLanguages(installedLanguages);
+                var installedLanguages = SBSDKOCRLanguagesManager.InstalledLanguages;
+                ocrConfiguration = SBSDKOpticalCharacterRecognizerConfiguration.TesseractWith(installedLanguages);
             }
-
-            SBSDKOpticalCharacterRecognizer recognizer = new SBSDKOpticalCharacterRecognizer(ocrConfiguration);
-
             try
             {
                 // Please check the default parameters
-                var (ocrResult, outputPdfUrl) = await DocumentUtilities.PerformOCRAsync(ocrRecognizer: recognizer, inputUrls: inputUrls, outputUrl: outputUrl, shouldGeneratePdf: true, encrypter: ScanbotSDKUI.DefaultImageStoreEncrypter);
+                
+                var opticalCharacterRecognizer = new SBSDKOpticalCharacterRecognizer(ocrConfiguration);
+                var (ocrResult, outputPdfUrl) = await DocumentUtilities.PerformOCRAsync(ocrRecognizer: opticalCharacterRecognizer, inputUrls: inputUrls, outputUrl: outputUrl, shouldGeneratePdf: true, encrypter: ScanbotUI.DefaultImageStoreEncrypter);
                 if (ocrResult != null)
                 {
                     OpenDocument(outputPdfUrl, true, ocrResult.RecognizedText);
@@ -151,12 +150,12 @@ namespace ReadyToUseUI.iOS.Controller
         private void WriteTIFF(NSUrl[] inputUrls, NSUrl outputUrl)
         {
             // Please note that some compression types are only compatible for 1-bit encoded images (binarized black & white images)!
-            var options = SBSDKTIFFImageWriterParameters.DefaultParametersForBinaryImages();
+            var options = SBSDKTIFFImageWriterParameters.DefaultParametersForBinaryImages;
             options.Binarize = true;
             options.Compression = SBSDKTIFFImageWriterCompressionOptions.Ccittfax4;
             options.Dpi = 250;
 
-            var (success, outputTiffUrl) = DocumentUtilities.CreateTIFF(options, inputUrls, outputUrl, ScanbotSDKUI.DefaultImageStoreEncrypter);
+            var (success, outputTiffUrl) = DocumentUtilities.CreateTIFF(options, inputUrls, outputUrl, ScanbotUI.DefaultImageStoreEncrypter);
             if (success)
             {
                 var title = "Write TIFF";

@@ -23,37 +23,21 @@ public class DocumentUtilities
         var storage = CreateStorage(inputUrls, encrypter);
         var outputPdfUrl = new NSUrl(outputUrl.AbsoluteString + Guid.NewGuid() + ".pdf");
         // Create the PDF rendering options.
-        var options = new SBSDKPDFRendererOptions(pageSize: pageSize,
-                                                pageOrientation: orientation,
-                                                ocrConfiguration: ocrConfiguration);
+        var options = new SBSDKPDFRendererOptions();
 
         // Create the PDF renderer and pass the PDF options to it.
         var renderer = new SBSDKPDFRenderer(options);
 
-        if (encrypter != null)
+        renderer.RenderImageStorage(storage, indexSet: null, encrypter: encrypter, output: outputPdfUrl, completion: (isComplete, error) =>
         {
-            renderer.RenderImageStorage(storage, indices: null, encrypter: encrypter, pdfOutputURL: outputPdfUrl, completion: (isComplete, error) =>
+            storage.RemoveAllImages();
+            if (error != null)
             {
-                storage.RemoveAllImages();
-                if (error != null)
-                {
-                    throw new NSErrorException(error);
-                }
-                task.SetResult(outputPdfUrl);
-            });
-        }
-        else
-        {
-            renderer.RenderImageStorage(storage, indices: null, pdfOutputURL: outputPdfUrl, completion: (isComplete, error) =>
-            {
-                storage.RemoveAllImages();
-                if (error != null)
-                {
-                    throw new NSErrorException(error);
-                }
-                task.SetResult(outputPdfUrl);
-            });
-        }
+                throw new NSErrorException(error);
+            }
+            task.SetResult(outputPdfUrl);
+        });
+        
         return task.Task;
     }
 
@@ -82,7 +66,7 @@ public class DocumentUtilities
     private static Task<(SBSDKOCRResult result, NSError error)> RecognizeText(SBSDKOpticalCharacterRecognizer opticalCharacterRecognizer, SBSDKImageStoring storage)
     {
         TaskCompletionSource<(SBSDKOCRResult, NSError)> task = new TaskCompletionSource<(SBSDKOCRResult, NSError)>();
-        opticalCharacterRecognizer.RecognizeText(storage, completion: (result, error) =>
+        opticalCharacterRecognizer.RecognizeOnImageStorage(storage, completion: (result, error) =>
         {
             task.SetResult((result, error));
         });
@@ -93,16 +77,14 @@ public class DocumentUtilities
     {
         bool success;
         var outputTiffUrl = new NSUrl(outputUrl.AbsoluteString + Guid.NewGuid() + ".tiff");
-
-        var images = LoadImagesFromUrl(inputUrls.ToList()).ToArray();
-
+        
         if (encrypter != null)
         {
-            success = SBSDKTIFFImageWriter.WriteTIFF(images, outputTiffUrl, encrypter, parameters);
+            success = new SBSDKTIFFImageWriter(parameters: parameters).WriteTIFFFromToFile(inputUrls, outputTiffUrl);
         }
         else
         {
-            success = SBSDKTIFFImageWriter.WriteTIFF(images, outputTiffUrl, parameters);
+            success = new SBSDKTIFFImageWriter(parameters: parameters, encrypter: encrypter).WriteTIFFFromToFile(inputUrls, outputTiffUrl);
         }
         return (success, outputTiffUrl);
     }

@@ -4,33 +4,33 @@ namespace ReadyToUseUI.iOS.Repository
 {
     public class PageRepository
     {
-        public static SBSDKUIPage Current { get; set; }
+        public static SBSDKDocumentPage Current { get; set; }
 
-        public static List<SBSDKUIPage> Items { get; private set; } = new List<SBSDKUIPage>();
+        public static List<SBSDKDocumentPage> Items { get; private set; } = new List<SBSDKDocumentPage>();
 
         public static NSUrl[] DocumentImageURLs => Items.Select(x => x.DocumentImageURL).ToArray();
 
-        static readonly SBSDKUIPageFileStorage storage = new SBSDKUIPageFileStorage(SBSDKImageFileFormat.Png);
+        static readonly SBSDKDocumentPageFileStorage storage = new SBSDKDocumentPageFileStorage(SBSDKImageFileFormat.Png);
 
-        public static void Remove(SBSDKUIPage page)
+        public static void Remove(SBSDKDocumentPage page)
         {
             storage.RemovePageFileID(page.PageFileUUID);
             Items.Remove(page);
         }
 
-        public static void Add(SBSDKUIPage page)
+        public static void Add(SBSDKDocumentPage page)
         {
             Items.Add(page);
         }
 
-        public static SBSDKUIPage Add(UIImage image, SBSDKPolygon polygon)
+        public static SBSDKDocumentPage Add(UIImage image, SBSDKPolygon polygon)
         {
-            var page = new SBSDKUIPage(image, polygon, SBSDKImageFilterType.None);
+            var page = new SBSDKDocumentPage(image, polygon, SBSDKImageFilterType.None);
             Add(page);
             return page;
         }
 
-        public static void Update(SBSDKUIPage page)
+        public static void Update(SBSDKDocumentPage page)
         {
             var existing = Items.Where(p => p.PageFileUUID == page.PageFileUUID).ToList()[0];
             Items.Remove(existing);
@@ -40,7 +40,7 @@ namespace ReadyToUseUI.iOS.Repository
 
         public static void UpdateCurrent(UIImage image, SBSDKPolygon polygon)
         {
-            var page = new SBSDKUIPage(image, polygon, Current.Filter);
+            var page = new SBSDKDocumentPage(image, polygon, Current.Filter);
             
             Remove(Current);
             Add(page);
@@ -55,15 +55,15 @@ namespace ReadyToUseUI.iOS.Repository
 
         public static void Apply(SBSDKImageFilterType filter)
         {
-            foreach (SBSDKUIPage page in Items)
+            foreach (SBSDKDocumentPage page in Items)
             {
                 page.Filter = filter;
             }
         }
 
-        public static SBSDKUIPage Apply(SBSDKImageFilterType filter, SBSDKUIPage page)
+        public static SBSDKDocumentPage Apply(SBSDKImageFilterType filter, SBSDKDocumentPage page)
         {
-            foreach (SBSDKUIPage item in Items)
+            foreach (SBSDKDocumentPage item in Items)
             {
                 if (page.PageFileUUID == item.PageFileUUID)
                 {
@@ -75,9 +75,9 @@ namespace ReadyToUseUI.iOS.Repository
             return null;
         }
 
-        public static SBSDKUIPage DuplicateCurrent(SBSDKImageFilterType type)
+        public static SBSDKDocumentPage DuplicateCurrent(SBSDKImageFilterType type)
         {
-            return new SBSDKUIPage(Current.OriginalImage, Current.Polygon, type);
+            return new SBSDKDocumentPage(Current.OriginalImage, Current.Polygon, type);
         }
     }
 }
