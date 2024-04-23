@@ -10,11 +10,9 @@ namespace ReadyToUseUI.iOS.Repository
 
         public static NSUrl[] DocumentImageURLs => Items.Select(x => x.DocumentImageURL).ToArray();
 
-        static readonly SBSDKDocumentPageFileStorage storage = new SBSDKDocumentPageFileStorage(SBSDKImageFileFormat.Png);
-
         public static void Remove(SBSDKDocumentPage page)
         {
-            storage.RemovePageFileID(page.PageFileUUID);
+            SBSDKDocumentPageFileStorage.DefaultStorage.RemovePageFileID(page.PageFileUUID);
             Items.Remove(page);
         }
 
@@ -32,7 +30,7 @@ namespace ReadyToUseUI.iOS.Repository
 
         public static void Update(SBSDKDocumentPage page)
         {
-            var existing = Items.Where(p => p.PageFileUUID == page.PageFileUUID).ToList()[0];
+            var existing = Items.Where(p => p.PageFileUUID.IsEqual(page.PageFileUUID)).ToList()[0];
             Items.Remove(existing);
 
             Items.Add(page);
@@ -49,7 +47,7 @@ namespace ReadyToUseUI.iOS.Repository
 
         public static void Clear()
         {
-            storage.RemoveAll();
+            SBSDKDocumentPageFileStorage.DefaultStorage.RemoveAll();
             Items.Clear();
         }
 
@@ -65,7 +63,7 @@ namespace ReadyToUseUI.iOS.Repository
         {
             foreach (SBSDKDocumentPage item in Items)
             {
-                if (page.PageFileUUID == item.PageFileUUID)
+                if (page.PageFileUUID.IsEqual(item.PageFileUUID))
                 {
                     item.Filter = filter;
                     return item;
