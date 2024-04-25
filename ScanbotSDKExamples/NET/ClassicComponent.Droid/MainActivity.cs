@@ -134,7 +134,7 @@ namespace ClassicComponent.Droid
                 {
                     // The SDK call is sync!
                     // TODO load uri
-                    var resultImage = scanbotSDK.ImageProcessor().ProcessBitmap(BitmapFactory.DecodeFile(documentImageUri.Path), new FilterOperation(filter));
+                    var resultImage = new ImageProcessor(BitmapFactory.DecodeFile(documentImageUri.Path)).ApplyFilter(new LegacyFilter(filter.Code)).ProcessedBitmap();
                     documentImageUri = TempImageStorage.Instance.AddImage(resultImage);
                     ShowImageView(resultImage);
                 });
@@ -443,7 +443,7 @@ namespace ClassicComponent.Droid
 
                         if (detectionResult.PolygonF != null)
                         {
-                            documentImage = scanbotSDK.ImageProcessor().ProcessBitmap(image, new CropOperation(detectionResult.PolygonF));
+                            documentImage = new ImageProcessor(image).Crop(detectionResult.PolygonF).ProcessedBitmap();
                         }
 
                         documentImageUri = TempImageStorage.Instance.AddImage(documentImage);

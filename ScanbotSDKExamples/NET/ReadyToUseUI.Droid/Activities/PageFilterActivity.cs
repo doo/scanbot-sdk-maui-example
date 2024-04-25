@@ -1,6 +1,5 @@
 ﻿using Android.Content;
 using Android.Graphics;
-using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using AndroidX.AppCompat.App;
@@ -12,6 +11,7 @@ using ReadyToUseUI.Droid.Fragments;
 using ReadyToUseUI.Droid.Listeners;
 using ReadyToUseUI.Droid.Utils;
 using DocumentSDK.NET.Model;
+using IO.Scanbot.Imagefilters;
 
 namespace ReadyToUseUI.Droid.Activities
 {
@@ -32,7 +32,7 @@ namespace ReadyToUseUI.Droid.Activities
         }
 
         private string selectedPageId;
-        private ImageFilterType selectedFilter;
+        private LegacyFilter selectedFilter;
         private FilterBottomSheetMenuFragment filterFragment;
         private ProgressBar progress;
         private IO.Scanbot.Sdk.ScanbotSDK scanbotSDK;
@@ -127,11 +127,11 @@ namespace ReadyToUseUI.Droid.Activities
 
             Task.Run(delegate
             {
-                var uri = pageStorage.GetFilteredPreviewImageURI(selectedPageId, ImageFilterType.None);
+                var uri = pageStorage.GetFilteredPreviewImageURI(selectedPageId, null); // None
 
                 if (!File.Exists(uri.Path))
                 {
-                    pageProcessor.GenerateFilteredPreview(new Page().Copy(pageId: selectedPageId), ImageFilterType.None);
+                    pageProcessor.GenerateFilteredPreview(new Page().Copy(pageId: selectedPageId), null);
                 }
 
                 UpdateImage(uri);
@@ -149,7 +149,7 @@ namespace ReadyToUseUI.Droid.Activities
 
             if (requestCode == CROP_DEFAULT_UI_REQUEST_CODE)
             {
-                selectedFilter = selectedFilter ?? ImageFilterType.None;
+                selectedFilter = selectedFilter ?? new LegacyFilter(ImageFilterType.None.Code);
 
                 var uri = pageStorage.GetFilteredPreviewImageURI(selectedPageId, selectedFilter);
 
@@ -175,7 +175,7 @@ namespace ReadyToUseUI.Droid.Activities
         public void ApplyFilter(ImageFilterType type)
         {
             progress.Visibility = ViewStates.Visible;
-            selectedFilter = type;
+            selectedFilter = new LegacyFilter(type.Code);
             Task.Run(delegate
             {
                 var pageToFilter = new Page().Copy(pageId: selectedPageId);
