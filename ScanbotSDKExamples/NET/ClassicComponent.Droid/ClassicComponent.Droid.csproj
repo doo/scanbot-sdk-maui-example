@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net7.0-android</TargetFramework>
+        <TargetFrameworks>net7.0-android;net8.0-android</TargetFrameworks>
         <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
         <OutputType>Exe</OutputType>
         <Nullable>disable</Nullable>
@@ -11,7 +11,7 @@
         <AssemblyName>ClassicComponent.Droid</AssemblyName>
         <ApplicationTitle>NET Classic Component</ApplicationTitle>
         <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
-      <RootNamespace>ClassicComponent.Droid</RootNamespace>
+        <RootNamespace>ClassicComponent.Droid</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\SBSDKLanguageData\deu.traineddata" />
@@ -19,6 +19,6 @@
     <AndroidAsset Include="Assets\SBSDKLanguageData\osd.traineddata" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ScanbotSDK.NET" Version="4.2.0" />
+    <PackageReference Include="ScanbotSDK.NET" Version="5.1.0-alpha.1" />
   </ItemGroup>
 </Project>

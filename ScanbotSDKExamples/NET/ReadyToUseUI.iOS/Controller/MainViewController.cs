@@ -117,7 +117,7 @@ namespace ReadyToUseUI.iOS.Controller
             configuration.RecognizerConfiguration.BarcodeTypes =
                 new[] { SBSDKBarcodeType.AustraliaPost, SBSDKBarcodeType.Aztec };
             
-            var usecases = SBSDKUI2BarcodeUseCase.SingleScanningMode;
+            var usecases = new SBSDKUI2SingleScanningMode{};
             usecases.ConfirmationSheetEnabled = true;
             usecases.ArOverlay.Visible = false;
             usecases.ArOverlay.AutomaticSelectionEnabled = false;
@@ -148,7 +148,7 @@ namespace ReadyToUseUI.iOS.Controller
             // Create the default configuration object.
             var configuration = new SBSDKUI2BarcodeScannerConfiguration();
             
-            var usecases = SBSDKUI2BarcodeUseCase.SingleScanningMode;
+            var usecases = new SBSDKUI2SingleScanningMode();
             usecases.ConfirmationSheetEnabled = true;
             usecases.ArOverlay.Visible = true;
             usecases.ArOverlay.AutomaticSelectionEnabled = false;
@@ -180,7 +180,7 @@ namespace ReadyToUseUI.iOS.Controller
             // Create the default configuration object.
             var configuration = new SBSDKUI2BarcodeScannerConfiguration();
             
-            var usecases = SBSDKUI2BarcodeUseCase.SingleScanningMode;
+            var usecases = new SBSDKUI2SingleScanningMode();
             usecases.ConfirmationSheetEnabled = true;
             usecases.ArOverlay.Visible = true;
             usecases.ArOverlay.AutomaticSelectionEnabled = true;
@@ -211,7 +211,7 @@ namespace ReadyToUseUI.iOS.Controller
             // Create the default configuration object.
             var configuration = new SBSDKUI2BarcodeScannerConfiguration();
             
-            var usecases = SBSDKUI2BarcodeUseCase.MultipleScanningMode;
+            var usecases = new SBSDKUI2MultipleScanningMode();
             usecases.Mode = SBSDKUI2MultipleBarcodesScanningMode.Unique;
             usecases.Sheet.Mode = SBSDKUI2SheetMode.Button;
             usecases.ArOverlay.Visible = true;
@@ -244,7 +244,7 @@ namespace ReadyToUseUI.iOS.Controller
             configuration.RecognizerConfiguration.BarcodeTypes =
                 new[] { SBSDKBarcodeType.AustraliaPost, SBSDKBarcodeType.Aztec };
             
-            var usecases = SBSDKUI2BarcodeUseCase.MultipleScanningMode;
+            var usecases = new SBSDKUI2MultipleScanningMode();
             usecases.Mode = SBSDKUI2MultipleBarcodesScanningMode.Unique;
             usecases.Sheet.Mode = SBSDKUI2SheetMode.CollapsedSheet;
             usecases.ArOverlay.Visible = false;
@@ -274,7 +274,7 @@ namespace ReadyToUseUI.iOS.Controller
         {
             var configuration = new SBSDKUI2BarcodeScannerConfiguration();
             
-            var usecases = SBSDKUI2BarcodeUseCase.MultipleScanningMode;
+            var usecases = new SBSDKUI2MultipleScanningMode();
             usecases.Mode = SBSDKUI2MultipleBarcodesScanningMode.Counting;
             usecases.Sheet.Mode = SBSDKUI2SheetMode.CollapsedSheet;
             usecases.Sheet.CollapsedVisibleHeight = SBSDKUI2CollapsedVisibleHeight.Large;
@@ -485,12 +485,12 @@ namespace ReadyToUseUI.iOS.Controller
 
         private void OnScanComplete(object _, FinishWithDocumentEventArgs args)
         {
-            if (args.Document.NumberOfPages == 0)
+            if (args?.Document?.Pages == null && args.Document.Pages.Length == 0)
             {
                 return;
             }
 
-            for (int i = 0; i < args.Document.NumberOfPages; ++i)
+            for (int i = 0; i < args.Document.Pages.Length; ++i)
             {
                 var page = args.Document.PageAtIndex(i);
                 var result = page.DetectDocumentAndApplyPolygonIfOkay(true);
