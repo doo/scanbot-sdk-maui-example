@@ -13,6 +13,7 @@ namespace ReadyToUseUI.Maui.Pages
 {
     public class ImageResultsPage : ContentPage
     {
+        private const string PDF = "PDF", OCR = "Perform OCR", SandwichPDF = "Sandwiched PDF", TIFF = "TIFF (1-bit, B&W)";
         private Grid pageGridView;
         private ListView resultList;
         private BottomActionBar bottomBar;
@@ -164,7 +165,7 @@ namespace ReadyToUseUI.Maui.Pages
                 return;
             }
 
-            var parameters = new string[] { "PDF", "PDF with OCR", "TIFF (1-bit, B&W)" };
+            var parameters = new string[] { PDF, OCR, SandwichPDF, TIFF};
             string action = await DisplayActionSheet("Save Image as", "Cancel", null, parameters);
 
             if (action == null || action.Equals("Cancel"))
@@ -175,31 +176,23 @@ namespace ReadyToUseUI.Maui.Pages
             try
             {
                 isLoading = true;
-
-                if (action.Equals(parameters[0]))
+                switch (action)
                 {
-                    var fileUri = await SBSDK.SDKService.CreatePdfAsync(documentSources.OfType<FileImageSource>(), PDFPageSize.A4);
-                    ViewUtils.Alert(this, "Success: ", "Wrote documents to: " + fileUri.AbsolutePath);
+                    case PDF:
+                        await GeneratePdfAsync(documentSources);
+                        break;
+                    case OCR:
+                        await PerformOcrAsync(documentSources);
+                        break;
+                    case SandwichPDF:
+                        await GenerateSandwichPdfAsync(documentSources);
+                        break;
+                    case TIFF:
+                        await GenerateTiffAsync(documentSources);
+                        break;
+                    default:
+                        break;
                 }
-                else if (action.Equals(parameters[1]))
-                {
-                    string path = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-                    string pdfFilePath = Path.Combine(path, Guid.NewGuid() + ".pdf");
-                    var languages = new[] { "en" };
-                    var result = await SBSDK.SDKService.PerformOcrAsync(documentSources.OfType<FileImageSource>(), OcrConfig.From(languages), pdfFilePath);
-
-                    // You can access the results with: result.Pages
-                    ViewUtils.Alert(this, "PDF with OCR layer stored: ", pdfFilePath);
-                }
-                else if (action.Equals(parameters[2]))
-                {
-                    var fileUri = await SBSDK.SDKService.WriteTiffAsync(
-                        documentSources.OfType<FileImageSource>(),
-                        new TiffOptions { OneBitEncoded = true, Dpi = 300, Compression = TiffCompressionOptions.CompressionCcittT6 }
-                    );
-                    ViewUtils.Alert(this, "Success: ", "Wrote documents to: " + fileUri.AbsolutePath);
-                }
-
             }
             catch (Exception ex)
             {
@@ -211,6 +204,80 @@ namespace ReadyToUseUI.Maui.Pages
             {
                 isLoading = false;
             }            
+        }
+
+        private async Task GeneratePdfAsync(List<ImageSource> documentSources)
+        {
+            var fileUri = await SBSDK.SDKService.CreatePdfAsync(documentSources.OfType<FileImageSource>(),
+                        configuration: new PDFConfiguration
+                        {
+                            PageOrientation = PDFPageOrientation.Auto,
+                            PageSize = PDFPageSize.A4,
+                            PdfAttributes = new PDFAttributes
+                            {
+                                Author = "Mayank",
+                                Creator = "Scanbot",
+                                Title = "Hotfix PDF",
+                                Subject = "PDF without OCR",
+                                Keywords = new[] { "x-platform", "ios", "android" },
+                            }
+                        });
+            ViewUtils.Alert(this, "Success: ", "Wrote documents to: " + fileUri.AbsolutePath);
+        }
+
+        private async Task PerformOcrAsync(List<ImageSource> documentSources)
+        {
+            // NOTE:
+            // The default OCR engine is 'OcrConfig.ScanbotOCR' which is ML based. This mode doesn't expect the Langauges array.
+            // If you wish to use the previous engine please use 'OcrConfig.Tesseract(...)'. The Languages array is mandatory in this mode.
+            // uncomment below code to use the legacy 'OcrConfig.Tesseract(...)' engine mode.
+            // var ocrConfig = OcrConfig.Tesseract(withLanguageString: new List<string>{ "en", "de" });
+
+            var ocrConfig = OcrConfig.ScanbotOCR;
+
+            // using the default option
+            var result = await SBSDK.SDKService.PerformOcrAsync(documentSources.OfType<FileImageSource>(), configuration: ocrConfig);
+
+            // You can access the results with: result.Pages
+            ViewUtils.Alert(this, "OCR", result.Text);
+        }
+
+        private async Task GenerateSandwichPdfAsync(List<ImageSource> documentSources)
+        {
+            // NOTE:
+            // The default OCR engine is 'OcrConfig.ScanbotOCR' which is ML based. This mode doesn't expect the Langauges array.
+            // If you wish to use the previous engine please use 'OcrConfig.Tesseract(...)'. The Languages array is mandatory in this mode.
+            // uncomment below code to use the legacy 'OcrConfig.Tesseract(...)' engine mode.
+            // var ocrConfig = OcrConfig.Tesseract(withLanguageString: new List<string>{ "en", "de" });
+
+            var ocrConfig = OcrConfig.ScanbotOCR;
+            var result = await SBSDK.SDKService.CreateSandwichPdfAsync(
+                documentSources.OfType<FileImageSource>(),
+                new PDFConfiguration
+                {
+                    PageOrientation = PDFPageOrientation.Auto,
+                    PageSize = PDFPageSize.A4,
+                    PdfAttributes = new PDFAttributes
+                    {
+                        Author = "Mayank",
+                        Creator = "Scanbot",
+                        Title = "Hotfix PDF",
+                        Subject = "PDF without OCR",
+                        Keywords = new[] { "x-platform", "ios", "android" },
+                    }
+                }, ocrConfig);
+
+            // You can access the results with: result.Pages
+            ViewUtils.Alert(this, "PDF with OCR layer stored: ", result.AbsolutePath);
+        }
+
+        private async Task GenerateTiffAsync(List<ImageSource> documentSources)
+        {
+            var fileUri = await SBSDK.SDKService.WriteTiffAsync(
+                                 documentSources.OfType<FileImageSource>(),
+                                 new TiffOptions { OneBitEncoded = true, Dpi = 300, Compression = TiffCompressionOptions.CompressionCcittT6 }
+                             );
+            ViewUtils.Alert(this, "Success: ", "Wrote documents to: " + fileUri.AbsolutePath);
         }
 
         private async void OnDeleteButtonTapped(object sender, EventArgs e)
