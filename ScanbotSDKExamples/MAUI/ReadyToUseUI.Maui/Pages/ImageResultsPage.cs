@@ -230,10 +230,10 @@ namespace ReadyToUseUI.Maui.Pages
             // NOTE:
             // The default OCR engine is 'OcrConfig.ScanbotOCR' which is ML based. This mode doesn't expect the Langauges array.
             // If you wish to use the previous engine please use 'OcrConfig.Tesseract(...)'. The Languages array is mandatory in this mode.
-            // uncomment below code to use the past legacy 'OcrConfig.Tesseract(...)' engine mode.
+            // Uncomment the below code to use the past legacy 'OcrConfig.Tesseract(...)' engine mode.
             // var ocrConfig = OcrConfig.Tesseract(withLanguageString: new List<string>{ "en", "de" });
 
-            // using the default OCR option
+            // Using the default OCR option
             var ocrConfig = OcrConfig.ScanbotOCR;
 
             var result = await SBSDK.SDKService.PerformOcrAsync(documentSources.OfType<FileImageSource>(), configuration: ocrConfig);
@@ -247,10 +247,10 @@ namespace ReadyToUseUI.Maui.Pages
             // NOTE:
             // The default OCR engine is 'OcrConfig.ScanbotOCR' which is ML based. This mode doesn't expect the Langauges array.
             // If you wish to use the previous engine please use 'OcrConfig.Tesseract(...)'. The Languages array is mandatory in this mode.
-            // uncomment below code to use the past legacy 'OcrConfig.Tesseract(...)' engine mode.
+            // Uncomment the below code to use the past legacy 'OcrConfig.Tesseract(...)' engine mode.
             // var ocrConfig = OcrConfig.Tesseract(withLanguageString: new List<string>{ "en", "de" });
 
-            // using the default OCR option
+            // Using the default OCR option
             var ocrConfig = OcrConfig.ScanbotOCR;
 
             var result = await SBSDK.SDKService.CreateSandwichPdfAsync(
