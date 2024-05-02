@@ -269,7 +269,6 @@ namespace ReadyToUseUI.Maui.Pages
                     }
                 }, ocrConfig);
 
-            // You can access the results with: result.Pages
             ViewUtils.Alert(this, "PDF with OCR layer stored: ", result.AbsolutePath);
         }
 
