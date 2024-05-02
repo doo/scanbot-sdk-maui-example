@@ -215,10 +215,10 @@ namespace ReadyToUseUI.Maui.Pages
                             PageSize = PDFPageSize.A4,
                             PdfAttributes = new PDFAttributes
                             {
-                                Author = "Mayank",
-                                Creator = "Scanbot",
-                                Title = "Hotfix PDF",
-                                Subject = "PDF without OCR",
+                                Author = "Scanbot User",
+                                Creator = "ScanbotSDK",
+                                Title = "ScanbotSDK PDF",
+                                Subject = "Generating a normal PDF",
                                 Keywords = new[] { "x-platform", "ios", "android" },
                             }
                         });
@@ -230,12 +230,12 @@ namespace ReadyToUseUI.Maui.Pages
             // NOTE:
             // The default OCR engine is 'OcrConfig.ScanbotOCR' which is ML based. This mode doesn't expect the Langauges array.
             // If you wish to use the previous engine please use 'OcrConfig.Tesseract(...)'. The Languages array is mandatory in this mode.
-            // uncomment below code to use the legacy 'OcrConfig.Tesseract(...)' engine mode.
+            // uncomment below code to use the past legacy 'OcrConfig.Tesseract(...)' engine mode.
             // var ocrConfig = OcrConfig.Tesseract(withLanguageString: new List<string>{ "en", "de" });
 
+            // using the default OCR option
             var ocrConfig = OcrConfig.ScanbotOCR;
 
-            // using the default option
             var result = await SBSDK.SDKService.PerformOcrAsync(documentSources.OfType<FileImageSource>(), configuration: ocrConfig);
 
             // You can access the results with: result.Pages
@@ -247,10 +247,12 @@ namespace ReadyToUseUI.Maui.Pages
             // NOTE:
             // The default OCR engine is 'OcrConfig.ScanbotOCR' which is ML based. This mode doesn't expect the Langauges array.
             // If you wish to use the previous engine please use 'OcrConfig.Tesseract(...)'. The Languages array is mandatory in this mode.
-            // uncomment below code to use the legacy 'OcrConfig.Tesseract(...)' engine mode.
+            // uncomment below code to use the past legacy 'OcrConfig.Tesseract(...)' engine mode.
             // var ocrConfig = OcrConfig.Tesseract(withLanguageString: new List<string>{ "en", "de" });
 
+            // using the default OCR option
             var ocrConfig = OcrConfig.ScanbotOCR;
+
             var result = await SBSDK.SDKService.CreateSandwichPdfAsync(
                 documentSources.OfType<FileImageSource>(),
                 new PDFConfiguration
@@ -259,10 +261,10 @@ namespace ReadyToUseUI.Maui.Pages
                     PageSize = PDFPageSize.A4,
                     PdfAttributes = new PDFAttributes
                     {
-                        Author = "Mayank",
-                        Creator = "Scanbot",
-                        Title = "Hotfix PDF",
-                        Subject = "PDF without OCR",
+                        Author = "Scanbot User",
+                        Creator = "ScanbotSDK",
+                        Title = "ScanbotSDK PDF",
+                        Subject = "Generating a sandwiched PDF",
                         Keywords = new[] { "x-platform", "ios", "android" },
                     }
                 }, ocrConfig);
