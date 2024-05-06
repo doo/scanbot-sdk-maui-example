@@ -117,7 +117,7 @@ namespace ReadyToUseUI.iOS.Controller
         private async Task PerformOCRAndCreatePDFAsync(NSUrl[] inputUrls, NSUrl outputUrl)
         {
             var recognitionMode = SBSDKOpticalCharacterRecognitionMode.Ml;
-            // This is the new OCR configuration with ML which doesn't require the langauges.
+            // This is the new OCR configuration with ML which doesn't require the languages.
             SBSDKOpticalCharacterRecognizerConfiguration ocrConfiguration = SBSDKOpticalCharacterRecognizerConfiguration.MlConfiguration;
 
             // to use legacy configuration we have to pass the installed languages.

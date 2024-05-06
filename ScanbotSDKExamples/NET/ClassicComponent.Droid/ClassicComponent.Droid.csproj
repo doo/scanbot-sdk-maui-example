@@ -10,6 +10,7 @@
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
         <AssemblyName>ClassicComponent.Droid</AssemblyName>
         <ApplicationTitle>NET Classic Component</ApplicationTitle>
+        <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
       <RootNamespace>ClassicComponent.Droid</RootNamespace>
   </PropertyGroup>
   <ItemGroup>

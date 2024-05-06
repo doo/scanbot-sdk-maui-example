@@ -18,6 +18,9 @@ using IO.Scanbot.Sdk.Tiff.Model;
 using IO.Scanbot.Pdf.Model;
 using IO.Scanbot.Sdk.Persistence.Fileio;
 using IO.Scanbot.Sdk.Util.Thread;
+using IO.Scanbot.Sdk.Ocr;
+using static IO.Scanbot.Sdk.Ocr.IOpticalCharacterRecognizer;
+using Android.Service.Voice;
 
 namespace ClassicComponent.Droid
 {
@@ -263,11 +266,25 @@ namespace ClassicComponent.Droid
                         var pdfOutputUri = GenerateRandomFileUrlInDemoTempStorage(".pdf");
                         var images = new AndroidNetUri[] { documentImageUri }; // add more images for OCR here
 
-                        var ocrResult = scanbotSDK.CreateOcrRecognizer().RecognizeTextWithPdfFromUris(
+                        // This is the new OCR configuration with ML which doesn't require the languages.
+                        var recognitionMode = IOpticalCharacterRecognizer.EngineMode.ScanbotOcr;
+                        var recognizer = scanbotSDK.CreateOcrRecognizer();
+
+                        // to use legacy configuration we have to pass the installed languages.
+                        if (recognitionMode == IOpticalCharacterRecognizer.EngineMode.Tesseract)
+                        { 
+                            var ocrConfig = new OcrConfig(IOpticalCharacterRecognizer.EngineMode.Tesseract, recognizer.InstalledLanguages);
+                            recognizer.SetOcrConfig(ocrConfig);
+                        }
+                        else
+                        {
+                            recognizer.SetOcrConfig(new OcrConfig(IOpticalCharacterRecognizer.EngineMode.ScanbotOcr));
+                        }
+
+                        var ocrResult = recognizer.RecognizeTextWithPdfFromUris(
                             images.ToList(),
                             MainApplication.USE_ENCRYPTION,
                             PdfConfig.DefaultConfig());
-
 
                         File.Move(ocrResult.SandwichedPdfDocumentFile.AbsolutePath, new Java.IO.File(pdfOutputUri.Path).AbsolutePath);
                         DebugLog("Recognized OCR text: " + ocrResult.RecognizedText);
