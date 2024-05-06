@@ -39,8 +39,13 @@ namespace ClassicComponent.Maui
         /// </summary>
         private void SetupViews()
         {
-            cameraView.OverlayConfiguration = new SelectionOverlayConfiguration(true, ScanbotSDK.MAUI.Constants.BarcodeTextFormat.CodeAndType,
-                Colors.Yellow, Colors.Yellow, Colors.Black, Colors.Red, Colors.Red, Colors.Black);
+            cameraView.OverlayConfiguration = new SelectionOverlayConfiguration(false, ScanbotSDK.MAUI.Constants.BarcodeTextFormat.CodeAndType,
+                textColor: Colors.Yellow,
+                textContainerColor: Colors.Black,
+                strokeColor: Colors.Yellow,
+                highlightedTextColor: Colors.Red,
+                highlightedTextContainerColor: Colors.Black,
+                highlightedStrokeColor: Colors.Red);
             cameraView.OnBarcodeScanResult = (result) =>
             {
                 string text = "";
