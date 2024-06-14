@@ -127,14 +127,14 @@ namespace ClassicComponent.iOS
             flashButton = new UIButton(new CGRect(bottomButtonsContainer.Frame.Width - 80, bottomButtonsContainer.Frame.Height - 80, 40, 40));
             flashButton.AddTarget(delegate
             {
-                documentScannerViewController.FlashLightEnabled = !documentScannerViewController.FlashLightEnabled;
-                flashButton.Selected = documentScannerViewController.FlashLightEnabled;
+                documentScannerViewController.IsFlashLightEnabled = !documentScannerViewController.IsFlashLightEnabled;
+                flashButton.Selected = documentScannerViewController.IsFlashLightEnabled;
             }, UIControlEvent.TouchUpInside);
 
             flashButton.SetImage(UIImage.FromBundle("ui_flash_off"), UIControlState.Normal);
             flashButton.SetImage(UIImage.FromBundle("ui_flash_on"), UIControlState.Selected);
 
-            flashButton.Selected = documentScannerViewController.FlashLightEnabled;
+            flashButton.Selected = documentScannerViewController.IsFlashLightEnabled;
 
             bottomButtonsContainer.AddSubview(flashButton);
             bottomButtonsContainer.BringSubviewToFront(flashButton);
@@ -143,7 +143,7 @@ namespace ClassicComponent.iOS
         private void SetAutoSnapEnabled(bool enabled)
         {
             autoSnapButton.Selected = enabled;
-            documentScannerViewController.AutoSnappingMode = enabled ? SBSDKAutosnappingMode.Enabled : SBSDKAutosnappingMode.Disabled;
+            documentScannerViewController.AutoSnappingMode = enabled ? SBSDKAutoSnappingMode.Enabled : SBSDKAutoSnappingMode.Disabled;
             documentScannerViewController.SuppressDetectionStatusLabel = !enabled;
             documentScannerViewController.SnapButton.ScannerStatus = enabled ? SBSDKScannerStatus.Scanning : SBSDKScannerStatus.Idle;
         }

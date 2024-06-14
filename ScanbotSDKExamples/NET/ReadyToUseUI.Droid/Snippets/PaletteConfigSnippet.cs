@@ -11,13 +11,13 @@ public class PaletteConfigSnippet
         var configuration = new BarcodeScannerConfiguration();
         
         // Simply alter one color and keep the other default.
-        configuration.Palette = new ScanbotPalette()
+        configuration.Palette = new Palette()
         {
             SbColorPrimary = new ScanbotColor("#c86e19"),
         };
         
         // ... or set an entirely new palette.
-        configuration.Palette = new ScanbotPalette()
+        configuration.Palette = new Palette()
         {
             SbColorPrimary = new ScanbotColor("#C8193C"),
             SbColorPrimaryDisabled = new ScanbotColor("#F5F5F5"),

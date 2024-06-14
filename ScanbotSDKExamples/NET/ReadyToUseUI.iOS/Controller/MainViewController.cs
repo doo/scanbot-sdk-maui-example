@@ -114,8 +114,8 @@ namespace ReadyToUseUI.iOS.Controller
             // Create the default configuration object.
             var configuration = new SBSDKUI2BarcodeScannerConfiguration();
             
-            configuration.RecognizerConfiguration.BarcodeTypes =
-                new[] { SBSDKBarcodeType.AustraliaPost, SBSDKBarcodeType.Aztec };
+            configuration.RecognizerConfiguration.BarcodeFormats =
+                new[] { SBSDKUI2BarcodeFormat.AustraliaPost, SBSDKUI2BarcodeFormat.Aztec };
             
             var usecases = new SBSDKUI2SingleScanningMode{};
             usecases.ConfirmationSheetEnabled = true;
@@ -241,8 +241,8 @@ namespace ReadyToUseUI.iOS.Controller
         {
             var configuration = new SBSDKUI2BarcodeScannerConfiguration();
 
-            configuration.RecognizerConfiguration.BarcodeTypes =
-                new[] { SBSDKBarcodeType.AustraliaPost, SBSDKBarcodeType.Aztec };
+            configuration.RecognizerConfiguration.BarcodeFormats =
+                new[] { SBSDKUI2BarcodeFormat.AustraliaPost,  SBSDKUI2BarcodeFormat.Aztec };
             
             var usecases = new SBSDKUI2MultipleScanningMode();
             usecases.Mode = SBSDKUI2MultipleBarcodesScanningMode.Unique;

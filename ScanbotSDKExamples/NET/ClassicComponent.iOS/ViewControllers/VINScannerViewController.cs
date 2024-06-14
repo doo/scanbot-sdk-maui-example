@@ -19,7 +19,7 @@ namespace ClassicComponent.iOS
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
-            var configuration = SBSDKVehicleIdentificationNumberScannerConfiguration.DefaultConfiguration();
+            var configuration = SBSDKVehicleIdentificationNumberScannerConfiguration.DefaultConfiguration;
             vinScannerController = new SBSDKVINScannerViewController(parentViewController: this,
                                                               parentView: containerView,
                                                               configuration: configuration,

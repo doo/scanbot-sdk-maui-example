@@ -28,11 +28,9 @@ namespace ClassicComponent.iOS
 
         internal SBSDKImageEditingViewController GetCroppingViewController()
         {
-            imageEditingViewController = new SBSDKImageEditingViewController();
-            imageEditingViewController.Image = image;
+            imageEditingViewController = SBSDKImageEditingViewController.CreateWithImage(image,imageParameters.Polygon);
             imageEditingViewController.Delegate = this;
-            imageEditingViewController.Polygon = imageParameters?.Polygon;
-            imageEditingViewController.RotationEnabled = true;
+            imageEditingViewController.IsRotationEnabled = true;
             imageEditingViewController.Rotations = imageParameters?.Rotation ?? 0;
             return imageEditingViewController;
         }
@@ -56,7 +54,7 @@ namespace ClassicComponent.iOS
         }
 
         [Export("imageEditingViewController:didApplyChangesWithPolygon:croppedImage:")]
-        public override void DidApplyChangesWithPolygon(SBSDKImageEditingViewController editingViewController, SBSDKPolygon polygon, UIImage croppedImage)
+        public override void DidApplyChangesWith(SBSDKImageEditingViewController editingViewController, SBSDKPolygon polygon, UIImage croppedImage)
         {
             modifyDocumentDelegate?.DidUpdateDocumentImage(editingViewController.Polygon, -editingViewController.Rotations);
             editingViewController.NavigationController.DismissViewController(true, null);

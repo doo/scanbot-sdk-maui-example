@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using Android.Views;
-using IO.Scanbot.Hicscanner.Model;
+using IO.Scanbot.Ehicscanner.Model;
 using ReadyToUseUI.Droid.Views;
 
 namespace ReadyToUseUI.Droid.Fragments
@@ -9,12 +9,12 @@ namespace ReadyToUseUI.Droid.Fragments
     {
         public const string NAME = "HealthInsuranceCardFragment";
 
-        public static HealthInsuranceCardFragment CreateInstance(HealthInsuranceCardRecognitionResult result)
+        public static HealthInsuranceCardFragment CreateInstance(EhicRecognitionResult result)
         {
             var fragment = new HealthInsuranceCardFragment();
 
             var args = new Bundle();
-            var fields = result.Fields.Cast<HealthInsuranceCardField>();
+            var fields = result.Fields.Cast<EhicField>();
             args.PutParcelableArray(NAME, fields.ToArray());
 
             fragment.Arguments = args;
@@ -23,7 +23,7 @@ namespace ReadyToUseUI.Droid.Fragments
 
         public override View AddContentView(LayoutInflater inflater, ViewGroup container)
         {
-            var data = Arguments.GetParcelableArray(NAME).Cast<HealthInsuranceCardField>().ToList();
+            var data = Arguments.GetParcelableArray(NAME).Cast<EhicField>().ToList();
             var view = inflater.Inflate(Resource.Layout.fragment_barcode_dialog, container);
 
             var format = view.FindViewById<TextView>(Resource.Id.title);
@@ -44,7 +44,7 @@ namespace ReadyToUseUI.Droid.Fragments
             return view;
         }
 
-        public string ParseData(List<HealthInsuranceCardField> fields)
+        public string ParseData(List<EhicField> fields)
         {
             var builder = new StringBuilder();
 

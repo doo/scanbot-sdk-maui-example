@@ -16,7 +16,7 @@ using IO.Scanbot.Sdk.UI.View.Barcode;
 using IO.Scanbot.Sdk.Barcode.Entity;
 using IO.Scanbot.Sdk.UI.View.Hic.Configuration;
 using IO.Scanbot.Sdk.UI.View.Hic;
-using IO.Scanbot.Hicscanner.Model;
+using IO.Scanbot.Ehicscanner.Model;
 using IO.Scanbot.Sdk.Camera;
 using IO.Scanbot.Sdk.Core.Contourdetector;
 using IO.Scanbot.Sdk.UI.View.Barcode.Batch.Configuration;
@@ -42,6 +42,7 @@ using IO.Scanbot.Sdk.UI.View.Licenseplate.Configuration;
 using IO.Scanbot.Sdk.UI.View.Licenseplate;
 using IO.Scanbot.Sdk.UI.View.MC;
 using IO.Scanbot.Sdk.Mcrecognizer.Entity;
+using IO.Scanbot.Sdk.Ui_v2.Barcode.Common.Mappers;
 using IO.Scanbot.Sdk.UI.View.Generictext;
 using IO.Scanbot.Sdk.Vin;
 using ReadyToUseUI.Droid.Snippets;
@@ -215,11 +216,10 @@ namespace ReadyToUseUI.Droid
 
         public void MapBarcodeItem(IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration.BarcodeItem barcodeItem, IBarcodeMappingResult result)
         {
-            result.OnResult(new BarcodeMappedData
-            {
-                Title = barcodeItem.TextWithExtension,
-                Subtitle = barcodeItem.Type.Name()
-            });
+            result.OnResult(new BarcodeMappedData(
+                title: barcodeItem.TextWithExtension,
+                subtitle: barcodeItem.Type.Name(),
+                barcodeImage: BarcodeMappedDataExtension.BarcodeFormatKey));
         }
 
         private void ScanBarcodeV2_CountAndMap()
@@ -571,7 +571,7 @@ namespace ReadyToUseUI.Droid
                     }
                 case SCAN_EHIC_REQUEST:
                     {
-                        var result = (HealthInsuranceCardRecognitionResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+                        var result = (EhicRecognitionResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
                         var fragment = HealthInsuranceCardFragment.CreateInstance(result);
                         fragment.Show(FragmentManager, HealthInsuranceCardFragment.NAME);
                         return;

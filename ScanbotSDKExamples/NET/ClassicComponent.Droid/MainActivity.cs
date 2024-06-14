@@ -21,6 +21,7 @@ using IO.Scanbot.Sdk.Util.Thread;
 using IO.Scanbot.Sdk.Ocr;
 using static IO.Scanbot.Sdk.Ocr.IOpticalCharacterRecognizer;
 using Android.Service.Voice;
+using IO.Scanbot.Imagefilters;
 
 namespace ClassicComponent.Droid
 {
@@ -42,7 +43,6 @@ namespace ClassicComponent.Droid
         AndroidNetUri documentImageUri, originalImageUri;
 
         ImageView imageView;
-
         Button performOcrButton;
 
         private IO.Scanbot.Sdk.ScanbotSDK scanbotSDK;
@@ -125,8 +125,9 @@ namespace ClassicComponent.Droid
             };
         }
 
-        void ApplyImageFilter(ImageFilterType filter)
+        void ApplyImageFilter(IO.Scanbot.Imagefilters.LegacyFilter filter)
         {
+            
             DebugLog("Applying image filter " + filter + " on image: " + documentImageUri);
             try
             {
@@ -134,7 +135,8 @@ namespace ClassicComponent.Droid
                 {
                     // The SDK call is sync!
                     // TODO load uri
-                    var resultImage = new ImageProcessor(BitmapFactory.DecodeFile(documentImageUri.Path)).ApplyFilter(new LegacyFilter(filter.Code)).ProcessedBitmap();
+                    
+                    var resultImage = new ImageProcessor(BitmapFactory.DecodeFile(documentImageUri.Path)).ApplyFilter(filter).ProcessedBitmap();
                     documentImageUri = TempImageStorage.Instance.AddImage(resultImage);
                     ShowImageView(resultImage);
                 });
@@ -586,9 +588,9 @@ namespace ClassicComponent.Droid
                 }
             }
 
-            Action<ImageFilterType> ApplyFilterAction;
+            Action<LegacyFilter> ApplyFilterAction;
 
-            internal ImageFilterDialog(Action<ImageFilterType> applyFilterAction)
+            internal ImageFilterDialog(Action<LegacyFilter> applyFilterAction)
             {
                 ApplyFilterAction = applyFilterAction;
             }
@@ -601,7 +603,7 @@ namespace ClassicComponent.Droid
                 {
                     var filterName = ImageFilterItems[args.Which];
                     var filter = ImageFilterType.Values().FirstOrDefault(f => f.ToString() == filterName);
-                    ApplyFilterAction?.Invoke(filter);
+                    ApplyFilterAction?.Invoke(new LegacyFilter(filter.Code));
                 });
 
                 return builder.Create();

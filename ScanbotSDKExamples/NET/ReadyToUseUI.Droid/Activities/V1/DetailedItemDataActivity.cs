@@ -1,11 +1,12 @@
 ﻿using System.Text;
 using AndroidX.AppCompat.App;
 using AndroidX.ConstraintLayout.Widget;
-using IO.Scanbot.Barcodescanner.Model.BoardingPass;
-using IO.Scanbot.Barcodescanner.Model.DEMedicalPlan;
-using IO.Scanbot.Barcodescanner.Model.MedicalCertificate;
-using IO.Scanbot.Barcodescanner.Model.SEPA;
-using IO.Scanbot.Barcodescanner.Model.VCard;
+// using IO.Scanbot.Barcodescanner.BoardingPass;
+// using IO.Scanbot.Barcodescanner.Model.DEMedicalPlan;
+// using IO.Scanbot.Barcodescanner.Model.MedicalCertificate;
+// using IO.Scanbot.Barcodescanner.Model.SEPA;
+// using IO.Scanbot.Barcodescanner.Model.VCard;
+// using IO.Scanbot.Barcodescanner.Model;
 using IO.Scanbot.Sdk.Barcode.Entity;
 
 namespace ReadyToUseUI.Droid.Activities.V1
@@ -35,93 +36,94 @@ namespace ReadyToUseUI.Droid.Activities.V1
             container.FindViewById<TextView>(Resource.Id.docFormat)
                 .Text = item.FormattedResult?.GetType()?.Name;
             container.FindViewById<TextView>(Resource.Id.description)
-                .Text = ParseFormat(item);
+                .Text = item.Text; //ParseFormat(item);
         }
 
-        private string ParseFormat(BarcodeItem item)
-        {
-            if (item.FormattedResult == null)
-                return item.Text;
-
-            var format = item.FormattedResult;
-
-            var result = new StringBuilder();
-            result.Append("\n");
-
-
-            if (format is BoardingPassDocument boardingPassDocument)
-            {
-                result.Append("Boarding Pass Document").Append("\n");
-                result.Append(boardingPassDocument.Name).Append("\n");
-
-                foreach (BoardingPassLeg leg in boardingPassDocument.Legs)
-                {
-                    foreach (BoardingPassLegField field in leg.Fields)
-                    {
-                        result.Append(field.Type.Name()).Append(": ").Append(field.Value).Append("\n");
-                    }
-                }
-            }
-            else if (format is DEMedicalPlanDocument medicalPlanDocument)
-            {
-                result.Append("DE Medical Plan Document").Append("\n");
-
-                result.Append("Doctor Fields: ").Append("\n");
-                foreach (DEMedicalPlanDoctorField field in medicalPlanDocument.Doctor.Fields)
-                {
-                    result.Append(field.Type.Name()).Append(": ").Append(field.Value).Append("\n");
-                }
-                result.Append("\n");
-
-                result.Append("Patient Fields: ").Append("\n");
-                foreach (DEMedicalPlanPatientField field in medicalPlanDocument.Patient.Fields)
-                {
-                    result.Append(field.Type.Name()).Append(": ").Append(field.Value).Append("\n");
-                }
-                result.Append("\n");
-
-                result.Append("Medicine Fields: ").Append("\n");
-                foreach (DEMedicalPlanStandardSubheading heading in medicalPlanDocument.Subheadings)
-                {
-                    foreach (DEMedicalPlanMedicine medicine in heading.Medicines)
-                    {
-                        foreach (DEMedicalPlanMedicineField field in medicine.Fields)
-                        {
-                            result.Append(field.Type.Name()).Append(": ").Append(field.Value).Append("\n");
-                        }
-                    }
-                }
-                result.Append("\n");
-            }
-            else if (format is MedicalCertificateDocument medicalCertDocument)
-            {
-                result.Append("Medical Certificate Document").Append("\n");
-
-                foreach (MedicalCertificateDocumentField field in medicalCertDocument.Fields)
-                {
-                    result.Append(field.Type.Name()).Append(": ").Append(field.Value).Append("\n");
-                }
-            }
-            else if (format is SEPADocument sepaDocument)
-            {
-                result.Append("SEPA Document").Append("\n");
-
-                foreach (SEPADocumentField field in sepaDocument.Fields)
-                {
-                    result.Append(field.Type.Name()).Append(": ").Append(field.Value).Append("\n");
-                }
-            }
-            else if (format is VCardDocument vCardDocument)
-            {
-                result.Append("VCard Document").Append("\n");
-
-                foreach (VCardDocumentField field in vCardDocument.Fields)
-                {
-                    result.Append(field.Type.ToString()).Append(": ").Append(field.RawText).Append("\n");
-                }
-            }
-
-            return result.ToString();
-        }
+        // private string ParseFormat(BarcodeItem item)
+        // {
+        //     if (item.FormattedResult == null)
+        //         return item.Text;
+        //
+        //     var format = item.FormattedResult;
+        //
+        //     var result = new StringBuilder();
+        //     result.Append("\n");
+        //
+        //     // io.scanbot.barcodescanner.model.boardingPass
+        //     IO.Scanbot.Barcodescanner.Model.BarcodeItem
+        //     if (format is IO.Scanbot.Barcodescanner.Entity.BoardingPass.DocumentType ==  BoardingPassDocument boardingPassDocument)
+        //     {
+        //         result.Append("Boarding Pass Document").Append("\n");
+        //         result.Append(boardingPassDocument.Name).Append("\n");
+        //
+        //         foreach (BoardingPassLeg leg in boardingPassDocument.Legs)
+        //         {
+        //             foreach (BoardingPassLegField field in leg.Fields)
+        //             {
+        //                 result.Append(field.Type.Name()).Append(": ").Append(field.Value).Append("\n");
+        //             }
+        //         }
+        //     }
+        //     else if (format is DEMedicalPlanDocument medicalPlanDocument)
+        //     {
+        //         result.Append("DE Medical Plan Document").Append("\n");
+        //
+        //         result.Append("Doctor Fields: ").Append("\n");
+        //         foreach (DEMedicalPlanDoctorField field in medicalPlanDocument.Doctor.Fields)
+        //         {
+        //             result.Append(field.Type.Name()).Append(": ").Append(field.Value).Append("\n");
+        //         }
+        //         result.Append("\n");
+        //
+        //         result.Append("Patient Fields: ").Append("\n");
+        //         foreach (DEMedicalPlanPatientField field in medicalPlanDocument.Patient.Fields)
+        //         {
+        //             result.Append(field.Type.Name()).Append(": ").Append(field.Value).Append("\n");
+        //         }
+        //         result.Append("\n");
+        //
+        //         result.Append("Medicine Fields: ").Append("\n");
+        //         foreach (DEMedicalPlanStandardSubheading heading in medicalPlanDocument.Subheadings)
+        //         {
+        //             foreach (DEMedicalPlanMedicine medicine in heading.Medicines)
+        //             {
+        //                 foreach (DEMedicalPlanMedicineField field in medicine.Fields)
+        //                 {
+        //                     result.Append(field.Type.Name()).Append(": ").Append(field.Value).Append("\n");
+        //                 }
+        //             }
+        //         }
+        //         result.Append("\n");
+        //     }
+        //     else if (format is MedicalCertificateDocument medicalCertDocument)
+        //     {
+        //         result.Append("Medical Certificate Document").Append("\n");
+        //
+        //         foreach (MedicalCertificateDocumentField field in medicalCertDocument.Fields)
+        //         {
+        //             result.Append(field.Type.Name()).Append(": ").Append(field.Value).Append("\n");
+        //         }
+        //     }
+        //     else if (format is SEPADocument sepaDocument)
+        //     {
+        //         result.Append("SEPA Document").Append("\n");
+        //
+        //         foreach (SEPADocumentField field in sepaDocument.Fields)
+        //         {
+        //             result.Append(field.Type.Name()).Append(": ").Append(field.Value).Append("\n");
+        //         }
+        //     }
+        //     else if (format is VCardDocument vCardDocument)
+        //     {
+        //         result.Append("VCard Document").Append("\n");
+        //
+        //         foreach (VCardDocumentField field in vCardDocument.Fields)
+        //         {
+        //             result.Append(field.Type.ToString()).Append(": ").Append(field.RawText).Append("\n");
+        //         }
+        //     }
+        //
+        //     return result.ToString();
+        // }
     }
 }

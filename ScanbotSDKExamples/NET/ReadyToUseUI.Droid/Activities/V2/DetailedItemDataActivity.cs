@@ -24,97 +24,120 @@ namespace ReadyToUseUI.Droid.Activities.V2
             }
 
             var container = FindViewById<ConstraintLayout>(Resource.Id.container);
-            
+
             container.FindViewById<TextView>(Resource.Id.barcodeFormat)
-                .Text = item.FormattedResult?.TypeName;
+                .Text = ParseData(item.ParsedDocument);
             container.FindViewById<TextView>(Resource.Id.description)
-                .Text = ParseFormat(item);
+                .Text = item.Text; //ParseFormat(item);
         }
-
-        private string ParseFormat(BarcodeItem item)
+        
+        private string ParseData(IO.Scanbot.Genericdocument.Entity.GenericDocument result)
         {
-            if (item.FormattedResult == null)
-            {
-                return item.Text;
-            }
-
-            var format = item.FormattedResult;
-
-            var result = new StringBuilder();
-            result.Append("\n");
-            
-            if (format is BoardingPassDocumentFormat boardingPassDocument)
-            {
-                result.Append("Boarding Pass Document").Append("\n");
-                result.Append(boardingPassDocument.Name).Append("\n");
-            
-                foreach (BoardingPassLeg leg in boardingPassDocument.Legs)
+            var builder = new StringBuilder();
+            var description = string.Join(";\n", result.Fields?
+                .Where(field => field != null)
+                .Select((field) =>
                 {
-                    foreach (BoardingPassLegField field in leg.Fields)
+                    string outStr = "";
+                    if (field.GetType() != null && field.GetType().Name != null)
                     {
-                        result.Append(field.Type.Name()).Append(": ").Append(field.Value).Append("\n");
+                        outStr += field.GetType().Name + " = ";
                     }
-                }
-            }
-            else if (format is IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration.MedicalPlanDocumentFormat medicalPlanDocument)
-            {
-                result.Append("DE Medical Plan Document").Append("\n");
-            
-                result.Append("Doctor Fields: ").Append("\n");
-                foreach (IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration.MedicalPlanDoctorField field in medicalPlanDocument.Doctor.Fields)
-                {
-                    result.Append(field.Type.Name()).Append(": ").Append(field.Value).Append("\n");
-                }
-                result.Append("\n");
-            
-                result.Append("Patient Fields: ").Append("\n");
-                foreach (IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration.MedicalPlanPatientField field in medicalPlanDocument.Patient.Fields)
-                {
-                    result.Append(field.Type.Name()).Append(": ").Append(field.Value).Append("\n");
-                }
-                result.Append("\n");
-            
-                result.Append("Medicine Fields: ").Append("\n");
-                foreach (IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration.MedicalPlanStandardSubheading heading in medicalPlanDocument.Subheadings)
-                {
-                    foreach (IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration.MedicalPlanMedicine medicine in heading.Medicines)
+                    if (field.Value != null && field.Value.Text != null)
                     {
-                        foreach (IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration.MedicalPlanMedicineField field in medicine.Fields)
-                        {
-                            result.Append(field.Type.Name()).Append(": ").Append(field.Value).Append("\n");
-                        }
+                        outStr += field.Value.Text;
                     }
-                }
-                result.Append("\n");
-            }
-            else if (format is IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration.MedicalCertificateDocumentFormat medicalCertDocument)
-            {
-                result.Append("Medical Certificate Document").Append("\n");
-            
-                foreach (MedicalCertificateDocumentField field in medicalCertDocument.Fields)
-                {
-                    result.Append(field.Type.Name()).Append(": ").Append(field.Value).Append("\n");
-                }
-            }
-            else if (format is IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration.SEPADocumentFormat sepaDocument)
-            {
-                result.Append("SEPA Document").Append("\n");
-            
-                foreach (IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration.SEPADocumentFormatField field in sepaDocument.Fields)
-                {
-                    result.Append(field.Type.Name()).Append(": ").Append(field.Value).Append("\n");
-                }
-            }
-            else if (format is IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration.VCardDocumentFormat vCardDocument)
-            {
-                result.Append("VCard Document").Append("\n");
-            
-                foreach (IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration.VCardDocumentFormatField field in vCardDocument.Fields)
-                {
-                    result.Append(field.Type.ToString()).Append(": ").Append(field.RawText).Append("\n");
-                }
-            }
-            return result.ToString();
+                    return outStr;
+                })
+                .ToList()
+            );
+            return description;
         }
+
+        // private string ParseFormat(BarcodeItem item)
+        // {
+        //     if (item.FormattedResult == null)
+        //     {
+        //         return item.Text;
+        //     }
+        //
+        //     var format = item.FormattedResult;
+        //
+        //     var result = new StringBuilder();
+        //     result.Append("\n");
+        //     
+        //     if (format is BoardingPassDocumentFormat boardingPassDocument)
+        //     {
+        //         result.Append("Boarding Pass Document").Append("\n");
+        //         result.Append(boardingPassDocument.Name).Append("\n");
+        //     
+        //         foreach (BoardingPassLeg leg in boardingPassDocument.Legs)
+        //         {
+        //             foreach (BoardingPassLegField field in leg.Fields)
+        //             {
+        //                 result.Append(field.Type.Name()).Append(": ").Append(field.Value).Append("\n");
+        //             }
+        //         }
+        //     }
+        //     else if (format is IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration.MedicalPlanDocumentFormat medicalPlanDocument)
+        //     {
+        //         result.Append("DE Medical Plan Document").Append("\n");
+        //     
+        //         result.Append("Doctor Fields: ").Append("\n");
+        //         foreach (IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration.MedicalPlanDoctorField field in medicalPlanDocument.Doctor.Fields)
+        //         {
+        //             result.Append(field.Type.Name()).Append(": ").Append(field.Value).Append("\n");
+        //         }
+        //         result.Append("\n");
+        //     
+        //         result.Append("Patient Fields: ").Append("\n");
+        //         foreach (IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration.MedicalPlanPatientField field in medicalPlanDocument.Patient.Fields)
+        //         {
+        //             result.Append(field.Type.Name()).Append(": ").Append(field.Value).Append("\n");
+        //         }
+        //         result.Append("\n");
+        //     
+        //         result.Append("Medicine Fields: ").Append("\n");
+        //         foreach (IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration.MedicalPlanStandardSubheading heading in medicalPlanDocument.Subheadings)
+        //         {
+        //             foreach (IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration.MedicalPlanMedicine medicine in heading.Medicines)
+        //             {
+        //                 foreach (IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration.MedicalPlanMedicineField field in medicine.Fields)
+        //                 {
+        //                     result.Append(field.Type.Name()).Append(": ").Append(field.Value).Append("\n");
+        //                 }
+        //             }
+        //         }
+        //         result.Append("\n");
+        //     }
+        //     else if (format is IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration.MedicalCertificateDocumentFormat medicalCertDocument)
+        //     {
+        //         result.Append("Medical Certificate Document").Append("\n");
+        //     
+        //         foreach (MedicalCertificateDocumentField field in medicalCertDocument.Fields)
+        //         {
+        //             result.Append(field.Type.Name()).Append(": ").Append(field.Value).Append("\n");
+        //         }
+        //     }
+        //     else if (format is IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration.SEPADocumentFormat sepaDocument)
+        //     {
+        //         result.Append("SEPA Document").Append("\n");
+        //     
+        //         foreach (IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration.SEPADocumentFormatField field in sepaDocument.Fields)
+        //         {
+        //             result.Append(field.Type.Name()).Append(": ").Append(field.Value).Append("\n");
+        //         }
+        //     }
+        //     else if (format is IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration.VCardDocumentFormat vCardDocument)
+        //     {
+        //         result.Append("VCard Document").Append("\n");
+        //     
+        //         foreach (IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration.VCardDocumentFormatField field in vCardDocument.Fields)
+        //         {
+        //             result.Append(field.Type.ToString()).Append(": ").Append(field.RawText).Append("\n");
+        //         }
+        //     }
+        //     return result.ToString();
+        // }
     }
 }

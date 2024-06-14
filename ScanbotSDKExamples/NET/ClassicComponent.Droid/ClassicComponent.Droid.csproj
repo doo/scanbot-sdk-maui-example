@@ -19,6 +19,12 @@
     <AndroidAsset Include="Assets\SBSDKLanguageData\osd.traineddata" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ScanbotSDK.NET" Version="5.1.0-alpha.1" />
+      <ProjectReference Include="..\..\..\..\scanbot-sdk-maui\DocumentSDK\DocumentSDK.NET.Droid\DocumentSDK.NET.Droid.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Remove="Resources\layout\BusinessCardPreview.axml" />
+    <AndroidResource Remove="Resources\layout\BusinessCardsLayout.axml" />
+    <AndroidResource Remove="Resources\layout\BusinessCardsPreview.axml" />
+    <AndroidResource Remove="Resources\layout\CameraViewDemo.axml" />
   </ItemGroup>
 </Project>

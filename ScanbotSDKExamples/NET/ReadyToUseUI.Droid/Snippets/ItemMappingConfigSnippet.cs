@@ -32,12 +32,7 @@ public class ItemMappingConfigSnippet
             }
             else
             {
-                result.OnResult(new BarcodeMappedData()
-                {
-                    BarcodeImage = image,
-                    Title = title,
-                    Subtitle = subTitle
-                });
+                result.OnResult(new BarcodeMappedData(barcodeImage: image, title: title, subtitle: subTitle));
             }
         }
     }

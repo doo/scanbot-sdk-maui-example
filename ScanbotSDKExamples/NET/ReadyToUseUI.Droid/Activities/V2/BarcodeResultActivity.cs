@@ -2,6 +2,7 @@ using Android.Content;
 using Android.Graphics;
 using Android.Views;
 using IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration;
+using Java.Lang;
 
 namespace ReadyToUseUI.Droid.Activities.V2
 {
@@ -40,14 +41,14 @@ namespace ReadyToUseUI.Droid.Activities.V2
 
             if (item.RawBytes != null)
             {   
-                byte[] byteArray = Utils.ImageUtils.ConvertToByteArray(item.RawBytes);
+                byte[] byteArray = item.RawBytes; // Utils.ImageUtils.ConvertToByteArray(
                 Bitmap bitmap = BitmapFactory.DecodeByteArray(byteArray, 0, byteArray.Length);
             
                 image.SetImageBitmap(bitmap);
             }
 
             barFormat.Text = "Format: " + item.Type?.Name();
-            docFormat.Text = item.FormattedResult != null ? item.FormattedResult?.TypeName : "Document: –";
+            docFormat.Text = ParseData(item.ParsedDocument);
             docText.Text = "Content: " + item.Text;
 
             child.Click += (sender, e) =>
@@ -57,5 +58,28 @@ namespace ReadyToUseUI.Droid.Activities.V2
                 StartActivity(intent);
             };
         } 
+        
+        private string ParseData(IO.Scanbot.Genericdocument.Entity.GenericDocument result)
+        {
+            var builder = new StringBuilder();
+            var description = string.Join(";\n", result.Fields?
+                .Where(field => field != null)
+                .Select((field) =>
+                {
+                    string outStr = "";
+                    if (field.GetType() != null && field.GetType().Name != null)
+                    {
+                        outStr += field.GetType().Name + " = ";
+                    }
+                    if (field.Value != null && field.Value.Text != null)
+                    {
+                        outStr += field.Value.Text;
+                    }
+                    return outStr;
+                })
+                .ToList()
+            );
+            return description;
+        }
     }
 }

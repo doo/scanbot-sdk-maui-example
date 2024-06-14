@@ -13,7 +13,7 @@ internal class DocumentUtilities
             var url = SBSDKStorageLocation.ApplicationSupportFolderURL;
             var tmp = NSUrl.FromFilename(string.Format("{0}/{1}", url.Scheme == "file" ? url.Path : url.AbsoluteString, Guid.NewGuid()));
             var location = new SBSDKStorageLocation(tmp);
-            tempImageStorage = new SBSDKIndexedImageStorage(location, SBSDKImageFileFormat.Jpeg, ScanbotSDKUI.DefaultImageStoreEncrypter);
+            tempImageStorage = new SBSDKIndexedImageStorage(location, SBSDKImageFileFormat.Jpeg, ScanbotUI.DefaultImageStoreEncrypter);
             return tempImageStorage;
         }
         return tempImageStorage;
@@ -25,35 +25,29 @@ internal class DocumentUtilities
     {
         TaskCompletionSource<NSUrl> task = new TaskCompletionSource<NSUrl>();
         var outputPdfUrl = Utilities.GenerateRandomFileUrlInDemoTempStorage(".pdf");
+        var defaultConfig = new SBSDKPDFRendererOptions();
         // Create the PDF rendering options.
         var options = new SBSDKPDFRendererOptions(pageSize: pageSize,
                                                 pageOrientation: orientation,
-                                                ocrConfiguration: ocrConfiguration);
+                                                ocrConfiguration: ocrConfiguration, 
+                                                dpi: defaultConfig.Dpi,
+                                                pageFitMode:defaultConfig.PageFitMode,
+                                                resample: defaultConfig.Resample,
+                                                jpegQuality:defaultConfig.JpegQuality);
 
         // Create the PDF renderer and pass the PDF options to it.
         var renderer = new SBSDKPDFRenderer(options);
-        if (encrypter != null)
-        {
-            renderer.RenderImageStorage(tempImageStorage, indices: null, encrypter: encrypter, pdfOutputURL: outputPdfUrl, completion: (isComplete, error) =>
+        renderer.RenderImageStorage(tempImageStorage, indexSet: null, encrypter: ScanbotUI.DefaultImageStoreEncrypter, output: outputPdfUrl,
+            completion: (isComplete, error) =>
             {
+                tempImageStorage.RemoveAllImages();
                 if (error != null)
                 {
                     throw new NSErrorException(error);
                 }
+    
                 task.SetResult(outputPdfUrl);
             });
-        }
-        else
-        {
-            renderer.RenderImageStorage(tempImageStorage, indices: null, pdfOutputURL: outputPdfUrl, completion: (isComplete, error) =>
-            {
-                if (error != null)
-                {
-                    throw new NSErrorException(error);
-                }
-                task.SetResult(outputPdfUrl);
-            });
-        }
         return task.Task;
     }
 
@@ -92,7 +86,7 @@ internal class DocumentUtilities
         bool success;
         var outputTiffUrl = Utilities.GenerateRandomFileUrlInDemoTempStorage(".tiff");
         var images = LoadImagesFromUrl(inputUrls.ToList()).ToArray(); // decrypt images before writing TIFF
-        success = SBSDKTIFFImageWriter.WriteTIFF(images, outputTiffUrl, parameters);
+        success = new SBSDKTIFFImageWriter(parameters, encrypter).WriteTIFFWithToFile(images, outputTiffUrl);
         return (success, outputTiffUrl);
     }
 
@@ -106,10 +100,10 @@ internal class DocumentUtilities
         return result;
     }
 
-    private static UIImage GetImageFromStorage(uint index)
+    private static UIImage GetImageFromStorage(nint index)
     {
         UIImage image;
-        if (ScanbotSDKUI.DefaultImageStoreEncrypter != null)
+        if (ScanbotUI.DefaultImageStoreEncrypter != null)
         {
             var imageData = Decrypt(tempImageStorage.ImageURLAtIndex(index));
             image = UIImage.LoadFromData(imageData);
@@ -124,7 +118,7 @@ internal class DocumentUtilities
     internal static NSData Decrypt(NSUrl url)
     {
         var data = NSData.FromUrl(url);
-        var decrypter = ScanbotSDKUI.DefaultImageStoreEncrypter;
+        var decrypter = ScanbotUI.DefaultImageStoreEncrypter;
         if (decrypter == null)
         {
             return data;

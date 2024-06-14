@@ -68,7 +68,8 @@ namespace ClassicComponent.iOS.Utils
             {
                 originalImage = originalImage.ImageRotatedCounterClockwise(parameters.Rotation);
             }
-            var image = originalImage.ImageWarpedByPolygon(parameters.Polygon, parameters.Filter, 1.0f);
+            var image = originalImage.ImageWarpedByPolygon(parameters.Polygon, 1.0f);
+            // todo Check the filters
             parameters.Rotation = 0;
             return image;
         }

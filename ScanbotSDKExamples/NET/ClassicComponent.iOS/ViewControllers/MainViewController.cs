@@ -96,7 +96,7 @@ namespace ClassicComponent.iOS
             if (message == null)
                 message = string.Empty;
 
-            if (message.Length == 0 && ScanbotSDKGlobal.LicenseStatus == dooLicenseStatus.Trial)
+            if (message.Length == 0 && ScanbotSDKGlobal.LicenseStatus == SBSDKLicenseStatus.Trial)
             {
                 message = Texts.TrialLicenseHint;
             }
@@ -220,7 +220,7 @@ namespace ClassicComponent.iOS
                 });
 
                 if (detectionResult.Status == SBSDKDocumentDetectionStatus.Ok ||
-                    detectionResult.Status == SBSDKDocumentDetectionStatus.OK_SmallSize)
+                    detectionResult.Status == SBSDKDocumentDetectionStatus.Ok_SmallSize)
                 {
                     var documentImage = originalImage;
 
@@ -275,7 +275,7 @@ namespace ClassicComponent.iOS
                 IsBusy = true;
                 Debug.WriteLine("Creating PDF file ...");
                 var urls = DocumentUtilities.GetTemporaryStorage().ImageURLs;
-                var result = await DocumentUtilities.CreatePDFAsync(encrypter: ScanbotSDKUI.DefaultImageStoreEncrypter);
+                var result = await DocumentUtilities.CreatePDFAsync(encrypter: ScanbotUI.DefaultImageStoreEncrypter);
                 IsBusy = false;
                 Utilities.ShowMessage("PDF file created", "" + result.AbsoluteString);
             });
@@ -288,15 +288,15 @@ namespace ClassicComponent.iOS
             Task.Run(async () =>
             {
                 IsBusy = true;
-                var recognitionMode = SBSDKOpticalCharacterRecognitionMode.Ml;
+                var recognitionMode = SBSDKOpticalCharacterRecognitionMode.ScanbotOCR;
                 // This is the new OCR configuration with ML which doesn't require the languages.
-                SBSDKOpticalCharacterRecognizerConfiguration ocrConfiguration = SBSDKOpticalCharacterRecognizerConfiguration.MlConfiguration;
+                SBSDKOpticalCharacterRecognizerConfiguration ocrConfiguration = SBSDKOpticalCharacterRecognizerConfiguration.ScanbotOCR;
 
                 // to use legacy configuration we have to pass the installed languages.
-                if (recognitionMode == SBSDKOpticalCharacterRecognitionMode.Legacy)
+                if (recognitionMode == SBSDKOpticalCharacterRecognitionMode.Tesseract)
                 {
-                    var installedLanguages = SBSDKResourcesManager.InstalledLanguages;
-                    ocrConfiguration = SBSDKOpticalCharacterRecognizerConfiguration.LegacyConfigurationWithLanguages(installedLanguages);
+                    var installedLanguages = SBSDKOCRLanguagesManager.InstalledLanguages;
+                    ocrConfiguration = SBSDKOpticalCharacterRecognizerConfiguration.TesseractWith(installedLanguages);
                 }
 
                 SBSDKOpticalCharacterRecognizer recognizer = new SBSDKOpticalCharacterRecognizer(ocrConfiguration);
@@ -305,7 +305,7 @@ namespace ClassicComponent.iOS
                 try
                 {
                     // Please check the default parameters
-                    var (ocrResult, outputPdfUrl) = await DocumentUtilities.PerformOCRAsync(ocrRecognizer: recognizer, shouldGeneratePdf: true, encrypter: ScanbotSDKUI.DefaultImageStoreEncrypter);
+                    var (ocrResult, outputPdfUrl) = await DocumentUtilities.PerformOCRAsync(ocrRecognizer: recognizer, shouldGeneratePdf: true, encrypter: ScanbotUI.DefaultImageStoreEncrypter);
                     IsBusy = false;
                     if (ocrResult != null)
                     {
@@ -327,12 +327,12 @@ namespace ClassicComponent.iOS
             IsBusy = true;
             Debug.WriteLine("Creating TIFF file ...");
             var urls = DocumentUtilities.GetTemporaryStorage().ImageURLs;
-            var options = SBSDKTIFFImageWriterParameters.DefaultParametersForBinaryImages();
+            var options = SBSDKTIFFImageWriterParameters.DefaultParametersForBinaryImages;
             options.Binarize = true;
             options.Compression = SBSDKTIFFImageWriterCompressionOptions.Ccittfax4;
             options.Dpi = 250;
 
-            var (success, outputTiffUrl) = DocumentUtilities.CreateTIFF(options, inputUrls: urls, ScanbotSDKUI.DefaultImageStoreEncrypter);
+            var (success, outputTiffUrl) = DocumentUtilities.CreateTIFF(options, inputUrls: urls, ScanbotUI.DefaultImageStoreEncrypter);
             if (success)
             {
                 Utilities.ShowMessage("TIFF file created", "" + outputTiffUrl.AbsoluteString);
