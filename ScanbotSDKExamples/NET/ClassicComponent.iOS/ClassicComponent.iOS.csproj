@@ -22,6 +22,7 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Scanbot.Xamarin.ImagePicker" Version="0.0.3-beta.1" />
+        <PackageReference Include="ScanbotSDK.NET" Version="5.1.0-alpha.3" />
     </ItemGroup>
     <ItemGroup>
       <InterfaceDefinition Remove="ViewControllers\ClassicComponents\ClassicComponentStoryboard.storyboard" />
@@ -58,8 +59,5 @@
       <ImageAsset Update="Assets.xcassets\rotateIcon.imageset\rotateIcon%403x.png">
         <Link>Assets.xcassets\rotateIcon.imageset\rotateIcon%403x.png</Link>
       </ImageAsset>
-    </ItemGroup>
-    <ItemGroup>
-      <ProjectReference Include="..\..\..\..\scanbot-sdk-maui\DocumentSDK\DocumentSDK.NET.iOS\DocumentSDK.NET.iOS.csproj" />
     </ItemGroup>
 </Project>
