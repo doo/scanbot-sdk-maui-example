@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFrameworks>net7.0-android;net8.0-android</TargetFrameworks>
         <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
@@ -12,7 +12,8 @@
         <ApplicationTitle>NET RTU UI</ApplicationTitle>
         <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
         <RootNamespace>ReadyToUseUI.Droid</RootNamespace>
-    </PropertyGroup>
+		<Platforms>ARM64;x64</Platforms>
+	</PropertyGroup>
      <ItemGroup>
          <PackageReference Include="Scanbot.Xamarin.ImagePicker" Version="0.0.3-beta.1" />
          <PackageReference Include="ScanbotSDK.NET" Version="5.1.0-alpha.3" />

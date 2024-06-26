@@ -21,6 +21,7 @@
         <CodesignProvision>Automatic</CodesignProvision>
         <CodesignKey>iPhone Developer</CodesignKey>
         <MtouchDebug>true</MtouchDebug>
+        <Platforms>ARM64;x64</Platforms>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="ScanbotSDK.NET" Version="5.1.0-alpha.3" />

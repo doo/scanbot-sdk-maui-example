@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFrameworks>net7.0-android;net8.0-android</TargetFrameworks>
         <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
@@ -12,7 +12,8 @@
         <ApplicationTitle>NET Classic Component</ApplicationTitle>
         <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
         <RootNamespace>ClassicComponent.Droid</RootNamespace>
-  </PropertyGroup>
+		<Platforms>ARM64;x64</Platforms>
+	</PropertyGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\SBSDKLanguageData\deu.traineddata" />
     <AndroidAsset Include="Assets\SBSDKLanguageData\eng.traineddata" />
