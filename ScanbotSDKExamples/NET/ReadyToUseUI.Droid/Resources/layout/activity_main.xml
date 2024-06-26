@@ -59,11 +59,13 @@
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginBottom="5dp"
                 android:fontFamily="sans-serif-medium"
-                android:textSize="13dp"
-                android:textStyle="normal"/>
+                android:textColor="@android:color/white"
+                android:gravity="center_vertical"
+                android:layout_gravity="left"
+                android:padding="16dp"
+                android:background="@color/scanbotRed"
+                android:textStyle="bold"/>
         </LinearLayout>
 
         <!--Barcode Detectors - V2 -->
@@ -76,11 +78,13 @@
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginBottom="5dp"
                 android:fontFamily="sans-serif-medium"
-                android:textSize="13dp"
-                android:textStyle="normal"/>
+                android:textColor="@android:color/white"
+                android:gravity="center_vertical"
+                android:layout_gravity="left"
+                android:padding="16dp"
+                android:background="@color/scanbotRed"
+                android:textStyle="bold"/>
         </LinearLayout>
 
         <!--Document Scanners -->
@@ -93,11 +97,13 @@
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginBottom="5dp"
                 android:fontFamily="sans-serif-medium"
-                android:textSize="13dp"
-                android:textStyle="normal"/>
+                android:textColor="@android:color/white"
+                android:gravity="center_vertical"
+                android:layout_gravity="left"
+                android:padding="16dp"
+                android:background="@color/scanbotRed"
+                android:textStyle="bold"/>
         </LinearLayout>
 
         <!--Data Detectors -->
@@ -110,11 +116,13 @@
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginBottom="5dp"
                 android:fontFamily="sans-serif-medium"
-                android:textSize="13dp"
-                android:textStyle="normal"/>
+                android:textColor="@android:color/white"
+                android:gravity="center_vertical"
+                android:layout_gravity="left"
+                android:padding="16dp"
+                android:background="@color/scanbotRed"
+                android:textStyle="bold"/>
         </LinearLayout>
 
     </LinearLayout>

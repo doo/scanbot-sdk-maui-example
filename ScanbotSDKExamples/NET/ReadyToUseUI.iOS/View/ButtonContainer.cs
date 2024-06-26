@@ -4,6 +4,7 @@ namespace ReadyToUseUI.iOS.View
 {
     public class ButtonContainer : UIView
     {
+        public UIView TitleContainerView { get; private set; }
         public UILabel Title { get; private set; }
 
         public List<ScannerButton> Buttons { get; private set; }
@@ -16,18 +17,26 @@ namespace ReadyToUseUI.iOS.View
             {
                 return titleHeight +
                     (Buttons.Count * buttonHeight) + 
-                    (Buttons.Count * padding);
+                    (Buttons.Count * padding) + padding;
             }
         }
 
         public ButtonContainer(string title, List<ListItem> data)
         {
+            titleHeight = 40;
+            buttonHeight = 30;
+            
             Title = new UILabel();
             Title.Text = title;
-            Title.Font = UIFont.FromName("HelveticaNeue-Bold", 13f);
-            Title.TextColor = Models.Colors.DarkGray;
-            AddSubview(Title);
+            Title.Font = UIFont.FromName("HelveticaNeue-Bold", 16f);
+            Title.TextColor = Models.Colors.NearWhite;
+            Title.BackgroundColor = UIColor.Clear;
+            
+            TitleContainerView = new UIView(new CGRect(0, 0, this.Frame.Width, titleHeight));
+            TitleContainerView.BackgroundColor = Colors.ScanbotRed;
+            TitleContainerView.Add(Title);
 
+            AddSubview(TitleContainerView);
             Buttons = new List<ScannerButton>();
 
             foreach(ListItem item in data)
@@ -36,9 +45,6 @@ namespace ReadyToUseUI.iOS.View
                 AddSubview(button);
                 Buttons.Add(button);
             }
-
-            titleHeight = 20;
-            buttonHeight = 30;
         }
 
         public override void LayoutSubviews()
@@ -46,13 +52,14 @@ namespace ReadyToUseUI.iOS.View
             base.LayoutSubviews();
 
             float x = padding;
-            float y = 0;
+            float y = padding;
             float w = (float)(Frame.Width - 2 * padding);
             float h = titleHeight;
 
-            Title.Frame = new CGRect(x, y, w, h);
-
-            y += h + padding;
+            TitleContainerView.Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width, h);
+            Title.Frame = new CGRect(x, 0, w, h);
+            
+            y = h + padding;
             h = buttonHeight;
 
             foreach(ScannerButton button in Buttons)

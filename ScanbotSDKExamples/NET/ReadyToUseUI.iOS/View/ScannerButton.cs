@@ -15,8 +15,8 @@ namespace ReadyToUseUI.iOS.View
 
             title = new UILabel();
             title.Text = data.Title;
-            title.Font = UIFont.FromName("HelveticaNeue", 15f);
-            title.TextColor = Models.Colors.DarkGray;
+            title.Font = UIFont.FromName("HelveticaNeue-Bold", 15f);
+            title.TextColor = Models.Colors.NearWhite;
             
             AddSubview(title);
         }

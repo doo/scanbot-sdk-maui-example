@@ -9,6 +9,7 @@ namespace ReadyToUseUI.Droid.Utils
         {
             Text = title;
             DoAction = doAction;
+            this.SetAllCaps(false);
 
             var parameters = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WrapContent,

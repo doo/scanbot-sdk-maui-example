@@ -17,7 +17,7 @@ namespace ReadyToUseUI.iOS.View
 
         public MainView()
         {
-            BackgroundColor = UIColor.White;
+            BackgroundColor = Models.Colors.DarkGray;
 
             LicenseIndicator = new UILabel();
             LicenseIndicator.TextColor = UIColor.White;
@@ -37,7 +37,7 @@ namespace ReadyToUseUI.iOS.View
 
             float largePadding = 20;
 
-            float x = largePadding;
+            float x = 0;
             float y = largePadding;
             float w = (float)(float)Frame.Width - 2 * x;
             float h = (float)(float)Frame.Width / 6;

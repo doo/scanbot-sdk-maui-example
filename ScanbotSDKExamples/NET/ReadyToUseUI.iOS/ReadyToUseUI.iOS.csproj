@@ -21,6 +21,8 @@
         <CodesignProvision>Automatic</CodesignProvision>
         <CodesignKey>iPhone Developer</CodesignKey>
         <MtouchDebug>true</MtouchDebug>
+        <!-- Comment this out to see RTU v1 in the example -->
+        <!-- <DefineConstants>$(DefineConstants);LEGACY_EXAMPLES</DefineConstants> -->
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="ScanbotSDK.NET" Version="5.1.0-alpha.3" />
