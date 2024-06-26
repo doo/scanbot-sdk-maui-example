@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFrameworks>net7.0-ios;net8.0-ios</TargetFrameworks>
         <OutputType>Exe</OutputType>
@@ -9,7 +9,8 @@
         <!-- Display name -->
         <ApplicationTitle>NET Classic Component</ApplicationTitle>
         <AssemblyName>ClassicComponent.iOS</AssemblyName>
-    </PropertyGroup>
+		<Platforms>ARM64;x64</Platforms>
+	</PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
         <CreatePackage>false</CreatePackage>
         <CodesignProvision>Automatic</CodesignProvision>
