@@ -28,10 +28,12 @@ namespace ReadyToUseUI.Droid.Activities.V2
             {
                 View child = LayoutInflater.Inflate(Resource.Layout.barcode_item, parent, false);
                 InitItemData(child, item);
+                
                 parent.AddView(child);
+                parent.AddView(GetSeparatorView());
             }
         }
-        
+
         private void InitItemData(View child, BarcodeItem item)
         {
             var image = child.FindViewById<ImageView>(Resource.Id.image);

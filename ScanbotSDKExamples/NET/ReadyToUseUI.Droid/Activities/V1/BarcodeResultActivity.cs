@@ -27,6 +27,7 @@ namespace ReadyToUseUI.Droid.Activities.V1
                 View child = LayoutInflater.Inflate(Resource.Layout.barcode_item, parent, false);
                 InitItemData(child, item);
                 parent.AddView(child);
+                parent.AddView(GetSeparatorView());
             }
         }
         

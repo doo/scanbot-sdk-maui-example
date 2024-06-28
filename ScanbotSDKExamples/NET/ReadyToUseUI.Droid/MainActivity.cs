@@ -92,7 +92,8 @@ namespace ReadyToUseUI.Droid
             {
                 new ListItemButton(this, "Single Barcode Scanning", SingleScanning),
                 new ListItemButton(this, "Single Barcode Scanning - AR Overlay", SingleScanningWithArOverlay),
-                new ListItemButton(this, "Multiple Unique Barcode Scanning", BatchBarcodeScanning),
+                new ListItemButton(this, "Batch Barcode Scanning", BatchBarcodeScanning),
+                new ListItemButton(this, "Multiple Unique Barcode Scanning", MultipleUniqueBarcodeScanning),
                 new ListItemButton(this, "Find and Pick Barcode Scanning", FindAndPickScanning),
             });
 
