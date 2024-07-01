@@ -34,7 +34,7 @@ public partial class MainViewController
                 {
                     viewController.DismissViewController(true, delegate
                     {
-                        ShowPopup(this, result?.ToJson());
+                        ShowBarcodeReults(result.Items);
                     });
                 }
                 else
@@ -45,7 +45,7 @@ public partial class MainViewController
 
         PresentViewController(controller, false, null);
     }
-        
+
     private void SingleScanningWithArOverlay()
     {
         // Create the default configuration object.
@@ -66,7 +66,7 @@ public partial class MainViewController
                 {
                     viewController.DismissViewController(true, delegate
                     {
-                        ShowPopup(this, result?.ToJson());
+                        ShowBarcodeReults(result.Items);
                     });
                 }
                 else
@@ -97,7 +97,7 @@ public partial class MainViewController
                 {
                     viewController.DismissViewController(true, delegate
                     {
-                        ShowPopup(this, result?.ToJson());
+                        ShowBarcodeReults(result.Items);
                     });
                 }
                 else
@@ -131,7 +131,7 @@ public partial class MainViewController
                 {
                     viewController.DismissViewController(true, delegate
                     {
-                        ShowPopup(this, result?.ToJson());
+                        ShowBarcodeReults(result.Items);
                     });
                 }
                 else
@@ -167,7 +167,7 @@ public partial class MainViewController
                 {
                     viewController.DismissViewController(true, delegate
                     {
-                        ShowPopup(this, result?.ToJson());
+                        ShowBarcodeReults(result.Items);
                     });
                 }
                 else
@@ -205,5 +205,12 @@ public partial class MainViewController
         }
 
         Alert.Show(this, "Detected Barcodes", text);
+    }
+    
+    private void ShowBarcodeReults(SBSDKUI2BarcodeItem[] items)
+    {
+        var viewController = new BarcodeResultListController();
+        viewController.NavigateData(items.ToList());
+        NavigationController.PushViewController(viewController, true);
     }
 }

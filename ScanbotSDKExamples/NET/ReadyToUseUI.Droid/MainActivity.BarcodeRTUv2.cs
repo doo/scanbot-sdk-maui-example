@@ -2,6 +2,7 @@ using IO.Scanbot.Sdk.Ui_v2.Barcode;
 using IO.Scanbot.Sdk.Ui_v2.Barcode.Common.Mappers;
 using IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration;
 using IO.Scanbot.Sdk.Ui_v2.Common;
+using ReadyToUseUI.Droid.Utils;
 
 namespace ReadyToUseUI.Droid;
 
@@ -63,6 +64,31 @@ public partial class MainActivity
             UseCase = new MultipleScanningMode
             {
                 Mode = MultipleBarcodesScanningMode.Counting
+            }
+        });
+        StartActivityForResult(intent, BARCODE_DEFAULT_UI_REQUEST_CODE_V2);
+    }
+
+    private void MultipleUniqueBarcodeScanning()
+    {
+        if (!CheckLicense())
+        {
+            return;
+        }
+
+        var useCase = new MultipleScanningMode();
+        useCase.Mode = MultipleBarcodesScanningMode.Unique;
+        useCase.Sheet.Mode = SheetMode.CollapsedSheet;
+        useCase.SheetContent.ManualCountChangeEnabled = false;
+        useCase.ArOverlay.Visible = true;
+        useCase.ArOverlay.AutomaticSelectionEnabled = false;
+
+        var intent = BarcodeScannerActivity.NewIntent(this, new BarcodeScannerConfiguration
+        {
+            UseCase = useCase,
+            UserGuidance = new UserGuidanceConfiguration
+            {
+                Title = new StyledText { Text = "Please align the QR-/Barcode in the frame above to scan it." }
             }
         });
         StartActivityForResult(intent, BARCODE_DEFAULT_UI_REQUEST_CODE_V2);

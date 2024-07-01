@@ -1,4 +1,5 @@
 ﻿using Android.Graphics;
+using Android.Views;
 using AndroidX.AppCompat.App;
 
 namespace ReadyToUseUI.Droid.Activities;
@@ -50,5 +51,14 @@ public class BaseResultActivity<TNativeBarcodeResult> : AppCompatActivity where 
         var view = LayoutInflater.Inflate(Resource.Layout.snap_image_item, items, false);
         items.AddView(view);
         return view.FindViewById<ImageView>(Resource.Id.snapImage);
+    }
+    
+    protected FrameLayout GetSeparatorView()
+    {
+        var separatorView = new FrameLayout(this);
+        separatorView.LayoutParameters = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, 2);
+        separatorView.SetPadding(20, 0, 10, 0);
+        separatorView.SetBackgroundColor(Color.Gray);
+        return separatorView;
     }
 }

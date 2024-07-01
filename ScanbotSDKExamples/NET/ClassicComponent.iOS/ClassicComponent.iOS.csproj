@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>net7.0-ios;net8.0-ios</TargetFrameworks>
+        <TargetFramework>net8.0-ios</TargetFramework>
         <OutputType>Exe</OutputType>
         <Nullable>disable</Nullable>
         <ImplicitUsings>true</ImplicitUsings>
@@ -23,7 +23,7 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Scanbot.Xamarin.ImagePicker" Version="0.0.3-beta.1" />
-        <PackageReference Include="ScanbotSDK.NET" Version="5.1.0-alpha.3" />
+        <PackageReference Include="ScanbotSDK.NET" Version="5.1.0-alpha.4" />
     </ItemGroup>
     <ItemGroup>
       <InterfaceDefinition Remove="ViewControllers\ClassicComponents\ClassicComponentStoryboard.storyboard" />
