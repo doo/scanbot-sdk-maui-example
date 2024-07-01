@@ -1,6 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net8.0-ios</TargetFramework>
+        <!-- Comment out the above and add the below to run with .net7 -->
+        <!-- <TargetFramework>net7.0-ios</TargetFramework> -->
+
         <OutputType>Exe</OutputType>
         <Nullable>disable</Nullable>
         <ImplicitUsings>true</ImplicitUsings>
