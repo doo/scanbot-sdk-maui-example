@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>net8.0-ios</TargetFrameworks>
+        <TargetFramework>net8.0-ios</TargetFramework>
         <OutputType>Exe</OutputType>
         <ImplicitUsings>enable</ImplicitUsings>
 
@@ -27,7 +27,7 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Scanbot.Xamarin.ImagePicker" Version="0.0.3-beta.1" />
-        <PackageReference Include="ScanbotSDK.NET" Version="5.1.0-alpha.4" />
+        <PackageReference Include="ScanbotSDK.NET" Version="5.1.0-beta.2" />
     </ItemGroup>
     <ItemGroup>
         <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\eng.traineddata" />
