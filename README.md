@@ -49,11 +49,11 @@ To build the iOS example project for both net7.0-ios and net8.0-ios, forcing pac
 
 To run the project on a real device, specify a target framework with `-f net8.0-ios` and the Run target via `-t:Run`, yielding the following:
 
-```dotnet build NET/ReadyToUseUI.iOS --force --no-incremental -r ios-arm64 -f net8.0-ios -t:Run```
+```dotnet build NET/ReadyToUseUI.iOS -r ios-arm64 -f net8.0-ios -t:Run --force --no-incremental```
 
 The Classic Component has its own project. Run it with:
 
-```dotnet build NET/ClassicComponent.iOS --force --no-incremental -r ios-arm64 -f net8.0-ios -t:Run```
+```dotnet build NET/ClassicComponent.iOS -r ios-arm64 -f net8.0-ios -t:Run --force --no-incremental```
 
 ##### Android
 To build the Android example project for both net7.0-android and net8.0-android, forcing packages to be restored and everything to be compiled from scratch:
@@ -62,11 +62,11 @@ To build the Android example project for both net7.0-android and net8.0-android,
 
 To run the project on a real device, specify a target framework with `-f net8.0-android` and the Run target via `-t:Run`, yielding the following:
 
-```dotnet build NET/ReadyToUseUI.Droid --force --no-incremental -f net8.0-android -t:Run```
+```dotnet build NET/ReadyToUseUI.Droid -f net8.0-android -t:Run --force --no-incremental ```
 
 The Classic Component has its own project. Run it with:
 
-```dotnet build NET/ClassicComponent.Droid --force --no-incremental -f net8.0-android -t:Run```
+```dotnet build NET/ClassicComponent.Droid -f net8.0-android -t:Run --force --no-incremental```
 
 #### MAUI
 
@@ -76,12 +76,12 @@ To build the MAUI example project for all supported target frameworks (net7.0-an
 
 To run the project on a real iOS device, specify a target framework with `-f net8.0-ios` and the Run target via `-t:Run`, yielding the following:
 
-```dotnet build MAUI/ReadyToUseUI.Maui --force --no-incremental -f net8.0-ios -t:Run```
+```dotnet build MAUI/ReadyToUseUI.Maui -f net8.0-ios -t:Run --force --no-incremental```
 
 
 To run the project on a real Android device, specify a target framework with `-f net8.0-android` and the Run target via `-t:Run`, yielding the following:
 
-```dotnet build MAUI/ReadyToUseUI.Maui --force --no-incremental -f net8.0-android -t:Run```
+```dotnet build MAUI/ReadyToUseUI.Maui -f net8.0-android -t:Run --force --no-incremental```
 
 ## Please note
 

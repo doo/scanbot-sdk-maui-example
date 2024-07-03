@@ -24,9 +24,11 @@
         <CodesignProvision>Automatic</CodesignProvision>
         <CodesignKey>iPhone Developer</CodesignKey>
         <MtouchDebug>true</MtouchDebug>
+        <Platforms>ARM64;x64</Platforms>
+        <WarningsAsErrors>NU1603</WarningsAsErrors>
+
         <!-- Comment this out to see RTU v1 in the example -->
         <!-- <DefineConstants>$(DefineConstants);LEGACY_EXAMPLES</DefineConstants> -->
-        <Platforms>ARM64;x64</Platforms>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Scanbot.Xamarin.ImagePicker" Version="0.0.3-beta.1" />

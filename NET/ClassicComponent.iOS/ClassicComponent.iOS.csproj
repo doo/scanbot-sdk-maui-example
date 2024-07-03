@@ -12,7 +12,8 @@
         <!-- Display name -->
         <ApplicationTitle>NET Classic Component</ApplicationTitle>
         <AssemblyName>ClassicComponent.iOS</AssemblyName>
-		<Platforms>ARM64;x64</Platforms>
+		    <Platforms>ARM64;x64</Platforms>
+        <WarningsAsErrors>NU1603</WarningsAsErrors>
 	</PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
         <CreatePackage>false</CreatePackage>

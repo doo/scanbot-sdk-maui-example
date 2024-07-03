@@ -33,7 +33,7 @@ public static partial class Snippets
         {
             var title = $"Some product {barcodeItem.TextWithExtension}";
             var subTitle = barcodeItem.Type.Name();
-            var image = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png";
+            var image = "https://avatars.githubusercontent.com/u/1454920";
 
             if (barcodeItem.TextWithExtension == "Error occurred!")
             {

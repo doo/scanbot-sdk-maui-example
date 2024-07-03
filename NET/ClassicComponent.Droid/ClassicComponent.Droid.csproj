@@ -15,7 +15,8 @@
         <ApplicationTitle>NET Classic Component</ApplicationTitle>
         <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
         <RootNamespace>ClassicComponent.Droid</RootNamespace>
-		<Platforms>ARM64;x64</Platforms>
+		    <Platforms>ARM64;x64</Platforms>
+        <WarningsAsErrors>NU1603</WarningsAsErrors>
 	</PropertyGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\SBSDKLanguageData\deu.traineddata" />
