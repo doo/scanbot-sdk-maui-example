@@ -1,16 +1,15 @@
 ﻿using System.Text;
 using ReadyToUseUI.Maui.Utils;
 using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Check;
 using ScanbotSDK.MAUI.Common;
-using ScanbotSDK.MAUI.MRZ;
 using ScanbotSDK.MAUI.EHIC;
 using ScanbotSDK.MAUI.GenericDocument;
-using ScanbotSDK.MAUI.MedicalCertificate;
-using ScanbotSDK.MAUI.VIN;
-using ScanbotSDK.MAUI.Check;
 using ScanbotSDK.MAUI.LicensePlate;
+using ScanbotSDK.MAUI.MedicalCertificate;
+using ScanbotSDK.MAUI.MRZ;
 using ScanbotSDK.MAUI.TextData;
-
+using ScanbotSDK.MAUI.VIN;
 using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
 
 namespace ReadyToUseUI.Maui.Pages
@@ -53,6 +52,7 @@ namespace ReadyToUseUI.Maui.Pages
         {
             var configuration = new GenericDocumentRecognizerConfiguration
             {
+                AcceptedDocumentTypes = GenericDocumentFormat.AllDocumentTypes
             };
             var result = await SBSDK.ReadyToUseUIService.LaunchGenericDocumentRecognizerAsync(configuration);
             if (result.Status == OperationResult.Ok)

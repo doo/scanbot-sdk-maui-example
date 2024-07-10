@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ReadyToUseUI.Maui.Pages.FilteredImagePage">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="9*" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+            <Image Grid.Row="0"
+                   x:Name="filteredImage"
+                   Aspect="AspectFit"
+                   Source="{Binding FilteredImage}"
+                   HorizontalOptions="Fill"
+                   VerticalOptions="Fill" />
+            <Button Grid.Row="1"
+                    x:Name="openFilters"
+                    Clicked="OpenFilters_OnClicked"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Fill" />
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

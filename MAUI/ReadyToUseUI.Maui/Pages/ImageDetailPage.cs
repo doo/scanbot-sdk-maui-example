@@ -3,6 +3,8 @@ using ScanbotSDK.MAUI.Document;
 using ReadyToUseUI.Maui.Utils;
 using ReadyToUseUI.Maui.SubViews.ActionBar;
 using ReadyToUseUI.Maui.Models;
+using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Document;
 
 namespace ReadyToUseUI.Maui.Pages
 {
@@ -88,7 +90,7 @@ namespace ReadyToUseUI.Maui.Pages
             if (Enum.TryParse<ImageFilter>(action, out var filter))
             {
                 documentImage.Source = null;
-                await selectedPage.SetFilterAsync(filter);
+                await selectedPage.SetFilterAsync(ParametricFilter.FromLegacyFilter(filter));
                 await PageStorage.Instance.UpdateAsync(selectedPage);
 
                 documentImage.Source = await PageDocument();

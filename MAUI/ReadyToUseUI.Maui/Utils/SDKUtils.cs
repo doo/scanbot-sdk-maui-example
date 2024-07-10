@@ -1,15 +1,16 @@
 ﻿using System.Text;
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Check;
-using ScanbotSDK.MAUI.GenericDocument;
+using ScanbotSDK.MAUI.Common;
 using ScanbotSDK.MAUI.EHIC;
+using ScanbotSDK.MAUI.GenericDocument;
 using ScanbotSDK.MAUI.MRZ;
-using BarcodeItem = ScanbotSDK.MAUI.RTU.v1.Barcode;
+using BarcodeItem = ScanbotSDK.MAUI.Barcode.BarcodeItem;
 using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
 
 namespace ReadyToUseUI.Maui.Utils
 {
-    public class SDKUtils
+    public static class SDKUtils
     {
         public static bool CheckLicense(Page context)
         {
@@ -26,7 +27,7 @@ namespace ReadyToUseUI.Maui.Utils
 
             foreach (var code in barcodes)
             {
-                builder.AppendLine($"{code.Format}: {code.Text}");
+                builder.AppendLine($"{code}: {code.Type}");
             }
 
             return builder.ToString();
@@ -38,7 +39,7 @@ namespace ReadyToUseUI.Maui.Utils
             builder.AppendLine($"DocumentType: {result.DocumentType}");
             foreach (var field in result.Document.Fields)
             {
-                builder.AppendLine($"{field.Type.Name}: {field.Value.Text} ({field.Value.Confidence:F2})");
+                builder.AppendLine($"{field.Name}: {field.Value.Text} ({field.Value.Confidence:F2})");
             }
             return builder.ToString();
         }
@@ -66,8 +67,26 @@ namespace ReadyToUseUI.Maui.Utils
         private static string GenericDocumentToString(ScanbotSDK.MAUI.Common.GenericDocument document)
         {
             return string.Join("\n", document.Fields
-                .Where((f) => f != null && f.Type.Name != null && f.Value.Text != null)
-                .Select((f) => string.Format("{0}: {1}", f.Type.Name, f.Value.Text)));
+                .Where((f) => f != null && f.Name != null && f.Name != null && f.Value.Text != null)
+                .Select((f) => string.Format("{0}: {1}", f.Name, f.Value.Text)));
+        }
+
+        internal static string FilterToJson(ParametricFilter filter)
+        {
+            var text = System.Text.Json.JsonSerializer.Serialize(filter);
+            return text;
+        }
+        
+        internal static ParametricFilter JsonToFilter(string jsonString)
+        {
+            var item = System.Text.Json.JsonSerializer.Deserialize<ParametricFilter>(jsonString);
+            return item;
+        }
+        
+        internal static void PrintJson(object modelObject)
+        {
+            var text = Newtonsoft.Json.JsonConvert.SerializeObject(modelObject);
+            System.Diagnostics.Debug.WriteLine(text);
         }
     }
 }

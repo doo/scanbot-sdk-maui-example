@@ -1,4 +1,5 @@
-﻿using ScanbotSDK.MAUI;
+﻿using ReadyToUseUI.Maui.Utils;
+using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Document;
 using SQLite;
 
@@ -62,7 +63,7 @@ namespace ReadyToUseUI.Maui.Models
                 return ScanbotSDK.MAUI.ScanbotSDK.SDKService.ReconstructPage(
                     page.Id,
                     page.CreatePolygon(),
-                    (ImageFilter)page.Filter,
+                    SDKUtils.JsonToFilter(page.Filter),
                     (DocumentDetectionStatus)page.DetectionStatus
                 ).Result;
             }).ToList();
@@ -93,7 +94,7 @@ namespace ReadyToUseUI.Maui.Models
         [PrimaryKey]
         public string Id { get; set; }
 
-        public int Filter { get; set; }
+        public string Filter { get; set; }
         public int DetectionStatus { get; set; }
 
         public double X1 { get; set; }
@@ -111,7 +112,7 @@ namespace ReadyToUseUI.Maui.Models
             var result = new DBPage
             {
                 Id = page.Id,
-                Filter = page.Filter.GetHashCode(),
+                Filter = SDKUtils.FilterToJson(page.Filter),
                 DetectionStatus = (int)page.DetectionStatus
             };
 

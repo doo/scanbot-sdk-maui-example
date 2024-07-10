@@ -7,6 +7,8 @@ using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Common;
 using ScanbotSDK.MAUI.Document;
 using System.Collections.ObjectModel;
+using ScanbotSDK.MAUI.Common;
+using ScanbotSDK.MAUI.Document;
 
 namespace ReadyToUseUI.Maui.Pages
 {
