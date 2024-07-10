@@ -1,5 +1,5 @@
-﻿using ScanbotSDK.MAUI.Configurations;
-using ScanbotSDK.MAUI.Constants;
+﻿using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.RTU.v1;
 using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
 
 namespace ReadyToUseUI.Maui.Pages
@@ -10,7 +10,7 @@ namespace ReadyToUseUI.Maui.Pages
         {
             var config = new BarcodeScannerConfiguration
             {
-                BarcodeFormats = Enum.GetValues<BarcodeFormat>().ToList(),
+                BarcodeFormats = BarcodeFormat.Values.ToList(),
                 CodeDensity = BarcodeDensity.High,
                 EngineMode = EngineMode.NextGen
             };
@@ -37,7 +37,7 @@ namespace ReadyToUseUI.Maui.Pages
             //    TextFormat = BarcodeTextFormat.CodeAndType
             //};
 
-            var result = await SBSDK.ReadyToUseUIService.OpenBarcodeScannerView(config);
+            var result = await SBSDK.LegacyBarcodeScanner.OpenBarcodeScannerView(config);
 
             if (result.Status == OperationResult.Ok)
             {
@@ -49,7 +49,7 @@ namespace ReadyToUseUI.Maui.Pages
         {
             var config = new BatchBarcodeScannerConfiguration
             {
-                BarcodeFormats = Enum.GetValues<BarcodeFormat>().ToList(),
+                BarcodeFormats = BarcodeFormat.Values.ToList(),
                 OverlayConfiguration = new SelectionOverlayConfiguration(
                     automaticSelectionEnabled: true,
                     overlayFormat: BarcodeTextFormat.Code,
@@ -64,7 +64,7 @@ namespace ReadyToUseUI.Maui.Pages
                 EngineMode = EngineMode.NextGen
             };
 
-            var result = await SBSDK.ReadyToUseUIService.OpenBatchBarcodeScannerView(config);
+            var result = await SBSDK.LegacyBarcodeScanner.OpenBatchBarcodeScannerView(config);
 
             if (result.Status == OperationResult.Ok)
             {

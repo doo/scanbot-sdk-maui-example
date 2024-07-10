@@ -1,6 +1,10 @@
 ﻿using System.Text;
-using ScanbotSDK.MAUI.Models;
-using BarcodeItem = ScanbotSDK.MAUI.Models.Barcode;
+using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Check;
+using ScanbotSDK.MAUI.GenericDocument;
+using ScanbotSDK.MAUI.EHIC;
+using ScanbotSDK.MAUI.MRZ;
+using BarcodeItem = ScanbotSDK.MAUI.RTU.v1.Barcode;
 using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
 
 namespace ReadyToUseUI.Maui.Utils
@@ -59,10 +63,10 @@ namespace ReadyToUseUI.Maui.Utils
             return GenericDocumentToString(result.Document);
         }
 
-        private static string GenericDocumentToString(GenericDocument document)
+        private static string GenericDocumentToString(ScanbotSDK.MAUI.Common.GenericDocument document)
         {
             return string.Join("\n", document.Fields
-                .Where((f) => f != null && f.Type != null && f.Type.Name != null && f.Value != null && f.Value.Text != null)
+                .Where((f) => f != null && f.Type.Name != null && f.Value.Text != null)
                 .Select((f) => string.Format("{0}: {1}", f.Type.Name, f.Value.Text)));
         }
     }

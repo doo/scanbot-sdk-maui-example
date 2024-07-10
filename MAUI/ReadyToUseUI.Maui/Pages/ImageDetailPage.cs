@@ -1,7 +1,7 @@
-﻿using ScanbotSDK.MAUI.Constants;
+﻿using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Document;
 using ReadyToUseUI.Maui.Utils;
 using ReadyToUseUI.Maui.SubViews.ActionBar;
-using ScanbotSDK.MAUI.Services;
 using ReadyToUseUI.Maui.Models;
 
 namespace ReadyToUseUI.Maui.Pages

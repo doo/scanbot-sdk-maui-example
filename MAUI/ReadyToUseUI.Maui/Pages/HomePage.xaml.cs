@@ -1,14 +1,15 @@
 ﻿using ScanbotSDK.MAUI.Configurations;
-using ScanbotSDK.MAUI.Constants;
 using ScanbotSDK.MAUI;
 using ReadyToUseUI.Maui.Models;
 using ReadyToUseUI.Maui.Utils;
 using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
+using Microsoft.Maui.Graphics;
 
 namespace ReadyToUseUI.Maui.Pages;
 
 public partial class HomePage : ContentPage
 {
+    public static Color ScanbotColor => Constants.Colors.ScanbotRed;
     public struct SdkFeature
     {
         public SdkFeature(string title, Func<Task> doTask = null)

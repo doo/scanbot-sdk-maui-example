@@ -1,6 +1,7 @@
 ﻿using ReadyToUseUI.Maui.Models;
 using ScanbotSDK.MAUI;
-using ScanbotSDK.MAUI.Constants;
+using ScanbotSDK.MAUI.Document;
+using ScanbotSDK.MAUI.Common;
 using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
 
 namespace ReadyToUseUI.Maui.Pages
@@ -9,7 +10,7 @@ namespace ReadyToUseUI.Maui.Pages
     {
         private async Task DocumentScannerClicked(bool withFinder = false)
         {
-            ScanbotSDK.MAUI.Models.DocumentScannerResult result;
+            DocumentScannerResult result;
             if (withFinder)
             {
                 result = await SBSDK.ReadyToUseUIService.LaunchFinderDocumentScannerAsync(new FinderDocumentScannerConfiguration
@@ -17,7 +18,7 @@ namespace ReadyToUseUI.Maui.Pages
                     CameraPreviewMode = CameraPreviewMode.FitIn,
                     IgnoreBadAspectRatio = true,
                     TextHintOK = "Don't move.\nScanning document...",
-                    OrientationLockMode = InterfaceOrientation.Portrait,
+                    OrientationLockMode = OrientationLockMode.Portrait,
                     // implicitly the aspect ratio is set to a4 portrait
 
                     // further configuration properties

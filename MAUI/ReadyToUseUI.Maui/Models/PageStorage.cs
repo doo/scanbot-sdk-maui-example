@@ -1,5 +1,5 @@
-﻿using ScanbotSDK.MAUI.Constants;
-using ScanbotSDK.MAUI.Services;
+﻿using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Document;
 using SQLite;
 
 namespace ReadyToUseUI.Maui.Models
@@ -111,7 +111,7 @@ namespace ReadyToUseUI.Maui.Models
             var result = new DBPage
             {
                 Id = page.Id,
-                Filter = (int)page.Filter,
+                Filter = page.Filter.GetHashCode(),
                 DetectionStatus = (int)page.DetectionStatus
             };
 

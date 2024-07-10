@@ -1,6 +1,4 @@
 ﻿using ScanbotSDK.MAUI;
-using ScanbotSDK.MAUI.Constants;
-using ScanbotSDK.MAUI.Models;
 
 namespace ReadyToUseUI.Maui
 {

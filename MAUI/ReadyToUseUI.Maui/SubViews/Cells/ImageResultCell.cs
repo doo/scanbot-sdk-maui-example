@@ -1,4 +1,4 @@
-﻿using ScanbotSDK.MAUI.Services;
+﻿using ScanbotSDK.MAUI;
 
 namespace ReadyToUseUI.Maui.SubViews.Cells
 {

@@ -1,12 +1,11 @@
-﻿using ScanbotSDK.MAUI.Constants;
-using ReadyToUseUI.Maui.Models;
+﻿using ReadyToUseUI.Maui.Models;
 using ReadyToUseUI.Maui.SubViews.ActionBar;
 using ReadyToUseUI.Maui.SubViews.Cells;
 using ReadyToUseUI.Maui.Utils;
-using ScanbotSDK.MAUI.Models;
-using ScanbotSDK.MAUI.Services;
 using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
 using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Common;
+using ScanbotSDK.MAUI.Document;
 using System.Collections.ObjectModel;
 
 namespace ReadyToUseUI.Maui.Pages
@@ -45,7 +44,7 @@ namespace ReadyToUseUI.Maui.Pages
                 HorizontalOptions = LayoutOptions.Fill,
                 HeightRequest = Application.Current.MainPage.Height / 3 * 2,
                 WidthRequest = Application.Current.MainPage.Width,
-                Color = SBColors.ScanbotRed,
+                Color = Constants.Colors.ScanbotRed,
                 IsRunning = true,
                 IsEnabled = true,
                 Scale = (DeviceInfo.Platform == DevicePlatform.iOS) ? 2 : 0.3
