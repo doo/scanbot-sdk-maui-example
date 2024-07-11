@@ -4,140 +4,187 @@ using ScanbotSDK.MAUI.DocumentFormats.Barcode;
 
 namespace ReadyToUseUI.Maui.Pages.DocumentFilters;
 
-public enum FilterParameterType
+public class FilterItemConstants
 {
-    SingleTitle,
-    List,
-    Slider
+    internal const string None = "None";
+    internal const string Presets = "Presets";
+    internal const string OutputMode = "Output Mode";
+    internal const string Denoise = "Denoise";
+    internal const string Radius = "Radius";
+    internal const string Brightness = "Brightness";
+    internal const string Contrast = "Contrast";
+    internal const string BorderWidthFraction = "Border Width Fraction";
+    internal const string BlackOutlierFraction = "Black Outlier Fraction";
+    internal const string WhiteOutlierFraction = "White Outlier Fraction";
+    internal const string LegacyFilters = "Legacy Filters";
+    internal const string BlackPoint = "Black Point";
+    internal const string WhitePoint = "White Point";
 }
 
-public class FilterItem : List<SubFilter>, INotifyPropertyChanged
+public enum FilterParameterType
 {
+    PrimaryFilter,
+    SubFilter,
+    Slider,
+    Picker
+}
+
+public class FilterItem : INotifyPropertyChanged
+{
+    private string _filterTitle;
+    private bool _isSelected;
+    private bool _isExpanded;
+    private string _caption;
+    private double _sliderValue;
+    private List<string> _pickerItems;
+    private string _pickerSelectedValue { get; set; }
+    private double _minValue;
+    private double _maxValue;
+    
+    public FilterParameterType ParameterType { get; set; }
+    
     // Group Item - Parametric Filter
-    private string filterTitle;
-    public string FilterTitle 
+    public string FilterTitle
     {
-        get => filterTitle;
+        get => _filterTitle;
         set
         {
-            filterTitle = value;
+            _filterTitle = value;
             OnPropertyChanged(nameof(FilterTitle));
         } 
     } 
 
     // Group Item selection
-    private bool isSelected;
     public bool IsSelected
     {
-        get => isSelected;
+        get => _isSelected;
         set
         {
-            isSelected = value;
+            _isSelected = value;
             OnPropertyChanged(nameof(IsSelected));
         } 
     } 
     
     // Section Expanded
-    private bool isExpanded;
     public bool IsExpanded
     {
-        get => isExpanded;
+        get => _isExpanded;
         set
         {
-            isExpanded = value;
+            _isExpanded = value;
             OnPropertyChanged(nameof(IsExpanded));
         } 
     }
-
-    public FilterItem(string title, List<SubFilter> filters, bool selected = false) : base(filters)
-    {
-        FilterTitle = title;
-        IsSelected = selected;
-    }
-
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-}
-
-public class SubFilter : List<string>, INotifyPropertyChanged
-{
-    public SubFilter()
-    {
-    }
-
-    public SubFilter(List<string> list) : base(list)
-    {
-    }
-
-    // Template/Parameter Type
-    public FilterParameterType ParameterType { get; set; }
-
-    // Legacy Filters
-    private string subFilterTitle;
-    public string SubFilterTitle 
-    {
-        get => subFilterTitle;
-        set
-        {
-            subFilterTitle = value;
-            OnPropertyChanged(nameof(SubFilterTitle));
-        } 
-    } 
-
+    
     // Sliders Caption
-    private string sliderCaption;
-    public string SliderCaption 
+    public string Caption 
     {
-        get => sliderCaption;
+        get => _caption;
         set
         {
-            sliderCaption = value;
-            OnPropertyChanged(nameof(SliderCaption));
+            _caption = value;
+            OnPropertyChanged(nameof(Caption));
         } 
     } 
 
     // Slider Value
-    
-    private double sliderValue;
     public double SliderValue 
     {
-        get => sliderValue;
+        get => _sliderValue;
         set
         {
-            sliderValue = value;
+            _sliderValue = value;
             OnPropertyChanged(nameof(SliderValue));
         } 
+    }
+    
+    // Picker Values
+    public List<string> PickerItems 
+    {
+        get => _pickerItems;
+        set
+        {
+            _pickerItems = value;
+            OnPropertyChanged(nameof(PickerItems));
+        } 
+    }
+
+    
+    /// <summary>
+    /// Selected Picker Value
+    /// </summary>
+    public string PickerSelectedValue {
+    get => _pickerSelectedValue;
+    set
+    {
+        _pickerSelectedValue = value;
+        OnPropertyChanged(nameof(PickerSelectedValue));
     } 
+} 
 
-    internal static SubFilter InitSlider(string caption, double sliderValue)
+
+    internal static FilterItem InitPrimaryFilter(string title)
     {
-        return new SubFilter
+        return new FilterItem
         {
-            SliderCaption = caption,
+            FilterTitle = title,
+            ParameterType = FilterParameterType.PrimaryFilter
+        };
+    }
+    
+    internal static FilterItem InitSubFilter(string primaryFilter, string subFilter)
+    {
+        return new FilterItem
+        {
+            FilterTitle = primaryFilter,
+            Caption = subFilter,
+            ParameterType = FilterParameterType.SubFilter
+        };
+    }
+
+    internal static FilterItem InitSlider(string primaryFilter, string caption, double sliderValue, double minValue, double maxValue)
+    {
+        return new FilterItem
+        {
+            FilterTitle = primaryFilter,
+            Caption = caption,
             SliderValue = sliderValue,
-            ParameterType = FilterParameterType.Slider
+            ParameterType = FilterParameterType.Slider,
+            MinValue = minValue,
+            MaxValue = maxValue
         };
     }
 
-    internal static SubFilter InitLegacyFilter(string subFilter)
+    public double MaxValue
     {
-        return new SubFilter
+        get => _maxValue;
+        set
         {
-            SubFilterTitle = subFilter,
-            ParameterType = FilterParameterType.SingleTitle
-        };
+            if (value.Equals(_maxValue)) return;
+            _maxValue = value;
+            OnPropertyChanged();
+        }
     }
 
-    internal static SubFilter InitParameters(string parameter, List<string> pickerInput)
+    public double MinValue
     {
-        return new SubFilter(pickerInput)
+        get => _minValue;
+        set
         {
-            SubFilterTitle = parameter,
-            ParameterType = FilterParameterType.List
+            if (value.Equals(_minValue)) return;
+            _minValue = value;
+            OnPropertyChanged();
+        }
+    }
+
+    internal static FilterItem InitPicker(string primaryFilter, string caption, List<string> pickerValues)
+    {
+        return new FilterItem
+        {
+            FilterTitle = primaryFilter,
+            Caption = caption,
+            ParameterType = FilterParameterType.Picker,
+            PickerItems = pickerValues
         };
     }
     
@@ -148,59 +195,3 @@ public class SubFilter : List<string>, INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }
-
-
-//
-// public class FilterItem : List<SubFilters>
-// {
-//     public string FilterTitle { get; set; }  // Group Item - Parametric Filter
-//     
-//     public bool IsSelected { get; set; } // Group Item selection
-//
-//     // Template/Parameter Type
-//     public FilterParameterType ParameterType { get; set; }
-//
-//     // Inner List Parameters
-//     public List<string> FilterParameters { get; set; }
-//
-//     // Legacy Filters
-//     public string SubFilterTitle { get; set; }
-//     
-//     // Sliders
-//     public string SliderCaption { get; set; }
-//
-//     public double SliderValue { get; set; }
-//
-//     internal static FilterItem InitSlider(string primeFilter, string caption, double sliderValue)
-//     {
-//        return new FilterItem
-//        {
-//            FilterTitle = primeFilter, 
-//            SliderCaption = caption, 
-//            SliderValue = sliderValue, 
-//            ParameterType = FilterParameterType.Slider
-//        };
-//     }
-//
-//     internal static FilterItem InitLegacyFilter(string primeFilter, string subFilter)
-//     {
-//         return new FilterItem
-//         {
-//             FilterTitle = primeFilter, 
-//             SubFilterTitle = subFilter, 
-//             ParameterType = FilterParameterType.SingleTitle
-//         };
-//     }
-//
-//     internal static FilterItem InitParameters(string primeFilter, string parameter, List<string> pickerInput)
-//     {
-//         return new FilterItem
-//         {
-//             FilterTitle = primeFilter, 
-//             SubFilterTitle = parameter, 
-//             FilterParameters = pickerInput, 
-//             ParameterType = FilterParameterType.List
-//         };
-//     }
-//
-// }

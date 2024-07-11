@@ -54,7 +54,7 @@ namespace ReadyToUseUI.Maui.Pages
         {
             var config = new BatchBarcodeScannerConfiguration
             {
-                BarcodeFormats = BarcodeFormat.Values.ToList(),
+                BarcodeFormats = Enum.GetValues<BarcodeFormat>().ToList(),
                 OverlayConfiguration = new SelectionOverlayConfiguration(
                     automaticSelectionEnabled: true,
                     overlayFormat: BarcodeTextFormat.Code,

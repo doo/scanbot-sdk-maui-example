@@ -82,19 +82,24 @@ namespace ReadyToUseUI.Maui.Pages
 
         private async void OnFilterButtonTapped(object sender, EventArgs e)
         {
-            if (!SDKUtils.CheckLicense(this)) { return; }
-
-            var buttons = Enum.GetNames(typeof(ImageFilter));
-            var action = await DisplayActionSheet("Filter", "Cancel", null, buttons);
-
-            if (Enum.TryParse<ImageFilter>(action, out var filter))
+            if (!SDKUtils.CheckLicense(this))
             {
-                documentImage.Source = null;
-                await selectedPage.SetFilterAsync(ParametricFilter.FromLegacyFilter(filter));
-                await PageStorage.Instance.UpdateAsync(selectedPage);
-
-                documentImage.Source = await PageDocument();
+                return;
             }
+
+            var filterPage = new FiltersPage();
+            filterPage.NavigateData((filters) =>
+            {
+                MainThread.InvokeOnMainThreadAsync(async () =>
+                {
+                    documentImage.Source = null;
+                    await selectedPage.SetFilterAsync(filters.ToArray());
+                    await PageStorage.Instance.UpdateAsync(selectedPage);
+                    documentImage.Source = await PageDocument();
+                });
+            });
+            
+            await Navigation.PushAsync(filterPage);
         }
 
         private async void OnAnalyzeQualityTapped(object sender, EventArgs e)

@@ -12,7 +12,7 @@ namespace ReadyToUseUI.Maui.Models
         public const string DatabaseFilename = "SBSDKPageStorage.db3";
 
         public const SQLiteOpenFlags Flags = SQLiteOpenFlags.ReadWrite
-            | SQLiteOpenFlags.Create | SQLiteOpenFlags.SharedCache;
+                                             | SQLiteOpenFlags.Create | SQLiteOpenFlags.SharedCache;
 
         public static string DatabasePath
         {
@@ -38,8 +38,9 @@ namespace ReadyToUseUI.Maui.Models
             return database;
         }
 
-
-        private PageStorage() { }
+        private PageStorage()
+        {
+        }
 
 
         public async Task<int> CreateAsync(IScannedPage page)
@@ -63,7 +64,7 @@ namespace ReadyToUseUI.Maui.Models
                 return ScanbotSDK.MAUI.ScanbotSDK.SDKService.ReconstructPage(
                     page.Id,
                     page.CreatePolygon(),
-                    SDKUtils.JsonToFilter(page.Filter),
+                    SDKUtils.JsonToFilter(page.ParametricFilters),
                     (DocumentDetectionStatus)page.DetectionStatus
                 ).Result;
             }).ToList();
@@ -91,10 +92,11 @@ namespace ReadyToUseUI.Maui.Models
      */
     public class DBPage
     {
-        [PrimaryKey]
-        public string Id { get; set; }
+        [PrimaryKey] public string Id { get; set; }
 
-        public string Filter { get; set; }
+        public int Filter { get; set; }
+
+        public string ParametricFilters { get; set; }
         public int DetectionStatus { get; set; }
 
         public double X1 { get; set; }
@@ -108,11 +110,10 @@ namespace ReadyToUseUI.Maui.Models
 
         public static DBPage From(IScannedPage page)
         {
-
             var result = new DBPage
             {
                 Id = page.Id,
-                Filter = SDKUtils.FilterToJson(page.Filter),
+                ParametricFilters = SDKUtils.FilterToJson(page.Filters),
                 DetectionStatus = (int)page.DetectionStatus
             };
 
@@ -127,6 +128,7 @@ namespace ReadyToUseUI.Maui.Models
             {
                 return;
             }
+
             X1 = points[0].X;
             Y1 = points[0].Y;
             X2 = points[1].X;
@@ -149,4 +151,3 @@ namespace ReadyToUseUI.Maui.Models
         }
     }
 }
-

@@ -71,21 +71,21 @@ namespace ReadyToUseUI.Maui.Utils
                 .Select((f) => string.Format("{0}: {1}", f.Name, f.Value.Text)));
         }
 
-        internal static string FilterToJson(ParametricFilter filter)
+        internal static string FilterToJson(ParametricFilter[] filter)
         {
             var text = System.Text.Json.JsonSerializer.Serialize(filter);
             return text;
         }
         
-        internal static ParametricFilter JsonToFilter(string jsonString)
+        internal static ParametricFilter[] JsonToFilter(string jsonString)
         {
-            var item = System.Text.Json.JsonSerializer.Deserialize<ParametricFilter>(jsonString);
+            var item = System.Text.Json.JsonSerializer.Deserialize<ParametricFilter[]>(jsonString);
             return item;
         }
         
         internal static void PrintJson(object modelObject)
         {
-            var text = Newtonsoft.Json.JsonConvert.SerializeObject(modelObject);
+            var text = System.Text.Json.JsonSerializer.Serialize(modelObject);
             System.Diagnostics.Debug.WriteLine(text);
         }
     }

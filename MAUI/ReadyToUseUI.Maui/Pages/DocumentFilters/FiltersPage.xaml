@@ -7,91 +7,86 @@
              xmlns:color="clr-namespace:ScanbotSDK.MAUI;assembly=ScanbotSDK.Shared">
     <ContentPage.Resources>
         <!-- Data Template Listing -->
+        
+        <!-- Primary Filter Template-->
+        <DataTemplate x:Key="primaryFilterTemplate">
+            <StackLayout Padding="10" HeightRequest="50"
+                         BackgroundColor="{Binding Source={x:Static color:Constants+Colors.ScanbotRed}}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="9*" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0"
+                           Text="{Binding FilterTitle }"
+                           FontSize="18"
+                           TextColor="White"
+                           FontAttributes="Bold" />
+                    <CheckBox Grid.Column="1"
+                              IsChecked="{Binding IsSelected}"
+                              CheckedChanged="CheckBox_OnCheckedChanged" />
+                </Grid>
+            </StackLayout>
+        </DataTemplate>
 
-        <!-- List type Parameter Filters-->
-        <DataTemplate x:Key="collectionViewItemTemplate">
-            <StackLayout Padding="9,0">
-                <CollectionView x:Name="SubFiltersListItemTemplate" 
-                                SelectionChanged="Filters_OnSelectionChanged"
-                                ItemsSource="{Binding .}"
-                                >
-                    <CollectionView.GroupHeaderTemplate>
-                        <DataTemplate>
-                            <StackLayout Padding="9,0">
-                                <Label Text="{Binding SubFilterTitle }" />
-                            </StackLayout>
-                        </DataTemplate>
-                    </CollectionView.GroupHeaderTemplate>
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <StackLayout Padding="19,0">
-                                <Label Text="{Binding . }" />
-                                <Frame HeightRequest="1" Margin="20,0,0,0" HorizontalOptions="Fill" BackgroundColor="DarkGray" />
-                            </StackLayout>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+        <!-- Picker Type Filters-->
+        <DataTemplate x:Key="pickerItemTemplate">
+            <StackLayout Padding="19,9">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="4*" />
+                        <ColumnDefinition Width="6*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Column="0" Text="{Binding Caption}" VerticalOptions="Center"  FontSize="14" HorizontalOptions="Start" />
+                    <Picker Grid.Column="1" 
+                            ItemsSource="{Binding PickerItems}"
+                            FontSize="14" 
+                            HorizontalOptions="Fill"
+                            SelectedItem="{Binding PickerSelectedValue}"
+                            SelectedIndexChanged="Picker_OnSelectedIndexChanged"/>
+                </Grid>
             </StackLayout>
         </DataTemplate>
 
         <!-- Legacy Filters-->
-        <DataTemplate x:Key="listItemTemplate">
-            <StackLayout Padding="9,0">
-                <Label Text="{Binding SubFilterTitle }" />
+        <DataTemplate x:Key="subFilterTemplate">
+            <StackLayout Padding="19,9">
+                <Label Text="{Binding Caption }" />
                 <Frame HeightRequest="1" HorizontalOptions="Fill" BackgroundColor="DarkGray" />
             </StackLayout>
         </DataTemplate>
 
         <!-- Slider Filter Item-->
         <DataTemplate x:Key="sliderItemTemplate">
-            <StackLayout Padding="19,0">
-                <Label Text="{Binding SliderCaption }" FontSize="14" />
-                <Slider Value="{Binding SliderValue }" Minimum="0.1" Maximum="1.0" />
-                <Frame HeightRequest="1" HorizontalOptions="Fill"  BackgroundColor="DarkGray" />
+            <StackLayout Padding="19,9">
+                <Label Text="{Binding Caption }" FontSize="14" />
+                <Grid>
+                    <Label HorizontalOptions="Start" Text="{Binding MinValue}" FontSize="14" />
+                    <Label HorizontalOptions="Center"  Text="{Binding Source={x:Reference slider}, Path=Value, StringFormat='{0:0.##}'}" FontSize="14" />
+                    <Label HorizontalOptions="End" Text="{Binding MaxValue}" FontSize="14" />
+                </Grid>
+                <Slider x:Name="slider" Value="{Binding SliderValue }" Minimum="{Binding MinValue}" Maximum="{Binding MaxValue}" ValueChanged="Slider_OnValueChanged" />
             </StackLayout>
         </DataTemplate>
 
         <local:FilterItemTemplateSelector x:Key="filterItemTemplateSelector"
-                                          CollectionViewItemTemplate="{StaticResource collectionViewItemTemplate}"
-                                          ListItemTemplate="{StaticResource listItemTemplate}"
+                                          PrimaryFilterTemplate = "{StaticResource primaryFilterTemplate}"
+                                          PickerItemTemplate="{StaticResource pickerItemTemplate}"
+                                          SubFilterTemplate="{StaticResource subFilterTemplate}"
                                           SliderItemTemplate="{StaticResource sliderItemTemplate}" />
 
         <!-- Item Template Listing -->
     </ContentPage.Resources>
     <ContentPage.Content>
         <ScrollView>
-            <StackLayout >
+            <StackLayout>
                 <CollectionView
                     x:Name="FilterssCollectionView"
                     ItemsSource="{Binding FilterItems}"
-                    SelectionChanged="Filters_OnSelectionChanged"
                     SelectionMode="Single"
                     VerticalScrollBarVisibility="Default"
-                    IsGrouped="True"
                     ItemTemplate="{StaticResource filterItemTemplateSelector}">
-                    <!-- Header Template -->
-                    <CollectionView.GroupHeaderTemplate>
-                        <DataTemplate x:DataType="local:FilterItem">
-                            <StackLayout Padding="10" HeightRequest="50" BackgroundColor="{Binding Source={x:Static color:Constants+Colors.ScanbotRed}}">
-                                <StackLayout.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="GroupFilter_OnTapped" />
-                                </StackLayout.GestureRecognizers>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="9*" />
-                                        <ColumnDefinition Width="1*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Label Grid.Column="0"
-                                           Text="{Binding FilterTitle }" 
-                                           FontSize="16"
-                                           FontAttributes="Bold" />
-                                    <CheckBox Grid.Column="1" 
-                                              IsChecked="{Binding IsSelected}" 
-                                              CheckedChanged="CheckBox_OnCheckedChanged" />
-                                </Grid>
-                            </StackLayout>
-                        </DataTemplate>
-                    </CollectionView.GroupHeaderTemplate>
                 </CollectionView>
             </StackLayout>
         </ScrollView>

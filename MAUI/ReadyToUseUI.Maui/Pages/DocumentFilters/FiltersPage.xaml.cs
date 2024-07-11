@@ -4,99 +4,57 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using ReadyToUseUI.Maui.Pages.DocumentFilters;
 using ReadyToUseUI.Maui.Utils;
+using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.DocumentFormats.Barcode;
 
 namespace ReadyToUseUI.Maui.Pages;
 
 public partial class FiltersPage : ContentPage
 {
+
+    private Action<List<ParametricFilter>> FilterSelectionChanged;
+    internal void NavigateData(Action<List<ParametricFilter>> filterSelectionChanged)
+    {
+        FilterSelectionChanged = filterSelectionChanged;
+    }
     private void PopulateData()
     {
-        var filterItems = new ObservableCollection<FilterItem>();
+        FilterItems = new ObservableCollection<FilterItem>
+        {
+            FilterItem.InitPrimaryFilter(FilterItemConstants.None),
 
-        filterItems.Add( new FilterItem("None", new List<SubFilter>()));
-        filterItems.Add(new FilterItem("Binarization",
-            new List<SubFilter>
-                { SubFilter.InitParameters("Output Mode", new List<string>() { "Binary", "AntiAliased" }) }));
-        
-        filterItems.Add( new FilterItem("CustomBinarization",
-            new List<SubFilter>
-            {
-                SubFilter.InitParameters("Presets", new List<string>() { "Preset1", "Preset2", "Preset3", "Preset4", }),
-                SubFilter.InitParameters("Output Mode", new List<string>() { "Binary", "AntiAliased" }),
-                SubFilter.InitSlider( "Denoise", 0.4),
-                SubFilter.InitSlider( "Radius", 0.5),
-            }));
-        
-        filterItems.Add( new FilterItem("ColorDocument", new List<SubFilter>()));
-        filterItems.Add(new FilterItem("Brightness", new List<SubFilter> {SubFilter.InitSlider( "", 0.4) }));
-        filterItems.Add(new FilterItem("Contrast", new List<SubFilter> {SubFilter.InitSlider( "", 0.4) }));
-        filterItems.Add(new FilterItem("Grayscale", new List<SubFilter>
-        {
-            SubFilter.InitSlider( "Border Width Fraction", 0.4),
-            SubFilter.InitSlider( "Black Outlier Fraction", 0.4),
-            SubFilter.InitSlider( "White Outlier Fraction", 0.4)
-        }));
-        
-        filterItems.Add(new FilterItem("Legacy", new List<SubFilter>
-        {
-            SubFilter.InitLegacyFilter("No Filter"),
-            SubFilter.InitLegacyFilter("Color"),
-            SubFilter.InitLegacyFilter("Optimised Grayscale"),
-            SubFilter.InitLegacyFilter("Binarized"),
-            SubFilter.InitLegacyFilter("Color Document"),
-            SubFilter.InitLegacyFilter("Pure Binarized"),
-            SubFilter.InitLegacyFilter("Background Clean"),
-            SubFilter.InitLegacyFilter("Black & White"),
-            SubFilter.InitLegacyFilter("Otus Binarization"),
-            SubFilter.InitLegacyFilter("Deep Binarization"),
-            SubFilter.InitLegacyFilter("Edge Highlights"),
-            SubFilter.InitLegacyFilter("Low light binarization"),
-            SubFilter.InitLegacyFilter("Low light binarization 2"),
-            SubFilter.InitLegacyFilter("Sensitive binarization"),
-            SubFilter.InitLegacyFilter("Pure Greyscale"),
-        }));
-        
-        filterItems.Add(new FilterItem("WhiteBlackPoint", new List<SubFilter>
-        {
-            SubFilter.InitSlider( "Border Width Fraction", 0.4),
-            SubFilter.InitSlider( "Black Outlier Fraction", 0.4),
-            SubFilter.InitSlider( "White Outlier Fraction", 0.4)
-        }));
-        
+            FilterItem.InitPrimaryFilter(nameof(BinarizationFilter)),
+            FilterItem.InitPicker(nameof(BinarizationFilter), FilterItemConstants.OutputMode, Enum.GetNames<OutputMode>().ToList()),
 
-        BaseFilterItems = filterItems.ToList();
-       
-        FilterItems = new ObservableCollection<FilterItem>(RefreshList());
-    }
+            FilterItem.InitPrimaryFilter(nameof(CustomBinarizationFilter)),
+            FilterItem.InitPicker(nameof(CustomBinarizationFilter), FilterItemConstants.Presets, Enum.GetNames<OutputMode>().ToList()),
+            FilterItem.InitPicker(nameof(CustomBinarizationFilter), FilterItemConstants.OutputMode, Enum.GetNames<OutputMode>().ToList()),
+            FilterItem.InitSlider(nameof(CustomBinarizationFilter), FilterItemConstants.Denoise, 0.5, 0.0, 1.0),
+            FilterItem.InitSlider(nameof(CustomBinarizationFilter), FilterItemConstants.Radius, 32, 0, 512),
 
-    // Which item to be shown expanded. 
-    public IEnumerable<FilterItem> RefreshList()
-    {
-        var list = new List<FilterItem>();
-        foreach (var item in BaseFilterItems)
-        {
-            SDKUtils.PrintJson(item);
-            if (item.IsExpanded)
-            {
-                var filter = new FilterItem(item.FilterTitle, item, selected: item.IsSelected)
-                {
-                    IsExpanded = true
-                };
-                list.Add(filter);
-            }
-            else
-            {
-                list.Add(new FilterItem(item.FilterTitle, new List<SubFilter>(), item.IsSelected));
-            }
+            FilterItem.InitPrimaryFilter(nameof(ColorDocumentFilter)),
+
+            FilterItem.InitPrimaryFilter(nameof(BrightnessFilter)),
+            FilterItem.InitSlider(nameof(BrightnessFilter), FilterItemConstants.Brightness, 0.0, -1.0, 1.0),
+
+            FilterItem.InitPrimaryFilter(nameof(ContrastFilter)),
+            FilterItem.InitSlider(nameof(ContrastFilter), FilterItemConstants.Contrast, 0.0, -1, 254),
+
+            FilterItem.InitPrimaryFilter(nameof(GrayscaleFilter)),
+            FilterItem.InitSlider(nameof(GrayscaleFilter), FilterItemConstants.BorderWidthFraction, 0.06, 0.0, 0.15),
+            FilterItem.InitSlider(nameof(GrayscaleFilter), FilterItemConstants.BlackOutlierFraction, 0.0, 0.0, 0.05),
+            FilterItem.InitSlider(nameof(GrayscaleFilter), FilterItemConstants.WhiteOutlierFraction, 0.02, 0.0, 0.05),
+
+            FilterItem.InitPrimaryFilter(nameof(LegacyFilter)),
+            FilterItem.InitPicker(nameof(LegacyFilter), FilterItemConstants.LegacyFilters, Enum.GetNames<ImageFilter>().ToList()),
             
-        }
-
-        return list;
+            FilterItem.InitPrimaryFilter(nameof(WhiteBlackPointFilter)),
+            FilterItem.InitSlider(nameof(WhiteBlackPointFilter), FilterItemConstants.BlackPoint, 0.0, 0.0, 1.0),
+            FilterItem.InitSlider(nameof(WhiteBlackPointFilter), FilterItemConstants.WhitePoint, 0.0, 0.0, 1.0),
+        };
     }
 
     private ObservableCollection<FilterItem> _filterItems;
-
-    public List<FilterItem> BaseFilterItems;
     public ObservableCollection<FilterItem> FilterItems
     {
         get => _filterItems;
@@ -110,8 +68,10 @@ public partial class FiltersPage : ContentPage
     public FiltersPage()
     {
         InitializeComponent();
-        // BindingContext = this;
         PopulateData();
+        Title = "Document Filters";
+
+        ToolbarItems.Add(new ToolbarItem("Done", null, DoneButtonClicked, ToolbarItemOrder.Primary));
     }
 
     protected override void OnAppearing()
@@ -120,33 +80,43 @@ public partial class FiltersPage : ContentPage
         FilterssCollectionView.ItemsSource = FilterItems;
     }
 
-    private void Filters_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    private async void CheckBox_OnCheckedChanged(object sender, CheckedChangedEventArgs e)
     {
-        if (e.CurrentSelection is SubFilter selectedItem && selectedItem != null)
+        var filterItem = (sender as CheckBox).BindingContext as FilterItem;
+
+        // Clear filters
+        if (filterItem.FilterTitle == FilterItemConstants.None)
         {
-           
+            var result = await DisplayAlert("Alert",
+                "Selecting None will clear all your previous selections, Please confirm.", "Continue",
+                "Cancel");
+
+            if (result)
+            {
+                foreach (var item in FilterItems)
+                {
+                    item.IsSelected = false;
+                }
+
+                FilterItems.First().IsSelected = true;
+            }
         }
     }
 
-    private void SubFilters_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void Picker_OnSelectedIndexChanged(object sender, EventArgs e)
     {
-        
+        if (sender is Picker picker && picker != null)
+        {
+            UpdateList(picker, (index) => FilterItems[index].PickerSelectedValue = picker.SelectedItem as string);
+        }
     }
 
-    private void GroupFilter_OnTapped(object sender, TappedEventArgs e)
+    private void Slider_OnValueChanged(object sender, ValueChangedEventArgs e)
     {
-        UpdateList(sender as StackLayout,
-            (index) =>
-            {
-                var isExpanded = !BaseFilterItems[index].IsExpanded;
-                BaseFilterItems.ForEach(item => item.IsExpanded = false);
-                BaseFilterItems[index].IsExpanded = isExpanded;
-            });
-    }
-
-    private void CheckBox_OnCheckedChanged(object sender, CheckedChangedEventArgs e)
-    {
-        UpdateList(sender as CheckBox, (index) => BaseFilterItems[index].IsSelected = !BaseFilterItems[index].IsSelected);
+        if (sender is Slider slider && slider != null)
+        {
+            UpdateList(slider, (index) => FilterItems[index].SliderValue = slider.Value);
+        }
     }
 
     private void UpdateList(Microsoft.Maui.Controls.View sender, Action<int> action)
@@ -155,16 +125,8 @@ public partial class FiltersPage : ContentPage
         {
             if (sender.BindingContext is FilterItem selectedItem)
             {
-                
-                
                 var index = FilterItems.ToList().FindIndex(item => item.FilterTitle == selectedItem?.FilterTitle);
                 action?.Invoke(index);
-                FilterItems = new ObservableCollection<FilterItem>(RefreshList());
-                FilterssCollectionView.ItemsSource = FilterItems;
-                Debug.WriteLine("================MASTER LIST======================");
-                SDKUtils.PrintJson(BaseFilterItems);
-                Debug.WriteLine("===============FILTERED LIST=====================");
-                SDKUtils.PrintJson(FilterItems);
             }
         });
     }
@@ -174,5 +136,145 @@ public partial class FiltersPage : ContentPage
     protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    /// <summary>
+    /// Extract the selected filters from the FilterItems and init the ParametricFiltrsList
+    /// </summary>
+    private async void DoneButtonClicked()
+    {
+        var selectedFilters =
+            FilterItems.Where(item => item.IsSelected).ToList(); // gets only primary filters with CheckBox.
+        
+        if (ValidateEmptyValues(selectedFilters))
+        {
+            // if filter is selected but the picker values are left empty.
+            await DisplayAlert("Alert", "Please insert the required values for the selected filters and try again.", "Ok");
+            return;
+        }
+
+        // Clear all the filters of null
+        if (selectedFilters.Count == 1 && selectedFilters.First().FilterTitle == FilterItemConstants.None)
+        {
+            // clear all filters
+            DidFinishFilterSelection(new List<ParametricFilter>());
+            return;
+        }
+
+        var list = new List<ParametricFilter>();
+        foreach (var filterType in selectedFilters)
+        {
+            if (filterType.FilterTitle == nameof(ColorDocumentFilter))
+            {
+                list.Add(GetParametricFilterFromItems(filterType.FilterTitle, null));
+                continue;
+            }
+            
+            // get the Filter parameters only
+            var properties = FilterItems.Where(item => item.FilterTitle == filterType.FilterTitle && !string.IsNullOrEmpty(item.Caption)).ToList();
+            list.Add(GetParametricFilterFromItems(filterType.FilterTitle, properties));
+        }
+        
+        // all selected filters
+        SDKUtils.PrintJson(list);
+        
+        // Note: If you wish to ignore the Legacy Filter uncoment below code 
+        // list = list.Where(item => !item.IsLegacyFilter).ToList();
+
+        DidFinishFilterSelection(list);
+    }
+
+    private void DidFinishFilterSelection(List<ParametricFilter> list)
+    {
+        FilterSelectionChanged?.Invoke(list);
+        this.Navigation.PopAsync(true);
+    }
+
+    private bool ValidateEmptyValues(List<FilterItem> selectedFilters)
+    {
+        bool isEmpty = false;
+        foreach (var filter in selectedFilters)
+        {
+            var list = FilterItems.Where(item =>
+                item.FilterTitle == filter.FilterTitle && item.ParameterType == FilterParameterType.Picker);
+            if (list.Any(item => string.IsNullOrEmpty(item.PickerSelectedValue)))
+            {
+                isEmpty = true;
+                break;
+            }
+        }
+        return isEmpty;
+    }
+
+    private ParametricFilter GetParametricFilterFromItems(string filterType, List<FilterItem> properties)
+    {
+        switch (filterType)
+        {
+            case nameof(BinarizationFilter):
+                return ParametricFilter.ScanbotBinarization(GetOutputMode(properties.First().PickerSelectedValue));
+
+            case nameof(CustomBinarizationFilter):
+            {
+                var outputMode = properties.First(item => item.Caption == FilterItemConstants.OutputMode)
+                    .PickerSelectedValue;
+                var presets = properties.First(item => item.Caption == FilterItemConstants.Presets)
+                    .PickerSelectedValue;
+                var deniose = properties.First(item => item.Caption == FilterItemConstants.Denoise)
+                    .SliderValue;
+                var radius = properties.First(item => item.Caption == FilterItemConstants.Radius)
+                    .SliderValue;
+                return ParametricFilter.CustomBinarization(GetOutputMode(outputMode), deniose, (int)radius,
+                    GetBinarizationPreset(presets));
+            }
+            case nameof(ColorDocumentFilter):
+                return ParametricFilter.ColorDocument;
+
+            case nameof(BrightnessFilter):
+                return ParametricFilter.Brightness(properties.First().SliderValue);
+
+            case nameof(ContrastFilter):
+                return ParametricFilter.Contrast(properties.First().SliderValue);
+
+            case nameof(GrayscaleFilter):
+            {
+                var borderWidth = properties.First(item => item.Caption == FilterItemConstants.BorderWidthFraction)
+                    .SliderValue;
+                var blackOutlier = properties.First(item => item.Caption == FilterItemConstants.BlackOutlierFraction)
+                    .SliderValue;
+                var whiteOutlier = properties.First(item => item.Caption == FilterItemConstants.WhiteOutlierFraction)
+                    .SliderValue;
+
+                return ParametricFilter.Grayscale(borderWidth, blackOutlier, whiteOutlier);
+            }
+            case nameof(LegacyFilter):
+            {
+                Enum.TryParse(properties.First().PickerSelectedValue, out ImageFilter legacyFilter);
+                return ParametricFilter.FromLegacyFilter(legacyFilter);
+            }
+
+            case nameof(WhiteBlackPointFilter):
+            {
+                var blackPoint = properties.First(item => item.Caption == FilterItemConstants.BlackPoint)
+                    .SliderValue;
+                var whitePoint = properties.First(item => item.Caption == FilterItemConstants.WhitePoint)
+                    .SliderValue;
+                
+                return ParametricFilter.WhiteBlackPoint(blackPoint, whitePoint);
+            }
+        }
+
+        throw new Exception("Filter type unsupported.");
+    }
+
+    private OutputMode GetOutputMode(string pickerValue)
+    {
+        Enum.TryParse(pickerValue, out OutputMode myStatus);
+        return myStatus;
+    }
+
+    private BinarizationFilterPreset GetBinarizationPreset(string pickerValue)
+    {
+        Enum.TryParse(pickerValue, out BinarizationFilterPreset preset);
+        return preset;
     }
 }

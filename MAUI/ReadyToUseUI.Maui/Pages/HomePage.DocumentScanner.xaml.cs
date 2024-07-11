@@ -85,12 +85,10 @@ namespace ReadyToUseUI.Maui.Pages
 
                 var result =
                     await SBSDK.SDKService.ApplyImageFilterAsync(source, ParametricFilter.Brightness(0.3f));
-
+                
                 var filteredResult = new FilteredImagePage();
                 filteredResult.NavigateData(result);
                 await Navigation.PushAsync(filteredResult);
-
-                // await Navigation.PushAsync(new FiltersPage());
             }
         }
     }
