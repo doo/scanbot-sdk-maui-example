@@ -59,15 +59,20 @@ namespace ReadyToUseUI.Maui.Models
             var db = await GetDatabaseAsync();
             var dbPages = await db.Table<DBPage>().ToListAsync();
 
-            return dbPages.Select(page =>
+            var scannedPages = new List<IScannedPage>();
+            foreach (var page in dbPages)
             {
-                return ScanbotSDK.MAUI.ScanbotSDK.SDKService.ReconstructPage(
+                var result = await ScanbotSDK.MAUI.ScanbotSDK.SDKService.ReconstructPage(
                     page.Id,
                     page.CreatePolygon(),
-                    SDKUtils.JsonToFilter(page.ParametricFilters),
-                    (DocumentDetectionStatus)page.DetectionStatus
-                ).Result;
-            }).ToList();
+                    SDKUtils.JsonToFilter(page.ParametricFilters) ??
+                    new[] { ParametricFilter.FromLegacyFilter(ImageFilter.None) },
+                    (DocumentDetectionStatus)page.DetectionStatus);
+
+                scannedPages.Add(result);
+            }
+
+            return scannedPages;
         }
 
         public async Task<int> DeleteAsync(IScannedPage page)
@@ -96,7 +101,11 @@ namespace ReadyToUseUI.Maui.Models
 
         public int Filter { get; set; }
 
+        /// <summary>
+        /// Dictionary of all the filter names mapped with their corresponding filter objects. 
+        /// </summary>
         public string ParametricFilters { get; set; }
+        
         public int DetectionStatus { get; set; }
 
         public double X1 { get; set; }

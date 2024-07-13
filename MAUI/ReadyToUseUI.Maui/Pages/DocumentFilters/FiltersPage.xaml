@@ -79,12 +79,12 @@
         <!-- Item Template Listing -->
     </ContentPage.Resources>
     <ContentPage.Content>
-        <ScrollView>
+        <ScrollView VerticalScrollBarVisibility="Never">
             <StackLayout>
                 <CollectionView
                     x:Name="FilterssCollectionView"
                     ItemsSource="{Binding FilterItems}"
-                    SelectionMode="Single"
+                    SelectionMode="None"
                     VerticalScrollBarVisibility="Default"
                     ItemTemplate="{StaticResource filterItemTemplateSelector}">
                 </CollectionView>

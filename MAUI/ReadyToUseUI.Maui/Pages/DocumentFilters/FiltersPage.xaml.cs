@@ -23,11 +23,11 @@ public partial class FiltersPage : ContentPage
         {
             FilterItem.InitPrimaryFilter(FilterItemConstants.None),
 
-            FilterItem.InitPrimaryFilter(nameof(BinarizationFilter)),
-            FilterItem.InitPicker(nameof(BinarizationFilter), FilterItemConstants.OutputMode, Enum.GetNames<OutputMode>().ToList()),
+            FilterItem.InitPrimaryFilter(nameof(ScanbotBinarizationFilter)),
+            FilterItem.InitPicker(nameof(ScanbotBinarizationFilter), FilterItemConstants.OutputMode, Enum.GetNames<OutputMode>().ToList()),
 
             FilterItem.InitPrimaryFilter(nameof(CustomBinarizationFilter)),
-            FilterItem.InitPicker(nameof(CustomBinarizationFilter), FilterItemConstants.Presets, Enum.GetNames<OutputMode>().ToList()),
+            FilterItem.InitPicker(nameof(CustomBinarizationFilter), FilterItemConstants.Presets, Enum.GetNames<BinarizationFilterPreset>().ToList()),
             FilterItem.InitPicker(nameof(CustomBinarizationFilter), FilterItemConstants.OutputMode, Enum.GetNames<OutputMode>().ToList()),
             FilterItem.InitSlider(nameof(CustomBinarizationFilter), FilterItemConstants.Denoise, 0.5, 0.0, 1.0),
             FilterItem.InitSlider(nameof(CustomBinarizationFilter), FilterItemConstants.Radius, 32, 0, 512),
@@ -80,26 +80,45 @@ public partial class FiltersPage : ContentPage
         FilterssCollectionView.ItemsSource = FilterItems;
     }
 
+    
+    private bool isBusy;
     private async void CheckBox_OnCheckedChanged(object sender, CheckedChangedEventArgs e)
     {
-        var filterItem = (sender as CheckBox).BindingContext as FilterItem;
-
-        // Clear filters
-        if (filterItem.FilterTitle == FilterItemConstants.None)
+        // Case: Selection 'None' Filter
+        // Unselecting all items selected filters(CheckBoxes) triggers the CheckBoxValueChanged event every single time. So we skip the call until all checkboxes are updated.
+        if (!isBusy)
         {
-            var result = await DisplayAlert("Alert",
-                "Selecting None will clear all your previous selections, Please confirm.", "Continue",
-                "Cancel");
+            isBusy = true;
+            var checkBox = (sender as CheckBox);
+            var filterItem = checkBox.BindingContext as FilterItem;
 
-            if (result)
+            // Clear filters
+            if (filterItem.FilterTitle == FilterItemConstants.None && checkBox.IsChecked)
             {
-                foreach (var item in FilterItems)
-                {
-                    item.IsSelected = false;
-                }
+                var result = await DisplayAlert("Alert",
+                    "Selecting None will clear all your previous selections, Please confirm.", "Continue",
+                    "Cancel");
 
-                FilterItems.First().IsSelected = true;
+                if (result)
+                {
+                    foreach (var item in FilterItems)
+                    {
+                        item.IsSelected = false;
+                    }
+
+                    FilterItems.First().IsSelected = true;
+                }
+                else
+                {
+                    checkBox.IsChecked = false;
+                }
             }
+            else
+            {
+                // Unchecking the None filter.
+                FilterItems.First().IsSelected = false;
+            }
+            isBusy = false;
         }
     }
 
@@ -210,7 +229,7 @@ public partial class FiltersPage : ContentPage
     {
         switch (filterType)
         {
-            case nameof(BinarizationFilter):
+            case nameof(ScanbotBinarizationFilter):
                 return ParametricFilter.ScanbotBinarization(GetOutputMode(properties.First().PickerSelectedValue));
 
             case nameof(CustomBinarizationFilter):
