@@ -1,6 +1,8 @@
 ﻿using ScanbotSDK.MAUI.Configurations;
 using Microsoft.Maui.Controls.PlatformConfiguration;
 using Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;
+using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.RTU.v1;
 
 namespace ClassicComponent.Maui
 {
@@ -39,7 +41,7 @@ namespace ClassicComponent.Maui
         /// </summary>
         private void SetupViews()
         {
-            cameraView.OverlayConfiguration = new SelectionOverlayConfiguration(false, ScanbotSDK.MAUI.Constants.BarcodeTextFormat.CodeAndType,
+            cameraView.OverlayConfiguration = new SelectionOverlayConfiguration(false, BarcodeTextFormat.CodeAndType,
                 textColor: Colors.Yellow,
                 textContainerColor: Colors.Black,
                 strokeColor: Colors.Yellow,
@@ -49,7 +51,7 @@ namespace ClassicComponent.Maui
             cameraView.OnBarcodeScanResult = (result) =>
             {
                 string text = "";
-                foreach (ScanbotSDK.MAUI.Models.Barcode barcode in result.Barcodes)
+                foreach (ScanbotSDK.MAUI.RTU.v1.Barcode barcode in result.Barcodes)
                 {
                     text += string.Format("{0} ({1})\n", barcode.Text, barcode.Format.ToString().ToUpper());
                 }

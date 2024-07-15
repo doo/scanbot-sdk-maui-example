@@ -64,6 +64,8 @@
         <PackageReference Include="SQLitePCLRaw.core" Version="2.1.4"/>
         <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.4"/>
         <PackageReference Include="sqlite-net-pcl" Version="1.8.116"/>
+        <!-- Todo: Need to publish a new beta package from CI -->
+        <PackageReference Include="ScanbotSDK.MAUI" Version="5.1.0-alpha.2" />
     </ItemGroup>
 
     <!-- ===================== IOS OCR Data Files =====================  -->
@@ -71,10 +73,6 @@
         <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\eng.traineddata"/>
         <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\deu.traineddata"/>
         <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\osd.traineddata"/>
-    </ItemGroup>
-    <ItemGroup>
-        <ProjectReference Include="..\..\..\scanbot-sdk-maui\DocumentSDK\DocumentSDK.MAUI\DocumentSDK.MAUI.csproj"/>
-        <ProjectReference Include="..\..\..\scanbot-sdk-maui\ScanbotSDK.Shared\ScanbotSDK.DS.Shared.csproj"/>
     </ItemGroup>
     <ItemGroup>
         <Folder Include="SubViews\ParametricFilterViews\"/>
