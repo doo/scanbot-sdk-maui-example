@@ -10,6 +10,7 @@ namespace ReadyToUseUI.Maui.Pages;
 public partial class HomePage : ContentPage
 {
     public static Color ScanbotColor => Constants.Colors.ScanbotRed;
+
     public struct SdkFeature
     {
         public SdkFeature(string title, Func<Task> doTask = null)
@@ -33,10 +34,20 @@ public partial class HomePage : ContentPage
     {
         sdkFeatures = new List<SdkFeature>
         {
-            new SdkFeature("BARCODE DETECTOR"),
+#if LEGACY_EXAMPLES
+            new SdkFeature("BARCODE DETECTOR V1"),
             new SdkFeature("Scan QR & Barcodes", () => BarcodeScannerClicked(withImage: false)),
             new SdkFeature("Scan QR & Barcodes With Image", () => BarcodeScannerClicked(withImage: true)),
             new SdkFeature("Scan Multiple QR & Barcodes", BatchBarcodeScannerClicked),
+            new SdkFeature("BARCODE DETECTOR V2"),
+#else
+            new SdkFeature("BARCODE DETECTOR"),
+#endif
+            new SdkFeature("Single Scanning", SingleScanning),
+            new SdkFeature("Single Scanning Selection Overlay", SingleScanningWithArOverlay),
+            new SdkFeature("Batch Barcode Scanning", BatchBarcodeScanning),
+            new SdkFeature("Multiple Unique Barcode Scanning", MultipleUniqueBarcodeScanning),
+            new SdkFeature("Find and Pick Barcode Scanning", FindAndPickScanning),
             new SdkFeature("Import Image & Detect Barcodes", ImportAndDetectBarcodesClicked),
 
             new SdkFeature("DOCUMENT SCANNER"),
@@ -71,6 +82,7 @@ public partial class HomePage : ContentPage
         if (e?.CurrentSelection?.FirstOrDefault() is SdkFeature feature && feature.DoTask != null)
         {
             if (!SDKUtils.CheckLicense(this)) { return; }
+
             await feature.DoTask();
         }
         FeaturesCollectionView.SelectedItem = null;

@@ -20,14 +20,17 @@
         <!-- Supported Platforms -->
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">13.0</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21</SupportedOSPlatformVersion>
+
+        <!-- Comment this out to see RTU v1 in the example -->
+         <DefineConstants>$(DefineConstants);LEGACY_EXAMPLES</DefineConstants>
     </PropertyGroup>
-    <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+    <PropertyGroup Condition="$(TargetFramework.Contains('-ios')) == true And '$(Platform)' == 'ARM'">
         <MtouchLink>SdkOnly</MtouchLink>
         <MtouchInterpreter>-all</MtouchInterpreter>
         <CreatePackage>false</CreatePackage>
         <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
     </PropertyGroup>
-    <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <PropertyGroup Condition="$(TargetFramework.Contains('-android')) == true And '$(Platform)' == 'ARM'">
         <MtouchLink>SdkOnly</MtouchLink>
         <CreatePackage>false</CreatePackage>
     </PropertyGroup>
@@ -65,7 +68,7 @@
         <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.4"/>
         <PackageReference Include="sqlite-net-pcl" Version="1.8.116"/>
         <!-- Todo: Need to publish a new beta package from CI -->
-        <PackageReference Include="ScanbotSDK.MAUI" Version="5.1.0-alpha.2" />
+        <PackageReference Include="ScanbotSDK.MAUI" Version="5.1.0-alpha.3" />
     </ItemGroup>
 
     <!-- ===================== IOS OCR Data Files =====================  -->
@@ -84,6 +87,9 @@
         <MauiXaml Update="Pages\DocumentFilters\FiltersPage.xaml">
             <SubType>Designer</SubType>
         </MauiXaml>
+        <MauiXaml Update="Pages\BarcodeResults\BarcodeResultPage.xaml">
+          <SubType>Designer</SubType>
+        </MauiXaml>
     </ItemGroup>
     <ItemGroup>
         <Compile Update="Pages\DocumentFilters\FilteredImagePage.xaml.cs">
@@ -93,6 +99,10 @@
         <Compile Update="Pages\DocumentFilters\FiltersPage.xaml.cs">
             <DependentUpon>FiltersPage.xaml</DependentUpon>
             <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Pages\BarcodeResults\BarcodeResultPage.xaml.cs">
+          <DependentUpon>BarcodeResultPage.xaml</DependentUpon>
+          <SubType>Code</SubType>
         </Compile>
     </ItemGroup>
 </Project>

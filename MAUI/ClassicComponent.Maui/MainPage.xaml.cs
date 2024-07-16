@@ -56,10 +56,7 @@ namespace ClassicComponent.Maui
                     text += string.Format("{0} ({1})\n", barcode.Text, barcode.Format.ToString().ToUpper());
                 }
 
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    resultsLabel.Text = text;
-                });
+                resultsLabel.Text = text;
             };
             SetupIOSAppearance();
         }

@@ -68,6 +68,6 @@
     </ItemGroup>
     <ItemGroup>
         <!-- Todo: Need to publish a new beta package from CI -->
-        <PackageReference Include="ScanbotSDK.MAUI" Version="5.1.0-alpha.2" />
+        <PackageReference Include="ScanbotSDK.MAUI" Version="5.1.0-alpha.3" />
     </ItemGroup>
 </Project>
