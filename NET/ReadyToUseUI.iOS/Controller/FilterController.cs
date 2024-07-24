@@ -8,24 +8,35 @@ namespace ReadyToUseUI.iOS.Controller
     public class FilterController : UIViewController
     {
         private FilterView ContentView;
-        private SBSDKImageFilterType Choice;
+        private Filter SelectedFilter = new Filter(SBSDKImageFilterType.None);
+        private SBSDKParametricFilter SelectedParametricFilter => GetParametricFilter(SelectedFilter);
         private SBSDKDocumentPage Temp;
 
-        private static readonly List<Filter> Filters = new List<Filter>
+        private readonly List<Filter> Filters = new List<Filter>
         {
-            new Filter("None", SBSDKImageFilterType.None),
-            new Filter("Low Light Binarization", SBSDKImageFilterType.LowLightBinarization),
-            new Filter("Low Light Binarization 2", SBSDKImageFilterType.LowLightBinarization2),
-            new Filter("Edge Highlight", SBSDKImageFilterType.EdgeHighlight),
-            new Filter("Deep Binarization", SBSDKImageFilterType.DeepBinarization),
-            new Filter("Otsu Binarization", SBSDKImageFilterType.OtsuBinarization),
-            new Filter("Clean Background", SBSDKImageFilterType.BackgroundClean),
-            new Filter("Color Document", SBSDKImageFilterType.ColorDocument),
-            new Filter("Color", SBSDKImageFilterType.Color),
-            new Filter("Grayscale", SBSDKImageFilterType.Gray),
-            new Filter("Binarized", SBSDKImageFilterType.Binarized),
-            new Filter("Pure Binarized", SBSDKImageFilterType.PureBinarized),
-            new Filter("Black & White", SBSDKImageFilterType.BlackAndWhite)
+            new Filter("New Filters", true),
+            new Filter(typeof(SBSDKScanbotBinarizationFilter)),
+            new Filter(typeof(SBSDKCustomBinarizationFilter)),
+            new Filter(typeof(SBSDKColorDocumentFilter)),
+            new Filter(typeof(SBSDKBrightnessFilter)),
+            new Filter(typeof(SBSDKContrastFilter)),
+            new Filter(typeof(SBSDKGrayscaleFilter)),
+            new Filter(typeof(SBSDKWhiteBlackPointFilter)),
+            
+            new Filter("Legacy Filters", true),
+            new Filter(SBSDKImageFilterType.None),
+            new Filter(SBSDKImageFilterType.LowLightBinarization),
+            new Filter(SBSDKImageFilterType.LowLightBinarization2),
+            new Filter(SBSDKImageFilterType.EdgeHighlight),
+            new Filter(SBSDKImageFilterType.DeepBinarization),
+            new Filter(SBSDKImageFilterType.OtsuBinarization),
+            new Filter(SBSDKImageFilterType.BackgroundClean),
+            new Filter(SBSDKImageFilterType.ColorDocument),
+            new Filter(SBSDKImageFilterType.Color),
+            new Filter(SBSDKImageFilterType.Gray),
+            new Filter(SBSDKImageFilterType.Binarized),
+            new Filter(SBSDKImageFilterType.PureBinarized),
+            new Filter(SBSDKImageFilterType.BlackAndWhite),
         };
 
         public override void ViewDidLoad()
@@ -60,22 +71,58 @@ namespace ReadyToUseUI.iOS.Controller
 
         private void OnFilterSelected(object sender, FilterEventArgs e)
         {
-            Choice = e.Type;
+            SelectedFilter = e.Type;
 
             if (Temp == null)
             {
-                Temp = PageRepository.DuplicateCurrent(Choice);
+                Temp = PageRepository.DuplicateCurrent(SelectedParametricFilter);
             }
 
-            Temp.Filter = Choice;
+            Temp.ParametricFilters = new[] { SelectedParametricFilter };
             ContentView.ImageView.Image = Temp.DocumentImage;
         }
 
         private void FilterChosen(object sender, EventArgs e)
         {
-            PageRepository.Apply(Choice, PageRepository.Current);
-            PageRepository.UpdateCurrent(PageRepository.Current.OriginalImage, PageRepository.Current.Polygon);
+            PageRepository.Apply(SelectedParametricFilter, PageRepository.Current);
+            PageRepository.UpdateCurrent(PageRepository.Current.DocumentImage, PageRepository.Current.Polygon);
             NavigationController.PopViewController(true);
+        }
+
+        private SBSDKParametricFilter GetParametricFilter(Filter filter)
+        {
+            if (filter.FilterType == FilterType.LegacyFilter)
+            {
+                SBSDKImageFilterType legacyFilter;
+                Enum.TryParse(filter.Title, true, out legacyFilter);
+                return new SBSDKLegacyFilter((int)legacyFilter);
+            }
+
+            switch (filter.Title)
+            {
+                case nameof(SBSDKScanbotBinarizationFilter):
+                    return new SBSDKScanbotBinarizationFilter();
+                
+                case nameof(SBSDKCustomBinarizationFilter):
+                    return new SBSDKCustomBinarizationFilter();
+                
+                case nameof(SBSDKColorDocumentFilter):
+                    return new SBSDKColorDocumentFilter();
+                
+                case nameof(SBSDKBrightnessFilter):
+                    return new SBSDKBrightnessFilter();
+                
+                case nameof(SBSDKContrastFilter):
+                    return new SBSDKContrastFilter();
+                
+                case nameof(SBSDKGrayscaleFilter):
+                    return new SBSDKGrayscaleFilter();
+                
+                case nameof(SBSDKWhiteBlackPointFilter):
+                    return new SBSDKWhiteBlackPointFilter();
+            }
+            
+            return new SBSDKLegacyFilter((int)SBSDKImageFilterType.None);
         }
     }
 }

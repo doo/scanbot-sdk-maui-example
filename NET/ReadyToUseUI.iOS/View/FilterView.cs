@@ -59,11 +59,12 @@ namespace ReadyToUseUI.iOS.View
 
     public class FilterEventArgs : EventArgs
     {
-        public SBSDKImageFilterType Type { get; set; }
+        public Filter Type { get; set; }
     }
 
     public class FilterPickerModel : UIPickerViewModel
     {
+        private const string iOSPrefix = "SBSDK";
         public EventHandler<FilterEventArgs> SelectionChanged;
 
         public List<Filter> Items = new List<Filter>();
@@ -76,7 +77,19 @@ namespace ReadyToUseUI.iOS.View
         [Export("pickerView:attributedTitleForRow:forComponent:")]
         public override NSAttributedString GetAttributedTitle(UIPickerView pickerView, nint row, nint component)
         {
-            var text = Items[(int)row].Title;
+            var currentItem = Items[(int)row];
+            var text = currentItem.Title;
+            
+            if (currentItem.IsSection)
+            {
+                return new NSAttributedString(text, UIFont.BoldSystemFontOfSize(16), foregroundColor:Colors.ScanbotRed);
+            }
+            
+            if (currentItem.FilterType == FilterType.NewFilter)
+            {
+                text = text.Replace(iOSPrefix, string.Empty);
+            }
+            
             var attributed = new NSAttributedString(text, null, Models.Colors.AppleBlue);
             return attributed;
         }
@@ -89,7 +102,10 @@ namespace ReadyToUseUI.iOS.View
         public override void Selected(UIPickerView pickerView, nint row, nint component)
         {
             var filter = Items[(int)row];
-            SelectionChanged?.Invoke(this, new FilterEventArgs { Type = filter.Type });
+            if (!filter.IsSection)
+            {
+                SelectionChanged?.Invoke(this, new FilterEventArgs { Type = filter });
+            }
         }
     }
 }
