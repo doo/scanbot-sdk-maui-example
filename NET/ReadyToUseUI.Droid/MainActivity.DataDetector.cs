@@ -48,12 +48,12 @@ public partial class MainActivity
         configuration.SetCancelButtonTitle("Done");
 
         // Specify accepted types if needed
-        configuration.SetAcceptedDocumentTypes(new List<RootDocumentType>
-        {
-            RootDocumentType.DeIdCardFront,
-            //RootDocumentType.DeIdCardBack,
-            //RootDocumentType.DePassport,
-        });
+        // configuration.SetAcceptedDocumentTypes(new List<RootDocumentType>
+        // {
+        //     RootDocumentType.DeIdCardFront,
+        //     //RootDocumentType.DeIdCardBack,
+        //     //RootDocumentType.DePassport,
+        // });
 
         // Apply the parameters for fields
         // Use constants from NormalizedFieldNames objects from the corresponding document type

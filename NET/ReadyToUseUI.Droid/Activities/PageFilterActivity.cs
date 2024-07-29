@@ -127,11 +127,11 @@ namespace ReadyToUseUI.Droid.Activities
 
             Task.Run(delegate
             {
-                var uri = pageStorage.GetFilteredPreviewImageURI(selectedPageId, null); // None
+                var uri = pageStorage.GetFilteredPreviewImageURI(selectedPageId, new LegacyFilter(ImageFilterType.None.Code)); 
 
                 if (!File.Exists(uri.Path))
                 {
-                    pageProcessor.GenerateFilteredPreview(new Page().Copy(pageId: selectedPageId), null);
+                    pageProcessor.GenerateFilteredPreview(new Page().Copy(pageId: selectedPageId),  new LegacyFilter(ImageFilterType.None.Code));
                 }
 
                 UpdateImage(uri);
