@@ -227,12 +227,11 @@ public partial class HomePage
         }
     }
 
-    private void DisplayResults(BarcodeScannerResult result)
+    private async void DisplayResults(BarcodeScannerResult result)
     {
         if (result?.Items?.Length > 0)
         {
-            MainThread.InvokeOnMainThreadAsync(async () =>
-                await Navigation.PushAsync(new BarcodeResultPage(result.Items.ToList())));
+            await Navigation.PushAsync(new BarcodeResultPage(result.Items.ToList()));
         }
     }
 }

@@ -90,13 +90,10 @@ namespace ReadyToUseUI.Maui.Pages
             var filterPage = new FiltersPage();
             filterPage.NavigateData((filters) =>
             {
-                MainThread.InvokeOnMainThreadAsync(async () =>
-                {
-                    documentImage.Source = null;
-                    await selectedPage.SetFilterAsync(filters.ToArray());
-                    await PageStorage.Instance.UpdateAsync(selectedPage);
-                    documentImage.Source = await PageDocument();
-                });
+                documentImage.Source = null;
+                await selectedPage.SetFilterAsync(filters.ToArray());
+                await PageStorage.Instance.UpdateAsync(selectedPage);
+                documentImage.Source = await PageDocument();
             });
             
             await Navigation.PushAsync(filterPage);

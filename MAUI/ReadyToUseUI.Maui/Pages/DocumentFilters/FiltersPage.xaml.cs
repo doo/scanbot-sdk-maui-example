@@ -140,14 +140,11 @@ public partial class FiltersPage : ContentPage
 
     private void UpdateList(Microsoft.Maui.Controls.View sender, Action<int> action)
     {
-        MainThread.InvokeOnMainThreadAsync(() =>
+        if (sender.BindingContext is FilterItem selectedItem)
         {
-            if (sender.BindingContext is FilterItem selectedItem)
-            {
-                var index = FilterItems.ToList().FindIndex(item => item.FilterTitle == selectedItem?.FilterTitle);
-                action?.Invoke(index);
-            }
-        });
+            var index = FilterItems.ToList().FindIndex(item => item.FilterTitle == selectedItem?.FilterTitle);
+            action?.Invoke(index);
+        }
     }
 
     public event PropertyChangedEventHandler PropertyChanged;
@@ -162,8 +159,7 @@ public partial class FiltersPage : ContentPage
     /// </summary>
     private async void DoneButtonClicked()
     {
-        var selectedFilters =
-            FilterItems.Where(item => item.IsSelected).ToList(); // gets only primary filters with CheckBox.
+        var selectedFilters = FilterItems?.Where(item => item.IsSelected)?.ToList() ?? new List<FilterItem>(); // gets only primary filters with CheckBox.
         
         if (ValidateEmptyValues(selectedFilters))
         {
