@@ -21,6 +21,7 @@ using IO.Scanbot.Sdk.Mcrecognizer.Entity;
 using IO.Scanbot.Sdk.Ui_v2.Barcode.Common.Mappers;
 using IO.Scanbot.Sdk.Vin;
 using IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration;
+using IO.Scanbot.Sdk.UI.View.Licenseplate.Entity;
 
 namespace ReadyToUseUI.Droid
 {
@@ -263,7 +264,7 @@ namespace ReadyToUseUI.Droid
                 {
                     var result = (VinScanResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
 
-                    Alert.Toast(this, $"VIN Scanned: {result.RawText}");
+                    Alert.Toast(this, $"VIN Scanned: {result?.RawText}");
                     return;
                 }
                 case SCAN_DATA_REQUEST:
@@ -279,14 +280,14 @@ namespace ReadyToUseUI.Droid
                 }
                 case SCAN_EU_LICENSE_REQUEST:
                 {
-                    var results = data.GetParcelableArrayListExtra(RtuConstants.ExtraKeyRtuResult);
+                    var result = (data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult) as LicensePlateScannerResult);
 
-                    if (results == null || results.Count == 0)
+                    if (result == null)
                     {
                         return;
                     }
 
-                    Alert.Toast(this, $"EU_LICENSE Scanned: {results[0]}");
+                    Alert.Toast(this, $"EU_LICENSE Scanned: {result.RawText}");
                     return;
                 }
                 case SCAN_MEDICAL_CERTIFICATE_REQUEST:
