@@ -30,6 +30,6 @@
     <AndroidResource Remove="Resources\layout\CameraViewDemo.axml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ScanbotSDK.NET" Version="5.1.0-rc.1" />
+    <PackageReference Include="ScanbotSDK.NET" Version="5.1.0-rc.2" />
   </ItemGroup>
 </Project>
