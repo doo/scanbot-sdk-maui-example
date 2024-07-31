@@ -1,3 +1,4 @@
+using ReadyToUseUI.iOS.Utils;
 using ScanbotSDK.iOS;
 
 namespace ReadyToUseUI.iOS.Controller;
@@ -66,7 +67,7 @@ public class BarcodeResultSource : UITableViewSource
         var barcode = interaction?.Barcodes[indexPath.Row];
         if (barcode != null)
         {
-            ConfigureDefaultCell(cell, barcode?.ParsedDocument?.Type?.Name, barcode.Text);
+            ConfigureDefaultCell(cell,barcode.Type.ToBarcodeName() , barcode.Text);
         }
         return cell;
     }
