@@ -300,7 +300,6 @@ namespace ClassicComponent.iOS
                 }
 
                 SBSDKOpticalCharacterRecognizer recognizer = new SBSDKOpticalCharacterRecognizer(ocrConfiguration);
-                var urls = DocumentUtilities.GetTemporaryStorage().ImageURLs;
 
                 try
                 {
