@@ -16,18 +16,21 @@ public struct FilterItem
 
     public bool IsSection { get; set; }
 
+    public int LegacyFilterCode { get; set; }
+
     public FilterItem(string sectionTitle, bool isSection)
     {
         IsSection = isSection;
         Title = sectionTitle;
     }
-
+    
     public FilterItem(ImageFilterType filter)
     {
-        Title = filter.ToString();
+        Title = filter.FilterName;
         FilterType = FilterType.LegacyFilter;
+        LegacyFilterCode = filter.Code;
     }
-
+    
     public FilterItem(Type parametricFilterType)
     {
         Title = parametricFilterType.Name;

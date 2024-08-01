@@ -32,8 +32,7 @@ namespace ReadyToUseUI.Droid.Activities
         }
 
         private string selectedPageId;
-        private LegacyFilter selectedFilter;
-        // private FilterBottomSheetMenuFragment filterFragment;
+        private ParametricFilter selectedFilter;
         private FilterListFragment filterFragment;
         private ProgressBar progress;
         private IO.Scanbot.Sdk.ScanbotSDK scanbotSDK;
@@ -128,11 +127,13 @@ namespace ReadyToUseUI.Droid.Activities
 
             Task.Run(delegate
             {
-                var uri = pageStorage.GetFilteredPreviewImageURI(selectedPageId, new LegacyFilter(ImageFilterType.None.Code)); 
+                // todo: the filter is null.
+                var defaultFilter = new LegacyFilter(ImageFilterType.None.Code);
+                var uri = pageStorage.GetFilteredPreviewImageURI(selectedPageId, selectedFilter ?? defaultFilter); 
 
                 if (!File.Exists(uri.Path))
                 {
-                    pageProcessor.GenerateFilteredPreview(new Page().Copy(pageId: selectedPageId),  new LegacyFilter(ImageFilterType.None.Code));
+                    pageProcessor.GenerateFilteredPreview(new Page().Copy(pageId: selectedPageId),  selectedFilter ?? defaultFilter);
                 }
 
                 UpdateImage(uri);
@@ -173,10 +174,10 @@ namespace ReadyToUseUI.Droid.Activities
             return base.OnOptionsItemSelected(item);
         }
 
-        public void ApplyFilter(ImageFilterType type)
+        public void ApplyFilter(ParametricFilter filter)
         {
             progress.Visibility = ViewStates.Visible;
-            selectedFilter = new LegacyFilter(type.Code);
+            selectedFilter = filter;
             Task.Run(delegate
             {
                 var pageToFilter = new Page().Copy(pageId: selectedPageId);
