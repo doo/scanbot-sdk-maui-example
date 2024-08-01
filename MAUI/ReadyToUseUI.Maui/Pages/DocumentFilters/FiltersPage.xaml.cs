@@ -186,7 +186,7 @@ public partial class FiltersPage : ContentPage
             }
             
             // get the Filter parameters only
-            var properties = FilterItems.Where(item => item.FilterTitle == filterType.FilterTitle && !string.IsNullOrEmpty(item.Caption)).ToList();
+            var properties = FilterItems?.Where(item => item.FilterTitle == filterType.FilterTitle && !string.IsNullOrEmpty(item.Caption))?.ToList() ?? new List<FilterItem>();
             list.Add(GetParametricFilterFromItems(filterType.FilterTitle, properties));
         }
         
@@ -210,8 +210,8 @@ public partial class FiltersPage : ContentPage
         bool isEmpty = false;
         foreach (var filter in selectedFilters)
         {
-            var list = FilterItems.Where(item =>
-                item.FilterTitle == filter.FilterTitle && item.ParameterType == FilterParameterType.Picker);
+            var list = FilterItems?.Where(item =>
+                item.FilterTitle == filter.FilterTitle && item.ParameterType == FilterParameterType.Picker)?.ToList() ?? new List<FilterItem>();
             if (list.Any(item => string.IsNullOrEmpty(item.PickerSelectedValue)))
             {
                 isEmpty = true;
