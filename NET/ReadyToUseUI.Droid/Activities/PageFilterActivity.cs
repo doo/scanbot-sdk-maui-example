@@ -33,7 +33,8 @@ namespace ReadyToUseUI.Droid.Activities
 
         private string selectedPageId;
         private LegacyFilter selectedFilter;
-        private FilterBottomSheetMenuFragment filterFragment;
+        // private FilterBottomSheetMenuFragment filterFragment;
+        private FilterListFragment filterFragment;
         private ProgressBar progress;
         private IO.Scanbot.Sdk.ScanbotSDK scanbotSDK;
         private IO.Scanbot.Sdk.Persistence.PageFileStorage pageStorage;
@@ -62,7 +63,7 @@ namespace ReadyToUseUI.Droid.Activities
             filter.Text = Texts.filter;
             filter.Click += delegate
             {
-                filterFragment.Show(SupportFragmentManager, CHOOSE_FILTERS_DIALOG_TAG);
+               filterFragment.Show(SupportFragmentManager, CHOOSE_FILTERS_DIALOG_TAG);
             };
 
             delete = FindViewById<TextView>(Resource.Id.action_delete);
@@ -99,7 +100,7 @@ namespace ReadyToUseUI.Droid.Activities
                 SupportFragmentManager.BeginTransaction().Remove(fragmentFilterMenu).CommitNow();
             }
 
-            filterFragment = new FilterBottomSheetMenuFragment();
+            filterFragment = new FilterListFragment();//FilterBottomSheetMenuFragment();
 
             if (!scanbotSDK.LicenseInfo.IsValid)
             {
