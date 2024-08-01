@@ -35,7 +35,7 @@ public class BarcodeResultDetailsController : UIViewController
     {
         var text = "______________________________________\n\n";
         text += "Barcode Type:\n\n";
-        text += barcode.Type.ToString()  +"\n\n";
+        text += barcode.Type?.ToBarcodeFormatName()  +"\n\n";
 
         var documentDetails = ParseData(barcode.ParsedDocument);
         if (!string.IsNullOrEmpty(documentDetails))

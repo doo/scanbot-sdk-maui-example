@@ -67,7 +67,7 @@ public class BarcodeResultSource : UITableViewSource
         var barcode = interaction?.Barcodes[indexPath.Row];
         if (barcode != null)
         {
-            ConfigureDefaultCell(cell,barcode.Type.ToString() , barcode.Text);
+            ConfigureDefaultCell(cell,barcode.Type?.ToBarcodeFormatName() , barcode.Text);
         }
         return cell;
     }
