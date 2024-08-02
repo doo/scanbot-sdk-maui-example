@@ -152,7 +152,7 @@ public partial class MainViewController
         usecases.Sheet.CollapsedVisibleHeight = SBSDKUI2CollapsedVisibleHeight.Large;
         usecases.SheetContent.ManualCountChangeEnabled = true;
         usecases.ArOverlay.Visible = true;
-        usecases.ArOverlay.AutomaticSelectionEnabled = true;
+        usecases.ArOverlay.AutomaticSelectionEnabled = false;
         usecases.ExpectedBarcodes = new SBSDKUI2ExpectedBarcode[] {
             new SBSDKUI2ExpectedBarcode(barcodeValue: "123456", title: "numeric barcode", image: "https://avatars.githubusercontent.com/u/1454920", count: 4),
             new SBSDKUI2ExpectedBarcode(barcodeValue: "SCANBOT", title: "value barcode", image: "https://avatars.githubusercontent.com/u/1454920", count: 4),
