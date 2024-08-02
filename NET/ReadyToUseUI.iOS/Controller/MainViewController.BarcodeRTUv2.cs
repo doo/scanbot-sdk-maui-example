@@ -119,7 +119,7 @@ public partial class MainViewController
         usecases.Mode = SBSDKUI2MultipleBarcodesScanningMode.Unique;
         usecases.Sheet.Mode = SBSDKUI2SheetMode.CollapsedSheet;
         usecases.SheetContent.ManualCountChangeEnabled = false;
-        usecases.ArOverlay.Visible = false;
+        usecases.ArOverlay.Visible = true;
         usecases.ArOverlay.AutomaticSelectionEnabled = false;
             
         configuration.UseCase = usecases;
