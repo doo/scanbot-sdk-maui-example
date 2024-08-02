@@ -99,7 +99,7 @@ namespace ReadyToUseUI.Droid.Activities
                 SupportFragmentManager.BeginTransaction().Remove(fragmentFilterMenu).CommitNow();
             }
 
-            filterFragment = new FilterListFragment();//FilterBottomSheetMenuFragment();
+            filterFragment = new FilterListFragment();
 
             if (!scanbotSDK.LicenseInfo.IsValid)
             {
@@ -127,7 +127,6 @@ namespace ReadyToUseUI.Droid.Activities
 
             Task.Run(delegate
             {
-                // todo: the filter is null.
                 var defaultFilter = new LegacyFilter(ImageFilterType.None.Code);
                 var uri = pageStorage.GetFilteredPreviewImageURI(selectedPageId, selectedFilter ?? defaultFilter); 
 
