@@ -14,9 +14,9 @@ using ReadyToUseUI.Droid.Fragments;
 using ReadyToUseUI.Droid.Listeners;
 using ReadyToUseUI.Droid.Utils;
 using DocumentSDK.NET.Model;
+using IO.Scanbot.Imagefilters;
 using IO.Scanbot.Sdk.Tiff.Model;
 using ReadyToUseUI.Droid.Model;
-using static Java.Interop.JniEnvironment;
 using IO.Scanbot.Sdk.Ocr;
 using static IO.Scanbot.Sdk.Ocr.IOpticalCharacterRecognizer;
 
@@ -38,7 +38,7 @@ namespace ReadyToUseUI.Droid.Activities
         PageAdapter adapter;
         RecyclerView recycleView;
 
-        FilterBottomSheetMenuFragment filterFragment;
+        FilterListFragment filterFragment;
         SaveBottomSheetMenuFragment saveFragment;
 
         ProgressBar progress;
@@ -56,7 +56,7 @@ namespace ReadyToUseUI.Droid.Activities
 
             SetupToolbar();
 
-            filterFragment = new FilterBottomSheetMenuFragment();
+            filterFragment = new FilterListFragment();
             saveFragment = new SaveBottomSheetMenuFragment();
 
             var fragmentFilterMenu = SupportFragmentManager.FindFragmentByTag(FILTERS_MENU_TAG);
@@ -265,14 +265,14 @@ namespace ReadyToUseUI.Droid.Activities
             return base.OnOptionsItemSelected(item); 
         }
 
-        public void ApplyFilter(ImageFilterType type)
+        public void ApplyFilter(ParametricFilter filter)
         {
             progress.Visibility = ViewStates.Visible;
             Task.Run(delegate
             {
                 foreach (var pageId in pageStorage.StoredPages)
                 {
-                    pageProcessor.ApplyFilter(new Page().Copy(pageId: pageId), new IO.Scanbot.Imagefilters.LegacyFilter(type.Code));
+                    pageProcessor.ApplyFilter(new Page().Copy(pageId: pageId), filter);
                 }
 
                 RunOnUiThread(delegate

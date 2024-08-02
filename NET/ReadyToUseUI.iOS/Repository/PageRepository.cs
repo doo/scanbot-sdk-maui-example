@@ -51,21 +51,21 @@ namespace ReadyToUseUI.iOS.Repository
             Items.Clear();
         }
 
-        public static void Apply(SBSDKImageFilterType filter)
+        public static void Apply(SBSDKParametricFilter filter)
         {
             foreach (SBSDKDocumentPage page in Items)
             {
-                page.Filter = filter;
+                page.ParametricFilters = new[] { filter };
             }
         }
 
-        public static SBSDKDocumentPage Apply(SBSDKImageFilterType filter, SBSDKDocumentPage page)
+        public static SBSDKDocumentPage Apply(SBSDKParametricFilter filter, SBSDKDocumentPage page)
         {
             foreach (SBSDKDocumentPage item in Items)
             {
                 if (page.PageFileUUID.IsEqual(item.PageFileUUID))
                 {
-                    item.Filter = filter;
+                    item.ParametricFilters = new[] { filter };
                     return item;
                 }
             }
@@ -73,9 +73,9 @@ namespace ReadyToUseUI.iOS.Repository
             return null;
         }
 
-        public static SBSDKDocumentPage DuplicateCurrent(SBSDKImageFilterType type)
+        public static SBSDKDocumentPage DuplicateCurrent(SBSDKParametricFilter type)
         {
-            return new SBSDKDocumentPage(Current.OriginalImage, Current.Polygon, type);
+            return new SBSDKDocumentPage(Current.OriginalImage, Current.Polygon, new[] { type });
         }
     }
 }

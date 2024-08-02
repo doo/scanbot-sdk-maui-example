@@ -49,7 +49,7 @@ namespace ReadyToUseUI.iOS.View
             Filters.Frame = new CGRect(x, y, w, h);
         }
 
-        public void SetPickerModel(List<Filter> filters)
+        public void SetPickerModel(List<FilterItem> filters)
         {
             Model = new FilterPickerModel();
             Model.Items = filters;
@@ -59,14 +59,14 @@ namespace ReadyToUseUI.iOS.View
 
     public class FilterEventArgs : EventArgs
     {
-        public SBSDKImageFilterType Type { get; set; }
+        public FilterItem Type { get; set; }
     }
 
     public class FilterPickerModel : UIPickerViewModel
     {
-        public EventHandler<FilterEventArgs> SelectionChanged;
+        private const string iOSPrefix = "SBSDK";
 
-        public List<Filter> Items = new List<Filter>();
+        public List<FilterItem> Items = new List<FilterItem>();
 
         public override nint GetRowsInComponent(UIPickerView pickerView, nint component)
         {
@@ -76,7 +76,19 @@ namespace ReadyToUseUI.iOS.View
         [Export("pickerView:attributedTitleForRow:forComponent:")]
         public override NSAttributedString GetAttributedTitle(UIPickerView pickerView, nint row, nint component)
         {
-            var text = Items[(int)row].Title;
+            var currentItem = Items[(int)row];
+            var text = currentItem.Title;
+            
+            if (currentItem.IsSection)
+            {
+                return new NSAttributedString(text, UIFont.BoldSystemFontOfSize(16), foregroundColor:Colors.ScanbotRed);
+            }
+            
+            if (text.Contains(iOSPrefix))
+            {
+                text = text.Replace(iOSPrefix, string.Empty);
+            }
+            
             var attributed = new NSAttributedString(text, null, Models.Colors.AppleBlue);
             return attributed;
         }
@@ -89,7 +101,10 @@ namespace ReadyToUseUI.iOS.View
         public override void Selected(UIPickerView pickerView, nint row, nint component)
         {
             var filter = Items[(int)row];
-            SelectionChanged?.Invoke(this, new FilterEventArgs { Type = filter.Type });
+            if (!filter.IsSection)
+            {
+                filter.FilterSelected?.Invoke();
+            }
         }
     }
 }

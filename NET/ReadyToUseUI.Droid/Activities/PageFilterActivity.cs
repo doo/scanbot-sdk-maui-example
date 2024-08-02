@@ -32,8 +32,8 @@ namespace ReadyToUseUI.Droid.Activities
         }
 
         private string selectedPageId;
-        private LegacyFilter selectedFilter;
-        private FilterBottomSheetMenuFragment filterFragment;
+        private ParametricFilter selectedFilter = new LegacyFilter(ImageFilterType.None.Code);
+        private FilterListFragment filterFragment;
         private ProgressBar progress;
         private IO.Scanbot.Sdk.ScanbotSDK scanbotSDK;
         private IO.Scanbot.Sdk.Persistence.PageFileStorage pageStorage;
@@ -54,7 +54,7 @@ namespace ReadyToUseUI.Droid.Activities
             progress = FindViewById<ProgressBar>(Resource.Id.progress);
 
             selectedPageId = Intent.GetStringExtra(nameof(selectedPageId));
-
+            
             crop = FindViewById<TextView>(Resource.Id.action_crop_and_rotate);
             crop.Text = Texts.crop_amp_rotate;
 
@@ -62,7 +62,7 @@ namespace ReadyToUseUI.Droid.Activities
             filter.Text = Texts.filter;
             filter.Click += delegate
             {
-                filterFragment.Show(SupportFragmentManager, CHOOSE_FILTERS_DIALOG_TAG);
+               filterFragment.Show(SupportFragmentManager, CHOOSE_FILTERS_DIALOG_TAG);
             };
 
             delete = FindViewById<TextView>(Resource.Id.action_delete);
@@ -83,7 +83,7 @@ namespace ReadyToUseUI.Droid.Activities
                 Alert.ShowAlert(this, "Document Quality", documentQualityResult.Name());
             };
 
-            FindViewById(Resource.Id.action_crop_and_rotate).Click += delegate
+            crop.Click += delegate
             {
                 var configuration = new CroppingConfiguration(new Page().Copy(pageId: selectedPageId));
                 configuration.SetPolygonColor(Color.Red);
@@ -99,7 +99,7 @@ namespace ReadyToUseUI.Droid.Activities
                 SupportFragmentManager.BeginTransaction().Remove(fragmentFilterMenu).CommitNow();
             }
 
-            filterFragment = new FilterBottomSheetMenuFragment();
+            filterFragment = new FilterListFragment();
 
             if (!scanbotSDK.LicenseInfo.IsValid)
             {
@@ -127,11 +127,10 @@ namespace ReadyToUseUI.Droid.Activities
 
             Task.Run(delegate
             {
-                var uri = pageStorage.GetFilteredPreviewImageURI(selectedPageId, new LegacyFilter(ImageFilterType.None.Code)); 
-
+                var uri = pageStorage.GetPreviewImageURI(selectedPageId, PageFileStorage.PageFileType.Document);
                 if (!File.Exists(uri.Path))
                 {
-                    pageProcessor.GenerateFilteredPreview(new Page().Copy(pageId: selectedPageId),  new LegacyFilter(ImageFilterType.None.Code));
+                    pageProcessor.GenerateFilteredPreview(new Page().Copy(pageId: selectedPageId),  selectedFilter);
                 }
 
                 UpdateImage(uri);
@@ -149,10 +148,7 @@ namespace ReadyToUseUI.Droid.Activities
 
             if (requestCode == CROP_DEFAULT_UI_REQUEST_CODE)
             {
-                selectedFilter = selectedFilter ?? new LegacyFilter(ImageFilterType.None.Code);
-
                 var uri = pageStorage.GetFilteredPreviewImageURI(selectedPageId, selectedFilter);
-
                 if (!File.Exists(uri.Path))
                 {
                     scanbotSDK.CreatePageProcessor().GenerateFilteredPreview(new Page().Copy(pageId: selectedPageId), selectedFilter);
@@ -172,10 +168,10 @@ namespace ReadyToUseUI.Droid.Activities
             return base.OnOptionsItemSelected(item);
         }
 
-        public void ApplyFilter(ImageFilterType type)
+        public void ApplyFilter(ParametricFilter filter)
         {
             progress.Visibility = ViewStates.Visible;
-            selectedFilter = new LegacyFilter(type.Code);
+            selectedFilter = filter;
             Task.Run(delegate
             {
                 var pageToFilter = new Page().Copy(pageId: selectedPageId);
