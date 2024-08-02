@@ -1,11 +1,13 @@
 using Android.Content;
 using Android.Graphics;
+using Android.Media;
 using Android.Views;
 using Google.Android.Material.BottomSheet;
 using IO.Scanbot.Imagefilters;
 using IO.Scanbot.Sdk.Process;
 using ReadyToUseUI.Droid.Listeners;
 using ReadyToUseUI.Droid.Model;
+using Orientation = Android.Widget.Orientation;
 
 namespace ReadyToUseUI.Droid.Fragments;
 
@@ -21,33 +23,38 @@ public class FilterListFragment : BottomSheetDialogFragment, IFilterItemAdapter
     public Context AdapterContext => this.Context;
     public List<FilterItem> Filters => this.filters;
 
-    private readonly List<FilterItem> filters = new List<FilterItem>
-    {
-        new FilterItem("New Filters", true),
-        new FilterItem(typeof(ScanbotBinarizationFilter)),
-        new FilterItem(typeof(CustomBinarizationFilter)),
-        new FilterItem(typeof(ColorDocumentFilter)),
-        new FilterItem(typeof(BrightnessFilter)),
-        new FilterItem(typeof(ContrastFilter)),
-        new FilterItem(typeof(GrayscaleFilter)),
-        new FilterItem(typeof(WhiteBlackPointFilter)),
+    private List<FilterItem> filters;
 
-        new FilterItem("Legacy Filters", true),
-        new FilterItem(ImageFilterType.None),
-        new FilterItem(ImageFilterType.LowLightBinarization),
-        new FilterItem(ImageFilterType.LowLightBinarization2),
-        new FilterItem(ImageFilterType.EdgeHighlight),
-        new FilterItem(ImageFilterType.DeepBinarization),
-        new FilterItem(ImageFilterType.OtsuBinarization),
-        new FilterItem(ImageFilterType.BackgroundClean),
-        new FilterItem(ImageFilterType.ColorDocument),
-        new FilterItem(ImageFilterType.ColorEnhanced),
-        new FilterItem(ImageFilterType.Grayscale),
-        new FilterItem(ImageFilterType.PureGrayscale),
-        new FilterItem(ImageFilterType.Binarized),
-        new FilterItem(ImageFilterType.PureBinarized),
-        new FilterItem(ImageFilterType.BlackAndWhite),
-    };
+    public FilterListFragment()
+    {
+        filters = new List<FilterItem>
+        {
+            new FilterItem("Parametric Filters"),
+            new FilterItem(nameof(ScanbotBinarizationFilter), () => FilterSelected(new ScanbotBinarizationFilter())),
+            new FilterItem(nameof(CustomBinarizationFilter), () => FilterSelected(new CustomBinarizationFilter())),
+            new FilterItem(nameof(ColorDocumentFilter), () => FilterSelected(new ColorDocumentFilter())),
+            new FilterItem(nameof(BrightnessFilter), () => FilterSelected(new BrightnessFilter())),
+            new FilterItem(nameof(ContrastFilter), () => FilterSelected(new ContrastFilter())),
+            new FilterItem(nameof(GrayscaleFilter), () => FilterSelected(new  GrayscaleFilter())),
+            new FilterItem(nameof(WhiteBlackPointFilter), () => FilterSelected(new  WhiteBlackPointFilter())),
+
+            new FilterItem("Legacy Filters"),
+            new FilterItem(nameof(ImageFilterType.None), () => FilterSelected(new  LegacyFilter(ImageFilterType.None.Code))),
+            new FilterItem(nameof(ImageFilterType.LowLightBinarization), () => FilterSelected(new  LegacyFilter(ImageFilterType.LowLightBinarization.Code))),
+            new FilterItem(nameof(ImageFilterType.LowLightBinarization2), () => FilterSelected(new  LegacyFilter(ImageFilterType.LowLightBinarization2.Code))),
+            new FilterItem(nameof(ImageFilterType.EdgeHighlight), () => FilterSelected(new  LegacyFilter(ImageFilterType.EdgeHighlight.Code))),
+            new FilterItem(nameof(ImageFilterType.DeepBinarization), () => FilterSelected(new  LegacyFilter(ImageFilterType.DeepBinarization.Code))),
+            new FilterItem(nameof(ImageFilterType.OtsuBinarization), () => FilterSelected(new  LegacyFilter(ImageFilterType.OtsuBinarization.Code))),
+            new FilterItem(nameof(ImageFilterType.BackgroundClean), () => FilterSelected(new  LegacyFilter(ImageFilterType.BackgroundClean.Code))),
+            new FilterItem(nameof(ImageFilterType.ColorDocument), () => FilterSelected(new  LegacyFilter(ImageFilterType.ColorDocument.Code))),
+            new FilterItem(nameof(ImageFilterType.ColorEnhanced), () => FilterSelected(new  LegacyFilter(ImageFilterType.ColorEnhanced.Code))),
+            new FilterItem(nameof(ImageFilterType.Grayscale), () => FilterSelected(new  LegacyFilter(ImageFilterType.Grayscale.Code))),
+            new FilterItem(nameof(ImageFilterType.PureGrayscale), () => FilterSelected(new  LegacyFilter(ImageFilterType.PureGrayscale.Code))),
+            new FilterItem(nameof(ImageFilterType.Binarized), () => FilterSelected(new  LegacyFilter(ImageFilterType.Binarized.Code))),
+            new FilterItem(nameof(ImageFilterType.PureBinarized), () => FilterSelected(new  LegacyFilter(ImageFilterType.PureBinarized.Code))),
+            new FilterItem(nameof(ImageFilterType.BlackAndWhite), () => FilterSelected(new  LegacyFilter(ImageFilterType.BlackAndWhite.Code))),
+        };
+    }
 
     public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -65,44 +72,14 @@ public class FilterListFragment : BottomSheetDialogFragment, IFilterItemAdapter
     {
         if (filters.Count > e.Position && !filters[e.Position].IsSection)
         {
-            var selectedItem = GetParametricFilter(filters[e.Position]);
-            (Activity as IFiltersListener).ApplyFilter(selectedItem);
-            DismissAllowingStateLoss();
+            filters[e.Position].FilterSelected?.Invoke();
         }
     }
 
-    private ParametricFilter GetParametricFilter(FilterItem filter)
+    private void FilterSelected(ParametricFilter filter)
     {
-        if (filter.FilterType == FilterType.LegacyFilter)
-        {
-            return new LegacyFilter(filter.LegacyFilterCode);
-        }
-
-        switch (filter.Title)
-        {
-            case nameof(ScanbotBinarizationFilter):
-                return new ScanbotBinarizationFilter();
-
-            case nameof(CustomBinarizationFilter):
-                return new CustomBinarizationFilter();
-
-            case nameof(ColorDocumentFilter):
-                return new ColorDocumentFilter();
-
-            case nameof(BrightnessFilter):
-                return new BrightnessFilter();
-
-            case nameof(ContrastFilter):
-                return new ContrastFilter();
-
-            case nameof(GrayscaleFilter):
-                return new GrayscaleFilter();
-
-            case nameof(WhiteBlackPointFilter):
-                return new WhiteBlackPointFilter();
-        }
-
-        return new LegacyFilter((int)ImageFilterType.None);
+        (Activity as IFiltersListener).ApplyFilter(filter);
+        DismissAllowingStateLoss();
     }
 }
 

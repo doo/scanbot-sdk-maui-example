@@ -49,7 +49,7 @@ namespace ReadyToUseUI.iOS.View
             Filters.Frame = new CGRect(x, y, w, h);
         }
 
-        public void SetPickerModel(List<Filter> filters)
+        public void SetPickerModel(List<FilterItem> filters)
         {
             Model = new FilterPickerModel();
             Model.Items = filters;
@@ -59,15 +59,14 @@ namespace ReadyToUseUI.iOS.View
 
     public class FilterEventArgs : EventArgs
     {
-        public Filter Type { get; set; }
+        public FilterItem Type { get; set; }
     }
 
     public class FilterPickerModel : UIPickerViewModel
     {
         private const string iOSPrefix = "SBSDK";
-        public EventHandler<FilterEventArgs> SelectionChanged;
 
-        public List<Filter> Items = new List<Filter>();
+        public List<FilterItem> Items = new List<FilterItem>();
 
         public override nint GetRowsInComponent(UIPickerView pickerView, nint component)
         {
@@ -85,7 +84,7 @@ namespace ReadyToUseUI.iOS.View
                 return new NSAttributedString(text, UIFont.BoldSystemFontOfSize(16), foregroundColor:Colors.ScanbotRed);
             }
             
-            if (currentItem.FilterType == FilterType.NewFilter)
+            if (text.Contains(iOSPrefix))
             {
                 text = text.Replace(iOSPrefix, string.Empty);
             }
@@ -104,7 +103,7 @@ namespace ReadyToUseUI.iOS.View
             var filter = Items[(int)row];
             if (!filter.IsSection)
             {
-                SelectionChanged?.Invoke(this, new FilterEventArgs { Type = filter });
+                filter.FilterSelected?.Invoke();
             }
         }
     }

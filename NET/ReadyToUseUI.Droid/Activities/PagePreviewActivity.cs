@@ -17,7 +17,6 @@ using DocumentSDK.NET.Model;
 using IO.Scanbot.Imagefilters;
 using IO.Scanbot.Sdk.Tiff.Model;
 using ReadyToUseUI.Droid.Model;
-using static Java.Interop.JniEnvironment;
 using IO.Scanbot.Sdk.Ocr;
 using static IO.Scanbot.Sdk.Ocr.IOpticalCharacterRecognizer;
 
