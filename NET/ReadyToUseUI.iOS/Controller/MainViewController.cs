@@ -36,8 +36,8 @@ namespace ReadyToUseUI.iOS.Controller
             
             barcodeDetectors = new List<ListItem>
             {
-                new ListItem("Single Scanning", SingleScanning),
-                new ListItem("Single Scanning Selection Overlay", SingleScanningWithArOverlay),
+                new ListItem("Single Barcode Scanning", SingleScanning),
+                new ListItem("Single Barcode Scanning - AR Overlay", SingleScanningWithArOverlay),
                 new ListItem("Batch Barcode Scanning", BatchBarcodeScanning),
                 new ListItem("Multiple Unique Barcode Scanning", MultipleUniqueBarcodeScanning),
                 new ListItem("Find and Pick Barcode Scanning", FindAndPickScanning),
