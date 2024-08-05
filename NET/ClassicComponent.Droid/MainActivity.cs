@@ -62,7 +62,6 @@ namespace ClassicComponent.Droid
             AssignStartCameraXButtonHandler();
             AssignStartGdrButtonHandler();
             AssingCroppingUIButtonHandler();
-            AssignApplyImageFilterButtonHandler();
             AssignImportImageButtonHandler();
             AssignCreatePdfButtonHandler();
             AssignCreateTiffButtonHandler();
@@ -109,42 +108,6 @@ namespace ClassicComponent.Droid
 
                 StartActivityForResult(intent, REQUEST_SB_GDR_SCANNING_UI);
             };
-        }
-
-        void AssignApplyImageFilterButtonHandler()
-        {
-            var applyImageFilterButton = FindViewById<Button>(Resource.Id.applyImageFilterButton);
-            applyImageFilterButton.Click += delegate
-            {
-                if (!CheckScanbotSDKLicense()) { return; }
-                if (!CheckDocumentImage()) { return; }
-
-                var transaction = FragmentManager.BeginTransaction();
-                var dialogFragment = new ImageFilterDialog(ApplyImageFilter);
-                dialogFragment.Show(transaction, "ImageFilterDialog");
-            };
-        }
-
-        void ApplyImageFilter(IO.Scanbot.Imagefilters.LegacyFilter filter)
-        {
-            
-            DebugLog("Applying image filter " + filter + " on image: " + documentImageUri);
-            try
-            {
-                Task.Run(() =>
-                {
-                    // The SDK call is sync!
-                    // TODO load uri
-                    
-                    var resultImage = new ImageProcessor(BitmapFactory.DecodeFile(documentImageUri.Path)).ApplyFilter(filter).ProcessedBitmap();
-                    documentImageUri = TempImageStorage.Instance.AddImage(resultImage);
-                    ShowImageView(resultImage);
-                });
-            }
-            catch (Exception e)
-            {
-                ErrorLog("Error applying image filter", e);
-            }
         }
 
         void AssignImportImageButtonHandler()
