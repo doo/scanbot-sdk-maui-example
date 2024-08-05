@@ -65,7 +65,6 @@ namespace ClassicComponent.iOS
                 new SDKService { Title = SDKServiceTitle.ScanningUI, ServiceAction = LaunchScanningUI },
                 new SDKService { Title = SDKServiceTitle.CroppingUI, ServiceAction = LaunchCroppingUI },
                 new SDKService { Title = SDKServiceTitle.ImportImageFromLibrary, ServiceAction = async () => await LaunchImportImageFromLibrary() },
-                new SDKService { Title = SDKServiceTitle.ApplyImageFilter, ServiceAction = ApplyImageFilter },
                 new SDKService { Title = SDKServiceTitle.CreateTIFF, ServiceAction = CreateTIFF },
                 new SDKService { Title = SDKServiceTitle.CreatePDF, ServiceAction = CreatePDF },
                 new SDKService { Title = SDKServiceTitle.PerformOCR, ServiceAction = PerformOCR },
@@ -341,26 +340,6 @@ namespace ClassicComponent.iOS
         }
 
         #endregion
-
-        private void ApplyImageFilter()
-        {
-            if (!CheckScanbotSDKLicense()) { return; }
-            if (!CheckOriginalImageUrl()) { return; }
-
-            UIAlertController actionSheetAlert = UIAlertController.Create("Select filter type", "", UIAlertControllerStyle.ActionSheet);
-
-            foreach (var filter in Enum.GetValues<SBSDKImageFilterType>())
-            {
-                if (filter.ToString().ToLower() == "none") { continue; }
-                actionSheetAlert.AddAction(UIAlertAction.Create(filter.ToString(), UIAlertActionStyle.Default, (action) =>
-                {
-                    DidUpdateDocumentImage(filter: filter);
-                }));
-            }
-
-            actionSheetAlert.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
-            PresentViewController(actionSheetAlert, true, null);
-        }
     }
 
     internal class SDKServiceSource : UITableViewSource
