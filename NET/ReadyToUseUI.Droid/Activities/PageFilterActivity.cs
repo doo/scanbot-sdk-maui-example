@@ -54,9 +54,6 @@ namespace ReadyToUseUI.Droid.Activities
             progress = FindViewById<ProgressBar>(Resource.Id.progress);
 
             selectedPageId = Intent.GetStringExtra(nameof(selectedPageId));
-            
-            crop = FindViewById<TextView>(Resource.Id.action_crop_and_rotate);
-            crop.Text = Texts.crop_amp_rotate;
 
             filter = FindViewById<TextView>(Resource.Id.action_filter);
             filter.Text = Texts.filter;
@@ -83,6 +80,8 @@ namespace ReadyToUseUI.Droid.Activities
                 Alert.ShowAlert(this, "Document Quality", documentQualityResult.Name());
             };
 
+            crop = FindViewById<TextView>(Resource.Id.action_crop_and_rotate);
+            crop.Text = Texts.crop_amp_rotate;
             crop.Click += delegate
             {
                 var configuration = new CroppingConfiguration(new Page().Copy(pageId: selectedPageId));

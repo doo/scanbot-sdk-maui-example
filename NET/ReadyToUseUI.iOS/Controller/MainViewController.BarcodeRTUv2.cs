@@ -193,10 +193,6 @@ public partial class MainViewController
                 {
                     text += item.Type.Name + ": " + item.RawTextString + "\n";
                 }
-
-                var quality = new SBSDKDocumentQualityAnalyzer().AnalyzeOnImage(image);
-                Console.WriteLine("The quality of the imported image: " + quality.ToString());
-                text += "(Additionally, blur: " + quality.ToString() + ")";
             }
         }
         else
