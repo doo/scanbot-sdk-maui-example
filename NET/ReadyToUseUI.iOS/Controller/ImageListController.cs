@@ -142,12 +142,23 @@ namespace ReadyToUseUI.iOS.Controller
             }
             try
             {
-                // Please check the default parameters
-                
                 var opticalCharacterRecognizer = new SBSDKOpticalCharacterRecognizer(ocrConfiguration);
                 var (ocrResult, outputPdfUrl) = await DocumentUtilities.PerformOCRAsync(ocrRecognizer: opticalCharacterRecognizer, inputUrls: inputUrls, outputUrl: outputUrl, shouldGeneratePdf: true, encrypter: ScanbotUI.DefaultImageStoreEncrypter);
                 if (ocrResult != null)
                 {
+                    var metadata = new SBSDKPDFMetadataEditor(outputPdfUrl);
+                    metadata.Author = "Your author";
+                    metadata.Creator = "Your creator";
+                    metadata.Title = "Your title";
+                    metadata.Subject = "Your subject";
+                    metadata.Keywords = ["PDF", "Scanbot", "SDK"];
+    
+                    NSError error;
+                    metadata.SaveToFileAt(outputPdfUrl, out error);
+                    if (error != null)
+                    {
+                        throw new Exception("Error while saving the PDF metadata. " + error.Description);
+                    }
                     OpenDocument(outputPdfUrl, true, ocrResult.RecognizedText);
                 }
                 else
