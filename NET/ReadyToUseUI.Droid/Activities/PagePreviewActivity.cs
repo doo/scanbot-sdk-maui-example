@@ -220,7 +220,18 @@ namespace ReadyToUseUI.Droid.Activities
                         recognizer.SetOcrConfig(new OcrConfig(IOpticalCharacterRecognizer.EngineMode.ScanbotOcr));
                     }
 
-                    var pdfFile = recognizer.RecognizeTextWithPdfFromUris(pagesUri, MainApplication.USE_ENCRYPTION, IO.Scanbot.Pdf.Model.PdfConfig.DefaultConfig());
+                    var pdfAttributes = new PdfAttributes(
+                        author: "Your author",
+                        creator: "Your creator",
+                        title: "Your title",
+                        subject: "Your subject",
+                        keywords: "Your keywords");
+                    
+                    var pdfConfig = new IO.Scanbot.Pdf.Model.PdfConfig(pdfAttributes: pdfAttributes, 
+                        pageSize:PageSize.A4, pageDirection:PageDirection.Auto, pageFit:PageFit.FitIn, 
+                        dpi:72, jpegQuality:80, resample:false);
+                    
+                    var pdfFile = recognizer.RecognizeTextWithPdfFromUris(pagesUri, MainApplication.USE_ENCRYPTION, pdfConfig);
                     File.Move(pdfFile.SandwichedPdfDocumentFile.AbsolutePath, new Java.IO.File(output.Path).AbsolutePath);
                 }
                 else
