@@ -15,6 +15,7 @@ using ReadyToUseUI.Droid.Listeners;
 using ReadyToUseUI.Droid.Utils;
 using DocumentSDK.NET.Model;
 using IO.Scanbot.Imagefilters;
+using IO.Scanbot.Pdf.Model;
 using IO.Scanbot.Sdk.Tiff.Model;
 using ReadyToUseUI.Droid.Model;
 using IO.Scanbot.Sdk.Ocr;
@@ -224,7 +225,18 @@ namespace ReadyToUseUI.Droid.Activities
                 }
                 else
                 {
-                    var pdfFile = scanbotSDK.CreatePdfRenderer().RenderDocumentFromImages(pagesUri, false, IO.Scanbot.Pdf.Model.PdfConfig.DefaultConfig());
+                    var pdfAttributes = new PdfAttributes(
+                        author: "Your author",
+                        creator: "Your creator",
+                        title: "Your title",
+                        subject: "Your subject",
+                        keywords: "Your keywords");
+                    
+                    var pdfConfig = new IO.Scanbot.Pdf.Model.PdfConfig(pdfAttributes: pdfAttributes, 
+                        pageSize:PageSize.A4, pageDirection:PageDirection.Auto, pageFit:PageFit.FitIn, 
+                        dpi:72, jpegQuality:80, resample:false);
+
+                    var pdfFile = scanbotSDK.CreatePdfRenderer().RenderDocumentFromImages(pagesUri, sourceFilesEncrypted: false, pdfConfig: pdfConfig);
                     File.Move(pdfFile.AbsolutePath, new Java.IO.File(output.Path).AbsolutePath);
                 }
 
