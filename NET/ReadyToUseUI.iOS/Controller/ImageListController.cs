@@ -177,7 +177,7 @@ namespace ReadyToUseUI.iOS.Controller
             // Please note that some compression types are only compatible for 1-bit encoded images (binarized black & white images)!
             var options = SBSDKTIFFImageWriterParameters.DefaultParametersForBinaryImages;
             options.Binarize = true;
-            options.Compression = SBSDKTIFFImageWriterCompressionOptions.Ccittfax4;
+            options.Compression = SBSDKTIFFImageWriterCompressionOptions.Ccitt_t4;
             options.Dpi = 250;
 
             var (success, outputTiffUrl) = DocumentUtilities.CreateTIFF(options, inputUrls, outputUrl, ScanbotUI.DefaultImageStoreEncrypter);
