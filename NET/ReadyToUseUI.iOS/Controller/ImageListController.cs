@@ -101,6 +101,20 @@ namespace ReadyToUseUI.iOS.Controller
                 var outputPdfUrl = await DocumentUtilities.CreatePDFAsync(inputUrls, outputUrl, SBSDKPDFRendererPageSize.A4, SBSDKPDFRendererPageOrientation.Auto, ScanbotUI.DefaultImageStoreEncrypter);
                 if (outputPdfUrl != null)
                 {
+                    var metadata = new SBSDKPDFMetadataEditor(outputUrl);
+                    metadata.Author = "Your author";
+                    metadata.Creator = "Your creator";
+                    metadata.Title = "Your title";
+                    metadata.Subject = "Your subject";
+                    metadata.Keywords = ["PDF", "Scanbot", "SDK"];
+    
+                    NSError error;
+                    metadata.SaveToFileAt(outputUrl, out error);
+                    if (error != null)
+                    {
+                        throw new Exception("Error while saving the PDF metadata. " + error.Description);
+                    }
+                    
                     OpenDocument(outputPdfUrl, false);
                 }
                 else
@@ -128,12 +142,23 @@ namespace ReadyToUseUI.iOS.Controller
             }
             try
             {
-                // Please check the default parameters
-                
                 var opticalCharacterRecognizer = new SBSDKOpticalCharacterRecognizer(ocrConfiguration);
                 var (ocrResult, outputPdfUrl) = await DocumentUtilities.PerformOCRAsync(ocrRecognizer: opticalCharacterRecognizer, inputUrls: inputUrls, outputUrl: outputUrl, shouldGeneratePdf: true, encrypter: ScanbotUI.DefaultImageStoreEncrypter);
                 if (ocrResult != null)
                 {
+                    var metadata = new SBSDKPDFMetadataEditor(outputPdfUrl);
+                    metadata.Author = "Your author";
+                    metadata.Creator = "Your creator";
+                    metadata.Title = "Your title";
+                    metadata.Subject = "Your subject";
+                    metadata.Keywords = ["PDF", "Scanbot", "SDK"];
+    
+                    NSError error;
+                    metadata.SaveToFileAt(outputPdfUrl, out error);
+                    if (error != null)
+                    {
+                        throw new Exception("Error while saving the PDF metadata. " + error.Description);
+                    }
                     OpenDocument(outputPdfUrl, true, ocrResult.RecognizedText);
                 }
                 else
@@ -152,7 +177,7 @@ namespace ReadyToUseUI.iOS.Controller
             // Please note that some compression types are only compatible for 1-bit encoded images (binarized black & white images)!
             var options = SBSDKTIFFImageWriterParameters.DefaultParametersForBinaryImages;
             options.Binarize = true;
-            options.Compression = SBSDKTIFFImageWriterCompressionOptions.Ccittfax4;
+            options.Compression = SBSDKTIFFImageWriterCompressionOptions.Ccitt_t4;
             options.Dpi = 250;
 
             var (success, outputTiffUrl) = DocumentUtilities.CreateTIFF(options, inputUrls, outputUrl, ScanbotUI.DefaultImageStoreEncrypter);

@@ -51,7 +51,7 @@ public class FilterListFragment : BottomSheetDialogFragment, IFilterItemAdapter
             new FilterItem(nameof(ImageFilterType.PureGrayscale), () => FilterSelected(new LegacyFilter(ImageFilterType.PureGrayscale.Code))),
             new FilterItem(nameof(ImageFilterType.Binarized), () => FilterSelected(new LegacyFilter(ImageFilterType.Binarized.Code))),
             new FilterItem(nameof(ImageFilterType.PureBinarized), () => FilterSelected(new LegacyFilter(ImageFilterType.PureBinarized.Code))),
-            new FilterItem(nameof(ImageFilterType.BlackAndWhite), () => FilterSelected(new LegacyFilter(ImageFilterType.BlackAndWhite.Code))),
+            new FilterItem(nameof(ImageFilterType.BlackAndWhite), () => FilterSelected(new LegacyFilter(ImageFilterType.BlackAndWhite.Code)))
         };
     }
 

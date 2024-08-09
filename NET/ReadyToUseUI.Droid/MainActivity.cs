@@ -168,10 +168,7 @@ namespace ReadyToUseUI.Droid
                     var detector = scanbotSDK.CreateBarcodeDetector();
                     var result = detector.DetectFromBitmap(bitmap, 0);
 
-                    var qualityAnalyzer = scanbotSDK.CreateDocumentQualityAnalyzer();
-                    var documentQualityResult = qualityAnalyzer.AnalyzeInBitmap(bitmap, 0);
-
-                    var fragment = BarcodeDialogFragment.CreateInstance(result, documentQualityResult);
+                    var fragment = BarcodeDialogFragment.CreateInstance(result);
                     fragment.Show(FragmentManager);
                     return;
                 }

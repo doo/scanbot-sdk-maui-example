@@ -327,7 +327,7 @@ namespace ClassicComponent.iOS
             var urls = DocumentUtilities.GetTemporaryStorage().ImageURLs;
             var options = SBSDKTIFFImageWriterParameters.DefaultParametersForBinaryImages;
             options.Binarize = true;
-            options.Compression = SBSDKTIFFImageWriterCompressionOptions.Ccittfax4;
+            options.Compression = SBSDKTIFFImageWriterCompressionOptions.Ccitt_t4;
             options.Dpi = 250;
 
             var (success, outputTiffUrl) = DocumentUtilities.CreateTIFF(options, inputUrls: urls, ScanbotUI.DefaultImageStoreEncrypter);
