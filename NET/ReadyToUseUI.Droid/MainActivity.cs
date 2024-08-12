@@ -117,7 +117,7 @@ namespace ReadyToUseUI.Droid
                 new ListItemButton(this, "Scan MRZ", ScanMrz),
                 new ListItemButton(this, "Scan Health Insurance card", ScanEhic),
                 new ListItemButton(this, "Generic Document Recognizer", RecongnizeGenericDocument),
-                new ListItemButton(this, "Check Recognizer", RecogniseCheck),
+                new ListItemButton(this, "Check Recognizer", RecognizeCheck),
                 new ListItemButton(this, "Text Data Recognizer", TextDataRecognizerTapped),
                 new ListItemButton(this, "VIN Recognizer", VinRecognizerTapped),
                 new ListItemButton(this, "License Plate Recognizer", LicensePlateRecognizerTapped),

@@ -101,7 +101,7 @@ namespace ReadyToUseUI.iOS.Controller
                 var outputPdfUrl = await DocumentUtilities.CreatePDFAsync(inputUrls, outputUrl, SBSDKPDFRendererPageSize.A4, SBSDKPDFRendererPageOrientation.Auto, ScanbotUI.DefaultImageStoreEncrypter);
                 if (outputPdfUrl != null)
                 {
-                    var metadata = new SBSDKPDFMetadataEditor(outputUrl);
+                    var metadata = new SBSDKPDFMetadataEditor(outputPdfUrl);
                     metadata.Author = "Your author";
                     metadata.Creator = "Your creator";
                     metadata.Title = "Your title";
@@ -109,7 +109,7 @@ namespace ReadyToUseUI.iOS.Controller
                     metadata.Keywords = ["PDF", "Scanbot", "SDK"];
     
                     NSError error;
-                    metadata.SaveToFileAt(outputUrl, out error);
+                    metadata.SaveToFileAt(outputPdfUrl, out error);
                     if (error != null)
                     {
                         throw new Exception("Error while saving the PDF metadata. " + error.Description);

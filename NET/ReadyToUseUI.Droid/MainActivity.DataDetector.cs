@@ -72,7 +72,7 @@ public partial class MainActivity
         StartActivityForResult(intent, GENERIC_DOCUMENT_REQUEST);
     }
 
-    private void RecogniseCheck()
+    private void RecognizeCheck()
     {
         var config = new CheckRecognizerConfiguration();
         config.SetCancelButtonTitle("Done");
