@@ -77,6 +77,7 @@ public partial class MainViewController
                 SBSDKCheckDocumentRootType.KwtCheck,
                 SBSDKCheckDocumentRootType.UsaCheck,
                 SBSDKCheckDocumentRootType.UaeCheck,
+                SBSDKCheckDocumentRootType.CanCheck,
                 SBSDKCheckDocumentRootType.IsrCheck,
             };
             var controller = SBSDKUICheckRecognizerViewController.CreateWithConfiguration(configuration, null);
