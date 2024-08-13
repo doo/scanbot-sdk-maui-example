@@ -29,13 +29,13 @@ public class FilterListFragment : BottomSheetDialogFragment, IFilterItemAdapter
         filters = new List<FilterItem>
         {
             new FilterItem("Parametric Filters"),
-            new FilterItem(nameof(ScanbotBinarizationFilter), () => FilterSelected(new ScanbotBinarizationFilter())),
-            new FilterItem(nameof(CustomBinarizationFilter), () => FilterSelected(new CustomBinarizationFilter())),
+            new FilterItem(nameof(ScanbotBinarizationFilter), () => FilterSelected(new ScanbotBinarizationFilter(outputMode: OutputMode.Binary))),
+            new FilterItem(nameof(CustomBinarizationFilter), () => FilterSelected(new CustomBinarizationFilter(outputMode: OutputMode.Binary, denoise: 0.5, radius: 32, preset: BinarizationFilterPreset.Preset1))),
             new FilterItem(nameof(ColorDocumentFilter), () => FilterSelected(new ColorDocumentFilter())),
-            new FilterItem(nameof(BrightnessFilter), () => FilterSelected(new BrightnessFilter())),
-            new FilterItem(nameof(ContrastFilter), () => FilterSelected(new ContrastFilter())),
-            new FilterItem(nameof(GrayscaleFilter), () => FilterSelected(new  GrayscaleFilter())),
-            new FilterItem(nameof(WhiteBlackPointFilter), () => FilterSelected(new  WhiteBlackPointFilter())),
+            new FilterItem(nameof(BrightnessFilter), () => FilterSelected(new BrightnessFilter(brightness: 0.2))),
+            new FilterItem(nameof(ContrastFilter), () => FilterSelected(new ContrastFilter(contrast: 2))),
+            new FilterItem(nameof(GrayscaleFilter), () => FilterSelected(new  GrayscaleFilter(blackOutliersFraction: 0.0, borderWidthFraction: 0.6, whiteOutliersFraction: 0.02))),
+            new FilterItem(nameof(WhiteBlackPointFilter), () => FilterSelected(new  WhiteBlackPointFilter(blackPoint: 0.2, whitePoint: 0.8))),
 
             new FilterItem("Legacy Filters"),
             new FilterItem(nameof(ImageFilterType.None), () => FilterSelected(new  LegacyFilter(ImageFilterType.None.Code))),
