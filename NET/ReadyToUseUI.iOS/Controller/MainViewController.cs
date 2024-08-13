@@ -29,8 +29,7 @@ namespace ReadyToUseUI.iOS.Controller
             barcodeDetectorsLegacy = new List<ListItem>
             {
                 new ListItem("Barcode Scanner", ScanBarcode),
-                new ListItem("Scan Batch Barcodes", ScanBarcodesInBatch),
-                new ListItem("Import and Detect Barcodes", ImportAndDetectBarcode),
+                new ListItem("Scan Batch Barcodes", ScanBarcodesInBatch)
             };
 #endif
             

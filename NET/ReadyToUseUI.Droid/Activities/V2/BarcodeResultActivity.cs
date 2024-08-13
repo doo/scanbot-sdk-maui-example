@@ -19,7 +19,7 @@ namespace ReadyToUseUI.Droid.Activities.V2
         
         private void ShowBarcodeResult(BarcodeScannerResult result)
         {
-            var parent = FindViewById<LinearLayout>(Resource.Id.recognisedItems);
+            var parent = FindViewById<LinearLayout>(Resource.Id.recognizedItems);
 
             if (result == null)
                 return;

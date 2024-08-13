@@ -72,7 +72,7 @@ public partial class MainActivity
         StartActivityForResult(intent, GENERIC_DOCUMENT_REQUEST);
     }
 
-    private void RecogniseCheck()
+    private void RecognizeCheck()
     {
         var config = new CheckRecognizerConfiguration();
         config.SetCancelButtonTitle("Done");
@@ -83,6 +83,9 @@ public partial class MainActivity
             IO.Scanbot.Check.Entity.RootDocumentType.INDCheck,
             IO.Scanbot.Check.Entity.RootDocumentType.KWTCheck,
             IO.Scanbot.Check.Entity.RootDocumentType.USACheck,
+            IO.Scanbot.Check.Entity.RootDocumentType.UAECheck,
+            IO.Scanbot.Check.Entity.RootDocumentType.ISRCheck,
+            IO.Scanbot.Check.Entity.RootDocumentType.CANCheck,
         });
         var intent = CheckRecognizerActivity.NewIntent(this, config);
         StartActivityForResult(intent, CHECK_RECOGNIZER_REQUEST);

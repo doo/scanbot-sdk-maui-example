@@ -47,7 +47,7 @@ public class BaseResultActivity<TNativeBarcodeResult> : AppCompatActivity where 
 
     protected ImageView AddImageView()
     {
-        var items = FindViewById<LinearLayout>(Resource.Id.recognisedItems);
+        var items = FindViewById<LinearLayout>(Resource.Id.recognizedItems);
         var view = LayoutInflater.Inflate(Resource.Layout.snap_image_item, items, false);
         items.AddView(view);
         return view.FindViewById<ImageView>(Resource.Id.snapImage);
