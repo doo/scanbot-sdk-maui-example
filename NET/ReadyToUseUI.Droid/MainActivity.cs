@@ -77,8 +77,7 @@ namespace ReadyToUseUI.Droid
             barcodeDetectors.AddChildren(buttons, new[]
             {
                 new ListItemButton(this, "Scan Barcodes", ScanBarcode),
-                new ListItemButton(this, "Scan Batch Barcodes", ScanBarcodesInBatch),
-                new ListItemButton(this, "Import and Detect Barcodes", ImportAndDetectBarcode),
+                new ListItemButton(this, "Scan Batch Barcodes", ScanBarcodesInBatch)
             });
             barcodeScannerTitle += " V2";
 #else
@@ -96,6 +95,7 @@ namespace ReadyToUseUI.Droid
                 new ListItemButton(this, "Batch Barcode Scanning", BatchBarcodeScanning),
                 new ListItemButton(this, "Multiple Unique Barcode Scanning", MultipleUniqueBarcodeScanning),
                 new ListItemButton(this, "Find and Pick Barcode Scanning", FindAndPickScanning),
+                new ListItemButton(this, "Import and Detect Barcodes", ImportAndDetectBarcode),
             });
 
             var scanner = (LinearLayout)container.FindViewById(Resource.Id.document_scanner);
