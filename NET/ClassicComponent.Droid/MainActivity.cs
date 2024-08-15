@@ -74,7 +74,7 @@ namespace ClassicComponent.Droid
         void AssignCopyrightText()
         {
             var copyrightTextView = FindViewById<TextView>(Resource.Id.copyrightTextView);
-            copyrightTextView.Text = "Copyright (c) " + DateTime.Now.Year.ToString() + " doo GmbH. All rights reserved.";
+            copyrightTextView.Text = "Copyright (c) " + DateTime.Now.Year.ToString() + " Scanbot SDK GmbH. All rights reserved.";
         }
 
         void AssignStartCameraXButtonHandler()
