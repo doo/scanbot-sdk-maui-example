@@ -40,7 +40,6 @@ internal class DocumentUtilities
         renderer.RenderImageStorage(tempImageStorage, indexSet: null, encrypter: ScanbotUI.DefaultImageStoreEncrypter, output: outputPdfUrl,
             completion: (isComplete, error) =>
             {
-                tempImageStorage.RemoveAllImages();
                 if (error != null)
                 {
                     throw new NSErrorException(error);

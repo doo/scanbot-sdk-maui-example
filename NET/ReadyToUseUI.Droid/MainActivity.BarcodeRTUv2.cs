@@ -109,6 +109,9 @@ public partial class MainActivity
         // Set the sheet mode for the barcodes preview.
         findAndPickConfig.Sheet.Mode = SheetMode.CollapsedSheet;
 
+        // Enable AR Overlay
+        findAndPickConfig.ArOverlay.Visible = true;
+
         // Enable/Disable the automatic selection.
         findAndPickConfig.ArOverlay.AutomaticSelectionEnabled = false;
 

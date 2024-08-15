@@ -17,6 +17,9 @@ public static partial class Snippets
             // Set the sheet mode for the barcodes preview.
             useCase.Sheet.Mode = SBSDKUI2SheetMode.CollapsedSheet;
 
+            // Enable the AR Overlay.
+            useCase.ArOverlay.Visible = true;
+
             // Enable/Disable the automatic selection.
             useCase.ArOverlay.AutomaticSelectionEnabled = false;
 

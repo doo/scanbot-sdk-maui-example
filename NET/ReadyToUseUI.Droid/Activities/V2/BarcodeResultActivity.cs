@@ -19,7 +19,7 @@ namespace ReadyToUseUI.Droid.Activities.V2
         
         private void ShowBarcodeResult(BarcodeScannerResult result)
         {
-            var parent = FindViewById<LinearLayout>(Resource.Id.recognisedItems);
+            var parent = FindViewById<LinearLayout>(Resource.Id.recognizedItems);
 
             if (result == null)
                 return;
@@ -63,6 +63,9 @@ namespace ReadyToUseUI.Droid.Activities.V2
         
         private string ParseData(IO.Scanbot.Genericdocument.Entity.GenericDocument result)
         {
+            if (result == null)
+                return string.Empty;
+            
             var builder = new StringBuilder();
             var description = string.Join(";\n", result.Fields?
                 .Where(field => field != null)

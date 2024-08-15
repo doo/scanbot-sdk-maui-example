@@ -1,4 +1,5 @@
 using System.Text;
+using ReadyToUseUI.iOS.Utils;
 using ScanbotSDK.iOS;
 
 namespace ReadyToUseUI.iOS.Controller;
@@ -33,22 +34,25 @@ public class BarcodeResultDetailsController : UIViewController
     private string GetBarcodeText()
     {
         var text = "______________________________________\n\n";
-    
         text += "Barcode Type:\n\n";
-        text += barcode.Type.GetType().Name +"\n\n";
-        
-        text += "______________________________________\n\n";        
-        
-        text += "Document Type:\n\n";
-        text += barcode.ParsedDocument.Type.Name +"\n\n";
-        
-        text += "______________________________________\n\n";        
-        
-        text += "Document Details:\n\n";
-        text += ParseData(barcode.ParsedDocument) +"\n\n";
-        
+        text += barcode.Type?.ToBarcodeFormatName()  +"\n\n";
+
+        var documentDetails = ParseData(barcode.ParsedDocument);
+        if (!string.IsNullOrEmpty(documentDetails))
+        {
+            text += "______________________________________\n\n";
+            text += "Document Details:\n\n";
+            text += documentDetails + "\n\n";
+        }
+
+        if (!string.IsNullOrEmpty(barcode.ParsedDocument?.Type?.Name))
+        {
+            text += "______________________________________\n\n";
+            text += "Document Type:\n\n";
+            text += barcode.ParsedDocument.Type.Name + "\n\n";
+        }
+
         text += "______________________________________\n\n";
-        
         text += "Raw Text:\n\n";
         text += barcode.TextWithExtension +"\n\n";
         text += "______________________________________\n\n";
@@ -58,6 +62,8 @@ public class BarcodeResultDetailsController : UIViewController
     
     private string ParseData(SBSDKGenericDocument result)
     {
+        if (result == null) return string.Empty;
+        
         var builder = new StringBuilder();
         var description = string.Join(";\n", result.Fields?
             .Where(field => field != null)

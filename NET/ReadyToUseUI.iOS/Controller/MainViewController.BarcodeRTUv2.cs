@@ -119,7 +119,7 @@ public partial class MainViewController
         usecases.Mode = SBSDKUI2MultipleBarcodesScanningMode.Unique;
         usecases.Sheet.Mode = SBSDKUI2SheetMode.CollapsedSheet;
         usecases.SheetContent.ManualCountChangeEnabled = false;
-        usecases.ArOverlay.Visible = false;
+        usecases.ArOverlay.Visible = true;
         usecases.ArOverlay.AutomaticSelectionEnabled = false;
             
         configuration.UseCase = usecases;
@@ -152,7 +152,7 @@ public partial class MainViewController
         usecases.Sheet.CollapsedVisibleHeight = SBSDKUI2CollapsedVisibleHeight.Large;
         usecases.SheetContent.ManualCountChangeEnabled = true;
         usecases.ArOverlay.Visible = true;
-        usecases.ArOverlay.AutomaticSelectionEnabled = true;
+        usecases.ArOverlay.AutomaticSelectionEnabled = false;
         usecases.ExpectedBarcodes = new SBSDKUI2ExpectedBarcode[] {
             new SBSDKUI2ExpectedBarcode(barcodeValue: "123456", title: "numeric barcode", image: "https://avatars.githubusercontent.com/u/1454920", count: 4),
             new SBSDKUI2ExpectedBarcode(barcodeValue: "SCANBOT", title: "value barcode", image: "https://avatars.githubusercontent.com/u/1454920", count: 4),
@@ -193,10 +193,6 @@ public partial class MainViewController
                 {
                     text += item.Type.Name + ": " + item.RawTextString + "\n";
                 }
-
-                var quality = new SBSDKDocumentQualityAnalyzer().AnalyzeOnImage(image);
-                Console.WriteLine("The quality of the imported image: " + quality.ToString());
-                text += "(Additionally, blur: " + quality.ToString() + ")";
             }
         }
         else
