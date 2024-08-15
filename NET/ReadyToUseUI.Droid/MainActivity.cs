@@ -21,6 +21,7 @@ using IO.Scanbot.Sdk.Mcrecognizer.Entity;
 using IO.Scanbot.Sdk.Ui_v2.Barcode.Common.Mappers;
 using IO.Scanbot.Sdk.Vin;
 using IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration;
+using IO.Scanbot.Sdk.UI.View.Licenseplate.Entity;
 
 namespace ReadyToUseUI.Droid
 {
@@ -76,8 +77,7 @@ namespace ReadyToUseUI.Droid
             barcodeDetectors.AddChildren(buttons, new[]
             {
                 new ListItemButton(this, "Scan Barcodes", ScanBarcode),
-                new ListItemButton(this, "Scan Batch Barcodes", ScanBarcodesInBatch),
-                new ListItemButton(this, "Import and Detect Barcodes", ImportAndDetectBarcode),
+                new ListItemButton(this, "Scan Batch Barcodes", ScanBarcodesInBatch)
             });
             barcodeScannerTitle += " V2";
 #else
@@ -95,6 +95,7 @@ namespace ReadyToUseUI.Droid
                 new ListItemButton(this, "Batch Barcode Scanning", BatchBarcodeScanning),
                 new ListItemButton(this, "Multiple Unique Barcode Scanning", MultipleUniqueBarcodeScanning),
                 new ListItemButton(this, "Find and Pick Barcode Scanning", FindAndPickScanning),
+                new ListItemButton(this, "Import and Detect Barcodes", ImportAndDetectBarcode),
             });
 
             var scanner = (LinearLayout)container.FindViewById(Resource.Id.document_scanner);
@@ -116,7 +117,7 @@ namespace ReadyToUseUI.Droid
                 new ListItemButton(this, "Scan MRZ", ScanMrz),
                 new ListItemButton(this, "Scan Health Insurance card", ScanEhic),
                 new ListItemButton(this, "Generic Document Recognizer", RecongnizeGenericDocument),
-                new ListItemButton(this, "Check Recognizer", RecogniseCheck),
+                new ListItemButton(this, "Check Recognizer", RecognizeCheck),
                 new ListItemButton(this, "Text Data Recognizer", TextDataRecognizerTapped),
                 new ListItemButton(this, "VIN Recognizer", VinRecognizerTapped),
                 new ListItemButton(this, "License Plate Recognizer", LicensePlateRecognizerTapped),
@@ -167,10 +168,7 @@ namespace ReadyToUseUI.Droid
                     var detector = scanbotSDK.CreateBarcodeDetector();
                     var result = detector.DetectFromBitmap(bitmap, 0);
 
-                    var qualityAnalyzer = scanbotSDK.CreateDocumentQualityAnalyzer();
-                    var documentQualityResult = qualityAnalyzer.AnalyzeInBitmap(bitmap, 0);
-
-                    var fragment = BarcodeDialogFragment.CreateInstance(result, documentQualityResult);
+                    var fragment = BarcodeDialogFragment.CreateInstance(result);
                     fragment.Show(FragmentManager);
                     return;
                 }
@@ -263,7 +261,7 @@ namespace ReadyToUseUI.Droid
                 {
                     var result = (VinScanResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
 
-                    Alert.Toast(this, $"VIN Scanned: {result.RawText}");
+                    Alert.Toast(this, $"VIN Scanned: {result?.RawText}");
                     return;
                 }
                 case SCAN_DATA_REQUEST:
@@ -279,14 +277,14 @@ namespace ReadyToUseUI.Droid
                 }
                 case SCAN_EU_LICENSE_REQUEST:
                 {
-                    var results = data.GetParcelableArrayListExtra(RtuConstants.ExtraKeyRtuResult);
+                    var result = (data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult) as LicensePlateScannerResult);
 
-                    if (results == null || results.Count == 0)
+                    if (result == null)
                     {
                         return;
                     }
 
-                    Alert.Toast(this, $"EU_LICENSE Scanned: {results[0]}");
+                    Alert.Toast(this, $"EU_LICENSE Scanned: {result.RawText}");
                     return;
                 }
                 case SCAN_MEDICAL_CERTIFICATE_REQUEST:
