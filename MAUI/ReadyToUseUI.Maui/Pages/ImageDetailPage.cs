@@ -88,7 +88,7 @@ namespace ReadyToUseUI.Maui.Pages
             }
 
             var filterPage = new FiltersPage();
-            filterPage.NavigateData((filters) =>
+            filterPage.NavigateData(async (filters) =>
             {
                 documentImage.Source = null;
                 await selectedPage.SetFilterAsync(filters.ToArray());
