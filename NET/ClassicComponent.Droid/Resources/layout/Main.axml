@@ -31,11 +31,6 @@
             android:layout_height="wrap_content"
             android:id="@+id/importImageButton" />
         <Button
-            android:text="Apply Image Filter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/applyImageFilterButton" />
-        <Button
             android:text="Create PDF"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

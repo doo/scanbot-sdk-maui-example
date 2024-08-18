@@ -1,9 +1,10 @@
-﻿using IO.Scanbot.Sdk.Process;
+﻿using IO.Scanbot.Imagefilters;
+using IO.Scanbot.Sdk.Process;
 
 namespace ReadyToUseUI.Droid.Listeners
 {
     public interface IFiltersListener
     {
-        void ApplyFilter(ImageFilterType type);
+        void ApplyFilter(ParametricFilter type);
     }
 }

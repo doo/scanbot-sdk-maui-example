@@ -32,6 +32,9 @@ namespace ReadyToUseUI.Droid.Activities.V2
         
         private string ParseData(IO.Scanbot.Genericdocument.Entity.GenericDocument result)
         {
+            if (result == null)
+                return string.Empty;
+            
             var builder = new StringBuilder();
             var description = string.Join(";\n", result.Fields?
                 .Where(field => field != null)

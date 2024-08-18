@@ -9,16 +9,13 @@ namespace ReadyToUseUI.Droid.Fragments
     {
         private const string dataTag = "BarcodeDialogFragment";
 
-        private DocumentQualityResult _qualityResult;
-
-        public static BarcodeDialogFragment CreateInstance(BarcodeScanningResult data, DocumentQualityResult qualityResult = null)
+        public static BarcodeDialogFragment CreateInstance(BarcodeScanningResult data)
         {
             var fragment = new BarcodeDialogFragment();
             var args = new Bundle();
             args.PutParcelable(dataTag, data);
 
             fragment.Arguments = args;
-            fragment._qualityResult = qualityResult;
             return fragment;
         }
 
@@ -40,11 +37,7 @@ namespace ReadyToUseUI.Droid.Fragments
             {
                 resultText += barcode.BarcodeFormat.Name() + ": " + barcode.Text + "\n";
             }
-
-            if (_qualityResult != null)
-            {
-                resultText += "Estimated image quality: " + _qualityResult.Name();
-            }
+            
             CopyText = resultText;
             content.Text = resultText;
 

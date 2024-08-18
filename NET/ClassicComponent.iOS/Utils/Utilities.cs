@@ -69,8 +69,8 @@ namespace ClassicComponent.iOS.Utils
                 originalImage = originalImage.ImageRotatedCounterClockwise(parameters.Rotation);
             }
             var image = originalImage.ImageWarpedByPolygon(parameters.Polygon, 1.0f);
-            // todo Check the filters
             parameters.Rotation = 0;
+            image = image.ImageFilteredWithFilters(new[] { new SBSDKLegacyFilter((int)parameters.Filter) });
             return image;
         }
     }

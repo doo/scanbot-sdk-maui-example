@@ -43,7 +43,8 @@ public partial class MainViewController
         {
             var configuration = SBSDKUIGenericDocumentRecognizerConfiguration.DefaultConfiguration;
             configuration.TextConfiguration.CancelButtonTitle = "Done";
-            configuration.BehaviorConfiguration.DocumentType = SBSDKUIDocumentType.IdCardFrontBackDE;
+            // Specify Document types if needed
+            // configuration.BehaviorConfiguration.DocumentType = SBSDKUIDocumentType.IdCardFrontBackDE;
             var controller = SBSDKUIGenericDocumentRecognizerViewController.CreateWithConfigurationAndDelegate(configuration, null);
 
             controller.DidFinishWithDocuments += (_, args) =>
@@ -75,6 +76,9 @@ public partial class MainViewController
                 SBSDKCheckDocumentRootType.IndCheck,
                 SBSDKCheckDocumentRootType.KwtCheck,
                 SBSDKCheckDocumentRootType.UsaCheck,
+                SBSDKCheckDocumentRootType.UaeCheck,
+                SBSDKCheckDocumentRootType.CanCheck,
+                SBSDKCheckDocumentRootType.IsrCheck,
             };
             var controller = SBSDKUICheckRecognizerViewController.CreateWithConfiguration(configuration, null);
             controller.DidRecognizeCheck += (_, args) =>
