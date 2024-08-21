@@ -66,12 +66,16 @@ namespace ReadyToUseUI.Maui.Pages
         {
             var configuration = new CheckRecognizerConfiguration
             {
-                AcceptedCheckStandards = new List<CheckStandard>() {
-                    CheckStandard.USA,
+                AcceptedCheckStandards = new List<CheckStandard>() 
+                {
                     CheckStandard.AUS,
-                    CheckStandard.IND,
+                    CheckStandard.CAN,
                     CheckStandard.FRA,
+                    CheckStandard.IND,
+                    CheckStandard.ISR,
                     CheckStandard.KWT,
+                    CheckStandard.UAE,
+                    CheckStandard.USA
                 }
             };
 
@@ -145,7 +149,7 @@ namespace ReadyToUseUI.Maui.Pages
             }
         }
 
-        private string FormatMedicalCertificateRecognitionResult(MedicalCertificateResult result)
+        internal string FormatMedicalCertificateRecognitionResult(MedicalCertificateResult result)
         {
             StringBuilder stringBuilder = new StringBuilder();
             

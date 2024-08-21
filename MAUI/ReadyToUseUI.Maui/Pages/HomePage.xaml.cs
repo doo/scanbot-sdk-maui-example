@@ -66,6 +66,13 @@ public partial class HomePage : ContentPage
             new SdkFeature("VIN Recognizer", VinRecognizerClicked),
             new SdkFeature("License Plate Recognizer", LicensePlateRecognizerClicked),
             new SdkFeature("Medical Certificate Recognizer", MedicalCertificateRecognizerClicked),
+            
+            new SdkFeature("DETECTION FROM IMAGE"),
+            new SdkFeature("MRZ Detector", MRZDetectorClicked),
+            new SdkFeature("EHIC Detector", EHICDetectorClicked),
+            new SdkFeature("Generic Document Detector", GenericDocumentDetectorClicked),
+            new SdkFeature("Check Detector", CheckDetectorrClicked),
+            new SdkFeature("Medical Certificate Detector", MedicalCertificateDetectorClicked),
 
             new SdkFeature("MISCELLANEOUS"),
             new SdkFeature("View License Info", ViewLicenseInfoClicked),
