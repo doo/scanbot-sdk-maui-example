@@ -103,7 +103,11 @@ namespace ReadyToUseUI.Maui.Pages
         {
             if (!SDKUtils.CheckLicense(this)) { return; }
 
-            DocumentQuality quality = await scanbotDocumentService.DetectDocumentQualityAsync(documentImage.Source);
+            DocumentQuality quality = await scanbotDocumentService.DetectDocumentQualityAsync(documentImage.Source, new DocumentQualityAnalyzerConfiguration
+            {
+                ImageSizeLimit = 2500,
+                MinimumNumberOfSymbols = 20
+            });
 
             ViewUtils.Alert(this, "Document Quality", $"Detected quality is: {quality}");
         }

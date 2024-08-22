@@ -1,17 +1,14 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using ReadyToUseUI.Maui.Pages.DocumentFilters;
 using ReadyToUseUI.Maui.Utils;
 using ScanbotSDK.MAUI;
-using ScanbotSDK.MAUI.DocumentFormats.Barcode;
 
 namespace ReadyToUseUI.Maui.Pages;
 
 public partial class FiltersPage : ContentPage
 {
-
     private Action<List<ParametricFilter>> FilterSelectionChanged;
     internal void NavigateData(Action<List<ParametricFilter>> filterSelectionChanged)
     {
@@ -79,7 +76,6 @@ public partial class FiltersPage : ContentPage
         base.OnAppearing();
         FilterssCollectionView.ItemsSource = FilterItems;
     }
-
     
     private bool isBusy;
     private async void CheckBox_OnCheckedChanged(object sender, CheckedChangedEventArgs e)
@@ -91,6 +87,9 @@ public partial class FiltersPage : ContentPage
             isBusy = true;
             var checkBox = (sender as CheckBox);
             var filterItem = checkBox.BindingContext as FilterItem;
+            
+            if (filterItem == null)
+                return;
 
             // Clear filters
             if (filterItem.FilterTitle == FilterItemConstants.None && checkBox.IsChecked)
@@ -105,7 +104,7 @@ public partial class FiltersPage : ContentPage
                     {
                         item.IsSelected = false;
                     }
-
+                    // Checking the None filter.
                     FilterItems.First().IsSelected = true;
                 }
                 else
@@ -118,6 +117,7 @@ public partial class FiltersPage : ContentPage
                 // Unchecking the None filter.
                 FilterItems.First().IsSelected = false;
             }
+
             isBusy = false;
         }
     }
@@ -126,7 +126,13 @@ public partial class FiltersPage : ContentPage
     {
         if (sender is Picker picker && picker != null)
         {
-            UpdateList(picker, (index) => FilterItems[index].PickerSelectedValue = picker.SelectedItem as string);
+            UpdateList(picker, (index) =>
+            {
+                if (index >= 0 && index < FilterItems.Count)
+                {
+                    FilterItems[index].PickerSelectedValue = picker.SelectedItem as string;
+                }
+            });
         }
     }
 
@@ -134,7 +140,13 @@ public partial class FiltersPage : ContentPage
     {
         if (sender is Slider slider && slider != null)
         {
-            UpdateList(slider, (index) => FilterItems[index].SliderValue = slider.Value);
+            UpdateList(slider, (index) =>
+            {
+                if (index >= 0 && index < FilterItems.Count)
+                {
+                    FilterItems[index].SliderValue = slider.Value;
+                }
+            });
         }
     }
 
