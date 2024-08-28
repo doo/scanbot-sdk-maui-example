@@ -2,6 +2,8 @@
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Document;
 using SQLite;
+using System.Linq;
+using ScanbotSDK.MAUI.RTU.v1;
 
 namespace ReadyToUseUI.Maui.Models
 {
@@ -65,10 +67,9 @@ namespace ReadyToUseUI.Maui.Models
                 var result = await ScanbotSDK.MAUI.ScanbotSDK.SDKService.ReconstructPage(
                     page.Id,
                     page.CreatePolygon(),
-                    SDKUtils.JsonToFilter(page.ParametricFilters) ??
-                    new[] { ParametricFilter.FromLegacyFilter(ImageFilter.None) },
+                    SDKUtils.JsonToFilter(page.ParametricFilters) ?? new [] { ParametricFilter.FromLegacyFilter(ImageFilter.None) },
                     (DocumentDetectionStatus)page.DetectionStatus);
-
+                
                 scannedPages.Add(result);
             }
 
@@ -90,6 +91,63 @@ namespace ReadyToUseUI.Maui.Models
 
             return -1;
         }
+
+        public async Task MigrateTableIfNeeded()
+        {
+            // Migration for parametric filters
+            var parametricFilterExists = await IsFieldExist(nameof(DBPage), "ParametricFilters");
+            if (parametricFilterExists)
+            {
+                // Already migrated
+                return;
+            }
+
+            await MigrateTableToParametricFilter();
+        }
+
+        private async Task MigrateTableToParametricFilter()
+        {
+            try
+            {
+                // It creates/updates a table based on the new(current) schema.
+                // So our Database table is updated with the new ParametricFilter field.
+                var sqliteDb = await GetDatabaseAsync();
+                var existingPages = await sqliteDb.Table<DBPage>().ToListAsync();
+
+                foreach (var page in existingPages)
+                {
+                    ParametricFilter newFilter = (ImageFilter)page.Filter;
+                    page.ParametricFilters = SDKUtils.FilterToJson(new[] { newFilter });
+                }
+
+                await sqliteDb.UpdateAllAsync(existingPages);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new Exception("Error while migrating to the Parametric Filters. \n " + e.Message);
+            }
+        }
+
+        // Returns [True]
+        // - if the column exists in your table.
+        // - if the table doesn't exist at all.
+        // Return [False]
+        // - If the field exists in the table.
+        private async Task<bool> IsFieldExist(string tableName, string fieldName)
+        {
+            var sqliteDatabase = new SQLiteAsyncConnection(DatabasePath, Flags);
+            var columns = await sqliteDatabase.GetTableInfoAsync(tableName);
+
+            if ((columns?.Count ?? 0) == 0)
+            {
+                // no columns available, hence table doesn't exists
+                return true;
+            }
+
+            var isExist = columns?.Any(column => column.Name == fieldName) ?? false;   
+            return isExist;
+        }
     }
 
     /*
@@ -98,11 +156,14 @@ namespace ReadyToUseUI.Maui.Models
     public class DBPage
     {
         [PrimaryKey] public string Id { get; set; }
-
+        
+        [Obsolete("The ImageFilter is obsolete. The ParametricFilters will be used instead.")]
         public int Filter { get; set; }
 
         /// <summary>
-        /// Dictionary of all the filter names mapped with their corresponding filter objects. 
+        /// Json Dictionary of the parametric filters.
+        /// Key: Filter Name (e.g: GrayScale)
+        /// Value: Json string of the Filter object.  
         /// </summary>
         public string ParametricFilters { get; set; }
         

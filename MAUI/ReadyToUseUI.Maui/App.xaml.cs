@@ -1,4 +1,5 @@
-﻿using ReadyToUseUI.Maui.Pages;
+﻿using ReadyToUseUI.Maui.Models;
+using ReadyToUseUI.Maui.Pages;
 
 namespace ReadyToUseUI.Maui
 {
@@ -6,8 +7,11 @@ namespace ReadyToUseUI.Maui
     {
         public App()
         {
-            InitializeComponent();            
+            InitializeComponent();
             MainPage = new NavigationPage(new HomePage());
+            
+            // SQLite Database migration from ImageFilter to ParametricFilters
+            Task.Run(PageStorage.Instance.MigrateTableIfNeeded);
         }
     }
 }
