@@ -9,10 +9,6 @@ namespace ReadyToUseUI.Maui
         {
             InitializeComponent();
             MainPage = new NavigationPage(new HomePage());
-            
-            // SQLite Database migration from ImageFilter to ParametricFilters
-            Task.Run(PageStorage.Instance.MigrateTableIfNeeded);
         }
     }
 }
-

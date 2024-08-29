@@ -1,4 +1,5 @@
-﻿using ScanbotSDK.MAUI;
+﻿using ReadyToUseUI.Maui.Models;
+using ScanbotSDK.MAUI;
 
 namespace ReadyToUseUI.Maui
 {
@@ -35,6 +36,9 @@ namespace ReadyToUseUI.Maui
                 // encrypted.
             });
 
+            // SQLite Database - Migrate DBPage table for using the new ParametricFilters instead of legacy ImageFilter type.
+            PageStorage.Instance.ValidateDatabaseMigration();
+            
             return builder.Build();
         }
 

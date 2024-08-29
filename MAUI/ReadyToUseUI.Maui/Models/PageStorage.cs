@@ -92,17 +92,24 @@ namespace ReadyToUseUI.Maui.Models
             return -1;
         }
 
-        public async Task MigrateTableIfNeeded()
+        public async void ValidateDatabaseMigration()
         {
-            // Migration for parametric filters
-            var parametricFilterExists = await IsFieldExist(nameof(DBPage), "ParametricFilters");
-            if (parametricFilterExists)
+            try
             {
-                // Already migrated
-                return;
-            }
+                // Migration for parametric filters
+                var parametricFilterExists = await IsFieldExist(nameof(DBPage), "ParametricFilters");
+                if (parametricFilterExists)
+                {
+                    // Already migrated
+                    return;
+                }
 
-            await MigrateTableToParametricFilter();
+                await MigrateTableToParametricFilter();
+            }
+            catch (Exception error)
+            {
+                Console.WriteLine(error.Message);
+            }
         }
 
         private async Task MigrateTableToParametricFilter()
@@ -139,14 +146,13 @@ namespace ReadyToUseUI.Maui.Models
             var sqliteDatabase = new SQLiteAsyncConnection(DatabasePath, Flags);
             var columns = await sqliteDatabase.GetTableInfoAsync(tableName);
 
-            if ((columns?.Count ?? 0) == 0)
+            if (columns == null || columns.Count == 0)
             {
                 // no columns available, hence table doesn't exists
                 return true;
             }
 
-            var isExist = columns?.Any(column => column.Name == fieldName) ?? false;   
-            return isExist;
+            return columns.Any(column => column.Name == fieldName);
         }
     }
 

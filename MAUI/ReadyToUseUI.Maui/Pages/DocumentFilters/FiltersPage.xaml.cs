@@ -78,48 +78,50 @@ public partial class FiltersPage : ContentPage
     }
     
     private bool isBusy;
+
     private async void CheckBox_OnCheckedChanged(object sender, CheckedChangedEventArgs e)
     {
         // Case: Selection 'None' Filter
         // Unselecting all items selected filters(CheckBoxes) triggers the CheckBoxValueChanged event every single time. So we skip the call until all checkboxes are updated.
-        if (!isBusy)
+        if (isBusy)
         {
-            isBusy = true;
-            var checkBox = (sender as CheckBox);
-            var filterItem = checkBox.BindingContext as FilterItem;
-            
-            if (filterItem == null)
-                return;
+            return;
+        }
 
-            // Clear filters
-            if (filterItem.FilterTitle == FilterItemConstants.None && checkBox.IsChecked)
+
+        isBusy = true;
+        var checkBox = (sender as CheckBox);
+        var filterItem = checkBox.BindingContext as FilterItem;
+
+        // Clear filters
+        if (filterItem.FilterTitle == FilterItemConstants.None && checkBox.IsChecked)
+        {
+            var result = await DisplayAlert("Alert",
+                "Selecting None will clear all your previous selections, Please confirm.", "Continue",
+                "Cancel");
+
+            if (result)
             {
-                var result = await DisplayAlert("Alert",
-                    "Selecting None will clear all your previous selections, Please confirm.", "Continue",
-                    "Cancel");
+                foreach (var item in FilterItems)
+                {
+                    item.IsSelected = false;
+                }
 
-                if (result)
-                {
-                    foreach (var item in FilterItems)
-                    {
-                        item.IsSelected = false;
-                    }
-                    // Checking the None filter.
-                    FilterItems.First().IsSelected = true;
-                }
-                else
-                {
-                    checkBox.IsChecked = false;
-                }
+                // Checking the None filter.
+                FilterItems.First().IsSelected = true;
             }
             else
             {
-                // Unchecking the None filter.
-                FilterItems.First().IsSelected = false;
+                checkBox.IsChecked = false;
             }
-
-            isBusy = false;
         }
+        else
+        {
+            // Unchecking the None filter.
+            FilterItems.First().IsSelected = false;
+        }
+
+        isBusy = false;
     }
 
     private void Picker_OnSelectedIndexChanged(object sender, EventArgs e)
