@@ -54,7 +54,6 @@ public partial class HomePage : ContentPage
             new SdkFeature("Scan Document", () => DocumentScannerClicked(withFinder: false)),
             new SdkFeature("Scan Document with Finder", () => DocumentScannerClicked(withFinder: true)),
             new SdkFeature("Import image & Detect Document", ImportButtonClicked),
-            new SdkFeature("Import image & Apply Filter", ApplyFilterOnImportedImageClicked),
             new SdkFeature("View Image Results", ViewImageResultsClicked),
 
             new SdkFeature("DATA DETECTORS"),

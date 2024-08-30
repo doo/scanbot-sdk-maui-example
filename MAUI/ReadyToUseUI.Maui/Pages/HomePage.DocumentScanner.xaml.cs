@@ -76,20 +76,6 @@ namespace ReadyToUseUI.Maui.Pages
         {
             await Navigation.PushAsync(new ImageResultsPage());
         }
-
-        private async Task ApplyFilterOnImportedImageClicked()
-        {
-            ImageSource source = await SBSDK.PickerService.PickImageAsync();
-            if (source != null)
-            {
-
-                var result = await SBSDK.SDKService.ApplyImageFilterAsync(source, ParametricFilter.Brightness(0.3f));
-                
-                var filteredResult = new FilteredImagePage();
-                filteredResult.NavigateData(result);
-                await Navigation.PushAsync(filteredResult);
-            }
-        }
     }
 }
 
