@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <!-- ===================== Common Project Configs/Architecture =====================  -->
     <PropertyGroup>
-        <TargetFrameworks>net7.0-android;net7.0-ios</TargetFrameworks>
+        <TargetFrameworks>net8.0-android;net8.0-ios</TargetFrameworks>
         <!-- Comment out the above and add the below to run with .net7 -->
-        <!-- <TargetFrameworks>net8.0-android;net8.0-ios</TargetFrameworks> -->
+        <!-- <TargetFrameworks>net7.0-android;net7.0-ios</TargetFrameworks> -->
         <OutputType>Exe</OutputType>
         <UseMaui>true</UseMaui>
         <SingleProject>true</SingleProject>
@@ -20,24 +20,54 @@
         <!-- Supported Platforms -->
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">13.0</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21</SupportedOSPlatformVersion>
+        <Platforms>x64;ARM64</Platforms>
+        <WarningsAsErrors>NU1603</WarningsAsErrors>
 
         <!-- Comment this out to see RTU v1 in the example -->
-         <DefineConstants>$(DefineConstants);LEGACY_EXAMPLES</DefineConstants>
+        <!-- <DefineConstants>$(DefineConstants);LEGACY_EXAMPLES</DefineConstants> -->
     </PropertyGroup>
-    <PropertyGroup Condition="$(TargetFramework.Contains('-ios')) == true And '$(Platform)' == 'ARM'">
+    
+    <!-- ===================== iOS Specific Targets =====================  -->
+    
+    <!-- Properties for iOS Simulator (x64 architecture) -->
+    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'iossimulator-x64'">
+        <RuntimeIdentifiers>iossimulator-x64</RuntimeIdentifiers>
+        <!-- Additional properties specific to iOS simulator (x64) -->
+        <PlatformTarget>x64</PlatformTarget>
+    </PropertyGroup>
+    
+    <!-- Properties for iOS Simulator (arm64 architecture) -->
+    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'iossimulator-arm64'">
+        <RuntimeIdentifiers>iossimulator-arm64</RuntimeIdentifiers>
+        <!-- Additional properties specific to iOS simulator (arm64) -->
+    </PropertyGroup>
+    
+    <!-- Properties for iOS Device (arm64 architecture) -->
+    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'ios-arm64'">
+        <RuntimeIdentifiers>ios-arm64</RuntimeIdentifiers>
+        <!-- Additional properties specific to iOS device (arm64) -->
+    </PropertyGroup>
+
+    <!-- ===================== General Targets =====================  -->
+    
+    <!-- Settings for all targets that are not iOS (e.g., Android ) -->
+    <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'ios'">
+        <MtouchLink>SdkOnly</MtouchLink>
+        <CreatePackage>false</CreatePackage>
+        <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+    </PropertyGroup>
+
+    <!-- General settings for iOS targets -->
+    <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
         <MtouchLink>SdkOnly</MtouchLink>
         <MtouchInterpreter>-all</MtouchInterpreter>
         <CreatePackage>false</CreatePackage>
         <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
+
+        <!-- Simulator support attribute -->
+        <ForceSimulatorX64ArchitectureInIDE>true</ForceSimulatorX64ArchitectureInIDE>
     </PropertyGroup>
-    <PropertyGroup Condition="$(TargetFramework.Contains('-android')) == true And '$(Platform)' == 'ARM'">
-        <MtouchLink>SdkOnly</MtouchLink>
-        <CreatePackage>false</CreatePackage>
-    </PropertyGroup>
-    <PropertyGroup Condition="$(TargetFramework.Contains('-android')) == true">
-        <!-- Added this flag to disable the fast assembly deployment option. Otherwise it fails to run on Android device.-->
-        <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
-    </PropertyGroup>
+    
     <!-- ===================== Application Resources =====================  -->
     <ItemGroup>
         <!-- App Icon -->
@@ -52,6 +82,7 @@
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)"/>
     </ItemGroup>
+    
     <!-- ===================== IOS Project References =====================  -->
     <ItemGroup Condition="$(TargetFramework.Contains('-ios')) == true">
         <PackageReference Include="NuGet.Build.Packaging" Version="0.2.2">
@@ -77,9 +108,13 @@
         <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\deu.traineddata"/>
         <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\osd.traineddata"/>
     </ItemGroup>
+
+    <!-- ===================== Folders =====================  -->
     <ItemGroup>
         <Folder Include="SubViews\ParametricFilterViews\"/>
     </ItemGroup>
+
+    <!-- ===================== Xaml and Xaml.cs files =====================  -->
     <ItemGroup>
         <MauiXaml Update="Pages\DocumentFilters\FilteredImagePage.xaml">
             <SubType>Designer</SubType>
