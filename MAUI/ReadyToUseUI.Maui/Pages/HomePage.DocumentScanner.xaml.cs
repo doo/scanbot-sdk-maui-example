@@ -1,7 +1,7 @@
 ﻿using ReadyToUseUI.Maui.Models;
 using ScanbotSDK.MAUI;
-using ScanbotSDK.MAUI.Document;
 using ScanbotSDK.MAUI.Common;
+using ScanbotSDK.MAUI.Document;
 using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
 
 namespace ReadyToUseUI.Maui.Pages
@@ -14,19 +14,19 @@ namespace ReadyToUseUI.Maui.Pages
             if (withFinder)
             {
                 result = await SBSDK.ReadyToUseUIService.LaunchFinderDocumentScannerAsync(new FinderDocumentScannerConfiguration
-                {
-                    CameraPreviewMode = CameraPreviewMode.FitIn,
-                    IgnoreBadAspectRatio = true,
-                    TextHintOK = "Don't move.\nScanning document...",
-                    OrientationLockMode = OrientationLockMode.Portrait,
-                    // implicitly the aspect ratio is set to a4 portrait
+                    {
+                        CameraPreviewMode = CameraPreviewMode.FitIn,
+                        IgnoreBadAspectRatio = true,
+                        TextHintOK = "Don't move.\nScanning document...",
+                        OrientationLockMode = OrientationLockMode.Portrait,
+                        // implicitly the aspect ratio is set to a4 portrait
 
-                    // further configuration properties
-                    //FinderLineColor = Colors.Red,
-                    //TopBarBackgroundColor = Colors.Blue,
-                    //FlashButtonHidden = true,
-                    // and so on...
-                });
+                        // further configuration properties
+                        //FinderLineColor = Colors.Red,
+                        //TopBarBackgroundColor = Colors.Blue,
+                        //FlashButtonHidden = true,
+                        // and so on...
+                    });
             }
             else
             {

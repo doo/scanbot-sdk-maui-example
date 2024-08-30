@@ -7,6 +7,8 @@ using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Common;
 using ScanbotSDK.MAUI.Document;
 using System.Collections.ObjectModel;
+using ScanbotSDK.MAUI.Common;
+using ScanbotSDK.MAUI.Document;
 
 namespace ReadyToUseUI.Maui.Pages
 {
@@ -195,9 +197,7 @@ namespace ReadyToUseUI.Maui.Pages
             }
             catch (Exception ex)
             {
-                // Making the error prettier.
-                var errorMessage = ex.Message.Substring(ex.Message.LastIndexOf(':')).Trim('{', '}');
-                ViewUtils.Alert(this, "Error: ", $"An error occurred while saving the document: {errorMessage}");
+                ViewUtils.Alert(this, "Error: ", $"An error occurred while saving the document: {ex.Message}");
             }
             finally
             {
@@ -219,7 +219,11 @@ namespace ReadyToUseUI.Maui.Pages
                                 Title = "ScanbotSDK PDF",
                                 Subject = "Generating a normal PDF",
                                 Keywords = new[] { "x-platform", "ios", "android" },
-                            }
+                            },
+                            Dpi = 72,
+                            JpegQuality = 80,
+                            PageFitMode = PDFPageFitMode.FitIn,
+                            Resample = false
                         });
             ViewUtils.Alert(this, "Success: ", "Wrote documents to: " + fileUri.AbsolutePath);
         }
@@ -255,7 +259,7 @@ namespace ReadyToUseUI.Maui.Pages
             var result = await SBSDK.SDKService.CreateSandwichPdfAsync(
                 documentSources.OfType<FileImageSource>(),
                 new PDFConfiguration
-                {
+                {  
                     PageOrientation = PDFPageOrientation.Auto,
                     PageSize = PDFPageSize.A4,
                     PdfAttributes = new PDFAttributes
@@ -265,7 +269,11 @@ namespace ReadyToUseUI.Maui.Pages
                         Title = "ScanbotSDK PDF",
                         Subject = "Generating a sandwiched PDF",
                         Keywords = new[] { "x-platform", "ios", "android" },
-                    }
+                    },
+                    Dpi = 72,
+                    JpegQuality = 80,
+                    PageFitMode = PDFPageFitMode.FitIn,
+                    Resample = false
                 }, ocrConfig);
 
             ViewUtils.Alert(this, "PDF with OCR layer stored: ", result.AbsolutePath);
@@ -275,7 +283,12 @@ namespace ReadyToUseUI.Maui.Pages
         {
             var fileUri = await SBSDK.SDKService.WriteTiffAsync(
                                  documentSources.OfType<FileImageSource>(),
-                                 new TiffOptions { OneBitEncoded = true, Dpi = 300, Compression = TiffCompressionOptions.CompressionCcittT6 }
+                                 new TiffOptions (ParametricFilter.ScanbotBinarization(OutputMode.Binary))
+                                 {
+                                     Compression = TiffCompressionOptions.CompressionCcittT6,
+                                     Dpi = 300,
+                                     OneBitEncoded = true
+                                 }
                              );
             ViewUtils.Alert(this, "Success: ", "Wrote documents to: " + fileUri.AbsolutePath);
         }

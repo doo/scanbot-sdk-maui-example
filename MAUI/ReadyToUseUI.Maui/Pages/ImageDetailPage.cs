@@ -3,6 +3,8 @@ using ScanbotSDK.MAUI.Document;
 using ReadyToUseUI.Maui.Utils;
 using ReadyToUseUI.Maui.SubViews.ActionBar;
 using ReadyToUseUI.Maui.Models;
+using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Document;
 
 namespace ReadyToUseUI.Maui.Pages
 {
@@ -80,26 +82,32 @@ namespace ReadyToUseUI.Maui.Pages
 
         private async void OnFilterButtonTapped(object sender, EventArgs e)
         {
-            if (!SDKUtils.CheckLicense(this)) { return; }
+            if (!SDKUtils.CheckLicense(this))
+            {
+                return;
+            }
 
-            var buttons = Enum.GetNames(typeof(ImageFilter));
-            var action = await DisplayActionSheet("Filter", "Cancel", null, buttons);
-
-            if (Enum.TryParse<ImageFilter>(action, out var filter))
+            var filterPage = new FiltersPage();
+            filterPage.NavigateData(async (filters) =>
             {
                 documentImage.Source = null;
-                await selectedPage.SetFilterAsync(filter);
+                await selectedPage.SetFilterAsync(filters.ToArray());
                 await PageStorage.Instance.UpdateAsync(selectedPage);
-
                 documentImage.Source = await PageDocument();
-            }
+            });
+            
+            await Navigation.PushAsync(filterPage);
         }
 
         private async void OnAnalyzeQualityTapped(object sender, EventArgs e)
         {
             if (!SDKUtils.CheckLicense(this)) { return; }
 
-            DocumentQuality quality = await scanbotDocumentService.DetectDocumentQualityAsync(documentImage.Source);
+            DocumentQuality quality = await scanbotDocumentService.DetectDocumentQualityAsync(documentImage.Source, new DocumentQualityAnalyzerConfiguration
+            {
+                ImageSizeLimit = 2500,
+                MinimumNumberOfSymbols = 20
+            });
 
             ViewUtils.Alert(this, "Document Quality", $"Detected quality is: {quality}");
         }

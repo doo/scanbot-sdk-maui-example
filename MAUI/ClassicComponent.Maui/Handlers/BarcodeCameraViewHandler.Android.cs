@@ -1,11 +1,12 @@
 ﻿using Android;
 using Android.Content;
 using Android.Content.PM;
+using Android.Graphics;
 using Android.Views;
 using Android.Widget;
 using AndroidX.Core.App;
 using AndroidX.Core.Content;
-
+using IO.Scanbot.Sdk;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 
@@ -13,8 +14,8 @@ using IO.Scanbot.Sdk.Barcode;
 using IO.Scanbot.Sdk.Barcode.Entity;
 using IO.Scanbot.Sdk.Barcode.UI;
 using IO.Scanbot.Sdk.UI.Camera;
-
-using ScanbotSDK.MAUI.Models;
+using ScanbotSDK.MAUI.Common;
+using ScanbotSDK.MAUI.RTU.v1;
 using ScanbotSDK.MAUI.Droid;
 using ScanbotSDK.MAUI.Droid.Utils;
 
@@ -70,8 +71,7 @@ namespace ClassicComponent.Maui.CustomViews
             cameraViewDroid.InitDetectionBehavior(detector, HandleFrameHandlerResult,
                 (onCameraOpen: OnCameraOpen,
                 onPictureTaken: (_, _) => { },
-                onSelectionOverlayBarcodeClicked: OnSelectionOverlayBarcodeClicked
-            ));
+                onSelectionOverlayBarcodeClicked: OnSelectionOverlayBarcodeClicked));
         }
 
         protected override void DisconnectHandler(FrameLayout platformView)
