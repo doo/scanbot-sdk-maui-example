@@ -33,11 +33,7 @@ public partial class HomePage
             // Comment out the above and use the below to try some of our snippets instead:
             // var result = await ScanbotBarcodeSDK.BarcodeScanner.OpenBarcodeScannerAsync(Snippets.SingleScanningUseCase);
             // Or Snippets.MultipleScanningUseCase, Snippets.FindAndPickUseCase, Snippets.ActionBar, etc.
-
-            // var barcodeAsText = result.Items.Select(barcode => $"{barcode.Type}: {barcode.Text}")
-            //     .FirstOrDefault() ?? string.Empty;
-            //
-            // await DisplayAlert("Found barcode", barcodeAsText, "Finish");
+            
             DisplayResults(result);
         }
         catch (TaskCanceledException)
@@ -66,11 +62,7 @@ public partial class HomePage
                         }
                     }
                 });
-
-            // var barcodeAsText = result.Items.Select(barcode => $"{barcode.Type}: {barcode.Text}")
-            //     .FirstOrDefault() ?? string.Empty;
-            //
-            // await DisplayAlert("Found barcode", barcodeAsText, "Finish");
+            
             DisplayResults(result);
         }
         catch (TaskCanceledException)
@@ -104,8 +96,6 @@ public partial class HomePage
                     }
                 });
 
-            // var barcodesAsText = result.Items.Select(barcode => $"{barcode.Type}: {barcode.Text}").ToArray();
-            // await DisplayActionSheet("Found barcodes", "Finish", null, barcodesAsText);
             DisplayResults(result);
         }
         catch (TaskCanceledException)
@@ -150,8 +140,6 @@ public partial class HomePage
                 });
 
             DisplayResults(result);
-            // var barcodesAsText = result.Items.Select(barcode => $"{barcode.Type}: {barcode.Text}").ToArray();
-            // await DisplayActionSheet("Found barcodes", "Finish", null, barcodesAsText);
         }
         catch (TaskCanceledException)
         {
@@ -196,12 +184,8 @@ public partial class HomePage
             // Set the expected barcodes.
             findAndPickConfig.ExpectedBarcodes = new ExpectedBarcode[]
             {
-                new ExpectedBarcode(barcodeValue: "123456", title: "numeric barcode",
-                    image: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
-                    count: 4),
-                new ExpectedBarcode(barcodeValue: "SCANBOT", title: "value barcode",
-                    image: "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
-                    count: 4),
+                new ExpectedBarcode(barcodeValue: "123456", title: "numeric barcode", image: "https://avatars.githubusercontent.com/u/1454920", count: 4),
+                new ExpectedBarcode(barcodeValue: "SCANBOT", title: "value barcode", image: "https://avatars.githubusercontent.com/u/1454920", count: 4),
             };
 
             // Configure other parameters, pertaining to findAndPick-scanning mode as needed.
@@ -209,12 +193,7 @@ public partial class HomePage
             configuration.RecognizerConfiguration.BarcodeFormats = BarcodeFormats.All.ToArray();
 
             var result = await ScanbotSDK.MAUI.ScanbotSDK.ReadyToUseUIService.OpenBarcodeScannerAsync(configuration);
-            if (result?.Items?.Length  > 0)
-            {
-                await Navigation.PushAsync(new BarcodeResultPage(result.Items.ToList()));
-            }
-            // var barcodesAsText = result.Items.Select(barcode => $"{barcode.Type}: {barcode.Text}").ToArray();
-            // await DisplayActionSheet("Found barcodes", "Finish", null, barcodesAsText);
+            DisplayResults(result);
         }
         catch (TaskCanceledException)
         {
