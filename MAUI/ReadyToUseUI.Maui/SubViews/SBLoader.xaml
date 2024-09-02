@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ReadyToUseUI.Maui.SubViews.SBLoader"
+             xmlns:color="clr-namespace:ScanbotSDK.MAUI;assembly=ScanbotSDK.Shared"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             IsVisible="{Binding IsBusy}">
+    <Grid 
+        BackgroundColor="#99000000">
+        <Border
+            BackgroundColor="White"
+            HorizontalOptions="Center"
+            VerticalOptions="Center">
+            <Border.Shadow>
+                <Shadow Brush="Black"
+                        Offset="20,20"
+                        Radius="40"
+                        Opacity="0.8" />
+            </Border.Shadow>
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="20" />
+            </Border.StrokeShape>
+            <ActivityIndicator
+                x:Name="sbActivityIndicator"
+                VerticalOptions="Fill"
+                HorizontalOptions="Fill"
+                Color="{Binding Source={x:Static color:Constants+Colors.ScanbotRed}}"
+                IsRunning="{Binding IsBusy}"
+                Margin="90, 60">
+                <ActivityIndicator.Scale>
+                    <OnPlatform x:TypeArguments="system:Double">
+                        <On Platform="iOS" Value="2.5" />
+                        <On Platform="Android" Value="0.3" />
+                    </OnPlatform>
+                </ActivityIndicator.Scale>
+            </ActivityIndicator>
+        </Border>
+    </Grid>
+</ContentView>

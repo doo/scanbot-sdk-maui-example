@@ -1,15 +1,24 @@
-﻿using ScanbotSDK.MAUI.Configurations;
-using ScanbotSDK.MAUI;
-using ReadyToUseUI.Maui.Models;
+﻿using ScanbotSDK.MAUI;
 using ReadyToUseUI.Maui.Utils;
 using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
-using Microsoft.Maui.Graphics;
 
 namespace ReadyToUseUI.Maui.Pages;
 
 public partial class HomePage : ContentPage
 {
-    public static Color ScanbotColor => Constants.Colors.ScanbotRed;
+    private bool _isLoading;
+    /// <summary>
+    /// Binding property configured with the Scanbot activity loader.
+    /// </summary>
+    public bool IsLoading
+    {
+        get => _isLoading;
+        set
+        {
+            _isLoading = value;
+            this.OnPropertyChanged(nameof(IsLoading));
+        }
+    }
 
     public struct SdkFeature
     {

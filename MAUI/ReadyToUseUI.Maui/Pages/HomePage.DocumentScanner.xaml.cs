@@ -59,6 +59,7 @@ namespace ReadyToUseUI.Maui.Pages
 
         private async Task ImportButtonClicked()
         {
+            IsBusy = true;
             ImageSource source = await SBSDK.PickerService.PickImageAsync();
             if (source != null)
             {
@@ -67,9 +68,11 @@ namespace ReadyToUseUI.Maui.Pages
 
                 // Run document detection on it
                 await importedPage.DetectDocumentAsync();
+                
                 await PageStorage.Instance.CreateAsync(importedPage);
                 await Navigation.PushAsync(new ImageResultsPage());
             }
+            IsBusy = false;
         }
 
         private async Task ViewImageResultsClicked()
