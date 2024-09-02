@@ -5,33 +5,49 @@ namespace ReadyToUseUI.Maui.SubViews;
 
 public partial class SBLoader : ContentView
 {
+    private const string LoaderText = "•";
+    private const int TextLimit = 5;
+    
     public SBLoader()
     {
         InitializeComponent();
     }
 
-    public static readonly BindableProperty IsBusyProperty =
-        BindableProperty.Create ("IsBusy", typeof(bool), typeof(SBLoader), false, BindingMode.Default, propertyChanged: ChangedProp);
-
-    private static void ChangedProp(BindableObject bindable, object oldvalue, object newvalue)
-    {
-        Debug.WriteLine("Test");
-    }
-
+    private bool _isBusy;
+    
     /// <summary>
     /// Can be configured with Xaml Binding 
     /// </summary>
     public bool IsBusy
     {
-        get => (bool)GetValue(IsBusyProperty);
-        set => SetValue(IsBusyProperty, value);
+        get => _isBusy;
+        set
+        {
+            _isBusy = value;
+            this.IsVisible = value;
+            IsRunning();
+        }
     }
-
-    // Use this function when there is no Xaml Binding.  
-    internal void UpdateLoading(bool loading)
+    
+    private async void IsRunning()
     {
-        IsBusy = loading;
-        IsVisible = loading;
-        sbActivityIndicator.IsRunning = loading;
+        var index = TextLimit;
+        var text = string.Empty;
+        do
+        {
+            if (index == TextLimit)
+            {
+                text = LoaderText;
+                index = 1;
+            }
+
+            await MainThread.InvokeOnMainThreadAsync(() => sbActivityIndicator.Text = text);
+            await Task.Delay(200);
+            text += LoaderText;
+            index++;
+
+        } while (IsBusy);
+
+        sbActivityIndicator.Text = string.Empty;
     }
 }

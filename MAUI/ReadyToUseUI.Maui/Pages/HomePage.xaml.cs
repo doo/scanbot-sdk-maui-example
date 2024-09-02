@@ -6,18 +6,13 @@ namespace ReadyToUseUI.Maui.Pages;
 
 public partial class HomePage : ContentPage
 {
-    private bool _isLoading;
     /// <summary>
     /// Binding property configured with the Scanbot activity loader.
     /// </summary>
     public bool IsLoading
     {
-        get => _isLoading;
-        set
-        {
-            _isLoading = value;
-            this.OnPropertyChanged(nameof(IsLoading));
-        }
+        get => sbLoader.IsBusy;
+        set => sbLoader.IsBusy = value;
     }
 
     public struct SdkFeature

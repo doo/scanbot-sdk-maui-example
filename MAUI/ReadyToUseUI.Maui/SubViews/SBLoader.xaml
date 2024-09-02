@@ -2,15 +2,15 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ReadyToUseUI.Maui.SubViews.SBLoader"
-             xmlns:color="clr-namespace:ScanbotSDK.MAUI;assembly=ScanbotSDK.Shared"
-             xmlns:system="clr-namespace:System;assembly=System.Runtime"
-             IsVisible="{Binding IsBusy}">
+             xmlns:color="clr-namespace:ScanbotSDK.MAUI;assembly=ScanbotSDK.Shared">
     <Grid 
         BackgroundColor="#99000000">
         <Border
             BackgroundColor="White"
             HorizontalOptions="Center"
-            VerticalOptions="Center">
+            VerticalOptions="Center"
+            HeightRequest="100"
+            WidthRequest="150">
             <Border.Shadow>
                 <Shadow Brush="Black"
                         Offset="20,20"
@@ -20,20 +20,15 @@
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="20" />
             </Border.StrokeShape>
-            <ActivityIndicator
+            <Label
                 x:Name="sbActivityIndicator"
-                VerticalOptions="Fill"
+                VerticalOptions="Start"
                 HorizontalOptions="Fill"
-                Color="{Binding Source={x:Static color:Constants+Colors.ScanbotRed}}"
-                IsRunning="{Binding IsBusy}"
-                Margin="90, 60">
-                <ActivityIndicator.Scale>
-                    <OnPlatform x:TypeArguments="system:Double">
-                        <On Platform="iOS" Value="2.5" />
-                        <On Platform="Android" Value="0.3" />
-                    </OnPlatform>
-                </ActivityIndicator.Scale>
-            </ActivityIndicator>
+                TextColor="{Binding Source={x:Static color:Constants+Colors.ScanbotRed}}"
+                HorizontalTextAlignment="Center"
+                VerticalTextAlignment="Center"
+                FontSize="50"
+                Margin="20" />
         </Border>
     </Grid>
 </ContentView>

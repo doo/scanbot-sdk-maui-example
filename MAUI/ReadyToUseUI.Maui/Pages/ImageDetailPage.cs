@@ -23,7 +23,7 @@ namespace ReadyToUseUI.Maui.Pages
             set
             {
                 _isLoading = value;
-                loader.UpdateLoading(_isLoading);
+                loader.IsBusy = _isLoading;
                 this.OnPropertyChanged(nameof(IsLoading));
             }
         }
@@ -63,7 +63,11 @@ namespace ReadyToUseUI.Maui.Pages
             gridView.SetRow(documentImage, 0);
             gridView.SetRow(bottomBar, 1);
 
-            loader = new SBLoader();
+            loader = new SBLoader
+            {
+                IsVisible = false
+            };
+            
             Content = new Grid
             {
                 Children = { gridView, loader },

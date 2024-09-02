@@ -48,7 +48,6 @@
                 <StackLayout HeightRequest="10" />
             </StackLayout>
         </ScrollView>
-        <customView:SBLoader
-            IsBusy="{Binding IsBusy}" />
+        <customView:SBLoader x:Name="sbLoader" IsVisible="False" />
     </Grid>
 </ContentPage>
