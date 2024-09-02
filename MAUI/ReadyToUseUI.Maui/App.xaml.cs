@@ -1,5 +1,4 @@
-﻿using ReadyToUseUI.Maui.Models;
-using ReadyToUseUI.Maui.Pages;
+﻿using ReadyToUseUI.Maui.Pages;
 
 namespace ReadyToUseUI.Maui
 {
