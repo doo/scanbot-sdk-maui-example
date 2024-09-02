@@ -79,13 +79,17 @@ namespace ReadyToUseUI.Maui.Pages
 
         private async Task ImportAndDetectBarcodesClicked()
         {
+            IsLoading = true;
             ImageSource source = await SBSDK.PickerService.PickImageAsync();
-
-            if (source != null)
+            if (source == null)
             {
-                var barcodes = await SBSDK.DetectionService.DetectBarcodesFrom(source);
-                await Navigation.PushAsync(new BarcodeResultPage(barcodes, source));
+                IsLoading = false;
+                return;
             }
+
+            var barcodes = await SBSDK.DetectionService.DetectBarcodesFrom(source);
+            await Navigation.PushAsync(new BarcodeResultPage(barcodes, source));
+            IsLoading = false;
         }
     }
 }

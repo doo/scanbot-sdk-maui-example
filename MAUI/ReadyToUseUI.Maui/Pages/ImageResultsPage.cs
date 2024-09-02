@@ -7,23 +7,35 @@ using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Common;
 using ScanbotSDK.MAUI.Document;
 using System.Collections.ObjectModel;
-using ScanbotSDK.MAUI.Common;
-using ScanbotSDK.MAUI.Document;
+using System.ComponentModel;
+using ReadyToUseUI.Maui.SubViews;
 
 namespace ReadyToUseUI.Maui.Pages
 {
-    public class ImageResultsPage : ContentPage
+    public class ImageResultsPage : ContentPage, INotifyPropertyChanged
     {
         private const string PDF = "PDF", OCR = "Perform OCR", SandwichPDF = "Sandwiched PDF", TIFF = "TIFF (1-bit, B&W)";
         private Grid pageGridView;
         private ListView resultList;
         private BottomActionBar bottomBar;
-        private ActivityIndicator loader;
-
+        private SBLoader loader;
         private ObservableCollection<IScannedPage> scannedPages = new ObservableCollection<IScannedPage>();
 
+        private bool _isLoading;
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set
+            {
+                _isLoading = value;
+                loader.IsBusy = value;
+                this.OnPropertyChanged(nameof(IsLoading));
+            }
+        }
+        
         public ImageResultsPage()
         {
+            this.BindingContext = this;
             Title = "Image Results";
             BackgroundColor = Colors.White;
             resultList = new ListView
@@ -39,19 +51,7 @@ namespace ReadyToUseUI.Maui.Pages
 
             bottomBar = new BottomActionBar(isDetailPage: false);
             bottomBar.VerticalOptions = LayoutOptions.End;
-
-            loader = new ActivityIndicator
-            {
-                VerticalOptions = LayoutOptions.Fill,
-                HorizontalOptions = LayoutOptions.Fill,
-                HeightRequest = Application.Current.MainPage.Height / 3 * 2,
-                WidthRequest = Application.Current.MainPage.Width,
-                Color = Constants.Colors.ScanbotRed,
-                IsRunning = true,
-                IsEnabled = true,
-                Scale = (DeviceInfo.Platform == DevicePlatform.iOS) ? 2 : 0.3
-            };
-
+            
             pageGridView = new Grid
             {
                 VerticalOptions = LayoutOptions.Fill,
@@ -67,6 +67,11 @@ namespace ReadyToUseUI.Maui.Pages
             pageGridView.SetRow(resultList, 0);
             pageGridView.SetRow(bottomBar, 1);
 
+            loader = new SBLoader
+            {
+                IsVisible = false
+            };
+            
             Content = new Grid
             {
                 Children = { pageGridView, loader },
@@ -81,28 +86,13 @@ namespace ReadyToUseUI.Maui.Pages
             resultList.ItemTapped += OnItemClick;
         }
 
-        private bool isLoading
-        {
-            get
-            {
-                return loader.IsRunning;
-            }
-            set
-            {
-                if (loader.IsRunning != value)
-                {
-                    loader.IsVisible = loader.IsRunning = value;
-                }
-            }
-        }
-
         protected override async void OnAppearing()
         {
             base.OnAppearing();
 
             try
             {
-                isLoading = true;
+                IsLoading = true;
                 var savedPages = await PageStorage.Instance.LoadAsync();
 
                 scannedPages.Clear();
@@ -112,7 +102,7 @@ namespace ReadyToUseUI.Maui.Pages
             }
             finally
             {
-                isLoading = false;
+                IsLoading = false;
             }
         }
 
@@ -176,7 +166,7 @@ namespace ReadyToUseUI.Maui.Pages
 
             try
             {
-                isLoading = true;
+                IsLoading = true;
                 switch (action)
                 {
                     case PDF:
@@ -201,7 +191,7 @@ namespace ReadyToUseUI.Maui.Pages
             }
             finally
             {
-                isLoading = false;
+                IsLoading = false;
             }            
         }
 

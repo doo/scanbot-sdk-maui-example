@@ -59,17 +59,24 @@ namespace ReadyToUseUI.Maui.Pages
 
         private async Task ImportButtonClicked()
         {
+            IsLoading = true;
             ImageSource source = await SBSDK.PickerService.PickImageAsync();
-            if (source != null)
+            if (source == null)
             {
-                // Import the selected image as original image and create a Page object
-                var importedPage = await SBSDK.SDKService.CreateScannedPageAsync(source);
-
-                // Run document detection on it
-                await importedPage.DetectDocumentAsync();
-                await PageStorage.Instance.CreateAsync(importedPage);
-                await Navigation.PushAsync(new ImageResultsPage());
+                IsLoading = false;
+                return;
             }
+
+            // Import the selected image as original image and create a Page object
+            var importedPage = await SBSDK.SDKService.CreateScannedPageAsync(source);
+
+            // Run document detection on it
+            await importedPage.DetectDocumentAsync();
+
+            await PageStorage.Instance.CreateAsync(importedPage);
+            await Navigation.PushAsync(new ImageResultsPage());
+
+            IsLoading = false;
         }
 
         private async Task ViewImageResultsClicked()
