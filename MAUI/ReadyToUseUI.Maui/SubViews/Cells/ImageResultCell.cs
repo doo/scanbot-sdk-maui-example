@@ -37,7 +37,7 @@ namespace ReadyToUseUI.Maui.SubViews.Cells
             Source = (IScannedPage)BindingContext;
             // If encryption is enabled, load the decrypted document.
             // Else accessible via page.Document
-            Document.Source = await Source.DecryptedDocumentPreview();
+            Document.Source = Source.DocumentPreview;
             //Document.Source = Source.DocumentPreview;
             base.OnBindingContextChanged();
         }

@@ -15,8 +15,8 @@ namespace ReadyToUseUI.Maui.Pages
         private SBLoader loader;
         private IScannedPage selectedPage;
         private IScanbotSDKService scanbotDocumentService; // for document quality detection
-        
         private bool _isLoading;
+        private ImageSource PageDocument => selectedPage?.Document;
         public bool IsLoading
         {
             get => _isLoading;
@@ -47,7 +47,6 @@ namespace ReadyToUseUI.Maui.Pages
             };
 
             bottomBar = new BottomActionBar(isDetailPage: true);
-
             var gridView = new Grid
             {
                 VerticalOptions = LayoutOptions.Fill,
@@ -81,14 +80,12 @@ namespace ReadyToUseUI.Maui.Pages
             bottomBar.AddTappedEvent(bottomBar.DeleteButton, OnDeleteButtonTapped);
         }
 
-        protected override async void OnAppearing()
+        protected override void OnAppearing()
         {
             base.OnAppearing();
 
-            documentImage.Source = await PageDocument();
+            documentImage.Source = PageDocument;
         }
-        
-        private async Task<ImageSource> PageDocument() =>  await selectedPage.DecryptedDocument();
 
         private async void OnCropButtonTapped(object sender, EventArgs e)
         {
@@ -99,8 +96,8 @@ namespace ReadyToUseUI.Maui.Pages
             if (result.Status == OperationResult.Ok)
             {
                 documentImage.Source = null;
-                await PageStorage.Instance.UpdateAsync(selectedPage);
-                documentImage.Source = await PageDocument();
+                await PageStorage.Instance.UpdateStorageAsync(selectedPage);
+                documentImage.Source = PageDocument;
             }
         }
 
@@ -118,8 +115,8 @@ namespace ReadyToUseUI.Maui.Pages
             {
                 documentImage.Source = null;
                 await selectedPage.SetFilterAsync(filters.ToArray());
-                await PageStorage.Instance.UpdateAsync(selectedPage);
-                documentImage.Source = await PageDocument();
+                await PageStorage.Instance.UpdateStorageAsync(selectedPage);
+                documentImage.Source = PageDocument;
             });
             
             await Navigation.PushAsync(filterPage);
