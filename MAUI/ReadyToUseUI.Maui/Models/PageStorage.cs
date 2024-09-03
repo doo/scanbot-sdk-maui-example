@@ -51,7 +51,7 @@ namespace ReadyToUseUI.Maui.Models
             return await (await GetDatabaseAsync()).InsertAsync(dbPage);
         }
 
-        public async Task<int> UpdateAsync(IScannedPage page)
+        public async Task<int> UpdateStorageAsync(IScannedPage page)
         {
             return await (await GetDatabaseAsync()).UpdateAsync(DBPage.From(page));
         }
