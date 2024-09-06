@@ -1,6 +1,8 @@
+using ReadyToUseUI.Maui.Pages.DetectOnImageResults;
 using ReadyToUseUI.Maui.Utils;
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Check;
+using ScanbotSDK.MAUI.EHIC;
 using ScanbotSDK.MAUI.GenericDocument;
 using ScanbotSDK.MAUI.MedicalCertificate;
 using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
@@ -29,8 +31,16 @@ public partial class HomePage
         var result = await SBSDK.DataDetectionService.DetectEHICFromImage(source);
         if (result.Status == OperationResult.Ok)
         {
-            var message = SDKUtils.ToAlertMessage(result);
-            ViewUtils.Alert(this, "EHIC Scanner result", message);
+            if (result.DetectionStatus == HealthInsuranceCardDetectionStatus.Success)
+            {
+                var message = SDKUtils.ToAlertMessage(result);
+                ViewUtils.Alert(this, "EHIC Scanner result", message);
+            }
+            else
+            {
+                var message = "Something went wrong, please try again.\nDetection status: " + result.DetectionStatus;
+                ViewUtils.Alert(this, "EHIC Scanner result", message);
+            }
         }
     }
 
@@ -96,12 +106,18 @@ public partial class HomePage
             RecognizePatientInfo = true,
             ReturnCroppedDocumentImage = true
         };
-        
+
         var result = await SBSDK.DataDetectionService.DetectMedicalCertificateFromImage(source, configuration);
-        
         if (result.Status == OperationResult.Ok)
         {
-            ViewUtils.Alert(this, $"Medical Certificate Recognition Result", FormatMedicalCertificateRecognitionResult(result));
+            ViewUtils.Alert(this, $"Medical Certificate Recognition Result",
+                FormatMedicalCertificateRecognitionResult(result), 
+                () =>
+                {
+                    var resultPage = new DetectOnImageResultPage();
+                    resultPage.NavigateData(result.CroppedImageSource);
+                    Navigation.PushAsync(resultPage);
+                });
         }
     }
 }
