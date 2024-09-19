@@ -99,7 +99,7 @@
         <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.4"/>
         <PackageReference Include="sqlite-net-pcl" Version="1.8.116"/>
         <!-- Todo: Need to publish a new beta package from CI -->
-        <PackageReference Include="ScanbotSDK.MAUI" Version="5.1.0-rc.8" />
+        <PackageReference Include="ScanbotSDK.MAUI" Version="5.1.0" />
     </ItemGroup>
 
     <!-- ===================== IOS OCR Data Files =====================  -->
