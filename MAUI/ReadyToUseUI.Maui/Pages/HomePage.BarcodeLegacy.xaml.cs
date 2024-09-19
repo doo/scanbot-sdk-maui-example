@@ -1,5 +1,9 @@
-﻿using ScanbotSDK.MAUI.Configurations;
-using ScanbotSDK.MAUI.Constants;
+﻿using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Barcode;
+using ScanbotSDK.MAUI.RTU.v1;
+using BarcodeFormat = ScanbotSDK.MAUI.Barcode.BarcodeFormat;
+using BarcodeScannerConfiguration = ScanbotSDK.MAUI.RTU.v1.BarcodeScannerConfiguration;
+using EngineMode = ScanbotSDK.MAUI.EngineMode;
 using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
 
 namespace ReadyToUseUI.Maui.Pages
@@ -11,7 +15,7 @@ namespace ReadyToUseUI.Maui.Pages
             var config = new BarcodeScannerConfiguration
             {
                 BarcodeFormats = Enum.GetValues<BarcodeFormat>().ToList(),
-                CodeDensity = BarcodeDensity.High,
+                CodeDensity = CodeDensity.High,
                 EngineMode = EngineMode.NextGen
             };
 
@@ -37,11 +41,12 @@ namespace ReadyToUseUI.Maui.Pages
             //    TextFormat = BarcodeTextFormat.CodeAndType
             //};
 
-            var result = await SBSDK.ReadyToUseUIService.OpenBarcodeScannerView(config);
+            var result = await SBSDK.LegacyBarcodeScanner.OpenBarcodeScannerView(config);
 
             if (result.Status == OperationResult.Ok)
             {
-                await Navigation.PushAsync(new BarcodeResultPage(result.Barcodes, withImage ? result.Image : result.ImagePath));
+                await Navigation.PushAsync(new BarcodeResultPage(result.Barcodes,
+                    withImage ? result.Image : result.ImagePath));
             }
         }
 
@@ -60,11 +65,11 @@ namespace ReadyToUseUI.Maui.Pages
                     highlightedTextColor: Colors.Red,
                     highlightedTextContainerColor: Colors.Black),
                 SuccessBeepEnabled = true,
-                CodeDensity = BarcodeDensity.High,
+                CodeDensity = CodeDensity.High,
                 EngineMode = EngineMode.NextGen
             };
 
-            var result = await SBSDK.ReadyToUseUIService.OpenBatchBarcodeScannerView(config);
+            var result = await SBSDK.LegacyBarcodeScanner.OpenBatchBarcodeScannerView(config);
 
             if (result.Status == OperationResult.Ok)
             {
@@ -74,14 +79,17 @@ namespace ReadyToUseUI.Maui.Pages
 
         private async Task ImportAndDetectBarcodesClicked()
         {
+            IsLoading = true;
             ImageSource source = await SBSDK.PickerService.PickImageAsync();
-
-            if (source != null)
+            if (source == null)
             {
-                var barcodes = await SBSDK.DetectionService.DetectBarcodesFrom(source);
-                await Navigation.PushAsync(new BarcodeResultPage(barcodes, source));
+                IsLoading = false;
+                return;
             }
+
+            var barcodes = await SBSDK.DetectionService.DetectBarcodesFrom(source);
+            await Navigation.PushAsync(new BarcodeResultPage(barcodes, source));
+            IsLoading = false;
         }
     }
 }
-

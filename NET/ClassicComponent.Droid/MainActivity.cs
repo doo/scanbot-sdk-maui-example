@@ -230,8 +230,9 @@ namespace ClassicComponent.Droid
                     {
                         var pdfOutputUri = GenerateRandomFileUrlInDemoTempStorage(".pdf");
                         var images = new AndroidNetUri[] { documentImageUri }; // add more images for OCR here
+                        
+                        // This is the new OCR configuration with ML which doesn't require the langauges.
 
-                        // This is the new OCR configuration with ML which doesn't require the languages.
                         var recognitionMode = IOpticalCharacterRecognizer.EngineMode.ScanbotOcr;
                         var recognizer = scanbotSDK.CreateOcrRecognizer();
 

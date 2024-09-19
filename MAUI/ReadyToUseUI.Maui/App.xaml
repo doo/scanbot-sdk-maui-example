@@ -3,11 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:ReadyToUseUI.Maui"
              x:Class="ReadyToUseUI.Maui.App"
-             xmlns:color="clr-namespace:ScanbotSDK.MAUI.Constants;assembly=ScanbotSDK.Shared">
+             xmlns:color="clr-namespace:ScanbotSDK.MAUI;assembly=ScanbotSDK.Shared">
     <Application.Resources>
         <ResourceDictionary>
              <Style TargetType="NavigationPage">
-                <Setter Property="BarBackgroundColor" Value="{Binding Source={x:Static color:SBColors.ScanbotRed}}"/>
+                <Setter Property="BarBackgroundColor" Value="{Binding Source={x:Static color:Constants+Colors.ScanbotRed}}"/>
                 <Setter Property="BarTextColor" Value="White"/>
             </Style>
 

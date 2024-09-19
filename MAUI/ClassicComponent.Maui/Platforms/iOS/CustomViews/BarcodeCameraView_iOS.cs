@@ -2,12 +2,11 @@
 using UIKit;
 
 using ScanbotSDK.iOS;
-using ScanbotSDK.MAUI.Models;
-using ScanbotSDK.MAUI.iOS;
 using ScanbotSDK.MAUI.iOS.Utils;
-
 using ClassicComponent.Maui.CustomViews;
 using ClassicComponent.Maui.Platforms.iOS.Utils;
+
+using ScanbotSDK.MAUI.RTU.v1;
 
 namespace ClassicComponent.Maui.Platforms.iOS.CustomViews
 {
@@ -33,7 +32,7 @@ namespace ClassicComponent.Maui.Platforms.iOS.CustomViews
         internal void MapIsFlashEnabled(bool isFlashEnabled)
         {
             if (cameraViewController == null) return;
-            cameraViewController.FlashLightEnabled = isFlashEnabled;
+            cameraViewController.IsFlashLightEnabled = isFlashEnabled;
         }
 
         // -----------------------------------------
@@ -97,13 +96,13 @@ namespace ClassicComponent.Maui.Platforms.iOS.CustomViews
         internal void MapStartDetectionHandler()
         {
             if (cameraViewController == null) return;
-            cameraViewController.RecognitionEnabled = true;
+            cameraViewController.IsRecognitionEnabled = true;
         }
 
         internal void MapStopDetectionHandler()
         {
             if (cameraViewController == null) return;
-            cameraViewController.RecognitionEnabled = false;
+            cameraViewController.IsRecognitionEnabled = false;
         }
 
         /// <summary>

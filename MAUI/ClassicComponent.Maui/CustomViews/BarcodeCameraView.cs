@@ -1,5 +1,4 @@
-﻿using ScanbotSDK.MAUI.Configurations;
-using ScanbotSDK.MAUI.Models;
+﻿using ScanbotSDK.MAUI.RTU.v1;
 
 namespace ClassicComponent.Maui.CustomViews
 {        /*
