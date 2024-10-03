@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ClassicComponent.Maui.Utils;
 using Microsoft.Maui.Controls;
 using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
 namespace ClassicComponent.Maui;
@@ -38,16 +39,23 @@ public partial class HomePage : ContentPage
 	{
 		_sdkFeatures = new List<SdkFeature>
 		{
-							new SdkFeature("Classic Barcode Scanner", () => Navigation.PushAsync(new MainPage())),
+							new SdkFeature("Classic Barcode Scanner", () => Navigation.PushAsync(new ClassicBarcodeScannerPage())),
 							new SdkFeature("Classic Document Scanner", () => Navigation.PushAsync(new ClassicDocumentScannerPage()))
 		};
 		this.BindingContext = this;
 		InitializeComponent();
 	}
 
-	private void SdkFeatureSelected(object sender, SelectionChangedEventArgs e)
+	private async void SdkFeatureSelected(object sender, SelectionChangedEventArgs e)
 	{
 		if (!SBSDK.IsLicenseValid)
+		{
+			await DisplayAlert("Error", "Your SDK license has expired", "Close");
+			return;
+		}
+			
+		var permissionGranted = await Validation.CheckAndRequestCameraPermission();
+		if (permissionGranted == PermissionStatus.Granted)
 		{
 			return;
 		}

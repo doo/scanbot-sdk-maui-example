@@ -1,3 +1,5 @@
+using ScanbotSDK.MAUI;
+
 namespace ClassicComponent.Maui.Pages;
 
 public partial class DocumentScannerResultPage : ContentPage
