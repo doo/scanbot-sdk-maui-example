@@ -17,12 +17,13 @@ public static class MauiProgram
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-			}).ConfigureMauiHandlers(handlers =>
-			{
-				handlers.AddHandler(typeof(BarcodeCameraView), typeof(BarcodeCameraViewHandler));
-			});
+			})
+			.ConfigureMauiHandlers(handlers =>
+           { 
+	           handlers.AddHandler(typeof(BarcodeCameraView), typeof(BarcodeCameraViewHandler));
+           });
 
-        SBSDKInitializer.Initialize(LICENSE_KEY, new ScanbotSDK.MAUI.SBSDKConfiguration
+		SBSDKInitializer.Initialize(builder, LICENSE_KEY, new ScanbotSDK.MAUI.SBSDKConfiguration
         {
             EnableLogging = true,
             // If no StorageBaseDirectory is specified, the default will be used

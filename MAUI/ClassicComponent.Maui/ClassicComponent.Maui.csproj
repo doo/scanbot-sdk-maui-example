@@ -91,6 +91,18 @@
     <ItemGroup  Condition="$(TargetFramework.Contains('-ios'))">
         <Compile Remove="**\**\*.Android.cs" />
         <None Include="**\**\*.Android.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+        <Compile Update="Pages\DocumentScanner\ClassicDocumentScannerPage.xaml.cs">
+          <DependentUpon>ClassicDocumentScannerPage.xaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Pages\DocumentScanner\DocumentScannerResultPage.xaml.cs">
+          <DependentUpon>DocumentScannerResultPage.xaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Pages\BarcodeScanner\ClassicBarcodeScannerPage.xaml.cs">
+          <DependentUpon>ClassicBarcodeScannerPage.xaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
     </ItemGroup>
     <ItemGroup  Condition="$(TargetFramework.Contains('-android'))">
         <Compile Remove="**\**\*.iOS.cs" />
@@ -108,5 +120,16 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="ScanbotSDK.MAUI" Version="5.1.1" />
+    </ItemGroup>
+    <ItemGroup>
+      <MauiXaml Update="Pages\DocumentScanner\ClassicDocumentScannerPage.xaml">
+        <SubType>Designer</SubType>
+      </MauiXaml>
+      <MauiXaml Update="Pages\DocumentScanner\DocumentScannerResultPage.xaml">
+        <SubType>Designer</SubType>
+      </MauiXaml>
+      <MauiXaml Update="Pages\BarcodeScanner\ClassicBarcodeScannerPage.xaml">
+        <SubType>Designer</SubType>
+      </MauiXaml>
     </ItemGroup>
 </Project>
