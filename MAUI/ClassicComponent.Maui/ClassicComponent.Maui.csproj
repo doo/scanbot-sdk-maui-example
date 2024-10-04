@@ -107,7 +107,6 @@
       <None Remove="Platforms\iOS\Utils\" />
     </ItemGroup>
     <ItemGroup>
-        <!-- Todo: Need to publish a new beta package from CI -->
-        <PackageReference Include="ScanbotSDK.MAUI" Version="5.1.0" />
+        <PackageReference Include="ScanbotSDK.MAUI" Version="5.1.1" />
     </ItemGroup>
 </Project>
