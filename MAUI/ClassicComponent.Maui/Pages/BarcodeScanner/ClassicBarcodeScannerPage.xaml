@@ -6,7 +6,6 @@
              xmlns:classicComponent="clr-namespace:ScanbotSDK.MAUI.ClassicComponent;assembly=ScanbotSDK.Shared"
              xmlns:local="clr-namespace:ClassicComponent.Maui.CustomViews"
              ios:Page.UseSafeArea="true"
-             BackgroundColor="#c8193c"
              xmlns:deviceDimensions="clr-namespace:Microsoft.Maui.Devices;assembly=Microsoft.Maui.Essentials">
     <Grid RowSpacing="10">
         <Grid.RowDefinitions>
