@@ -4,10 +4,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ClassicComponent.Maui.ClassicDocumentScannerPage"
              xmlns:scannerPage="clr-namespace:ClassicComponent.Maui;assembly=ClassicComponent.Maui"
-             xmlns:classicView="clr-namespace:ScanbotSDK.MAUI.ClassicComponents;assembly=DocumentSDK.MAUI">
+             >
     <ContentPage.Content>
         <Grid RowDefinitions="8*,2*">
-            <classicView:ClassicDocumentScannerView
+          <!--  <classicView:ClassicDocumentScannerView
                 Grid.Row="0"
                 x:Name="documentScannerView"
                 IgnoreBadAspectRatio="True"
@@ -46,7 +46,7 @@
                             Padding="10"
                             Clicked="DocumentScanner_ButtonClicked"/>
                     </HorizontalStackLayout>
-            </Grid>
+            </Grid> -->
         </Grid>
     </ContentPage.Content>
 </ContentPage>

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ClassicComponent.Maui.Pages;
 using ClassicComponent.Maui.Utils;
 using Microsoft.Maui.Controls;
 using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
@@ -40,7 +41,9 @@ public partial class HomePage : ContentPage
 		_sdkFeatures = new List<SdkFeature>
 		{
 							new SdkFeature("Classic Barcode Scanner", () => Navigation.PushAsync(new ClassicBarcodeScannerPage())),
-							new SdkFeature("Classic Document Scanner", () => Navigation.PushAsync(new ClassicDocumentScannerPage()))
+							new SdkFeature("Classic Barcode Scanner (Custom Implementation)", () => Navigation.PushAsync(new CustomBarcodeScannerPage())),
+							// todo: This feature is in progress
+							// new SdkFeature("Classic Document Scanner", () => Navigation.PushAsync(new ClassicDocumentScannerPage()))
 		};
 		this.BindingContext = this;
 		InitializeComponent();
@@ -55,7 +58,7 @@ public partial class HomePage : ContentPage
 		}
 			
 		var permissionGranted = await Validation.CheckAndRequestCameraPermission();
-		if (permissionGranted == PermissionStatus.Granted)
+		if (permissionGranted != PermissionStatus.Granted)
 		{
 			return;
 		}
