@@ -113,7 +113,7 @@
     </ItemGroup>
     <ItemGroup>
         <!-- Todo: Need to publish a new beta package from CI -->
-        <PackageReference Include="ScanbotSDK.MAUI" Version="5.1.2-hotfix.1" />
+        <PackageReference Include="ScanbotSDK.MAUI" Version="5.1.2-hotfix.2" />
     </ItemGroup>
     <ItemGroup>
         <MauiXaml Update="Pages\DocumentScanner\DocumentScannerResultPage.xaml">

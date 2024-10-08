@@ -2,6 +2,7 @@ using ScanbotSDK.MAUI.Configurations;
 using Microsoft.Maui.Controls.PlatformConfiguration;
 using Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;
 using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Common;
 using ScanbotSDK.MAUI.RTU.v1;
 
 namespace ClassicComponent.Maui;
@@ -23,11 +24,12 @@ public partial class ClassicBarcodeScannerPage : ContentPage
 
 		cameraView.FinderConfiguration = new FinderConfiguration
 		{
-							FinderLineColor = Colors.Red,
-							FinderOverlayColor = Colors.Cyan.WithAlpha(0.6f),
+							IsFinderEnabled = true,
+							FinderLineColor = Colors.WhiteSmoke,
+							FinderOverlayColor = Colors.Black.WithAlpha(0.5f),
 							FinderLineCornerRadius = 20,
-							FinderLineWidth = 12,
-							IsFinderEnabled = true
+							FinderLineWidth = 5,
+							RequiredAspectRatio = new AspectRatio(1,1)
 		};
 	}
 
