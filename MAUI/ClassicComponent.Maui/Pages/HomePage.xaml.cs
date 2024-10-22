@@ -1,32 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ClassicComponent.Maui.Pages;
+using ClassicComponent.Maui.Models;
 using ClassicComponent.Maui.Utils;
-using Microsoft.Maui.Controls;
 using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
 namespace ClassicComponent.Maui;
 
 public partial class HomePage : ContentPage
 {
-	public class SdkFeature
-	{
+	private List<ClassicCollectionItem> _sdkFeatures;
 
-		public string Title { get; private set; }
-		public Action ClickAction { get; private set; }
-
-
-		public SdkFeature(string title, Action clickAction)
-		{
-			Title = title;
-			ClickAction = clickAction;
-		}
-	}
-	
-	private List<SdkFeature> _sdkFeatures;
-
-	public List<SdkFeature> SDKFeatures
+	public List<ClassicCollectionItem> SDKFeatures
 	{
 		get => _sdkFeatures;
 		set
@@ -38,12 +19,11 @@ public partial class HomePage : ContentPage
 
 	public HomePage()
 	{
-		_sdkFeatures = new List<SdkFeature>
+		_sdkFeatures = new List<ClassicCollectionItem>
 		{
-							new SdkFeature("Classic Barcode Scanner", () => Navigation.PushAsync(new ClassicBarcodeScannerPage())),
-							new SdkFeature("Classic Barcode Scanner (Custom Implementation)", () => Navigation.PushAsync(new CustomBarcodeScannerPage())),
-							// todo: This feature is in progress
-							// new SdkFeature("Classic Document Scanner", () => Navigation.PushAsync(new ClassicDocumentScannerPage()))
+							new ("Classic Barcode Scanner", () => Navigation.PushAsync(new ClassicBarcodeScannerPage())),
+							new ("Classic Barcode Scanner (Custom Implementation)", () => Navigation.PushAsync(new CustomBarcodeScannerPage())),
+							new ("Classic Document Scanner", () => Navigation.PushAsync(new ClassicDocumentScannerPage()))
 		};
 		this.BindingContext = this;
 		InitializeComponent();
@@ -63,9 +43,9 @@ public partial class HomePage : ContentPage
 			return;
 		}
 		
-		if (e?.CurrentSelection != null && e.CurrentSelection.Count > 0 && e.CurrentSelection.First() is SdkFeature feature)
+		if (e?.CurrentSelection != null && e.CurrentSelection.Count > 0 && e.CurrentSelection.First() is ClassicCollectionItem collectionItem)
 		{
-			feature?.ClickAction?.Invoke();
+			collectionItem?.ClickAction?.Invoke();
         }
 
         FeaturesCollectionView.SelectedItem = null;

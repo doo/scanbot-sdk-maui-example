@@ -29,7 +29,7 @@ public partial class ClassicBarcodeScannerPage : ContentPage
 							FinderOverlayColor = Colors.Black.WithAlpha(0.5f),
 							FinderLineCornerRadius = 20,
 							FinderLineWidth = 5,
-							RequiredAspectRatio = new AspectRatio(1,1)
+							FinderAspectRatio = new AspectRatio(1,1)
 		};
 	}
 
