@@ -109,7 +109,7 @@ public partial class ClassicDocumentScannerPage : ContentPage, IClassicDocumentS
 		ScanningHintLabel.BackgroundColor = backgroundColor.WithAlpha(0.5f);
 	}
 	
-	private void ScannerButton_OnClicked(object sender, EventArgs e)
+	private void ScannerButtonOnClicked(object sender, EventArgs e)
 	{
 		var selectedItem = (sender as Button)?.BindingContext as ClassicCollectionItem;
 		if (selectedItem == null) return;

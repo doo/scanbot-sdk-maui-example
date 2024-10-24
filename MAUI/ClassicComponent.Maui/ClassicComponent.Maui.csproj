@@ -91,7 +91,6 @@
     <ItemGroup Condition="$(TargetFramework.Contains('-ios'))">
         <Compile Remove="**\**\*.Android.cs"/>
         <None Include="**\**\*.Android.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)"/>
-        <Compile Remove="Pages\DocumentScanner\ClassicDocumentScannerPage.xaml.cs" />
         <Compile Update="Pages\HomePage.xaml.cs">
           <DependentUpon>HomePage.xaml</DependentUpon>
           <SubType>Code</SubType>
