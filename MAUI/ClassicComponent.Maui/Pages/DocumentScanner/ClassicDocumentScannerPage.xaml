@@ -42,7 +42,7 @@
                     <DataTemplate>
                         <customButton:SBButton
                             Text="{Binding Title}"
-                            Clicked="ScannerButton_OnClicked"
+                            Clicked="ScannerButtonOnClicked"
                             Style="{x:StaticResource Key=scannerButonStyle}"
                             IsSelected="{Binding Selected}"/>
                     </DataTemplate>

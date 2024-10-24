@@ -91,7 +91,6 @@
     <ItemGroup Condition="$(TargetFramework.Contains('-ios'))">
         <Compile Remove="**\**\*.Android.cs"/>
         <None Include="**\**\*.Android.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)"/>
-        <Compile Remove="Pages\DocumentScanner\ClassicDocumentScannerPage.xaml.cs" />
         <Compile Update="Pages\HomePage.xaml.cs">
           <DependentUpon>HomePage.xaml</DependentUpon>
           <SubType>Code</SubType>
@@ -113,7 +112,7 @@
     </ItemGroup>
     <ItemGroup>
         <!-- Todo: Need to publish a new beta package from CI -->
-        <PackageReference Include="ScanbotSDK.MAUI" Version="5.1.2-hotfix.2" />
+        <PackageReference Include="ScanbotSDK.MAUI" Version="5.1.3-alpha.3" />
     </ItemGroup>
     <ItemGroup>
         <MauiXaml Update="Pages\DocumentScanner\DocumentScannerResultPage.xaml">
