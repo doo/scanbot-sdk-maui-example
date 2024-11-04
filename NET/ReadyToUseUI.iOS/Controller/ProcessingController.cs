@@ -7,14 +7,10 @@ namespace ReadyToUseUI.iOS.Controller
     {
         public UIImageView ImageView { get; private set; }
 
-        private CroppingFinishedHandler handler;
-
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
             Title = "Process Image";
-            
-            handler = new CroppingFinishedHandler();
 
             SetUpPreview();
             SetupToolbar();
@@ -40,10 +36,8 @@ namespace ReadyToUseUI.iOS.Controller
         {
             this.SetToolbarItems(new UIBarButtonItem[]
             {
-                new UIBarButtonItem("Crop & Rotate", UIBarButtonItemStyle.Plain, CropAndRotate),
                 new UIBarButtonItem("Filter", UIBarButtonItemStyle.Plain, OpenFilterScreen),
                 new UIBarButtonItem("Delete", UIBarButtonItemStyle.Plain, DeleteImage),
-                new UIBarButtonItem("Check Quality", UIBarButtonItemStyle.Plain, CheckQuality)
             }, true);
            this.NavigationController.SetToolbarHidden(false, false);
         }
@@ -58,29 +52,6 @@ namespace ReadyToUseUI.iOS.Controller
         {
             base.ViewWillAppear(animated);
 
-            handler.Finished += CroppingFinished;
-
-            ImageView.Image = PageRepository.Current.DocumentImage;
-        }
-
-        public override void ViewWillDisappear(bool animated)
-        {
-            base.ViewWillDisappear(animated);
-
-            handler.Finished -= CroppingFinished;
-        }
-
-        private void CropAndRotate(object sender, EventArgs e)
-        {
-            var config = SBSDKUICroppingScreenConfiguration.DefaultConfiguration;
-            var controller = SBSDKUICroppingViewController.CreateWithPage(PageRepository.Current, config, handler);
-            controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
-            PresentViewController(controller, false, null);
-        }
-
-        private void CroppingFinished(object sender, CroppingFinishedArgs e)
-        {
-            PageRepository.Current = e.Page;
             ImageView.Image = PageRepository.Current.DocumentImage;
         }
 
@@ -100,15 +71,5 @@ namespace ReadyToUseUI.iOS.Controller
     public class CroppingFinishedArgs : EventArgs
     {
         public SBSDKDocumentPage Page { get; set; }
-    }
-
-    public class CroppingFinishedHandler : SBSDKUICroppingViewControllerDelegate
-    {
-        public EventHandler<CroppingFinishedArgs> Finished;
-
-        public override void DidFinish(SBSDKUICroppingViewController viewController, SBSDKDocumentPage changedPage)
-        {
-            Finished?.Invoke(this, new CroppingFinishedArgs { Page = changedPage });
-        }
     }
 }

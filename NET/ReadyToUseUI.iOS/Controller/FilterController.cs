@@ -9,7 +9,7 @@ namespace ReadyToUseUI.iOS.Controller
     {
         private FilterView ContentView;
         private SBSDKParametricFilter SelectedParametricFilter;
-        private SBSDKDocumentPage Temp;
+        private SBSDKScannedPage Temp;
         private readonly List<FilterItem> Filters;
 
         public FilterController()
@@ -66,7 +66,7 @@ namespace ReadyToUseUI.iOS.Controller
                 Temp = PageRepository.DuplicateCurrent(SelectedParametricFilter);
             }
 
-            Temp.ParametricFilters = new[] { SelectedParametricFilter };
+            Temp.Filters = new[] { SelectedParametricFilter };
             ContentView.ImageView.Image = Temp.DocumentImage;
         }
 
