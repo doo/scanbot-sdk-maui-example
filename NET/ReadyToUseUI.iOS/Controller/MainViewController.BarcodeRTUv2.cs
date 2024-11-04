@@ -15,7 +15,7 @@ public partial class MainViewController
             RecognizerConfiguration = new SBSDKUI2BarcodeRecognizerConfiguration
             {
                 BarcodeFormats = SBSDKUI2BarcodeFormat.AllFormats,
-                Gs1Handling = SBSDKUI2Gs1Handling.Decode
+                Gs1Handling = SBSDKUI2Gs1Handling.DecodeFull
             },
             UseCase = new SBSDKUI2SingleScanningMode
             {

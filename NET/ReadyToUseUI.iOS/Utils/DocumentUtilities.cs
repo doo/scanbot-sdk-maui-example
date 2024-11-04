@@ -14,32 +14,33 @@ public class DocumentUtilities
         return new SBSDKIndexedImageStorage(location, format, encrypter, uris);
     }
 
-    internal static Task<NSUrl> CreatePDFAsync(NSUrl[] inputUrls, NSUrl outputUrl, SBSDKPDFRendererPageSize pageSize = SBSDKPDFRendererPageSize.Custom,
-                                                SBSDKPDFRendererPageOrientation orientation = SBSDKPDFRendererPageOrientation.Auto, SBSDKStorageCrypting encrypter = null,
-                                                SBSDKOpticalCharacterRecognizerConfiguration ocrConfiguration = null)
-    {
-        TaskCompletionSource<NSUrl> task = new TaskCompletionSource<NSUrl>();
-
-        var storage = CreateStorage(inputUrls, encrypter);
-        var outputPdfUrl = new NSUrl(outputUrl.AbsoluteString + Guid.NewGuid() + ".pdf");
-        // Create the PDF rendering options.
-        var options = new SBSDKPDFRendererOptions();
-
-        // Create the PDF renderer and pass the PDF options to it.
-        var renderer = new SBSDKPDFRenderer(options);
-
-        renderer.RenderImageStorage(storage, indexSet: null, encrypter: encrypter, output: outputPdfUrl, completion: (isComplete, error) =>
-        {
-            storage.RemoveAllImages();
-            if (error != null)
-            {
-                throw new NSErrorException(error);
-            }
-            task.SetResult(outputPdfUrl);
-        });
-        
-        return task.Task;
-    }
+    // internal static Task<NSUrl> CreatePDFAsync(NSUrl[] inputUrls, NSUrl outputUrl, SBSDKPDFRendererPageSize pageSize = SBSDKPDFRendererPageSize.Custom,
+    //                                             SBSDKPDFRendererPageOrientation orientation = SBSDKPDFRendererPageOrientation.Auto, SBSDKStorageCrypting encrypter = null,
+    //                                             SBSDKOpticalCharacterRecognizerConfiguration ocrConfiguration = null)
+    // {
+    //     TaskCompletionSource<NSUrl> task = new TaskCompletionSource<NSUrl>();
+    //
+    //     var storage = CreateStorage(inputUrls, encrypter);
+    //     var outputPdfUrl = new NSUrl(outputUrl.AbsoluteString + Guid.NewGuid() + ".pdf");
+    //     // Create the PDF rendering options.
+    //     var options = new SBSDKPDFRendererOptions();
+    //     options.PdfAttributes = new SBSDKPDFAttributes()
+    //
+    //     // Create the PDF renderer and pass the PDF options to it.
+    //     var renderer = new SBSDKPDFRenderer(options, encrypter);
+    //     
+    //     renderer.RenderImageStorageAsync(imageStorage: storage, indexSet: null, output: outputPdfUrl, completionHandler: (isComplete, error) =>
+    //     {
+    //         storage.RemoveAllImages();
+    //         if (error != null)
+    //         {
+    //             throw new NSErrorException(error);
+    //         }
+    //         task.SetResult(outputPdfUrl);
+    //     });
+    //     
+    //     return task.Task;
+    // }
 
     internal static async Task<(SBSDKOCRResult, NSUrl)> PerformOCRAsync(SBSDKOpticalCharacterRecognizer ocrRecognizer,
                                                                     NSUrl[] inputUrls, NSUrl outputUrl, bool shouldGeneratePdf = true,
@@ -57,7 +58,7 @@ public class DocumentUtilities
 
         if (shouldGeneratePdf)
         {
-            outputUrl = await CreatePDFAsync(inputUrls, outputUrl, pageSize, orientation, encrypter, ocrRecognizer.Configuration);
+            // outputUrl = await CreatePDFAsync(inputUrls, outputUrl, pageSize, orientation, encrypter, ocrRecognizer.Configuration);
         }
         storage.RemoveAllImages();
         return (ocrResult, outputUrl);

@@ -2,8 +2,8 @@ using ReadyToUseUI.iOS.Repository;
 using ReadyToUseUI.iOS.Utils;
 using ReadyToUseUI.iOS.View;
 using ReadyToUseUI.iOS.Models;
-using ScanbotSDK.iOS;
 using Scanbot.ImagePicker.iOS;
+using ScanbotSDK.iOS;
 
 namespace ReadyToUseUI.iOS.Controller
 {
@@ -45,8 +45,9 @@ namespace ReadyToUseUI.iOS.Controller
 
             documentScanners = new List<ListItem>
             {
-                new ListItem("Scan Document", ScanDocument),
-                new ListItem("Scan Document with Finder", ScanDocumentWithFinder),
+                new ListItem("Single Document Scanning", SingleDocumentScanning),
+                new ListItem("Single Finder Document Scanning", SingleFinderDocumentScanning),
+                new ListItem("Multiple Document Scanning", MultipleDocumentScanning),
                 new ListItem("Import Image", ImportImage),
                 new ListItem("View Images", OpenImageListController)
             };

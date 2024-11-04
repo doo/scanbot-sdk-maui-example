@@ -74,8 +74,8 @@ namespace ReadyToUseUI.iOS.Controller
                 return;
             }
 
-            var pdf = CreateButton(Texts.save_without_ocr, (action) => _ = CreatePDFAsync(input, url));
-            var ocr = CreateButton(Texts.save_with_ocr, (action) => _ = PerformOCRAndCreatePDFAsync(input, url));
+            var pdf = CreateButton(Texts.save_without_ocr, (action) =>  CreatePDFAsync(input, url));
+            var ocr = CreateButton(Texts.save_with_ocr, (action) =>  PerformOCRAndCreatePDFAsync(input, url));
             var tiff = CreateButton(Texts.Tiff, (action) => WriteTIFF(input, url));
             var cancel = CreateButton("Cancel", delegate { }, UIAlertActionStyle.Cancel);
 
@@ -94,33 +94,43 @@ namespace ReadyToUseUI.iOS.Controller
             PresentViewController(alertController, true, null);
         }
 
-        private async Task CreatePDFAsync(NSUrl[] inputUrls, NSUrl outputUrl)
+        private void CreatePDFAsync(NSUrl[] inputUrls, NSUrl outputUrl)
         {
             try
             {
-                var outputPdfUrl = await DocumentUtilities.CreatePDFAsync(inputUrls, outputUrl, SBSDKPDFRendererPageSize.A4, SBSDKPDFRendererPageOrientation.Auto, ScanbotUI.DefaultImageStoreEncrypter);
-                if (outputPdfUrl != null)
-                {
-                    var metadata = new SBSDKPDFMetadataEditor(outputPdfUrl);
-                    metadata.Author = "Your author";
-                    metadata.Creator = "Your creator";
-                    metadata.Title = "Your title";
-                    metadata.Subject = "Your subject";
-                    metadata.Keywords = ["PDF", "Scanbot", "SDK"];
-    
-                    NSError error;
-                    metadata.SaveToFileAt(outputPdfUrl, out error);
-                    if (error != null)
-                    {
-                        throw new Exception("Error while saving the PDF metadata. " + error.Description);
-                    }
-                    
-                    OpenDocument(outputPdfUrl, false);
-                }
-                else
-                {
-                    ShowErrorAlert();
-                }
+                var storage = DocumentUtilities.CreateStorage(inputUrls, ScanbotUI.DefaultImageStoreEncrypter);
+                var outputPdfUrl = new NSUrl(outputUrl.AbsoluteString + Guid.NewGuid() + ".pdf");
+                
+                // Create the PDF rendering options.
+                var options = new SBSDKPDFRendererOptions();
+                
+                options.Dpi = 200;
+                options.Resample = false;
+                options.JpegQuality = 100;
+                options.PageSize = SBSDKPDFRendererPageSize.A4;
+                options.PageOrientation = SBSDKPDFRendererPageOrientation.Auto;
+                options.PageFitMode = SBSDKPDFRendererPageFitMode.FitIn;
+                options.PdfAttributes =  new SBSDKPDFAttributes(
+                                    author: "Your author",
+                                    creator: "Your creator",
+                                    title: "Your title",
+                                    subject: "Your subject",
+                                    keywords: ["PDF", "Scanbot", "SDK"]);
+
+                // Create the PDF renderer and pass the PDF options to it.
+                var renderer = new SBSDKPDFRenderer(options,  ScanbotUI.DefaultImageStoreEncrypter);
+        
+                renderer.RenderImageStorageAsync(imageStorage: storage, indexSet: null, output: outputPdfUrl,
+                                    completionHandler: (isComplete, error) =>
+                                    {
+                                        storage.RemoveAllImages();
+                                        if (error != null)
+                                        {
+                                            throw new NSErrorException(error);
+                                        }
+                                        
+                                        OpenDocument(outputPdfUrl, false);
+                                    });
             }
             catch (Exception ex)
             {
@@ -128,11 +138,12 @@ namespace ReadyToUseUI.iOS.Controller
             }
         }
 
-        private async Task PerformOCRAndCreatePDFAsync(NSUrl[] inputUrls, NSUrl outputUrl)
+        private void PerformOCRAndCreatePDFAsync(NSUrl[] inputUrls, NSUrl outputUrl)
         {
             var recognitionMode = SBSDKOpticalCharacterRecognitionMode.ScanbotOCR;
             // This is the new OCR configuration with ML which doesn't require the langauges.
-            SBSDKOpticalCharacterRecognizerConfiguration ocrConfiguration = SBSDKOpticalCharacterRecognizerConfiguration.ScanbotOCR;
+            SBSDKOpticalCharacterRecognizerConfiguration ocrConfiguration =
+                                SBSDKOpticalCharacterRecognizerConfiguration.ScanbotOCR;
 
             // to use legacy configuration we have to pass the installed languages.
             if (recognitionMode == SBSDKOpticalCharacterRecognitionMode.Tesseract)
@@ -140,31 +151,56 @@ namespace ReadyToUseUI.iOS.Controller
                 var installedLanguages = SBSDKOCRLanguagesManager.InstalledLanguages;
                 ocrConfiguration = SBSDKOpticalCharacterRecognizerConfiguration.TesseractWith(installedLanguages);
             }
+
             try
             {
                 var opticalCharacterRecognizer = new SBSDKOpticalCharacterRecognizer(ocrConfiguration);
-                var (ocrResult, outputPdfUrl) = await DocumentUtilities.PerformOCRAsync(ocrRecognizer: opticalCharacterRecognizer, inputUrls: inputUrls, outputUrl: outputUrl, shouldGeneratePdf: true, encrypter: ScanbotUI.DefaultImageStoreEncrypter);
-                if (ocrResult != null)
-                {
-                    var metadata = new SBSDKPDFMetadataEditor(outputPdfUrl);
-                    metadata.Author = "Your author";
-                    metadata.Creator = "Your creator";
-                    metadata.Title = "Your title";
-                    metadata.Subject = "Your subject";
-                    metadata.Keywords = ["PDF", "Scanbot", "SDK"];
-    
-                    NSError error;
-                    metadata.SaveToFileAt(outputPdfUrl, out error);
-                    if (error != null)
-                    {
-                        throw new Exception("Error while saving the PDF metadata. " + error.Description);
-                    }
-                    OpenDocument(outputPdfUrl, true, ocrResult.RecognizedText);
-                }
-                else
-                {
-                    ShowErrorAlert();
-                }
+                var storage = DocumentUtilities.CreateStorage(inputUrls, ScanbotUI.DefaultImageStoreEncrypter);
+                opticalCharacterRecognizer.RecognizeOnImageStorage(storage,
+                                    completion: (ocrResult, error) =>
+                                                {
+                                                    // Create the PDF rendering options.
+                                                    var options = new SBSDKPDFRendererOptions();
+
+                                                    options.Dpi = 200;
+                                                    options.Resample = false;
+                                                    options.JpegQuality = 100;
+                                                    options.PageSize = SBSDKPDFRendererPageSize.A4;
+                                                    options.PageOrientation = SBSDKPDFRendererPageOrientation.Auto;
+                                                    options.PageFitMode = SBSDKPDFRendererPageFitMode.FitIn;
+                                                    options.PdfAttributes = new SBSDKPDFAttributes(
+                                                                        author: "Your author",
+                                                                        creator: "Your creator",
+                                                                        title: "Your title",
+                                                                        subject: "Your subject",
+                                                                        keywords: ["PDF", "Scanbot", "SDK"]);
+
+                                                    // Create the PDF renderer and pass the PDF options to it.
+                                                    var renderer = new SBSDKPDFRenderer(options,
+                                                                        ScanbotUI.DefaultImageStoreEncrypter);
+
+                                                    renderer.RenderImageStorageAsync(imageStorage: storage,
+                                                                        indexSet: null, output: outputUrl,
+                                                                        completionHandler: (isComplete, error) =>
+                                                                        {
+                                                                            storage.RemoveAllImages();
+                                                                            if (error != null)
+                                                                            {
+                                                                                throw new NSErrorException(error);
+                                                                            }
+
+                                                                            OpenDocument(outputUrl, false);
+                                                                        });
+
+                                                    if (ocrResult != null)
+                                                    {
+                                                        OpenDocument(outputUrl, true, ocrResult.RecognizedText);
+                                                    }
+                                                    else
+                                                    {
+                                                        ShowErrorAlert();
+                                                    }
+                                                });
             }
             catch (Exception ex)
             {

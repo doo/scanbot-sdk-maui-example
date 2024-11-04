@@ -1,36 +1,38 @@
-﻿using ScanbotSDK.iOS;
+
+using ScanbotSDK.iOS;
 
 namespace ReadyToUseUI.iOS.Repository
 {
-    public class PageRepository
-    {
-        public static SBSDKDocumentPage Current { get; set; }
+	public class PageRepository
+	{
+        public static SBSDKScannedPage Current { get; set; }
 
-        public static List<SBSDKDocumentPage> Items { get; private set; } = new List<SBSDKDocumentPage>();
+        public static List<SBSDKScannedPage> Items { get; private set; } = new List<SBSDKScannedPage>();
 
-        public static NSUrl[] DocumentImageURLs => Items.Select(x => x.DocumentImageURL).ToArray();
+        public static NSUrl[] DocumentImageURLs => Items.Select(x => x.DocumentImageURI).ToArray();
 
-        public static void Remove(SBSDKDocumentPage page)
+        public static void Remove(SBSDKScannedPage page)
         {
-            SBSDKDocumentPageFileStorage.DefaultStorage.RemovePageFileID(page.PageFileUUID);
+            SBSDKDocumentPageFileStorage.DefaultStorage.RemovePageFileID(new NSUuid(page.Uuid));
             Items.Remove(page);
         }
 
-        public static void Add(SBSDKDocumentPage page)
+        public static void Add(SBSDKScannedPage page)
         {
             Items.Add(page);
         }
 
-        public static SBSDKDocumentPage Add(UIImage image, SBSDKPolygon polygon)
+        public static SBSDKScannedPage Add(UIImage image, SBSDKPolygon polygon)
         {
-            var page = new SBSDKDocumentPage(image, polygon, SBSDKImageFilterType.None);
-            Add(page);
-            return page;
+            var document = new SBSDKScannedDocument();
+            var scannedPage = document.AddPageWith(image, polygon, new[] { new SBSDKParametricFilter() });
+            Add(scannedPage);
+            return scannedPage;
         }
 
-        public static void Update(SBSDKDocumentPage page)
+        public static void Update(SBSDKScannedPage page)
         {
-            var existing = Items.Where(p => p.PageFileUUID.IsEqual(page.PageFileUUID)).ToList()[0];
+            var existing = Items.Where(p => p.Uuid.Equals(page.Uuid)).ToList()[0];
             Items.Remove(existing);
 
             Items.Add(page);
@@ -38,7 +40,8 @@ namespace ReadyToUseUI.iOS.Repository
 
         public static void UpdateCurrent(UIImage image, SBSDKPolygon polygon)
         {
-            var page = new SBSDKDocumentPage(image, polygon, Current.Filter);
+            var document = new SBSDKScannedDocument();
+            var  page = document.AddPageWith(image, polygon, Current.Filters);
             
             Remove(Current);
             Add(page);
@@ -53,19 +56,19 @@ namespace ReadyToUseUI.iOS.Repository
 
         public static void Apply(SBSDKParametricFilter filter)
         {
-            foreach (SBSDKDocumentPage page in Items)
+            foreach (SBSDKScannedPage page in Items)
             {
-                page.ParametricFilters = new[] { filter };
+                page.Filters = new[] { filter };
             }
         }
 
-        public static SBSDKDocumentPage Apply(SBSDKParametricFilter filter, SBSDKDocumentPage page)
+        public static SBSDKScannedPage Apply(SBSDKParametricFilter filter, SBSDKScannedPage page)
         {
-            foreach (SBSDKDocumentPage item in Items)
+            foreach (SBSDKScannedPage item in Items)
             {
-                if (page.PageFileUUID.IsEqual(item.PageFileUUID))
+                if (page.Uuid.Equals(item.Uuid))
                 {
-                    item.ParametricFilters = new[] { filter };
+                    item.Filters = new[] { filter };
                     return item;
                 }
             }
@@ -73,9 +76,10 @@ namespace ReadyToUseUI.iOS.Repository
             return null;
         }
 
-        public static SBSDKDocumentPage DuplicateCurrent(SBSDKParametricFilter type)
+        public static SBSDKScannedPage DuplicateCurrent(SBSDKParametricFilter type)
         {
-            return new SBSDKDocumentPage(Current.OriginalImage, Current.Polygon, new[] { type });
+            var document = new SBSDKScannedDocument();
+            return document.AddPageWith(Current.OriginalImage, Current.Polygon, new[] { type });
         }
     }
 }
