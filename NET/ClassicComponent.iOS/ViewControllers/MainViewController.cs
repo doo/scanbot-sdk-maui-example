@@ -219,7 +219,7 @@ namespace ClassicComponent.iOS
                 });
 
                 if (detectionResult.Status == SBSDKDocumentDetectionStatus.Ok ||
-                    detectionResult.Status == SBSDKDocumentDetectionStatus.Ok_SmallSize)
+                    detectionResult.Status == SBSDKDocumentDetectionStatus.OkButTooSmall)
                 {
                     var documentImage = originalImage;
 
