@@ -1,5 +1,4 @@
-﻿using System;
-namespace ReadyToUseUI.Droid.Model
+﻿namespace ReadyToUseUI.Droid.Model
 {
 	public enum SaveType
     {

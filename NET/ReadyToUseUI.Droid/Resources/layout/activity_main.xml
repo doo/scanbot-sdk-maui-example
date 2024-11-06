@@ -49,44 +49,6 @@
             android:gravity="center"
             android:textStyle="normal"/>
 
-        <!--Barcode Detectors -->
-        <LinearLayout
-            android:id="@+id/barcode_data_scanner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:textColor="@android:color/white"
-                android:gravity="center_vertical"
-                android:layout_gravity="left"
-                android:padding="16dp"
-                android:background="@color/scanbotRed"
-                android:textStyle="bold"/>
-        </LinearLayout>
-
-        <!--Barcode Detectors - V2 -->
-        <LinearLayout
-            android:id="@+id/barcode_data_scanner_v2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:textColor="@android:color/white"
-                android:gravity="center_vertical"
-                android:layout_gravity="left"
-                android:padding="16dp"
-                android:background="@color/scanbotRed"
-                android:textStyle="bold"/>
-        </LinearLayout>
-
         <!--Document Scanners -->
         <LinearLayout
             android:id="@+id/document_scanner"

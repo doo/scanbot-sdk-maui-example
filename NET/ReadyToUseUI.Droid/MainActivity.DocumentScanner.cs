@@ -1,54 +1,67 @@
 using Android.Content;
 using DocumentSDK.NET.Model;
-using IO.Scanbot.Sdk.UI.View.Base.Configuration;
-using IO.Scanbot.Sdk.UI.View.Camera;
-using IO.Scanbot.Sdk.UI.View.Camera.Configuration;
-using ReadyToUseUI.Droid.Activities;
+using IO.Scanbot.Sdk.Ui_v2.Common;
+using IO.Scanbot.Sdk.Ui_v2.Document.Configuration;
+using DocumentScannerActivity = IO.Scanbot.Sdk.Ui_v2.Document.DocumentScannerActivity;
 
 namespace ReadyToUseUI.Droid;
 
 public partial class MainActivity
 {
-        private void ScanDocument()
+        private void SingleDocumentScanning()
+        {   
+            if (!CheckLicense())
+            {
+                return;
+            }
+
+            var configuration = new DocumentScanningFlow();
+            configuration.OutputSettings.PagesScanLimit = 1;
+            configuration.Screens.Camera.CameraConfiguration.RequiredAspectRatios = new[]
+            { 
+                new AspectRatio(21.0, 29.7) // allow only A4 format documents to be scanned
+            };
+         
+            var intent = DocumentScannerActivity.NewIntent(this, configuration);
+            StartActivityForResult(intent, SCAN_DOCUMENT_REQUEST_CODE);
+        }
+
+        private void SingleFinderDocumentScanning()
         {
-            var configuration = new DocumentScannerConfiguration();
+            if (!CheckLicense())
+            {
+                return;
+            }
 
-            configuration.SetCameraPreviewMode(IO.Scanbot.Sdk.Camera.CameraPreviewMode.FitIn);
-            configuration.SetIgnoreBadAspectRatio(true);
-            configuration.SetMultiPageEnabled(true);
-            configuration.SetPageCounterButtonTitle("%d Page(s)");
-            configuration.SetTextHintOK("Don't move.\nScanning document...");
+            // allow only A4 format documents to be scanned
+            var aspectRatio = new AspectRatio(21.0, 29.7);
 
-            // further configuration properties
-            //configuration.SetBottomBarBackgroundColor(Color.Blue);
-            //configuration.SetBottomBarButtonsColor(Color.White);
-            //configuration.SetFlashButtonHidden(true);
-            // and so on...
+            var configuration = new DocumentScanningFlow();
+            configuration.Screens.Camera.CameraConfiguration.AcceptedSizeScore = 0.75;
+            configuration.Screens.Camera.CameraConfiguration.RequiredAspectRatios = new[] { aspectRatio };
+            configuration.Screens.Camera.ViewFinder.Visible = true;
+            configuration.Screens.Camera.ViewFinder.AspectRatio = aspectRatio;
 
             var intent = DocumentScannerActivity.NewIntent(this, configuration);
             StartActivityForResult(intent, SCAN_DOCUMENT_REQUEST_CODE);
         }
 
-        private void ScanDocumentWithFinder()
+        private void MultipleDocumentScanning()
         {
-            var configuration = new FinderDocumentScannerConfiguration();
+            if (!CheckLicense())
+            {
+                return;
+            }
 
-            configuration.SetCameraPreviewMode(IO.Scanbot.Sdk.Camera.CameraPreviewMode.FitIn);
-            configuration.SetIgnoreBadAspectRatio(true);
-            configuration.SetTextHintOK("Don't move.\nScanning document...");
-            configuration.SetOrientationLockMode(CameraOrientationMode.Portrait);
-            configuration.SetFinderAspectRatio(new IO.Scanbot.Sdk.AspectRatio(21.0, 29.7)); // a4 portrait
-
-            // further configuration properties
-            //configuration.SetFinderLineColor(Color.Red);
-            //configuration.SetTopBarBackgroundColor(Color.Blue);
-            //configuration.SetFlashButtonHidden(true);
-            // and so on...
-
-            var intent = FinderDocumentScannerActivity.NewIntent(this, configuration);
+            var configuration = new DocumentScanningFlow();
+            configuration.OutputSettings.PagesScanLimit = 1;
+            configuration.Screens.Camera.BottomBar.ShutterButton.InnerColor = new ScanbotColor(Android.Graphics.Color.Red);
+         
+            var intent = DocumentScannerActivity.NewIntent(this, configuration);
             StartActivityForResult(intent, SCAN_DOCUMENT_REQUEST_CODE);
         }
-
+        
+        
         private void ImportImage()
         {
             var intent = new Intent();
@@ -60,6 +73,4 @@ public partial class MainActivity
             var chooser = Intent.CreateChooser(intent, Texts.share_title);
             StartActivityForResult(chooser, IMPORT_IMAGE_REQUEST);
         }
-
-        private void ViewImages() => StartActivity(new Intent(this, typeof(PagePreviewActivity)));
 }

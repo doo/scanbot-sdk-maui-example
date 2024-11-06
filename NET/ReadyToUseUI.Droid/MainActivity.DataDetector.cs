@@ -1,5 +1,4 @@
 using Android.Graphics;
-using IO.Scanbot.Genericdocument.Entity;
 using IO.Scanbot.Sdk.UI.View.Check;
 using IO.Scanbot.Sdk.UI.View.Check.Configuration;
 using IO.Scanbot.Sdk.UI.View.Genericdocument;

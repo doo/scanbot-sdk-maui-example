@@ -1,13 +1,11 @@
-using ReadyToUseUI.iOS.Repository;
+using ReadyToUseUI.iOS.Models;
 using Scanbot.ImagePicker.iOS;
 using ScanbotSDK.iOS;
 
 namespace ReadyToUseUI.iOS.Controller;
 
 public partial class MainViewController
-{
-    private UIColor AppAccentColor = UIColor.FromRGBA(200, 23, 60, 1);
-    
+{   
     private void SingleDocumentScanning()
     {
       // Initialize document scanner configuration object using default configurations
@@ -39,8 +37,8 @@ public partial class MainViewController
         configuration.Screens.Camera.BottomBar.TorchOffButton.Title.Visible = true;
         
         // Set colors
-        configuration.Palette.SbColorPrimary = new SBSDKUI2Color(uiColor: AppAccentColor);
-        configuration.Palette.SbColorOnPrimary = new SBSDKUI2Color(uiColor: UIColor.White);
+        configuration.Palette.SbColorPrimary = new SBSDKUI2Color(uiColor: Colors.ScanbotRed);
+        configuration.Palette.SbColorOnPrimary = new SBSDKUI2Color(uiColor: Colors.NearWhite);
         
         // Configure the hint texts for different scenarios
         configuration.Screens.Camera.UserGuidance.StatesTitles.TooDark = "Need more lighting to detect a document";
@@ -68,8 +66,8 @@ public partial class MainViewController
         configuration.Screens.Camera.BottomBar.ManualSnappingModeButton.Visible = true;
         
         // Set colors
-        configuration.Palette.SbColorPrimary = new SBSDKUI2Color(uiColor: AppAccentColor);
-        configuration.Palette.SbColorOnPrimary = new SBSDKUI2Color(uiColor: UIColor.White);
+        configuration.Palette.SbColorPrimary = new SBSDKUI2Color(uiColor: Colors.ScanbotRed);
+        configuration.Palette.SbColorOnPrimary = new SBSDKUI2Color(uiColor: Colors.NearWhite);
         
         // Configure the hint texts for different scenarios
         // e.G
@@ -133,8 +131,8 @@ public partial class MainViewController
         configuration.Screens.Camera.BottomBar.ManualSnappingModeButton.Visible = false;
         
         // Set colors
-        configuration.Palette.SbColorPrimary = new SBSDKUI2Color(uiColor: AppAccentColor);
-        configuration.Palette.SbColorOnPrimary = new SBSDKUI2Color(uiColor: UIColor.White);
+        configuration.Palette.SbColorPrimary = new SBSDKUI2Color(uiColor: Colors.ScanbotRed);
+        configuration.Palette.SbColorOnPrimary = new SBSDKUI2Color(uiColor: Colors.NearWhite);
         
         // Configure the hint texts for different scenarios
         configuration.Screens.Camera.UserGuidance.StatesTitles.TooDark = "Need more lighting to detect a document";
@@ -156,10 +154,10 @@ public partial class MainViewController
         for (int i = 0; i < scannedDocument.Pages.Length; ++i)
         {
             var page = scannedDocument.PageAt(i);
-            PageRepository.Add(page);
+         
         }
 
-        OpenImageListController();
+        OpenImageListController(scannedDocument.Uuid);
     }
     
 
@@ -172,14 +170,33 @@ public partial class MainViewController
             
         // Run detection on the image
         var result = detector.DetectPhotoPolygonOnImage(image, CoreGraphics.CGRect.Empty, smoothingEnabled: false);
+
+        if (result == null)
+        {
+            return;
+        }
         
+        // Create an instance of a document
+        var document = new SBSDKScannedDocument();
+            
+        // Add page to the document using the image and the detected polygon on the image (if any)
+        if (result.Polygon != null)
+        {
+            document.AddPageWith(image, result.Polygon, null);
+        }
+        else
+        {
+            document.AddPageWith(image, null, null);
+        }
+
         Console.WriteLine("Attempted document detection on imported page: " + result.Status);
-        OpenImageListController();
+        OpenImageListController(document.Uuid);
     }
 
-    private void OpenImageListController()
+    private void OpenImageListController(string documentId)
     {
-        var controller = new ImageListController();
-        NavigationController.PushViewController(controller, true);
+        var controller = new ScannedDocumentsViewController();
+        controller.NavigateData(documentId);
+        NavigationController?.PushViewController(controller, true);
     }
 }
