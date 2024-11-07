@@ -29,10 +29,7 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Scanbot.Xamarin.ImagePicker" Version="0.0.3-beta.1" />
-        <PackageReference Include="ScanbotSDK.NET" Version="5.1.1">
-            <!-- Required if our package is a dependency of your own package. -->
-            <PrivateAssets>None</PrivateAssets>
-        </PackageReference>
+        <PackageReference Include="ScanbotSDK.NET" Version="6.0.0-local.11" />
     </ItemGroup>
     <ItemGroup>
         <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\eng.traineddata" />

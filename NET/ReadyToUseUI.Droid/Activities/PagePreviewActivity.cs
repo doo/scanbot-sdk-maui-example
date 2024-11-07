@@ -19,6 +19,7 @@ using ReadyToUseUI.Droid.Model;
 using IO.Scanbot.Sdk.Ocr;
 using IO.Scanbot.Sdk.Ui_v2.Document;
 using IO.Scanbot.Sdk.Ui_v2.Document.Configuration;
+using Org.Json;
 using static IO.Scanbot.Sdk.Ocr.IOpticalCharacterRecognizer;
 
 namespace ReadyToUseUI.Droid.Activities
@@ -108,12 +109,9 @@ namespace ReadyToUseUI.Droid.Activities
             crop.Text = Texts.crop;
             crop.Click += delegate
             {
-                  var configuration = new CroppingConfiguration(null, null, null,
-                                                      documentUuid: document.Uuid,
-                                                      pageUuid: document.PageAtIndex(0)?.Uuid,
-                                                      null, null, null, null);
-                  var intent = CroppingActivity.NewIntent(this, configuration);
-                  StartActivityForResult(intent, CAMERA_ACTIVITY);
+                var pageId = scanbotSDK.DocumentApi.LoadDocument(documentId)?.PageAtIndex(0)?.Uuid;
+                var intent = CroppingActivity.NewIntent(this, CroppingActivityConfiguration.Init(documentId, pageId));
+                StartActivityForResult(intent, CAMERA_ACTIVITY);
             };
 
             quality = FindViewById<TextView>(Resource.Id.action_document_quality);
@@ -160,7 +158,8 @@ namespace ReadyToUseUI.Droid.Activities
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
         {
             base.OnActivityResult(requestCode, resultCode, data);
-
+            
+            document = scanbotSDK.DocumentApi.LoadDocument(document.Uuid); // refresh from memory
             adapter.Refresh(document);
             UpdateVisibility();
         }
@@ -320,15 +319,13 @@ namespace ReadyToUseUI.Droid.Activities
         }
     }
 
-    class PageAdapter :  RecyclerView.Adapter
+    class PageAdapter : RecyclerView.Adapter
     {
         private IO.Scanbot.Sdk.Persistence.Fileio.IFileIOProcessor fileProcessor;
-        private IO.Scanbot.Sdk.ScanbotSDK scanbotSdk;
         private List<PageModel> _pages = new List<PageModel>();
         public PageAdapter(IO.Scanbot.Sdk.Persistence.Fileio.IFileIOProcessor fileProcessor, Document document)
         {
             this.fileProcessor = fileProcessor;
-            this.scanbotSdk = scanbotSdk;
             Refresh(document);
         }
 
