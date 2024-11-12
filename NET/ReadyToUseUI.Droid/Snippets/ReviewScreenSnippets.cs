@@ -1,4 +1,5 @@
 using Android.Content;
+using Android.Graphics;
 using AndroidX.AppCompat.App;
 using IO.Scanbot.Sdk.Ui_v2.Common;
 using IO.Scanbot.Sdk.Ui_v2.Document;
@@ -6,7 +7,7 @@ using IO.Scanbot.Sdk.Ui_v2.Document.Configuration;
 
 namespace ReadyToUseUI.Droid.Snippets;
 
-public class PaletteSnippet : AppCompatActivity
+public class ReviewScreenSnippets : AppCompatActivity
 {
 	private IO.Scanbot.Sdk.ScanbotSDK _scanbotSdk;
 	private const int ScanDocumentRequestCode = 001;
@@ -14,40 +15,49 @@ public class PaletteSnippet : AppCompatActivity
 	protected override void OnCreate(Bundle savedInstanceState)
 	{
 		base.OnCreate(savedInstanceState);
-		
+
 		// Returns the singleton instance of the Sdk.
 		_scanbotSdk = new IO.Scanbot.Sdk.ScanbotSDK(this);
-		
+
 		if (_scanbotSdk.LicenseInfo.IsValid)
 		{
 			LaunchDocumentScanner();
 		}
 	}
+
 	private void LaunchDocumentScanner()
 	{
 		// Create the default configuration object.
 		var configuration = new DocumentScanningFlow();
 
-		// Configure the colors.
-		// The palette already has the default colors set, so you don't have to always set all the colors.
-		configuration.Palette.SbColorPrimary = new ScanbotColor("#C8193C");
-		configuration.Palette.SbColorPrimaryDisabled = new ScanbotColor("#F5F5F5");
-		configuration.Palette.SbColorNegative = new ScanbotColor("#FF3737");
-		configuration.Palette.SbColorPositive = new ScanbotColor("#4EFFB4");
-		configuration.Palette.SbColorWarning = new ScanbotColor("#FFCE5C");
-		configuration.Palette.SbColorSecondary = new ScanbotColor("#FFEDEE");
-		configuration.Palette.SbColorSecondaryDisabled = new ScanbotColor("#F5F5F5");
-		configuration.Palette.SbColorOnPrimary = new ScanbotColor("#FFFFFF");
-		configuration.Palette.SbColorOnSecondary = new ScanbotColor("#C8193C");
-		configuration.Palette.SbColorSurface = new ScanbotColor("#FFFFFF");
-		configuration.Palette.SbColorOutline = new ScanbotColor("#EFEFEF");
-		configuration.Palette.SbColorOnSurfaceVariant = new ScanbotColor("#707070");
-		configuration.Palette.SbColorOnSurface = new ScanbotColor("#000000");
-		configuration.Palette.SbColorSurfaceLow = new ScanbotColor("#26000000");
-		configuration.Palette.SbColorSurfaceHigh = new ScanbotColor("#7A000000");
-		configuration.Palette.SbColorModalOverlay = new ScanbotColor("#A3000000");
+		// Retrieve the instance of the review configuration from the main configuration object.
+		// Enable / Disable the review screen.
+		configuration.Screens.Review.Enabled = true;
+
+		// Hide the zoom button.
+		configuration.Screens.Review.ZoomButton.Visible = false;
+
+		// Hide the add button.
+		configuration.Screens.Review.BottomBar.AddButton.Visible = false;
+
+		// Retrieve the instance of the reorder pages configuration from the main configuration object.
+		// Hide the guidance view.
+		configuration.Screens.ReorderPages.Guidance.Visible = false;
+
+		// Set the title for the reorder screen.
+		configuration.Screens.ReorderPages.TopBarTitle.Text = "Reorder Pages Screen";
+
+		// Retrieve the instance of the cropping configuration from the main configuration object.
+		// Hide the reset button.
+		configuration.Screens.Cropping.BottomBar.ResetButton.Visible = false;
+		// Retrieve the retake button configuration from the main configuration object.
 		
-		// Launch the scanner here .. 
+		// Show the retake button.
+		configuration.Screens.Review.BottomBar.RetakeButton.Visible = true;
+
+		// Configure the retake title color.
+		configuration.Screens.Review.BottomBar.RetakeButton.Title.Color = new ScanbotColor(Color.Black);
+		
 		// Start the Document Scanner activity.
 		var intent = DocumentScannerActivity.NewIntent(this, configuration);
 		StartActivityForResult(intent, ScanDocumentRequestCode);

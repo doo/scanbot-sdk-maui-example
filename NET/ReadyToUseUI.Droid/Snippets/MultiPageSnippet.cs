@@ -5,7 +5,7 @@ using IO.Scanbot.Sdk.Ui_v2.Document.Configuration;
 
 namespace ReadyToUseUI.Droid.Snippets;
 
-public class LaunchSnippet : AppCompatActivity
+public class MultiPageSnippet : AppCompatActivity
 {
 	private IO.Scanbot.Sdk.ScanbotSDK _scanbotSdk;
 	private const int ScanDocumentRequestCode = 001;
@@ -27,6 +27,12 @@ public class LaunchSnippet : AppCompatActivity
 	{
 		// Create the default configuration object.
 		var configuration = new DocumentScanningFlow();
+		
+		// Set the page limit.
+		configuration.OutputSettings.PagesScanLimit = 0;
+
+		// Enable the acknowledgment screen.
+		configuration.Screens.Camera.Acknowledgement.AcknowledgementMode = AcknowledgementMode.None;
 
 		// Start the Document Scanner activity.
 		var intent = DocumentScannerActivity.NewIntent(this, configuration);

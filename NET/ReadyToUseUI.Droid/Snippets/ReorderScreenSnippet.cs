@@ -1,11 +1,12 @@
 using Android.Content;
 using AndroidX.AppCompat.App;
+using IO.Scanbot.Sdk.Ui_v2.Common;
 using IO.Scanbot.Sdk.Ui_v2.Document;
 using IO.Scanbot.Sdk.Ui_v2.Document.Configuration;
 
 namespace ReadyToUseUI.Droid.Snippets;
 
-public class LaunchSnippet : AppCompatActivity
+public class ReorderScreenSnippet : AppCompatActivity
 {
 	private IO.Scanbot.Sdk.ScanbotSDK _scanbotSdk;
 	private const int ScanDocumentRequestCode = 001;
@@ -27,6 +28,19 @@ public class LaunchSnippet : AppCompatActivity
 	{
 		// Create the default configuration object.
 		var configuration = new DocumentScanningFlow();
+
+		// Retrieve the instance of the reorder pages configuration from the main configuration object.
+		// Hide the guidance view.
+		configuration.Screens.ReorderPages.Guidance.Visible = false;
+
+		// Set the title for the reorder screen.
+		configuration.Screens.ReorderPages.TopBarTitle.Text = "Reorder Pages Screen";
+
+		// Set the title for the guidance.
+		configuration.Screens.ReorderPages.Guidance.Title.Text = "Reorder";
+
+		// Set the color for the page number text.
+		configuration.Screens.ReorderPages.PageTextStyle.Color = new ScanbotColor(Android.Graphics.Color.Black);
 
 		// Start the Document Scanner activity.
 		var intent = DocumentScannerActivity.NewIntent(this, configuration);
