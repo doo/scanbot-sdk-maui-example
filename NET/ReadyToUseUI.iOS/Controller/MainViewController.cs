@@ -58,7 +58,6 @@ namespace ReadyToUseUI.iOS.Controller
             {
                 button.Click += OnScannerButtonClick;
             }
-            
         }
 
         public override void ViewWillDisappear(bool animated)
