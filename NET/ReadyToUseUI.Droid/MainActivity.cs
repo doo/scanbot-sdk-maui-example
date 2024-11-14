@@ -222,9 +222,9 @@ namespace ReadyToUseUI.Droid
                 {
                     var resultWrapper = (ResultWrapper)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
                     var resultRepository = scanbotSDK.ResultRepositoryForClass(resultWrapper.Clazz);
-                    var checkResult = (MedicalCertificateRecognizerResult)resultRepository.GetResultAndErase(resultWrapper.ResultId);
+                    var result = (MedicalCertificateRecognizerResult)resultRepository.GetResultAndErase(resultWrapper.ResultId);
 
-                    var fragment = MedicalCertificateResultDialogFragment.CreateInstance(checkResult);
+                    var fragment = MedicalCertificateResultDialogFragment.CreateInstance(result);
                     fragment.Show(FragmentManager, MedicalCertificateResultDialogFragment.NAME);
                     return;
                 }
