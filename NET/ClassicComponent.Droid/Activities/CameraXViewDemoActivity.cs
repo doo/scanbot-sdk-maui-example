@@ -9,9 +9,9 @@ using IO.Scanbot.Sdk.UI.Camera;
 using IO.Scanbot.Sdk.Camera;
 using IO.Scanbot.Sdk.Contourdetector;
 using IO.Scanbot.Sdk.UI;
-using IO.Scanbot.Sdk.Core.Contourdetector;
 using IO.Scanbot.Sdk.Process;
 using IO.Scanbot.Sdk;
+using IO.Scanbot.Sdk.Core.Contourdetector;
 
 namespace ClassicComponent.Droid
 {
@@ -132,20 +132,20 @@ namespace ClassicComponent.Droid
             var guideText = "";
 
             var result = frame.DetectionStatus;
-            if (result == DetectionStatus.Ok)
+            if (result == DocumentDetectionStatus.Ok)
             {
                 guideText = "Don't move.\nCapturing...";
                 color = Color.Green;
             }
-            else if (result == DetectionStatus.OkButTooSmall)
+            else if (result == DocumentDetectionStatus.OkButTooSmall)
             {
                 guideText = "Move closer";
             }
-            else if (result == DetectionStatus.OkButBadAngles)
+            else if (result == DocumentDetectionStatus.OkButBadAngles)
             {
                 guideText = "Perspective";
             }
-            else if (result == DetectionStatus.OkButBadAspectRatio)
+            else if (result == DocumentDetectionStatus.OkButBadAspectRatio)
             {
                 guideText = "Wrong aspect ratio.\n Rotate your device";
                 if (ignoreBadAspectRatio)
@@ -154,15 +154,15 @@ namespace ClassicComponent.Droid
                     color = Color.Green;
                 }
             }
-            else if (result == DetectionStatus.ErrorNothingDetected)
+            else if (result == DocumentDetectionStatus.ErrorNothingDetected)
             {
                 guideText = "No Document";
             }
-            else if (result == DetectionStatus.ErrorTooNoisy)
+            else if (result == DocumentDetectionStatus.ErrorTooNoisy)
             {
                 guideText = "Background too noisy";
             }
-            else if (result == DetectionStatus.ErrorTooDark)
+            else if (result == DocumentDetectionStatus.ErrorTooDark)
             {
                 guideText = "Poor light";
             }
@@ -216,7 +216,7 @@ namespace ClassicComponent.Droid
             var detector = scanbotSDK.CreateContourDetector();
             var sdkDetectionResult = detector.Detect(originalBitmap);
             //  var detectionResult = ScanbotSDK.MAUI.Native.Droid.ScanbotSDK.DetectDocument(originalBitmap);
-            if (sdkDetectionResult.Status == DetectionStatus.Ok)
+            if (sdkDetectionResult.Status == DocumentDetectionStatus.Ok)
             {
                 if (sdkDetectionResult.PolygonF != null)
                 {

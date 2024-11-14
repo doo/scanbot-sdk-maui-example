@@ -16,12 +16,11 @@ using IO.Scanbot.Sdk.UI.View.Base;
 using IO.Scanbot.Sdk.Process;
 using IO.Scanbot.Sdk.Tiff.Model;
 using IO.Scanbot.Pdf.Model;
+using IO.Scanbot.Sdk.Imagefilters;
 using IO.Scanbot.Sdk.Persistence.Fileio;
 using IO.Scanbot.Sdk.Util.Thread;
 using IO.Scanbot.Sdk.Ocr;
 using static IO.Scanbot.Sdk.Ocr.IOpticalCharacterRecognizer;
-using Android.Service.Voice;
-using IO.Scanbot.Imagefilters;
 
 namespace ClassicComponent.Droid
 {
@@ -157,7 +156,7 @@ namespace ClassicComponent.Droid
                         var pdfOutputUri = GenerateRandomFileUrlInDemoTempStorage(".pdf");
                         var images = new AndroidNetUri[] { documentImageUri }; // add more images for PDF pages here
                         // The SDK call is sync!
-                        var tempPdfFile = scanbotSDK.CreatePdfRenderer().RenderDocumentFromImages(images, false, PdfConfig.DefaultConfig());
+                        var tempPdfFile = scanbotSDK.CreatePdfRenderer().Render(images, false, PdfConfig.DefaultConfig());
                         //  SBSDK.CreatePDF(images, pdfOutputUri, PDFPageSize.FixedA4);
                         File.Move(tempPdfFile.AbsolutePath, new Java.IO.File(pdfOutputUri.Path).AbsolutePath);
                         DebugLog("PDF file created: " + pdfOutputUri);
@@ -191,8 +190,8 @@ namespace ClassicComponent.Droid
                         var tiffOutputUri = GenerateRandomFileInDemoTempStorage(".tiff");
 
                         // The SDK call is sync!
-                        scanbotSDK.CreateTiffWriter().WriteTIFFFromFiles(
-                            new[] {new Java.IO.File(documentImageUri.Path) }.ToList(),
+                        scanbotSDK.CreateTiffWriter().WriteTIFF(
+                            new[] {  documentImageUri },
                             false,
                             new Java.IO.File(tiffOutputUri.Path),
                             TIFFImageWriterParameters.DefaultParameters());
@@ -230,8 +229,9 @@ namespace ClassicComponent.Droid
                     {
                         var pdfOutputUri = GenerateRandomFileUrlInDemoTempStorage(".pdf");
                         var images = new AndroidNetUri[] { documentImageUri }; // add more images for OCR here
+                        
+                        // This is the new OCR configuration with ML which doesn't require the langauges.
 
-                        // This is the new OCR configuration with ML which doesn't require the languages.
                         var recognitionMode = IOpticalCharacterRecognizer.EngineMode.ScanbotOcr;
                         var recognizer = scanbotSDK.CreateOcrRecognizer();
 
@@ -401,8 +401,8 @@ namespace ClassicComponent.Droid
                     var detectionResult = scanbotSDK.CreateContourDetector().Detect(image);
 
                     DebugLog("Document detection result: " + detectionResult.Status);
-                    if (detectionResult.Status == IO.Scanbot.Sdk.Core.Contourdetector.DetectionStatus.Ok ||
-                        detectionResult.Status == IO.Scanbot.Sdk.Core.Contourdetector.DetectionStatus.OkButTooSmall)
+                    if (detectionResult.Status == IO.Scanbot.Sdk.Core.Contourdetector.DocumentDetectionStatus.Ok ||
+                        detectionResult.Status == IO.Scanbot.Sdk.Core.Contourdetector.DocumentDetectionStatus.OkButTooSmall)
                     {
                         var documentImage = image;
 
