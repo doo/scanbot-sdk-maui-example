@@ -2,7 +2,7 @@
 {
     public class Colors
     {
-        public static readonly UIColor ScanbotRed = UIColor.FromRGB(200, 25, 60);
+        public static readonly UIColor ScanbotRed = UIColor.FromRGB(200, 23, 60);
 
         public static readonly UIColor AppleBlue = UIColor.FromRGB(10, 132, 255);
 

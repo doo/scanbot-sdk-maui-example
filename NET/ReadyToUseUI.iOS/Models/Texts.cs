@@ -40,7 +40,7 @@
 
         public const string add_page = "ADD PAGE";
 
-        public const string filter = "FILTER";
+        public const string filter = "Filter";
 
         public const string delete_all = "DELETE ALL";
 
@@ -70,7 +70,11 @@
 
         public const string none = "None";
 
-        public const string crop_amp_rotate = "CROP & ROTATE";
+        public const string crop = "Crop";
+        
+        public const string export = "Export";
+    
+        public const string document_quality = "Quality";
 
         public const string delete = "DELETE";
 

@@ -1,16 +1,21 @@
 ﻿using ReadyToUseUI.iOS.Models;
-using ReadyToUseUI.iOS.Repository;
 using ReadyToUseUI.iOS.View;
 using ScanbotSDK.iOS;
 
 namespace ReadyToUseUI.iOS.Controller
 {
+    interface IFilterControllerDelegate
+    {
+        void DidSelectFilter(SBSDKParametricFilter filter);
+    }
+    
     public class FilterController : UIViewController
     {
         private FilterView ContentView;
-        private SBSDKParametricFilter SelectedParametricFilter;
-        private SBSDKDocumentPage Temp;
+        private SBSDKParametricFilter _selectedParametricFilter;
+        private SBSDKScannedDocument _scannedDocument;
         private readonly List<FilterItem> Filters;
+        private IFilterControllerDelegate _filterDelegate;
 
         public FilterController()
         {
@@ -42,6 +47,12 @@ namespace ReadyToUseUI.iOS.Controller
             };
         }
 
+        internal void NavigateData(IFilterControllerDelegate filterDelegate, SBSDKScannedDocument scannedDocument)
+        {
+            _scannedDocument = scannedDocument;
+            _filterDelegate = filterDelegate;
+        }
+
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
@@ -50,7 +61,7 @@ namespace ReadyToUseUI.iOS.Controller
             View = ContentView;
 
             ContentView.SetPickerModel(Filters);
-            ContentView.ImageView.Image = PageRepository.Current.DocumentImage;
+            ContentView.ImageView.Image = _scannedDocument.Pages.First().DocumentImage;
 
             Title = "Choose filter";
 
@@ -60,20 +71,20 @@ namespace ReadyToUseUI.iOS.Controller
         
         private void OnFilterSelected(SBSDKParametricFilter filter)
         {
-            SelectedParametricFilter = filter;
-            if (Temp == null)
-            {
-                Temp = PageRepository.DuplicateCurrent(SelectedParametricFilter);
-            }
+            _selectedParametricFilter = filter;
 
-            Temp.ParametricFilters = new[] { SelectedParametricFilter };
-            ContentView.ImageView.Image = Temp.DocumentImage;
+            foreach (var page in _scannedDocument.Pages)
+            {
+                page.Filters = new[] { _selectedParametricFilter };
+            }
+            
+            ContentView.ImageView.Image = _scannedDocument.Pages.First().DocumentImage;
         }
 
         private void FilterChosen(object sender, EventArgs e)
         {
-            PageRepository.Apply(SelectedParametricFilter, PageRepository.Current);
-            NavigationController.PopViewController(true);
+            _filterDelegate?.DidSelectFilter(_selectedParametricFilter);
+            NavigationController?.PopViewController(true);
         }
     }
 }

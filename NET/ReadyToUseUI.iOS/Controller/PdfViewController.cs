@@ -25,6 +25,8 @@ namespace ReadyToUseUI.iOS.Controller
             View = ContentView;
 
             Title = uri.LastPathComponent;
+            
+            
         }
 
         public override void ViewDidAppear(bool animated)
