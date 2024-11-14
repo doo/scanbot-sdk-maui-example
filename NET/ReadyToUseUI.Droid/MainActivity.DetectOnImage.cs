@@ -1,3 +1,4 @@
+using Android.Content;
 using ReadyToUseUI.Droid.Fragments;
 using ReadyToUseUI.Droid.Utils;
 
@@ -5,9 +6,9 @@ namespace ReadyToUseUI.Droid;
 
 public partial class MainActivity
 {
-    public async void DetectMrzFromImage()
+    private void DetectMrzFromImage(Intent data)
     {
-        var bitmap = await ImagePickerServiceActivity.PickImageAsync(this);
+        var bitmap = ImageUtils.ProcessGalleryResult(this, data);
         var recognizer = scanbotSDK.CreateMrzScanner();
         var result = recognizer.RecognizeMRZBitmap(bitmap, 0);
 
@@ -17,9 +18,9 @@ public partial class MainActivity
         fragment.Show(FragmentManager, MRZDialogFragment.NAME);
     }
     
-    public async void DetectCheckFromImage()
+    private void DetectCheckFromImage(Intent data)
     {
-        var bitmap = await ImagePickerServiceActivity.PickImageAsync(this);
+        var bitmap = ImageUtils.ProcessGalleryResult(this, data);
         var recognizer = scanbotSDK.CreateCheckRecognizer();
         var result = recognizer.RecognizeBitmap(bitmap, 0);
         var fields = result.Check.Fields;
@@ -43,9 +44,9 @@ public partial class MainActivity
         Alert.ShowAlert(this, "Result", description);
     }
 
-    public async void DetectMedicalCertificateFromImage()
+    private void DetectMedicalCertificateFromImage(Intent data)
     {
-        var bitmap = await ImagePickerServiceActivity.PickImageAsync(this);
+        var bitmap = ImageUtils.ProcessGalleryResult(this, data);
         var recognizer = scanbotSDK.CreateMedicalCertificateRecognizer();
         var result = recognizer.RecognizeMcBitmap(image: bitmap,
             orientation: 0,
@@ -60,9 +61,9 @@ public partial class MainActivity
         fragment.Show(FragmentManager, MedicalCertificateResultDialogFragment.NAME);
     }
 
-    public async void DetectEHICFromImage()
+    private void DetectEHICFromImage(Intent data)
     {
-        var bitmap = await ImagePickerServiceActivity.PickImageAsync(this);
+        var bitmap = ImageUtils.ProcessGalleryResult(this, data);
         var recognizer = scanbotSDK.CreateHealthInsuranceCardScanner();
         var result = recognizer.RecognizeBitmap(bitmap, 0);
        
@@ -72,9 +73,9 @@ public partial class MainActivity
         fragment.Show(FragmentManager, HealthInsuranceCardFragment.NAME);
     }
 
-    public async void DetectGenericDocumentFromImage()
+    private void DetectGenericDocumentFromImage(Intent data)
     {
-        var bitmap = await ImagePickerServiceActivity.PickImageAsync(this);
+        var bitmap = ImageUtils.ProcessGalleryResult(this, data);
         var recognizer = scanbotSDK.CreateGenericDocumentRecognizer();
         var result = recognizer.ScanBitmap(bitmap, true, 0);
         

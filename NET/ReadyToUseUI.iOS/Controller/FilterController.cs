@@ -28,22 +28,7 @@ namespace ReadyToUseUI.iOS.Controller
                 new FilterItem(nameof(SBSDKBrightnessFilter), () => OnFilterSelected(new SBSDKBrightnessFilter(brightness: 0.2))),
                 new FilterItem(nameof(SBSDKContrastFilter), () => OnFilterSelected(new SBSDKContrastFilter(contrast: 2))),
                 new FilterItem(nameof(SBSDKGrayscaleFilter), () => OnFilterSelected(new SBSDKGrayscaleFilter(blackOutliersFraction: 0.0, borderWidthFraction: 0.6, whiteOutliersFraction: 0.02))),
-                new FilterItem(nameof(SBSDKWhiteBlackPointFilter), () => OnFilterSelected(new SBSDKWhiteBlackPointFilter(blackPoint: 0.2, whitePoint: 0.8))),
-
-                new FilterItem("Legacy Filters"),
-                new FilterItem(nameof(SBSDKImageFilterType.None), () => OnFilterSelected(SBSDKImageFilterType.None.ToLegacyFilter())),
-                new FilterItem(nameof(SBSDKImageFilterType.LowLightBinarization),() => OnFilterSelected(SBSDKImageFilterType.LowLightBinarization.ToLegacyFilter())),
-                new FilterItem(nameof(SBSDKImageFilterType.LowLightBinarization2),() => OnFilterSelected(SBSDKImageFilterType.LowLightBinarization2.ToLegacyFilter())),
-                new FilterItem(nameof(SBSDKImageFilterType.EdgeHighlight),() => OnFilterSelected(SBSDKImageFilterType.EdgeHighlight.ToLegacyFilter())),
-                new FilterItem(nameof(SBSDKImageFilterType.DeepBinarization),() => OnFilterSelected(SBSDKImageFilterType.DeepBinarization.ToLegacyFilter())),
-                new FilterItem(nameof(SBSDKImageFilterType.OtsuBinarization),() => OnFilterSelected(SBSDKImageFilterType.OtsuBinarization.ToLegacyFilter())),
-                new FilterItem(nameof(SBSDKImageFilterType.BackgroundClean),() => OnFilterSelected(SBSDKImageFilterType.BackgroundClean.ToLegacyFilter())),
-                new FilterItem(nameof(SBSDKImageFilterType.ColorDocument),() => OnFilterSelected(SBSDKImageFilterType.ColorDocument.ToLegacyFilter())),
-                new FilterItem(nameof(SBSDKImageFilterType.Color),() => OnFilterSelected(SBSDKImageFilterType.Color.ToLegacyFilter())),
-                new FilterItem(nameof(SBSDKImageFilterType.Gray),() => OnFilterSelected(SBSDKImageFilterType.Gray.ToLegacyFilter())),
-                new FilterItem(nameof(SBSDKImageFilterType.Binarized),() => OnFilterSelected(SBSDKImageFilterType.Binarized.ToLegacyFilter())),
-                new FilterItem(nameof(SBSDKImageFilterType.PureBinarized),() => OnFilterSelected(SBSDKImageFilterType.PureBinarized.ToLegacyFilter())),
-                new FilterItem(nameof(SBSDKImageFilterType.BlackAndWhite),() => OnFilterSelected(SBSDKImageFilterType.BlackAndWhite.ToLegacyFilter())),
+                new FilterItem(nameof(SBSDKWhiteBlackPointFilter), () => OnFilterSelected(new SBSDKWhiteBlackPointFilter(blackPoint: 0.2, whitePoint: 0.8)))
             };
         }
 

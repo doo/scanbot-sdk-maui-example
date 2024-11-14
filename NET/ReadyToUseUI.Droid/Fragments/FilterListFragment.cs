@@ -36,22 +36,6 @@ public class FilterListFragment : BottomSheetDialogFragment, IFilterItemAdapter
             new FilterItem(nameof(ContrastFilter), () => FilterSelected(new ContrastFilter(contrast: 2))),
             new FilterItem(nameof(GrayscaleFilter), () => FilterSelected(new  GrayscaleFilter(blackOutliersFraction: 0.0, borderWidthFraction: 0.6, whiteOutliersFraction: 0.02))),
             new FilterItem(nameof(WhiteBlackPointFilter), () => FilterSelected(new  WhiteBlackPointFilter(blackPoint: 0.2, whitePoint: 0.8))),
-
-            new FilterItem("Legacy Filters"),
-            new FilterItem(nameof(ImageFilterType.None), () => FilterSelected(new  LegacyFilter(ImageFilterType.None.Code))),
-            new FilterItem(nameof(ImageFilterType.LowLightBinarization), () => FilterSelected(new LegacyFilter(ImageFilterType.LowLightBinarization.Code))),
-            new FilterItem(nameof(ImageFilterType.LowLightBinarization2), () => FilterSelected(new LegacyFilter(ImageFilterType.LowLightBinarization2.Code))),
-            new FilterItem(nameof(ImageFilterType.EdgeHighlight), () => FilterSelected(new LegacyFilter(ImageFilterType.EdgeHighlight.Code))),
-            new FilterItem(nameof(ImageFilterType.DeepBinarization), () => FilterSelected(new LegacyFilter(ImageFilterType.DeepBinarization.Code))),
-            new FilterItem(nameof(ImageFilterType.OtsuBinarization), () => FilterSelected(new LegacyFilter(ImageFilterType.OtsuBinarization.Code))),
-            new FilterItem(nameof(ImageFilterType.BackgroundClean), () => FilterSelected(new LegacyFilter(ImageFilterType.BackgroundClean.Code))),
-            new FilterItem(nameof(ImageFilterType.ColorDocument), () => FilterSelected(new LegacyFilter(ImageFilterType.ColorDocument.Code))),
-            new FilterItem(nameof(ImageFilterType.ColorEnhanced), () => FilterSelected(new LegacyFilter(ImageFilterType.ColorEnhanced.Code))),
-            new FilterItem(nameof(ImageFilterType.Grayscale), () => FilterSelected(new LegacyFilter(ImageFilterType.Grayscale.Code))),
-            new FilterItem(nameof(ImageFilterType.PureGrayscale), () => FilterSelected(new LegacyFilter(ImageFilterType.PureGrayscale.Code))),
-            new FilterItem(nameof(ImageFilterType.Binarized), () => FilterSelected(new LegacyFilter(ImageFilterType.Binarized.Code))),
-            new FilterItem(nameof(ImageFilterType.PureBinarized), () => FilterSelected(new LegacyFilter(ImageFilterType.PureBinarized.Code))),
-            new FilterItem(nameof(ImageFilterType.BlackAndWhite), () => FilterSelected(new LegacyFilter(ImageFilterType.BlackAndWhite.Code)))
         };
     }
 

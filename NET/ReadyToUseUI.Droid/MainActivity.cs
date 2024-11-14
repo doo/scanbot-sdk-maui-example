@@ -3,6 +3,7 @@ using ReadyToUseUI.Droid.Fragments;
 using Android.Graphics;
 using Android.Content;
 using Android.Runtime;
+using AndroidX.Activity.Result.Contract;
 using IO.Scanbot.Sdk.Persistence.Page.Legacy;
 using ReadyToUseUI.Droid.Activities;
 using ReadyToUseUI.Droid.Utils;
@@ -19,7 +20,6 @@ using IO.Scanbot.Sdk.UI.View.Generictext.Entity;
 using IO.Scanbot.Sdk.Mcrecognizer.Entity;
 using IO.Scanbot.Sdk.Vin;
 using IO.Scanbot.Sdk.UI.View.Licenseplate.Entity;
-using Page = IO.Scanbot.Sdk.Persistence.Page.Legacy.Page;
 
 namespace ReadyToUseUI.Droid
 {
@@ -37,14 +37,19 @@ namespace ReadyToUseUI.Droid
         private const int SCAN_EU_LICENSE_REQUEST = 4005;
         private const int SCAN_EHIC_REQUEST = 4006;
         private const int SCAN_MEDICAL_CERTIFICATE_REQUEST = 4007;
-
         private const int CHECK_RECOGNIZER_REQUEST = 5001;
+        
+        private const int DETECT_MRZ_FROM_IMAGE = 6001;
+        private const int DETECT_EHIC_FROM_IMAGE = 6002;
+        private const int DETECT_MEDICAL_CERTIFICATE_FROM_IMAGE = 6003;
+        private const int DETECT_CHECK_FROM_IMAGE = 6004;
+        private const int DETECT_GDR_FROM_IMAGE = 6005;
 
         private readonly List<ListItemButton> buttons = new List<ListItemButton>();
         private ProgressBar progress;
 
         private IO.Scanbot.Sdk.ScanbotSDK scanbotSDK;
-        private PageFileStorage pageFileStorage;
+        // private PageFileStorage pageFileStorage;
         private TextView licenseIndicator;
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -55,7 +60,7 @@ namespace ReadyToUseUI.Droid
             SetContentView(Resource.Layout.activity_main);
 
             scanbotSDK = new IO.Scanbot.Sdk.ScanbotSDK(this);
-            pageFileStorage = scanbotSDK.CreatePageFileStorage();
+            // pageFileStorage = scanbotSDK.CreatePageFileStorage();
 
             var container = (LinearLayout)FindViewById(Resource.Id.container);
             var title = container.FindViewById<TextView>(Resource.Id.textView);
@@ -87,6 +92,18 @@ namespace ReadyToUseUI.Droid
                 new ListItemButton(this, "Medical Certificate Recognizer", ScanMedicalCertificate),
             });
 
+            var detectionOnImage = (LinearLayout)container.FindViewById(Resource.Id.data_detection_on_image);
+            var detectionOnImageTitle = (TextView)detectionOnImage.FindViewById(Resource.Id.textView);
+            detectionOnImageTitle.Text = "Data Detection On Image";
+            detectionOnImage.AddChildren(buttons, new[]
+            {
+                new ListItemButton(this, "Detect MRZ from Image", () => LaunchImagePicker(DETECT_MRZ_FROM_IMAGE)),
+                new ListItemButton(this, "Detect EHIC from Image", () => LaunchImagePicker(DETECT_EHIC_FROM_IMAGE)),
+                new ListItemButton(this, "Detect Generic Document from Image", () => LaunchImagePicker(DETECT_GDR_FROM_IMAGE)),
+                new ListItemButton(this, "Detect Check from Image", () => LaunchImagePicker(DETECT_CHECK_FROM_IMAGE)),
+                new ListItemButton(this, "Detect Medical Certificate from Image", () => LaunchImagePicker(DETECT_MEDICAL_CERTIFICATE_FROM_IMAGE))
+            });
+            
             progress = FindViewById<ProgressBar>(Resource.Id.progressBar);
 
             licenseIndicator = container.FindViewById<TextView>(Resource.Id.licenseIndicator);
@@ -132,15 +149,24 @@ namespace ReadyToUseUI.Droid
 
                     Alert.Toast(this, Texts.importing_and_processing);
 
-                    var result = ImageUtils.ProcessGalleryResult(this, data);
+                    var bitmap = ImageUtils.ProcessGalleryResult(this, data);
 
-                    var pageId = pageFileStorage.Add(result);
-                    var page = new Page(pageId, new List<PointF>(), DocumentDetectionStatus.Ok, ImageFilterType.None);
-                    page = scanbotSDK.CreatePageProcessor().DetectDocument(page);
+                    var detector = scanbotSDK.CreateContourDetector();
+                    var detectionResult = detector.Detect(bitmap);
+                    
+                    var defaultDocumentSizeLimit = 0;
+                    var document = scanbotSDK.DocumentApi.CreateDocument(defaultDocumentSizeLimit);
+                    document.AddPage(bitmap);
+
+                    if (detectionResult != null)
+                    {
+                        document.PageAtIndex(0).Polygon = detectionResult.PolygonF;
+                    }
 
                     progress.Visibility = ViewStates.Gone;
 
-                    StartActivity(new Intent(this, typeof(PagePreviewActivity)));
+                    var intent = PagePreviewActivity.CreateIntent(this, document.Uuid);
+                    StartActivity(intent);
                     return;
                 }
                 
@@ -254,6 +280,21 @@ namespace ReadyToUseUI.Droid
                     Alert.ShowAlert(this, "Result", description);
                     return;
                 }
+                case DETECT_MRZ_FROM_IMAGE:
+                    DetectMrzFromImage(data);
+                    return;
+                case DETECT_EHIC_FROM_IMAGE:
+                    DetectEHICFromImage(data);
+                    return;
+                case DETECT_CHECK_FROM_IMAGE:
+                    DetectCheckFromImage(data);
+                    return;
+                case DETECT_MEDICAL_CERTIFICATE_FROM_IMAGE:
+                    DetectMedicalCertificateFromImage(data);
+                    return;
+                case DETECT_GDR_FROM_IMAGE:
+                    DetectGenericDocumentFromImage(data);
+                    return;
             }
         }
 
@@ -284,6 +325,18 @@ namespace ReadyToUseUI.Droid
             }
 
             return scanbotSDK.LicenseInfo.IsValid;
+        }
+
+        private void LaunchImagePicker(int activityRequestCode)
+        {
+                var intent = new Intent();
+                intent.SetType("image/*");
+                intent.SetAction(Intent.ActionGetContent);
+                intent.PutExtra(Intent.ExtraLocalOnly, false);
+                intent.PutExtra(Intent.ExtraAllowMultiple, false);
+
+                var chooser = Intent.CreateChooser(intent, Texts.share_title);
+                StartActivityForResult(chooser, activityRequestCode);
         }
     }
 }

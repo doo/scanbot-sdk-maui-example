@@ -9,6 +9,7 @@ namespace ReadyToUseUI.iOS.Controller
         private MainView contentView;
         private List<ListItem> documentScanners;
         private List<ListItem> dataDetectors;
+        private List<ListItem> dataDetectionOnImage;
 
         public override void ViewDidLoad()
         {
@@ -39,8 +40,18 @@ namespace ReadyToUseUI.iOS.Controller
                 new ListItem("Medical Certificate Recognizer", MedicalCertificateRecognizerTapped),
             };
 
+            dataDetectionOnImage = new List<ListItem>
+            {
+                new ListItem("Detect MRZ From Image", DetectMrz),
+                new ListItem("Detect EHIC From Image", DetectEhic),
+                new ListItem("Detect Generic Document From Image", DetectGenericDocument),
+                new ListItem("Detect Check From Image", DetectCheck),
+                new ListItem("Detect Medical Certificate From Image", DetectMedicalCertificate),
+            };
+
             contentView.AddContent("Document Scanner", documentScanners);
             contentView.AddContent("Data Detectors", dataDetectors);
+            contentView.AddContent("Data Detection On Image", dataDetectionOnImage);
 
             contentView.LicenseIndicator.Text = Texts.no_license_found_the_app_will_terminate_after_one_minute;
         }
@@ -83,7 +94,7 @@ namespace ReadyToUseUI.iOS.Controller
                 button.Data.DoAction();
             }
         }
-        
+
         private static bool IsPresented { get; set; }
 
         public static void ShowPopup(UIViewController controller, string text, Action onClose = null)
