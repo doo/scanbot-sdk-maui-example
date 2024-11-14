@@ -30,7 +30,7 @@ public class CropScreenSnippet : AppCompatActivity
 		// Create the default configuration object.
 		var configuration = new DocumentScanningFlow();
 
-		// MARK: Set the limit for the number of pages you want to scan.
+		// Set the limit for the number of pages you want to scan.
 		configuration.OutputSettings.PagesScanLimit = 30;
 
 		// Pass the DOCUMENT_UUID here to resume an old session, or pass null to start a new session or to resume a draft session.
@@ -39,7 +39,7 @@ public class CropScreenSnippet : AppCompatActivity
 		// Controls whether to resume an existing draft session or start a new one when DOCUMENT_UUID is null.
 		configuration.CleanScanningSession = true;
 
-		// MARK: Configure the bottom bar and the bottom bar buttons.
+		// Configure the bottom bar and the bottom bar buttons.
 		// Set the background color of the bottom bar.
 		configuration.Appearance.BottomBarBackgroundColor = new ScanbotColor("#C8193C");
 		

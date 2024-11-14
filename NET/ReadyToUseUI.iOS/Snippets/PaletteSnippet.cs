@@ -40,17 +40,18 @@ public class PalleteSnippet : UIViewController
 		palette.SbColorModalOverlay = new SBSDKUI2Color(colorString: "#A3000000");
 
 		// Present the recognizer view controller modal on this view controller.
-		SBSDKUI2DocumentScannerController.PresentOn(this, configuration, (document) =>
-		                                                                 {
-			                                                                 // Completion handler to process the result.
-			                                                                 if (document != null)
-			                                                                 {
-				                                                                 // Handle the document.
-			                                                                 }
-			                                                                 else
-			                                                                 {
-				                                                                 // Indicates that the cancel button was tapped.
-			                                                                 }
-		                                                                 });
+		SBSDKUI2DocumentScannerController.PresentOn(this, configuration,
+			(document) =>
+		    {
+			    // Completion handler to process the result.
+			    if (document != null)
+			    {
+				    // Handle the document.
+			    }
+			    else
+			    {
+				    // Indicates that the cancel button was tapped.
+			    }
+		    });
 	}
 }

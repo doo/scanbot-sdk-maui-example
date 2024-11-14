@@ -37,14 +37,14 @@ public class ScanningScreenSnippet : AppCompatActivity
 		// Controls whether to resume an existing draft session or start a new one when DOCUMENT_UUID is null.
 		configuration.CleanScanningSession = true;
 
-		// MARK: Configure the bottom bar and the bottom bar buttons.
+		// Configure the bottom bar and the bottom bar buttons.
 		// Set the background color of the bottom bar.
 		configuration.Appearance.BottomBarBackgroundColor = new ScanbotColor("#C8193C");
 
 		// Retrieve the camera screen configuration.
 		configuration.Screens.Camera = new CameraScreenConfiguration();
 
-		// MARK: Configure the user guidance.
+		// Configure the user guidance.
 		// Configure the top user guidance.
 		configuration.Screens.Camera.TopUserGuidance.Visible = true;
 		configuration.Screens.Camera.TopUserGuidance.Background.FillColor = new ScanbotColor("#4A000000");
@@ -94,7 +94,7 @@ public class ScanningScreenSnippet : AppCompatActivity
 		configuration.Screens.Camera.BottomBar.TorchOffButton.Title.Text = "Off";
 
 
-		// MARK: Configure the document capture feedback.
+		// Configure the document capture feedback.
 		// Configure the camera blink behavior when an image is captured.
 		configuration.Screens.Camera.CaptureFeedback.CameraBlinkEnabled = true;
 
