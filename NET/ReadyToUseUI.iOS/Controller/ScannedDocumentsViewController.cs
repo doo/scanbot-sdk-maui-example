@@ -5,7 +5,7 @@ using ScanbotSDK.iOS;
 
 namespace ReadyToUseUI.iOS.Controller;
 
-public partial class ScannedDocumentsViewController : UIViewController, IFilterControllerDelegate
+public partial class ScannedDocumentsViewController : UIViewController
 {
     public ImageCollectionView ContentView { get; private set; }
 
@@ -119,7 +119,7 @@ public partial class ScannedDocumentsViewController : UIViewController, IFilterC
     private void OnFilterButtonClicked(object sender, EventArgs e)
     {
         var controller = new FilterController();
-        controller.NavigateData(this, _scannedDocument);
+        controller.NavigateData(_ => LoadPages(), _scannedDocument);
         NavigationController?.PushViewController(controller, true);
     }
 

@@ -4,18 +4,13 @@ using ScanbotSDK.iOS;
 
 namespace ReadyToUseUI.iOS.Controller
 {
-    interface IFilterControllerDelegate
-    {
-        void DidSelectFilter(SBSDKParametricFilter filter);
-    }
-    
     public class FilterController : UIViewController
     {
         private FilterView ContentView;
         private SBSDKParametricFilter _selectedParametricFilter;
         private SBSDKScannedDocument _scannedDocument;
         private readonly List<FilterItem> Filters;
-        private IFilterControllerDelegate _filterDelegate;
+        private Action<SBSDKParametricFilter> _onFilterSelected;
 
         public FilterController()
         {
@@ -32,10 +27,10 @@ namespace ReadyToUseUI.iOS.Controller
             };
         }
 
-        internal void NavigateData(IFilterControllerDelegate filterDelegate, SBSDKScannedDocument scannedDocument)
+        internal void NavigateData(Action<SBSDKParametricFilter> onFilterSelected, SBSDKScannedDocument scannedDocument)
         {
             _scannedDocument = scannedDocument;
-            _filterDelegate = filterDelegate;
+            _onFilterSelected = onFilterSelected;
         }
 
         public override void ViewDidLoad()
@@ -68,7 +63,7 @@ namespace ReadyToUseUI.iOS.Controller
 
         private void FilterChosen(object sender, EventArgs e)
         {
-            _filterDelegate?.DidSelectFilter(_selectedParametricFilter);
+            _onFilterSelected?.Invoke(_selectedParametricFilter);
             NavigationController?.PopViewController(true);
         }
     }

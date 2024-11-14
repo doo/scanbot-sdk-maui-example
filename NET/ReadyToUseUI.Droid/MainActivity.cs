@@ -1,25 +1,9 @@
 ﻿using Android.Views;
-using ReadyToUseUI.Droid.Fragments;
-using Android.Graphics;
 using Android.Content;
 using Android.Runtime;
-using AndroidX.Activity.Result.Contract;
-using IO.Scanbot.Sdk.Persistence.Page.Legacy;
-using ReadyToUseUI.Droid.Activities;
 using ReadyToUseUI.Droid.Utils;
-using IO.Scanbot.Sdk.Process;
-using IO.Scanbot.Ehicscanner.Model;
-using IO.Scanbot.Sdk.Core.Contourdetector;
-using IO.Scanbot.Genericdocument.Entity;
-using IO.Scanbot.Sdk.UI.Result;
-using IO.Scanbot.Sdk.UI.View.Base;
-using IO.Scanbot.Sdk.Check.Entity;
 using DocumentSDK.NET.Model;
-using IO.Scanbot.Mrzscanner.Model;
-using IO.Scanbot.Sdk.UI.View.Generictext.Entity;
-using IO.Scanbot.Sdk.Mcrecognizer.Entity;
-using IO.Scanbot.Sdk.Vin;
-using IO.Scanbot.Sdk.UI.View.Licenseplate.Entity;
+
 
 namespace ReadyToUseUI.Droid
 {
@@ -134,168 +118,20 @@ namespace ReadyToUseUI.Droid
                 return;
             }
 
-            switch (requestCode)
+            if (documentScannerActions.TryGetValue(requestCode, out var documentScannerAction))
             {
-                case SCAN_DOCUMENT_REQUEST_CODE:
-                {
-                        var documentId = data?.GetStringExtra(IO.Scanbot.Sdk.Ui_v2.Common.Activity.ActivityConstants.ExtraKeyRtuResult) as string;
-                        var intent = PagePreviewActivity.CreateIntent(this, documentId);
-                        StartActivity(intent);
-                        return;
-                }
-                case IMPORT_IMAGE_REQUEST:
-                {
-                    progress.Visibility = ViewStates.Visible;
-
-                    Alert.Toast(this, Texts.importing_and_processing);
-
-                    var bitmap = ImageUtils.ProcessGalleryResult(this, data);
-
-                    var detector = scanbotSDK.CreateContourDetector();
-                    var detectionResult = detector.Detect(bitmap);
-                    
-                    var defaultDocumentSizeLimit = 0;
-                    var document = scanbotSDK.DocumentApi.CreateDocument(defaultDocumentSizeLimit);
-                    document.AddPage(bitmap);
-
-                    if (detectionResult != null)
-                    {
-                        document.PageAtIndex(0).Polygon = detectionResult.PolygonF;
-                    }
-
-                    progress.Visibility = ViewStates.Gone;
-
-                    var intent = PagePreviewActivity.CreateIntent(this, document.Uuid);
-                    StartActivity(intent);
-                    return;
-                }
-                
-                case SCAN_MRZ_REQUEST:
-                {
-                    var result = (MRZGenericDocument)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
-                    var fragment = MRZDialogFragment.CreateInstance(result);
-                    fragment.Show(FragmentManager, MRZDialogFragment.NAME);
-                    return;
-                }
-                case GENERIC_DOCUMENT_REQUEST:
-                {
-                    var resultsArray = data.GetParcelableArrayListExtra(RtuConstants.ExtraKeyRtuResult);
-                    if (resultsArray?.Count == 0)
-                    {
-                        return;
-                    }
-
-                    var resultWrapper = (ResultWrapper)resultsArray[0];
-                    var resultRepository = scanbotSDK.ResultRepositoryForClass(resultWrapper.Clazz);
-                    var genericDocument = (GenericDocument)resultRepository.GetResultAndErase(resultWrapper.ResultId);
-                    var fields = genericDocument.Fields.Cast<Field>().ToList();
-
-                    var description = string.Join(";\n", fields
-                        .Where(field => field != null)
-                        .Select(field =>
-                        {
-                            string typeName = field.GetType().Name;
-                            string valueText = field.Value?.Text;
-                            return !string.IsNullOrEmpty(typeName) && !string.IsNullOrEmpty(valueText)
-                                ? $"{typeName} = {valueText}"
-                                : null;
-                        })
-                        .Where(outStr => outStr != null)
-                        .ToList()
-                    );
-
-                    Alert.ShowAlert(this, "Result", description);
-                    return;
-                }
-                case SCAN_EHIC_REQUEST:
-                {
-                    var result = (EhicRecognitionResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
-                    var fragment = HealthInsuranceCardFragment.CreateInstance(result);
-                    fragment.Show(FragmentManager, HealthInsuranceCardFragment.NAME);
-                    return;
-                }
-                case SCAN_VIN_REQUEST:
-                {
-                    var result = (VinScanResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
-
-                    Alert.Toast(this, $"VIN Scanned: {result?.RawText}");
-                    return;
-                }
-                case SCAN_DATA_REQUEST:
-                {
-                    var results = data.GetParcelableArrayExtra(RtuConstants.ExtraKeyRtuResult);
-                    if (results == null || results.Length == 0)
-                    {
-                        return;
-                    }
-                    var textDataScannerStepResult = results.First() as TextDataScannerStepResult;
-                    Alert.Toast(this, "Text Recognizer Result: " + textDataScannerStepResult.Text);
-                    return;
-                }
-                case SCAN_EU_LICENSE_REQUEST:
-                {
-                    var result = (data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult) as LicensePlateScannerResult);
-
-                    if (result == null)
-                    {
-                        return;
-                    }
-
-                    Alert.Toast(this, $"EU_LICENSE Scanned: {result.RawText}");
-                    return;
-                }
-                case SCAN_MEDICAL_CERTIFICATE_REQUEST:
-                {
-                    var resultWrapper = (ResultWrapper)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
-                    var resultRepository = scanbotSDK.ResultRepositoryForClass(resultWrapper.Clazz);
-                    var result = (MedicalCertificateRecognizerResult)resultRepository.GetResultAndErase(resultWrapper.ResultId);
-
-                    var fragment = MedicalCertificateResultDialogFragment.CreateInstance(result);
-                    fragment.Show(FragmentManager, MedicalCertificateResultDialogFragment.NAME);
-                    return;
-                }
-                case CHECK_RECOGNIZER_REQUEST:
-                {
-                    var resultWrapper = (ResultWrapper)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
-                    var resultRepository = scanbotSDK.ResultRepositoryForClass(resultWrapper.Clazz);
-                    var checkResult = (CheckRecognizerResult)resultRepository.GetResultAndErase(resultWrapper.ResultId);
-                    var fields = checkResult.Check.Fields;
-                    var description = string.Join(";\n", fields
-                        .Where(field => field != null)
-                        .Select((field) =>
-                        {
-                            string outStr = "";
-                            if (field.GetType() != null && field.GetType().Name != null)
-                            {
-                                outStr += field.GetType().Name + " = ";
-                            }
-                            if (field.Value != null && field.Value.Text != null)
-                            {
-                                outStr += field.Value.Text;
-                            }
-                            return outStr;
-                        })
-                        .ToList());
-
-                    Alert.ShowAlert(this, "Result", description);
-                    return;
-                }
-                case DETECT_MRZ_FROM_IMAGE:
-                    DetectMrzFromImage(data);
-                    return;
-                case DETECT_EHIC_FROM_IMAGE:
-                    DetectEHICFromImage(data);
-                    return;
-                case DETECT_CHECK_FROM_IMAGE:
-                    DetectCheckFromImage(data);
-                    return;
-                case DETECT_MEDICAL_CERTIFICATE_FROM_IMAGE:
-                    DetectMedicalCertificateFromImage(data);
-                    return;
-                case DETECT_GDR_FROM_IMAGE:
-                    DetectGenericDocumentFromImage(data);
-                    return;
+                documentScannerAction(data);
             }
+
+            if (dataDetectorActions.TryGetValue(requestCode, out var dataDetectorAction))
+            {
+                dataDetectorAction(data);
+            }            
+
+            if (detectOnImageActions.TryGetValue(requestCode, out var detectOnImageAction))
+            {
+                detectOnImageAction(data);
+            }            
         }
 
         private void OnButtonClick(object sender, EventArgs e)
@@ -325,18 +161,6 @@ namespace ReadyToUseUI.Droid
             }
 
             return scanbotSDK.LicenseInfo.IsValid;
-        }
-
-        private void LaunchImagePicker(int activityRequestCode)
-        {
-                var intent = new Intent();
-                intent.SetType("image/*");
-                intent.SetAction(Intent.ActionGetContent);
-                intent.PutExtra(Intent.ExtraLocalOnly, false);
-                intent.PutExtra(Intent.ExtraAllowMultiple, false);
-
-                var chooser = Intent.CreateChooser(intent, Texts.share_title);
-                StartActivityForResult(chooser, activityRequestCode);
         }
     }
 }
