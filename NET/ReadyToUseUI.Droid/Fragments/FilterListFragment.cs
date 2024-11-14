@@ -2,7 +2,7 @@ using Android.Content;
 using Android.Graphics;
 using Android.Views;
 using Google.Android.Material.BottomSheet;
-using IO.Scanbot.Imagefilters;
+using IO.Scanbot.Sdk.Imagefilters;
 using IO.Scanbot.Sdk.Process;
 using ReadyToUseUI.Droid.Listeners;
 using ReadyToUseUI.Droid.Model;

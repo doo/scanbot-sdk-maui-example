@@ -1,6 +1,5 @@
 ﻿using Android.Runtime;
 using Android.Util;
-using IO.Scanbot.Sdk.Persistence.Fileio;
 
 namespace ReadyToUseUI.Droid
 {
@@ -40,17 +39,7 @@ namespace ReadyToUseUI.Droid
             Log.Debug(LOG_TAG, "Initializing Scanbot SDK...");
             var initializer = new IO.Scanbot.Sdk.ScanbotSDKInitializer();
 
-            initializer.WithLogging(useLog: true, enableNativeLogging: false);
-            initializer.SdkFilesDirectory(app, PageStoragePathForExample(app));
-            initializer.License(app, LicenseKey);
-
-            initializer.UsePageStorageSettings(new IO.Scanbot.Sdk.Persistence.PageStorageSettings.Builder()
-                                               .ImageQuality(80)
-                                               .ImageFormat(IO.Scanbot.Sdk.Persistence.CameraImageFormat.Jpg)
-                                               .PreviewTargetMax(1500) // max size for the preview images
-                                               .Build());
-            initializer.OcrBlobsPath(app, "SBSDKLanguageData");
-            initializer.PrepareOCRLanguagesBlobs(true);
+          
 
             // You can enable encryption by uncommenting the following lines:
             //initializer.UseFileEncryption(enableFileEncryption: USE_ENCRYPTION, new AESEncryptedFileIOProcessor(

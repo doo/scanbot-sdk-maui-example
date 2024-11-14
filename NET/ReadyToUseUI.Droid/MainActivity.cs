@@ -3,11 +3,10 @@ using ReadyToUseUI.Droid.Fragments;
 using Android.Graphics;
 using Android.Content;
 using Android.Runtime;
-using IO.Scanbot.Sdk.Persistence;
+using IO.Scanbot.Sdk.Persistence.Page.Legacy;
 using ReadyToUseUI.Droid.Activities;
 using ReadyToUseUI.Droid.Utils;
 using IO.Scanbot.Sdk.Process;
-using IO.Scanbot.Sdk.Barcode.Entity;
 using IO.Scanbot.Ehicscanner.Model;
 using IO.Scanbot.Sdk.Core.Contourdetector;
 using IO.Scanbot.Genericdocument.Entity;
@@ -18,24 +17,18 @@ using DocumentSDK.NET.Model;
 using IO.Scanbot.Mrzscanner.Model;
 using IO.Scanbot.Sdk.UI.View.Generictext.Entity;
 using IO.Scanbot.Sdk.Mcrecognizer.Entity;
-using IO.Scanbot.Sdk.Ui_v2.Barcode.Common.Mappers;
 using IO.Scanbot.Sdk.Vin;
-using IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration;
 using IO.Scanbot.Sdk.UI.View.Licenseplate.Entity;
+using Page = IO.Scanbot.Sdk.Persistence.Page.Legacy.Page;
 
 namespace ReadyToUseUI.Droid
 {
     [Activity(Label = "NET RTU UI", MainLauncher = true, Icon = "@mipmap/icon")]
-    public partial class MainActivity : AndroidX.AppCompat.App.AppCompatActivity, IBarcodeItemMapper
+    public partial class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
     {
-        private const int BARCODE_DEFAULT_UI_REQUEST_CODE_V2 = 911;
-
         private const int SCAN_DOCUMENT_REQUEST_CODE = 1000;
 
         private const int IMPORT_IMAGE_REQUEST = 2001;
-        private const int IMPORT_BARCODE_REQUEST = 2002;
-
-        private const int QR_BARCODE_DEFAULT_REQUEST = 3001;
 
         private const int SCAN_MRZ_REQUEST = 4001;
         private const int GENERIC_DOCUMENT_REQUEST = 4002;
@@ -51,7 +44,7 @@ namespace ReadyToUseUI.Droid
         private ProgressBar progress;
 
         private IO.Scanbot.Sdk.ScanbotSDK scanbotSDK;
-        private PageFileStorage pageStorage;
+        private PageFileStorage pageFileStorage;
         private TextView licenseIndicator;
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -62,51 +55,21 @@ namespace ReadyToUseUI.Droid
             SetContentView(Resource.Layout.activity_main);
 
             scanbotSDK = new IO.Scanbot.Sdk.ScanbotSDK(this);
-            pageStorage = scanbotSDK.CreatePageFileStorage();
+            pageFileStorage = scanbotSDK.CreatePageFileStorage();
 
             var container = (LinearLayout)FindViewById(Resource.Id.container);
             var title = container.FindViewById<TextView>(Resource.Id.textView);
             title.Text = Texts.scanbot_sdk_demo;
-
-            var barcodeDetectors = (LinearLayout)container.FindViewById(Resource.Id.barcode_data_scanner);
-            var barcodeDetectorsTitle = (TextView)barcodeDetectors.FindViewById(Resource.Id.textView);
-            var barcodeScannerTitle = "Barcode Scanner";
-            
-#if LEGACY_EXAMPLES
-            barcodeDetectorsTitle.Text = barcodeScannerTitle + " V1";
-            barcodeDetectors.AddChildren(buttons, new[]
-            {
-                new ListItemButton(this, "Scan Barcodes", ScanBarcode),
-                new ListItemButton(this, "Scan Batch Barcodes", ScanBarcodesInBatch)
-            });
-            barcodeScannerTitle += " V2";
-#else
-            barcodeDetectorsTitle.Visibility = ViewStates.Gone;
-            barcodeDetectors.Visibility = ViewStates.Gone;
-#endif
-
-            var barcodeDetectorV2 = (LinearLayout)container.FindViewById(Resource.Id.barcode_data_scanner_v2);
-            var barcodeDetectorV2Title = (TextView)barcodeDetectorV2.FindViewById(Resource.Id.textView);
-            barcodeDetectorV2Title.Text = barcodeScannerTitle;
-            barcodeDetectorV2.AddChildren(buttons, new[]
-            {
-                new ListItemButton(this, "Single Barcode Scanning", SingleScanning),
-                new ListItemButton(this, "Single Barcode Scanning - AR Overlay", SingleScanningWithArOverlay),
-                new ListItemButton(this, "Batch Barcode Scanning", BatchBarcodeScanning),
-                new ListItemButton(this, "Multiple Unique Barcode Scanning", MultipleUniqueBarcodeScanning),
-                new ListItemButton(this, "Find and Pick Barcode Scanning", FindAndPickScanning),
-                new ListItemButton(this, "Import and Detect Barcodes", ImportAndDetectBarcode),
-            });
-
+          
             var scanner = (LinearLayout)container.FindViewById(Resource.Id.document_scanner);
             var scannerTitle = (TextView)scanner.FindViewById(Resource.Id.textView);
             scannerTitle.Text = "Document Scanner";
             scanner.AddChildren(buttons, new[]
             {
-                new ListItemButton(this, "Scan Document", ScanDocument),
-                new ListItemButton(this, "Scan Document with Finder", ScanDocumentWithFinder),
-                new ListItemButton(this, "Import Image", ImportImage),
-                new ListItemButton(this, "View Images", ViewImages)
+                new ListItemButton(this, "Single Document Scanning", SingleDocumentScanning),
+                new ListItemButton(this, "Single Finder Document Scanning", SingleFinderDocumentScanning),
+                new ListItemButton(this, "Multiple Document Scanning", MultipleDocumentScanning),
+                new ListItemButton(this, "Import Image", ImportImage)
             });
 
             var detectors = (LinearLayout)container.FindViewById(Resource.Id.data_detectors);
@@ -158,19 +121,10 @@ namespace ReadyToUseUI.Droid
             {
                 case SCAN_DOCUMENT_REQUEST_CODE:
                 {
-                    var parcelable = data.GetParcelableArrayExtra(RtuConstants.ExtraKeyRtuResult);
-                    StartActivity(new Intent(this, typeof(PagePreviewActivity)));
-                    return;
-                }
-                case IMPORT_BARCODE_REQUEST:
-                {
-                    var bitmap = Utils.ImageUtils.ProcessGalleryResult(this, data);
-                    var detector = scanbotSDK.CreateBarcodeDetector();
-                    var result = detector.DetectFromBitmap(bitmap, 0);
-
-                    var fragment = BarcodeDialogFragment.CreateInstance(result);
-                    fragment.Show(FragmentManager);
-                    return;
+                        var documentId = data?.GetStringExtra(IO.Scanbot.Sdk.Ui_v2.Common.Activity.ActivityConstants.ExtraKeyRtuResult) as string;
+                        var intent = PagePreviewActivity.CreateIntent(this, documentId);
+                        StartActivity(intent);
+                        return;
                 }
                 case IMPORT_IMAGE_REQUEST:
                 {
@@ -180,8 +134,8 @@ namespace ReadyToUseUI.Droid
 
                     var result = ImageUtils.ProcessGalleryResult(this, data);
 
-                    var pageId = pageStorage.Add(result);
-                    var page = new Page(pageId, new List<PointF>(), DetectionStatus.Ok, ImageFilterType.None);
+                    var pageId = pageFileStorage.Add(result);
+                    var page = new Page(pageId, new List<PointF>(), DocumentDetectionStatus.Ok, ImageFilterType.None);
                     page = scanbotSDK.CreatePageProcessor().DetectDocument(page);
 
                     progress.Visibility = ViewStates.Gone;
@@ -189,30 +143,7 @@ namespace ReadyToUseUI.Droid
                     StartActivity(new Intent(this, typeof(PagePreviewActivity)));
                     return;
                 }
-                case QR_BARCODE_DEFAULT_REQUEST:
-                {
-                    var result = (BarcodeScanningResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
-                    var fragment = BarcodeDialogFragment.CreateInstance(result);
-                    fragment.Show(FragmentManager);
-                    return;
-                }
-                case BARCODE_DEFAULT_UI_REQUEST_CODE_V2:
-                {
-                    if (data?.GetParcelableExtra(IO.Scanbot.Sdk.Ui_v2.Common.Activity.ActivityConstants.ExtraKeyRtuResult) is BarcodeScannerResult barcodeV2)
-                    {
-                        var imagePath = data.GetStringExtra(
-                            IO.Scanbot.Sdk.Ui_v2.Barcode.BarcodeScannerActivity.ScannedBarcodeImagePathExtra);
-                        var previewPath = data.GetStringExtra(
-                            IO.Scanbot.Sdk.Ui_v2.Barcode.BarcodeScannerActivity.ScannedBarcodePreviewFramePathExtra);
-
-                        var intent = new Intent(this, typeof(Activities.V2.BarcodeResultActivity));
-                        var bundle = new BaseBarcodeResult<BarcodeScannerResult>(barcodeV2, imagePath, previewPath).ToBundle();
-                        intent.PutExtra("BarcodeResult", bundle);
-
-                        StartActivity(intent);
-                    }
-                    return;
-                }
+                
                 case SCAN_MRZ_REQUEST:
                 {
                     var result = (MRZGenericDocument)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
@@ -291,9 +222,9 @@ namespace ReadyToUseUI.Droid
                 {
                     var resultWrapper = (ResultWrapper)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
                     var resultRepository = scanbotSDK.ResultRepositoryForClass(resultWrapper.Clazz);
-                    var checkResult = (MedicalCertificateRecognizerResult)resultRepository.GetResultAndErase(resultWrapper.ResultId);
+                    var result = (MedicalCertificateRecognizerResult)resultRepository.GetResultAndErase(resultWrapper.ResultId);
 
-                    var fragment = MedicalCertificateResultDialogFragment.CreateInstance(checkResult);
+                    var fragment = MedicalCertificateResultDialogFragment.CreateInstance(result);
                     fragment.Show(FragmentManager, MedicalCertificateResultDialogFragment.NAME);
                     return;
                 }
@@ -353,14 +284,6 @@ namespace ReadyToUseUI.Droid
             }
 
             return scanbotSDK.LicenseInfo.IsValid;
-        }
-        
-        public void MapBarcodeItem(IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration.BarcodeItem barcodeItem, IBarcodeMappingResult result)
-        {
-            result.OnResult(new BarcodeMappedData(
-                title: barcodeItem.TextWithExtension,
-                subtitle: barcodeItem.Type.Name(),
-                barcodeImage: BarcodeMappedDataExtension.BarcodeFormatKey));
         }
     }
 }
