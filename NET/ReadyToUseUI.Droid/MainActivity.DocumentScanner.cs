@@ -29,7 +29,7 @@ public partial class MainActivity
         configuration.Screens.Camera.CameraConfiguration.RequiredAspectRatios = new[]
         {
                 new AspectRatio(21.0, 29.7) // allow only A4 format documents to be scanned
-            };
+        };
 
         var intent = DocumentScannerActivity.NewIntent(this, configuration);
         StartActivityForResult(intent, SCAN_DOCUMENT_REQUEST_CODE);

@@ -3,28 +3,27 @@ Open Source libraries used in the Scanbot SDK for .NET and MAUI version 6.1.0:
 ------------------------------------------------------------------------------
 .NET for Android (formerly Xamarin.Android) bindings for Square.OkHttp3: 
 .NET for Android (formerly Xamarin.Android) bindings for AndroidX library 'androidx.activity:activity-compose'.: 
-.NET for Android (formerly Xamarin.Android) bindings for AndroidX library 'androidx.activity:activity-ktx'.: 
+.NET for Android (formerly Xamarin.Android) bindings for AndroidX library 'androidx.appcompat:appcompat'.: 
 Xamarin.Android bindings for AndroidX - camera-camera2: 
+Xamarin.Android bindings for AndroidX - camera-extensions: 
 Xamarin.Android bindings for AndroidX - camera-view: 
 .NET for Android (formerly Xamarin.Android) bindings for AndroidX library 'androidx.collection:collection-ktx'.: 
-.NET for Android (formerly Xamarin.Android) bindings for AndroidX - foundation-layout: 
 .NET for Android (formerly Xamarin.Android) bindings for AndroidX - material: 
-.NET for Android (formerly Xamarin.Android) bindings for AndroidX - ui: 
-.NET for Android (formerly Xamarin.Android) bindings for AndroidX - ui-geometry: 
-.NET for Android (formerly Xamarin.Android) bindings for AndroidX - ui-graphics: 
-.NET for Android (formerly Xamarin.Android) bindings for AndroidX - ui-text: 
-.NET for Android (formerly Xamarin.Android) bindings for AndroidX - ui-unit: 
-.NET for Android (formerly Xamarin.Android) bindings for AndroidX - ui-util: 
+.NET for Android (formerly Xamarin.Android) bindings for AndroidX - material3: 
 .NET for Android (formerly Xamarin.Android) bindings for AndroidX - ui-viewbinding: 
+Xamarin.Android bindings for AndroidX - constraintlayout-core: 
 Xamarin.Android bindings for AndroidX - legacy-support-v4: 
-Xamarin.Android bindings for AndroidX - lifecycle-extensions: 
+.NET for Android (formerly Xamarin.Android) bindings for AndroidX library 'androidx.lifecycle:lifecycle-common'.: 
+.NET for Android (formerly Xamarin.Android) bindings for AndroidX library 'androidx.lifecycle:lifecycle-livedata-core-ktx'.: 
+.NET for Android (formerly Xamarin.Android) bindings for AndroidX library 'androidx.lifecycle:lifecycle-runtime'.: 
+.NET for Android (formerly Xamarin.Android) bindings for AndroidX library 'androidx.lifecycle:lifecycle-runtime-ktx'.: 
 .NET for Android (formerly Xamarin.Android) bindings for AndroidX library 'androidx.lifecycle:lifecycle-viewmodel-compose'.: 
+.NET for Android (formerly Xamarin.Android) bindings for AndroidX library 'androidx.navigation:navigation-compose'.: 
 .NET for Android (formerly Xamarin.Android) bindings for AndroidX library 'androidx.preference:preference'.: 
 Xamarin.Android bindings for AndroidX - security-crypto: 
 .NET for Android (formerly Xamarin.Android) binding for Google.Accompanist.AppCompat.Theme: 
 .NET for Android (formerly Xamarin.Android) binding for Google.Accompanist.DrawablePainter: 
 .NET for Android (formerly Xamarin.Android) binding for Google.Accompanist.FlowLayout: 
-.NET for Android (formerly Xamarin.Android) binding for Google.Accompanist.Pager: 
 .NET for Android (formerly Xamarin.Android) binding for Google.Accompanist.Pager.Indicators: 
 .NET for Android (formerly Xamarin.Android) binding for Google.Accompanist.Permissions: 
 .NET for Android (formerly Xamarin.Android) binding for Google.Accompanist.Placeholder: 
@@ -2963,6 +2962,9 @@ Version 1.1.0
    limitations under the License.
 
 
+
+
+
 ------------------------------------------------------------------------------
 
 Open Source libraries used in ScanbotSDK for iOS version 6.1.0:
@@ -5711,3 +5713,4 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
