@@ -62,7 +62,7 @@ To build the Android example project for both net7.0-android and net8.0-android,
 
 To run the project on a real device, specify a target framework with `-f net8.0-android` and the Run target via `-t:Run`, yielding the following:
 
-```dotnet build NET/ReadyToUseUI.Droid -f net8.0-android -t:Run --force --no-incremental ```
+```dotnet build NET/ReadyToUseUI.Droid -f net8.0-android -t:Run --force --no-incremental```
 
 The Classic Component has its own project. Run it with:
 
