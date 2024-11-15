@@ -1,4 +1,5 @@
 using Android.Content;
+using DocumentSDK.NET.Model;
 using ReadyToUseUI.Droid.Fragments;
 using ReadyToUseUI.Droid.Utils;
 
@@ -6,6 +7,27 @@ namespace ReadyToUseUI.Droid;
 
 public partial class MainActivity
 {
+    private Dictionary<int, Action<Intent>> detectOnImageActions => new Dictionary<int, Action<Intent>>
+    {
+        { DETECT_MRZ_FROM_IMAGE, DetectMrzFromImage },
+        { DETECT_EHIC_FROM_IMAGE, DetectEHICFromImage },
+        { DETECT_CHECK_FROM_IMAGE, DetectCheckFromImage },
+        { DETECT_MEDICAL_CERTIFICATE_FROM_IMAGE, DetectMedicalCertificateFromImage },
+        { DETECT_GDR_FROM_IMAGE, DetectGenericDocumentFromImage },
+    };
+
+    private void LaunchImagePicker(int activityRequestCode)
+    {
+        var intent = new Intent();
+        intent.SetType("image/*");
+        intent.SetAction(Intent.ActionGetContent);
+        intent.PutExtra(Intent.ExtraLocalOnly, false);
+        intent.PutExtra(Intent.ExtraAllowMultiple, false);
+
+        var chooser = Intent.CreateChooser(intent, Texts.share_title);
+        StartActivityForResult(chooser, activityRequestCode);
+    }
+
     private void DetectMrzFromImage(Intent data)
     {
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
@@ -13,11 +35,11 @@ public partial class MainActivity
         var result = recognizer.RecognizeMRZBitmap(bitmap, 0);
 
         if (result?.Document == null) return;
-        
+
         var fragment = MRZDialogFragment.CreateInstance(result);
         fragment.Show(FragmentManager, MRZDialogFragment.NAME);
     }
-    
+
     private void DetectCheckFromImage(Intent data)
     {
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
@@ -54,7 +76,7 @@ public partial class MainActivity
             returnCroppedDocument: true,
             recognizePatientInfo: true,
             recognizeBarcode: true);
-        
+
         if (result == null) return;
 
         var fragment = MedicalCertificateResultDialogFragment.CreateInstance(result);
@@ -66,7 +88,7 @@ public partial class MainActivity
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
         var recognizer = scanbotSDK.CreateHealthInsuranceCardScanner();
         var result = recognizer.RecognizeBitmap(bitmap, 0);
-       
+
         if (result == null) return;
 
         var fragment = HealthInsuranceCardFragment.CreateInstance(result);
@@ -78,7 +100,7 @@ public partial class MainActivity
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
         var recognizer = scanbotSDK.CreateGenericDocumentRecognizer();
         var result = recognizer.ScanBitmap(bitmap, true, 0);
-        
+
         if (result?.Document == null) return;
 
         var description = string.Join(";\n", result.Document.Fields

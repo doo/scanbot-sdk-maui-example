@@ -146,7 +146,7 @@ public partial class MainViewController
 
     private void DidCompleteDocumentScanning(SBSDKScannedDocument scannedDocument)
     {
-        if (scannedDocument?.Pages == null && scannedDocument.Pages.Length == 0)
+        if (scannedDocument?.Pages == null || scannedDocument.Pages.Length == 0)
         {
             return;
         }
