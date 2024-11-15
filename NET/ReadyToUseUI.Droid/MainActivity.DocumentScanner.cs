@@ -1,65 +1,117 @@
 using Android.Content;
-using DocumentSDK.NET.Model;
-using IO.Scanbot.Sdk.UI.View.Base.Configuration;
-using IO.Scanbot.Sdk.UI.View.Camera;
-using IO.Scanbot.Sdk.UI.View.Camera.Configuration;
+using Android.Views;
+using IO.Scanbot.Sdk.Ui_v2.Common;
+using IO.Scanbot.Sdk.Ui_v2.Document.Configuration;
+using DocumentScannerActivity = IO.Scanbot.Sdk.Ui_v2.Document.DocumentScannerActivity;
 using ReadyToUseUI.Droid.Activities;
+using ReadyToUseUI.Droid.Utils;
+using DocumentSDK.NET.Model;
 
 namespace ReadyToUseUI.Droid;
 
 public partial class MainActivity
 {
-        private void ScanDocument()
+    private Dictionary<int, Action<Intent>> documentScannerActions => new Dictionary<int, Action<Intent>>
+    {
+        { SCAN_DOCUMENT_REQUEST_CODE, HandleDocumentScannerResult },
+        { IMPORT_IMAGE_REQUEST, HandleImageImport },
+    };
+
+    private void SingleDocumentScanning()
+    {
+        if (!CheckLicense())
         {
-            var configuration = new DocumentScannerConfiguration();
-
-            configuration.SetCameraPreviewMode(IO.Scanbot.Sdk.Camera.CameraPreviewMode.FitIn);
-            configuration.SetIgnoreBadAspectRatio(true);
-            configuration.SetMultiPageEnabled(true);
-            configuration.SetPageCounterButtonTitle("%d Page(s)");
-            configuration.SetTextHintOK("Don't move.\nScanning document...");
-
-            // further configuration properties
-            //configuration.SetBottomBarBackgroundColor(Color.Blue);
-            //configuration.SetBottomBarButtonsColor(Color.White);
-            //configuration.SetFlashButtonHidden(true);
-            // and so on...
-
-            var intent = DocumentScannerActivity.NewIntent(this, configuration);
-            StartActivityForResult(intent, SCAN_DOCUMENT_REQUEST_CODE);
+            return;
         }
 
-        private void ScanDocumentWithFinder()
+        var configuration = new DocumentScanningFlow();
+        configuration.OutputSettings.PagesScanLimit = 1;
+        configuration.Screens.Camera.CameraConfiguration.RequiredAspectRatios = new[]
         {
-            var configuration = new FinderDocumentScannerConfiguration();
+                new AspectRatio(21.0, 29.7) // allow only A4 format documents to be scanned
+        };
 
-            configuration.SetCameraPreviewMode(IO.Scanbot.Sdk.Camera.CameraPreviewMode.FitIn);
-            configuration.SetIgnoreBadAspectRatio(true);
-            configuration.SetTextHintOK("Don't move.\nScanning document...");
-            configuration.SetOrientationLockMode(CameraOrientationMode.Portrait);
-            configuration.SetFinderAspectRatio(new IO.Scanbot.Sdk.AspectRatio(21.0, 29.7)); // a4 portrait
+        var intent = DocumentScannerActivity.NewIntent(this, configuration);
+        StartActivityForResult(intent, SCAN_DOCUMENT_REQUEST_CODE);
+    }
 
-            // further configuration properties
-            //configuration.SetFinderLineColor(Color.Red);
-            //configuration.SetTopBarBackgroundColor(Color.Blue);
-            //configuration.SetFlashButtonHidden(true);
-            // and so on...
-
-            var intent = FinderDocumentScannerActivity.NewIntent(this, configuration);
-            StartActivityForResult(intent, SCAN_DOCUMENT_REQUEST_CODE);
+    private void SingleFinderDocumentScanning()
+    {
+        if (!CheckLicense())
+        {
+            return;
         }
 
-        private void ImportImage()
-        {
-            var intent = new Intent();
-            intent.SetType("image/*");
-            intent.SetAction(Intent.ActionGetContent);
-            intent.PutExtra(Intent.ExtraLocalOnly, false);
-            intent.PutExtra(Intent.ExtraAllowMultiple, false);
+        // allow only A4 format documents to be scanned
+        var aspectRatio = new AspectRatio(21.0, 29.7);
 
-            var chooser = Intent.CreateChooser(intent, Texts.share_title);
-            StartActivityForResult(chooser, IMPORT_IMAGE_REQUEST);
+        var configuration = new DocumentScanningFlow();
+        configuration.Screens.Camera.CameraConfiguration.AcceptedSizeScore = 0.75;
+        configuration.Screens.Camera.CameraConfiguration.RequiredAspectRatios = new[] { aspectRatio };
+        configuration.Screens.Camera.ViewFinder.Visible = true;
+        configuration.Screens.Camera.ViewFinder.AspectRatio = aspectRatio;
+
+        var intent = DocumentScannerActivity.NewIntent(this, configuration);
+        StartActivityForResult(intent, SCAN_DOCUMENT_REQUEST_CODE);
+    }
+
+    private void MultipleDocumentScanning()
+    {
+        if (!CheckLicense())
+        {
+            return;
         }
 
-        private void ViewImages() => StartActivity(new Intent(this, typeof(PagePreviewActivity)));
+        var configuration = new DocumentScanningFlow();
+        configuration.OutputSettings.PagesScanLimit = 1;
+        configuration.Screens.Camera.BottomBar.ShutterButton.InnerColor = new ScanbotColor(Android.Graphics.Color.Red);
+
+        var intent = DocumentScannerActivity.NewIntent(this, configuration);
+        StartActivityForResult(intent, SCAN_DOCUMENT_REQUEST_CODE);
+    }
+
+    private void HandleDocumentScannerResult(Intent data)
+    {
+        var documentId = data?.GetStringExtra(IO.Scanbot.Sdk.Ui_v2.Common.Activity.ActivityConstants.ExtraKeyRtuResult) as string;
+        var intent = PagePreviewActivity.CreateIntent(this, documentId);
+        StartActivity(intent);
+    }
+
+    private void ImportImage()
+    {
+        var intent = new Intent();
+        intent.SetType("image/*");
+        intent.SetAction(Intent.ActionGetContent);
+        intent.PutExtra(Intent.ExtraLocalOnly, false);
+        intent.PutExtra(Intent.ExtraAllowMultiple, false);
+
+        var chooser = Intent.CreateChooser(intent, Texts.share_title);
+        StartActivityForResult(chooser, IMPORT_IMAGE_REQUEST);
+    }
+
+    private void HandleImageImport(Intent data)
+    {
+        progress.Visibility = ViewStates.Visible;
+
+        Alert.Toast(this, Texts.importing_and_processing);
+
+        var bitmap = ImageUtils.ProcessGalleryResult(this, data);
+
+        var detector = scanbotSDK.CreateContourDetector();
+        var detectionResult = detector.Detect(bitmap);
+
+        var defaultDocumentSizeLimit = 0;
+        var document = scanbotSDK.DocumentApi.CreateDocument(defaultDocumentSizeLimit);
+        document.AddPage(bitmap);
+
+        if (detectionResult != null)
+        {
+            document.PageAtIndex(0).Polygon = detectionResult.PolygonF;
+        }
+
+        progress.Visibility = ViewStates.Gone;
+
+        var intent = PagePreviewActivity.CreateIntent(this, document.Uuid);
+        StartActivity(intent);
+    }
 }

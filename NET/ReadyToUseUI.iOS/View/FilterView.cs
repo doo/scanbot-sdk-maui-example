@@ -1,5 +1,4 @@
 ﻿using ReadyToUseUI.iOS.Models;
-using ScanbotSDK.iOS;
 
 namespace ReadyToUseUI.iOS.View
 {

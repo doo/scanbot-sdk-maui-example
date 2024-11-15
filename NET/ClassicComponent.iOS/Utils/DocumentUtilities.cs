@@ -33,11 +33,17 @@ internal class DocumentUtilities
                                                 dpi: defaultConfig.Dpi,
                                                 pageFitMode:defaultConfig.PageFitMode,
                                                 resample: defaultConfig.Resample,
-                                                jpegQuality:defaultConfig.JpegQuality);
+                                                jpegQuality:defaultConfig.JpegQuality, 
+                                                pdfAttributes:  new SBSDKPDFAttributes(
+                                                                    author: "Your author",
+                                                                    creator: "Your creator",
+                                                                    title: "Your title",
+                                                                    subject: "Your subject",
+                                                                    keywords: ["PDF", "Scanbot", "SDK"]));
 
         // Create the PDF renderer and pass the PDF options to it.
-        var renderer = new SBSDKPDFRenderer(options);
-        renderer.RenderImageStorage(tempImageStorage, indexSet: null, encrypter: ScanbotUI.DefaultImageStoreEncrypter, output: outputPdfUrl,
+        var renderer = new SBSDKPDFRenderer(options, encrypter: ScanbotUI.DefaultPDFEncrypter);
+        renderer.RenderImageStorage(tempImageStorage, indexSet: null, output: outputPdfUrl,
             completion: (isComplete, error) =>
             {
                 if (error != null)

@@ -69,7 +69,6 @@ namespace ClassicComponent.iOS
                 new SDKService { Title = SDKServiceTitle.CreatePDF, ServiceAction = CreatePDF },
                 new SDKService { Title = SDKServiceTitle.PerformOCR, ServiceAction = PerformOCR },
                 new SDKService { Title = SDKServiceTitle.CheckRecognizer, ServiceAction = () => NavigationController.PushViewController(new CheckRecognizerDemoViewController(), true)},
-                new SDKService { Title = SDKServiceTitle.BarcodeScanAndCount, ServiceAction = LaunchBarcodeScanAndCount },
                 new SDKService { Title = SDKServiceTitle.VINScanner, ServiceAction = LaunchVINScanner },
             };
         }
@@ -152,12 +151,6 @@ namespace ClassicComponent.iOS
             SDKServices[index].ServiceAction?.Invoke();
         }
 
-        private void LaunchBarcodeScanAndCount()
-        {
-            var viewController = Utilities.GetViewController<BarcodeScanAndCountViewController>(Texts.ClassicComponentStoryboard);
-            NavigationController.PushViewController(viewController, true);
-        }
-
         private void LaunchVINScanner()
         {
             var viewController = Utilities.GetViewController<VINScannerViewController>(Texts.ClassicComponentStoryboard);
@@ -219,7 +212,7 @@ namespace ClassicComponent.iOS
                 });
 
                 if (detectionResult.Status == SBSDKDocumentDetectionStatus.Ok ||
-                    detectionResult.Status == SBSDKDocumentDetectionStatus.Ok_SmallSize)
+                    detectionResult.Status == SBSDKDocumentDetectionStatus.OkButTooSmall)
                 {
                     var documentImage = originalImage;
 
