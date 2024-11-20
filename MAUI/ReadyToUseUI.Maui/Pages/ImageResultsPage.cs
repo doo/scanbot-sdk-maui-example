@@ -145,11 +145,8 @@ namespace ReadyToUseUI.Maui.Pages
         {
             if (!SDKUtils.CheckLicense(this)) { return; }
 
-            var documentSources = scannedPages
-                .Where(p => p.Document != null)
-                .Select(p => p.Document)
-                .ToList();
-
+            var documentSources = scannedPages.Select(p => p.DocumentFileImageSource).ToList();
+            
             if (documentSources.Count == 0)
             {
                 ViewUtils.Alert(this, "Oops!", "Please import or scan a document first");
@@ -195,9 +192,9 @@ namespace ReadyToUseUI.Maui.Pages
             }            
         }
 
-        private async Task GeneratePdfAsync(List<ImageSource> documentSources)
+        private async Task GeneratePdfAsync(List<FileImageSource> documentSources)
         {
-            var fileUri = await SBSDK.SDKService.CreatePdfAsync(documentSources.OfType<FileImageSource>(),
+            var fileUri = await SBSDK.SDKService.CreatePdfAsync(documentSources,
                         configuration: new PDFConfiguration
                         {
                             PageOrientation = PDFPageOrientation.Auto,
@@ -218,7 +215,7 @@ namespace ReadyToUseUI.Maui.Pages
             ViewUtils.Alert(this, "Success: ", "Wrote documents to: " + fileUri.AbsolutePath);
         }
 
-        private async Task PerformOcrAsync(List<ImageSource> documentSources)
+        private async Task PerformOcrAsync(List<FileImageSource> documentSources)
         {
             // NOTE:
             // The default OCR engine is 'OcrConfig.ScanbotOCR' which is ML based. This mode doesn't expect the Langauges array.
@@ -229,13 +226,13 @@ namespace ReadyToUseUI.Maui.Pages
             // Using the default OCR option
             var ocrConfig = OcrConfig.ScanbotOCR;
 
-            var result = await SBSDK.SDKService.PerformOcrAsync(documentSources.OfType<FileImageSource>(), configuration: ocrConfig);
+            var result = await SBSDK.SDKService.PerformOcrAsync(documentSources, configuration: ocrConfig);
 
             // You can access the results with: result.Pages
             ViewUtils.Alert(this, "OCR", result.Text);
         }
 
-        private async Task GenerateSandwichPdfAsync(List<ImageSource> documentSources)
+        private async Task GenerateSandwichPdfAsync(List<FileImageSource> documentSources)
         {
             // NOTE:
             // The default OCR engine is 'OcrConfig.ScanbotOCR' which is ML based. This mode doesn't expect the Langauges array.
@@ -247,7 +244,7 @@ namespace ReadyToUseUI.Maui.Pages
             var ocrConfig = OcrConfig.ScanbotOCR;
 
             var result = await SBSDK.SDKService.CreateSandwichPdfAsync(
-                documentSources.OfType<FileImageSource>(),
+                documentSources,
                 new PDFConfiguration
                 {  
                     PageOrientation = PDFPageOrientation.Auto,
@@ -269,10 +266,10 @@ namespace ReadyToUseUI.Maui.Pages
             ViewUtils.Alert(this, "PDF with OCR layer stored: ", result.AbsolutePath);
         }
 
-        private async Task GenerateTiffAsync(List<ImageSource> documentSources)
+        private async Task GenerateTiffAsync(List<FileImageSource> documentSources)
         {
             var fileUri = await SBSDK.SDKService.WriteTiffAsync(
-                                 documentSources.OfType<FileImageSource>(),
+                                 documentSources,
                                  new TiffOptions (ParametricFilter.ScanbotBinarization(OutputMode.Binary))
                                  {
                                      Compression = TiffCompressionOptions.CompressionCcittT6,
