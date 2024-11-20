@@ -1,9 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net8.0-ios</TargetFramework>
-        <!-- Comment out the above and add the below to run with .net7 -->
-        <!-- <TargetFramework>net7.0-ios</TargetFramework> -->
-        
         <OutputType>Exe</OutputType>
         <ImplicitUsings>enable</ImplicitUsings>
 
@@ -29,7 +26,7 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Scanbot.Xamarin.ImagePicker" Version="0.0.3-beta.1" />
-        <PackageReference Include="ScanbotSDK.NET" Version="6.1.0-rc1" />
+        <PackageReference Include="ScanbotSDK.NET" Version="6.1.0-rc.2" />
     </ItemGroup>
     <ItemGroup>
         <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\eng.traineddata" />
