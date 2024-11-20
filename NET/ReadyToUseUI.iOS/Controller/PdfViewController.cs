@@ -23,10 +23,7 @@ namespace ReadyToUseUI.iOS.Controller
 
             ContentView = new PdfContainerView(uri, ocr);
             View = ContentView;
-
             Title = uri.LastPathComponent;
-            
-            
         }
 
         public override void ViewDidAppear(bool animated)

@@ -17,12 +17,4 @@ namespace ReadyToUseUI.iOS.Models
             IsSection = filterSelected == null;
         }
     }
-
-    internal static class FilterExtension
-    {
-        internal static SBSDKLegacyFilter ToLegacyFilter(this SBSDKImageFilterType filter)
-        {
-            return new SBSDKLegacyFilter((int)filter);
-        }
-    }
 }

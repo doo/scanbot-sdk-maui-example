@@ -68,19 +68,14 @@ public partial class ScannedDocumentsViewController : UIViewController
     {
         var configuration = new SBSDKUI2CroppingConfiguration(documentUuid: _scannedDocument.Uuid, pageUuid: _scannedDocument.PageUuids.First());
 
-        // Set the colors
-        // e.g
-        configuration.Palette.SbColorPrimary = new SBSDKUI2Color(uiColor: Colors.ScanbotRed);
-        configuration.Palette.SbColorOnPrimary = new SBSDKUI2Color(uiColor: Colors.NearWhite);
-
-        // Configure the screen 
-        configuration.Cropping.TopBarTitle.Text = "Cropping Screen";
-        configuration.Cropping.BottomBar.ResetButton.Visible = true;
-        configuration.Cropping.BottomBar.RotateButton.Visible = true;
-        configuration.Cropping.BottomBar.DetectButton.Visible = true;
+        // e.g. configure various colors.
+        configuration.Appearance.TopBarBackgroundColor = new SBSDKUI2Color(UIColor.Red);
+        configuration.Cropping.TopBarConfirmButton.Foreground.Color = new SBSDKUI2Color(UIColor.White);
+        
+        // e.g. customize a UI element's text
+        configuration.Localization.CroppingTopBarCancelButtonTitle = "Cancel";
 
         SBSDKUI2CroppingViewController.PresentOn(this, configuration, completion: CroppingFinished);
-
     }
 
     private void CroppingFinished(SBSDKUI2CroppingResult result)

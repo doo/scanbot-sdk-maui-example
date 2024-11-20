@@ -535,42 +535,5 @@ namespace ClassicComponent.Droid
             });
             alert.Show();
         }
-
-
-        [Obsolete]
-        class ImageFilterDialog : DialogFragment
-        {
-            static List<string> ImageFilterItems = new List<string>();
-
-            static ImageFilterDialog()
-            {
-                foreach (var filter in ImageFilterType.Values())
-                {
-                    if (filter.ToString().ToLower() == "none") { continue; }
-                    ImageFilterItems.Add(filter.ToString());
-                }
-            }
-
-            Action<LegacyFilter> ApplyFilterAction;
-
-            internal ImageFilterDialog(Action<LegacyFilter> applyFilterAction)
-            {
-                ApplyFilterAction = applyFilterAction;
-            }
-
-            public override Dialog OnCreateDialog(Bundle savedInstanceState)
-            {
-                AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
-                builder.SetTitle("Pick an Image Filter");
-                builder.SetItems(ImageFilterItems.ToArray(), (sender, args) =>
-                {
-                    var filterName = ImageFilterItems[args.Which];
-                    var filter = ImageFilterType.Values().FirstOrDefault(f => f.ToString() == filterName);
-                    ApplyFilterAction?.Invoke(new LegacyFilter(filter.Code));
-                });
-
-                return builder.Create();
-            }
-        }
     }
 }

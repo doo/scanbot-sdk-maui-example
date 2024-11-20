@@ -20,9 +20,9 @@ public partial class ScannedDocumentsViewController : UIViewController
             return;
         }
 
-        var pdf = CreateButton(Texts.save_without_ocr, (action) =>  CreatePDFAsync(input, url));
-        var ocr = CreateButton(Texts.save_with_ocr, (action) =>  PerformOCRAndCreatePDFAsync(input, url));
-        var tiff = CreateButton(Texts.Tiff, (action) => WriteTIFF(input, url));
+        var pdf = CreateButton(Texts.save_without_ocr, (action) =>  CreatePdfAsync(input, url));
+        var ocr = CreateButton(Texts.save_with_ocr, (action) =>  PerformOcrAndCreatePdfAsync(input, url));
+        var tiff = CreateButton(Texts.Tiff, (action) => WriteTiff(input, url));
         var cancel = CreateButton("Cancel", delegate { }, UIAlertActionStyle.Cancel);
 
         alertController.AddAction(pdf);
@@ -40,11 +40,11 @@ public partial class ScannedDocumentsViewController : UIViewController
         PresentViewController(alertController, true, null);
     }
     
-	private void CreatePDFAsync(NSUrl[] inputUrls, NSUrl outputUrl)
+	private void CreatePdfAsync(NSUrl[] inputUrls, NSUrl outputUrl)
     {
         try
         {
-            var storage = DocumentUtilities.CreateStorage(inputUrls, ScanbotUI.DefaultImageStoreEncrypter);
+            var storage = CreateStorage(inputUrls, ScanbotUI.DefaultImageStoreEncrypter);
             var outputPdfUrl = new NSUrl(outputUrl.AbsoluteString + Guid.NewGuid() + ".pdf");
             
             // Create the PDF rendering options.
@@ -84,10 +84,10 @@ public partial class ScannedDocumentsViewController : UIViewController
         }
     }
 
-    private void PerformOCRAndCreatePDFAsync(NSUrl[] inputUrls, NSUrl outputUrl)
+    private void PerformOcrAndCreatePdfAsync(NSUrl[] inputUrls, NSUrl outputUrl)
     {
         var recognitionMode = SBSDKOpticalCharacterRecognitionMode.ScanbotOCR;
-        // This is the new OCR configuration with ML which doesn't require the langauges.
+        // This is the new OCR configuration with ML which doesn't require the languages.
         SBSDKOpticalCharacterRecognizerConfiguration ocrConfiguration =
                             SBSDKOpticalCharacterRecognizerConfiguration.ScanbotOCR;
 
@@ -101,7 +101,7 @@ public partial class ScannedDocumentsViewController : UIViewController
         try
         {
             var opticalCharacterRecognizer = new SBSDKOpticalCharacterRecognizer(ocrConfiguration);
-            var storage = DocumentUtilities.CreateStorage(inputUrls, ScanbotUI.DefaultImageStoreEncrypter);
+            var storage = CreateStorage(inputUrls, ScanbotUI.DefaultImageStoreEncrypter);
             opticalCharacterRecognizer.RecognizeOnImageStorage(storage,
             completion: (ocrResult, error) =>
             {
@@ -154,24 +154,39 @@ public partial class ScannedDocumentsViewController : UIViewController
         }
     }
 
-    private void WriteTIFF(NSUrl[] inputUrls, NSUrl outputUrl)
-        {
-            // Please note that some compression types are only compatible for 1-bit encoded images (binarized black & white images)!
-            var options = SBSDKTIFFImageWriterParameters.DefaultParametersForBinaryImages;
-            options.Binarize = true;
-            options.Compression = SBSDKTIFFImageWriterCompressionOptions.Ccitt_t4;
-            options.Dpi = 250;
+    private void WriteTiff(NSUrl[] inputUrls, NSUrl outputUrl)
+    {
+        // Please note that some compression types are only compatible for 1-bit encoded images (binarized black & white images)!
+        var options = SBSDKTIFFImageWriterParameters.DefaultParametersForBinaryImages;
+        options.Binarize = true;
+        options.Compression = SBSDKTIFFImageWriterCompressionOptions.Ccitt_t4;
+        options.Dpi = 250;
 
-            var (success, outputTiffUrl) = DocumentUtilities.CreateTIFF(options, inputUrls, outputUrl, ScanbotUI.DefaultImageStoreEncrypter);
-            if (success)
-            {
-                var title = "Write TIFF";
-                var body = "TIFF file saved to: " + outputTiffUrl;
-                Alert.Show(this, title, body);
-            }
-            else
-            {
-                ShowErrorAlert();
-            }
+        var outputTiffUrl = new NSUrl(outputUrl.AbsoluteString + Guid.NewGuid() + ".tiff");
+        var tiffWriter = new SBSDKTIFFImageWriter(parameters: options);
+        var success = tiffWriter.WriteTIFFFromToFile(inputUrls, 
+                                                        ScanbotUI.DefaultImageStoreEncrypter,
+                                                        outputTiffUrl);
+        if (success)
+        {
+            var title = "Write TIFF";
+            var body = "TIFF file saved to: " + outputTiffUrl;
+            Alert.Show(this, title, body);
         }
+        else
+        {
+            ShowErrorAlert();
+        }
+    }
+
+    private SBSDKIndexedImageStorage CreateStorage(NSUrl[] uris, SBSDKStorageCrypting encrypter)
+    {
+        var url = SBSDKStorageLocation.ApplicationSupportFolderURL;
+        var tmp = NSUrl.FromFilename(string.Format("{0}/{1}", url.Scheme == "file" ? url.Path : url.AbsoluteString,
+                            Guid.NewGuid()));
+        var location = new SBSDKStorageLocation(tmp);
+        var format = SBSDKImageFileFormat.Jpeg;
+
+        return new SBSDKIndexedImageStorage(location, format, encrypter, uris);
+    }
 }
