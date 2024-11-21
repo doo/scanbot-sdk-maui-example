@@ -17,10 +17,14 @@ using IO.Scanbot.Sdk.Imagefilters;
 using IO.Scanbot.Sdk.Tiff.Model;
 using ReadyToUseUI.Droid.Model;
 using IO.Scanbot.Sdk.Ocr;
+using IO.Scanbot.Sdk.Process.Model;
+using IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration;
+using IO.Scanbot.Sdk.Ui_v2.Common;
 using IO.Scanbot.Sdk.Ui_v2.Document;
 using IO.Scanbot.Sdk.Ui_v2.Document.Configuration;
 using Org.Json;
 using static IO.Scanbot.Sdk.Ocr.IOpticalCharacterRecognizer;
+using ImageProcessor = IO.Scanbot.Sdk.Core.Processor.ImageProcessor;
 
 namespace ReadyToUseUI.Droid.Activities
 {
@@ -110,7 +114,22 @@ namespace ReadyToUseUI.Droid.Activities
             crop.Click += delegate
             {
                 var pageId = scanbotSDK.DocumentApi.LoadDocument(documentId)?.PageAtIndex(0)?.Uuid;
-                var intent = CroppingActivity.NewIntent(this, CroppingActivityConfiguration.Init(documentId, pageId));
+                var configurations = CroppingActivityConfiguration.Init(documentId, pageId);
+                
+                configurations.Appearance.TopBarBackgroundColor = new ScanbotColor(Android.Graphics.Color.Red);
+                configurations.Cropping.TopBarConfirmButton.Foreground.Color = new ScanbotColor(Android.Graphics.Color.Red);
+                
+                // e.g. disable the rotation feature.
+                configurations.Cropping.BottomBar.RotateButton.Visible = false;
+
+                // e.g. configure various colors.
+                configurations.Appearance.TopBarBackgroundColor = new ScanbotColor(Color.Red);
+                configurations.Cropping.TopBarConfirmButton.Foreground.Color = new ScanbotColor(Color.White);
+
+                // e.g. customize a UI element's text.
+                configurations.Localization.CroppingTopBarCancelButtonTitle = "Cancel";
+                
+                var intent = CroppingActivity.NewIntent(this, configurations);
                 StartActivityForResult(intent, CAMERA_ACTIVITY);
             };
 
@@ -131,7 +150,6 @@ namespace ReadyToUseUI.Droid.Activities
             filter.Text = Texts.filter;
             filter.Click += delegate
             {
-                // var existing = SupportFragmentManager.FindFragmentByTag(FILTERS_MENU_TAG);
                 filterFragment.Show(SupportFragmentManager, FILTERS_MENU_TAG);
             };
 
@@ -140,7 +158,6 @@ namespace ReadyToUseUI.Droid.Activities
             export.Text = Texts.export;
             export.Click += delegate
             {
-                // var existing = SupportFragmentManager.FindFragmentByTag(SAVE_MENU_TAG);
                 saveFragment.Show(SupportFragmentManager, SAVE_MENU_TAG);
             };
         }
@@ -207,7 +224,7 @@ namespace ReadyToUseUI.Droid.Activities
                     output = GetOutputUri(".tiff");
                     // Please note that some compression types are only compatible for 1-bit encoded images (binarized black & white images)!
                     var options = new IO.Scanbot.Sdk.Tiff.Model.TIFFImageWriterParameters(
-                        new LegacyFilter(ImageFilterType.PureBinarized.Code),
+                        new ScanbotBinarizationFilter(),
                         250,
                         IO.Scanbot.Sdk.Tiff.Model.TIFFImageWriterCompressionOptions.CompressionCcittfax4,
                         Array.Empty<TIFFImageWriterUserDefinedField>());
@@ -217,7 +234,7 @@ namespace ReadyToUseUI.Droid.Activities
                 else if (type == SaveType.OCR)
                 {
                     // This is the new OCR configuration with ML which doesn't require the languages.
-                    var recognitionMode = IOpticalCharacterRecognizer.EngineMode.Tesseract;
+                    var recognitionMode = IOpticalCharacterRecognizer.EngineMode.ScanbotOcr;
                     var recognizer = scanbotSDK.CreateOcrRecognizer();
 
                     // to use legacy configuration we have to pass the installed languages.
@@ -233,12 +250,12 @@ namespace ReadyToUseUI.Droid.Activities
                             return;
                         }
 
-                        var ocrConfig = new OcrConfig(IOpticalCharacterRecognizer.EngineMode.Tesseract, recognizer.InstalledLanguages);
+                        var ocrConfig = new OcrConfig(recognitionMode, languages);
                         recognizer.SetOcrConfig(ocrConfig);
                     }
                     else
                     {
-                        recognizer.SetOcrConfig(new OcrConfig(IOpticalCharacterRecognizer.EngineMode.ScanbotOcr));
+                        recognizer.SetOcrConfig(new OcrConfig(recognitionMode));
                     }
 
                     var pdfAttributes = new PdfAttributes(

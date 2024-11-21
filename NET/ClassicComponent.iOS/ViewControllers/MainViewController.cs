@@ -15,7 +15,7 @@ namespace ClassicComponent.iOS
 
     interface IModifyDocumentControllerDelegate
     {
-        public void DidUpdateDocumentImage(SBSDKPolygon polygon = null, nint? rotation = null, SBSDKImageFilterType? filter = null);
+        public void DidUpdateDocumentImage(SBSDKPolygon polygon = null, nint? rotation = null, SBSDKParametricFilter? filter = null);
     }
 
     internal interface ICameraDemoViewControllerDelegate
@@ -234,7 +234,7 @@ namespace ClassicComponent.iOS
             }
         }
 
-        public void DidUpdateDocumentImage(SBSDKPolygon polygon = null, nint? rotation = null, SBSDKImageFilterType? filter = null)
+        public void DidUpdateDocumentImage(SBSDKPolygon polygon = null, nint? rotation = null, SBSDKParametricFilter? filter = null)
         {
             if (rotation != null)
             {
@@ -248,7 +248,7 @@ namespace ClassicComponent.iOS
 
             if (filter != null)
             {
-                imageParameters.Filter = filter.Value;
+                imageParameters.Filter = filter;
             }
 
             editedDocumentImage = Utilities.GetProcessedImage(ref originalDocumentImage, imageParameters);

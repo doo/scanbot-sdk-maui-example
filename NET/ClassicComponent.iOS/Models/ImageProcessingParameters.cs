@@ -8,7 +8,7 @@ namespace ClassicComponent.iOS.Models
 
 		public int Rotation { get; set; }
 
-		public SBSDKImageFilterType Filter { get; set; } = SBSDKImageFilterType.None;
+		public SBSDKParametricFilter Filter { get; set; } = new SBSDKParametricFilter();
 	}
 }
 
