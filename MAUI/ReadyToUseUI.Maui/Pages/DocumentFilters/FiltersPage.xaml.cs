@@ -9,8 +9,8 @@ namespace ReadyToUseUI.Maui.Pages;
 
 public partial class FiltersPage : ContentPage
 {
-    private Action<List<ParametricFilter>> FilterSelectionChanged;
-    internal void NavigateData(Action<List<ParametricFilter>> filterSelectionChanged)
+    private Action<ParametricFilter[]> FilterSelectionChanged;
+    internal void NavigateData(Action<ParametricFilter[]> filterSelectionChanged)
     {
         FilterSelectionChanged = filterSelectionChanged;
     }
@@ -186,7 +186,7 @@ public partial class FiltersPage : ContentPage
         if (selectedFilters.Count == 1 && selectedFilters.First().FilterTitle == FilterItemConstants.None)
         {
             // clear all filters
-            DidFinishFilterSelection(new List<ParametricFilter>());
+            DidFinishFilterSelection([]);
             return;
         }
 
@@ -210,10 +210,10 @@ public partial class FiltersPage : ContentPage
         // Note: If you wish to ignore the Legacy Filter uncoment below code 
         // list = list.Where(item => !item.IsLegacyFilter).ToList();
 
-        DidFinishFilterSelection(list);
+        DidFinishFilterSelection(list.ToArray());
     }
 
-    private void DidFinishFilterSelection(List<ParametricFilter> list)
+    private void DidFinishFilterSelection(ParametricFilter[] list)
     {
         FilterSelectionChanged?.Invoke(list);
         this.Navigation.PopAsync(true);

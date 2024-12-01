@@ -7,7 +7,6 @@ using ScanbotSDK.MAUI.EHIC;
 using ScanbotSDK.MAUI.GenericDocument;
 using ScanbotSDK.MAUI.MRZ;
 using BarcodeItem = ScanbotSDK.MAUI.Barcode.BarcodeItem;
-using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
 
 namespace ReadyToUseUI.Maui.Utils
 {
@@ -15,11 +14,11 @@ namespace ReadyToUseUI.Maui.Utils
     {
         public static bool CheckLicense(Page context)
         {
-            if (!SBSDK.SDKService.IsLicenseValid)
+            if (!ScanbotSDKMain.IsLicenseValid)
             {
                 ViewUtils.Alert(context, "Oops!", "License expired or invalid");
             }
-            return SBSDK.SDKService.IsLicenseValid;
+            return ScanbotSDKMain.IsLicenseValid;
         }
 
         public static string ParseBarcodes(List<BarcodeItem> barcodes)

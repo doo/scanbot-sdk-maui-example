@@ -1,6 +1,6 @@
 ﻿using ScanbotSDK.MAUI;
 using ReadyToUseUI.Maui.Utils;
-using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
+using SBSDK = ScanbotSDK.MAUI.ScanbotSDKMain;
 
 namespace ReadyToUseUI.Maui.Pages;
 
@@ -38,28 +38,16 @@ public partial class HomePage : ContentPage
     {
         sdkFeatures = new List<SdkFeature>
         {
-#if LEGACY_EXAMPLES
-            new SdkFeature("BARCODE DETECTOR V1"),
-            new SdkFeature("Scan QR & Barcodes", () => BarcodeScannerClicked(withImage: false)),
-            new SdkFeature("Scan QR & Barcodes With Image", () => BarcodeScannerClicked(withImage: true)),
-            new SdkFeature("Scan Multiple QR & Barcodes", BatchBarcodeScannerClicked),
-            new SdkFeature("BARCODE DETECTOR V2"),
-#else
-            new SdkFeature("BARCODE DETECTOR"),
-#endif
-            new SdkFeature("Single Scanning", SingleScanning),
-            new SdkFeature("Single Scanning Selection Overlay", SingleScanningWithArOverlay),
-            new SdkFeature("Batch Barcode Scanning", BatchBarcodeScanning),
-            new SdkFeature("Multiple Unique Barcode Scanning", MultipleUniqueBarcodeScanning),
-            new SdkFeature("Find and Pick Barcode Scanning", FindAndPickScanning),
-            new SdkFeature("Import Image & Detect Barcodes", ImportAndDetectBarcodesClicked),
-
             new SdkFeature("DOCUMENT SCANNER"),
-            new SdkFeature("Scan Document", () => DocumentScannerClicked(withFinder: false)),
-            new SdkFeature("Scan Document with Finder", () => DocumentScannerClicked(withFinder: true)),
-            new SdkFeature("Import image & Detect Document", ImportButtonClicked),
-            new SdkFeature("View Image Results", ViewImageResultsClicked),
-
+            //new ListItem("Single Document Scanning", SingleDocumentScanning),
+            //new ListItem("Single Finder Document Scanning", SingleFinderDocumentScanning),
+            //new ListItem("Multiple Document Scanning", MultipleDocumentScanning),
+            //new ListItem("Import Image", ImportImage)
+            new SdkFeature("Single Document Scanning", SingleDocumentScanningClicked),
+            new SdkFeature("Single Finder Document Scanning", SingleFinderDocumentScanningClicked),
+            new SdkFeature("Multiple Document Scanning", MultipleDocumentScanningClicked),
+            new SdkFeature("Import Import Image", ImportButtonClicked),
+            
             new SdkFeature("DATA DETECTORS"),
             new SdkFeature("MRZ Scanner", MRZScannerClicked),
             new SdkFeature("EHIC Scanner", EHICScannerClicked),
@@ -93,7 +81,14 @@ public partial class HomePage : ContentPage
         {
             if (!SDKUtils.CheckLicense(this)) { return; }
 
-            await feature.DoTask();
+            try
+            {
+                await feature.DoTask();
+            }
+            catch
+            {
+
+            }
         }
         FeaturesCollectionView.SelectedItem = null;
     }
