@@ -216,7 +216,6 @@ namespace ReadyToUseUI.Droid.Activities
 
             Task.Run(delegate
             {
-                var pagesUri = adapter.GetDocumentUris();
                 var output = GetOutputUri(".pdf");
 
                 if (type == SaveType.TIFF)
@@ -229,7 +228,7 @@ namespace ReadyToUseUI.Droid.Activities
                         IO.Scanbot.Sdk.Tiff.Model.TIFFImageWriterCompressionOptions.CompressionCcittfax4,
                         Array.Empty<TIFFImageWriterUserDefinedField>());
 
-                    scanbotSDK.CreateTiffWriter().WriteTIFF(pagesUri.Select(i => new Java.IO.File(i.Path)).ToArray(), false, new Java.IO.File(output.Path), options);
+                    scanbotSDK.CreateTiffWriter().WriteTIFF(document, new Java.IO.File(output.Path), options);
                 }
                 else if (type == SaveType.OCR)
                 {
@@ -269,7 +268,7 @@ namespace ReadyToUseUI.Droid.Activities
                         pageSize:PageSize.A4, pageDirection:PageDirection.Auto, pageFit:PageFit.FitIn, 
                         dpi:72, jpegQuality:80, ResamplingMethod.None);
                     
-                    var pdfFile = recognizer.RecognizeTextWithPdfFromUris(pagesUri, MainApplication.USE_ENCRYPTION, pdfConfig);
+                    var pdfFile = recognizer.RecognizeTextWithPdfFromDocument(document, pdfConfig);
                     File.Move(pdfFile.SandwichedPdfDocumentFile.AbsolutePath, new Java.IO.File(output.Path).AbsolutePath);
                 }
                 else
@@ -285,8 +284,7 @@ namespace ReadyToUseUI.Droid.Activities
                         pageSize:PageSize.A4, pageDirection:PageDirection.Auto, pageFit:PageFit.FitIn, 
                         dpi:72, jpegQuality:80, ResamplingMethod.None);
 
-                    var pdfFile = scanbotSDK.CreatePdfRenderer().Render(pagesUri.ToArray(), sourceFilesEncrypted: false, pdfConfig: pdfConfig);
-                    File.Move(pdfFile.AbsolutePath, new Java.IO.File(output.Path).AbsolutePath);
+                    var pdfFile = scanbotSDK.CreatePdfRenderer().Render(document,new Java.IO.File(output.Path), pdfConfig: pdfConfig);
                 }
 
                 Java.IO.File file = Copier.Copy(this, output);
@@ -332,7 +330,7 @@ namespace ReadyToUseUI.Droid.Activities
             {
                 page.Apply(page.Rotation, page.Polygon, new[] { selectedFilter });
             }
-            adapter.Refresh(document);
+            adapter.Refresh(document);                                          
         }
     }
 
@@ -378,25 +376,6 @@ namespace ReadyToUseUI.Droid.Activities
         public override int ItemCount => _pages.Count;
 
         public bool IsEmpty { get => ItemCount == 0; }
-
-        public List<Android.Net.Uri> GetDocumentUris()
-        {
-            var uris = new List<Android.Net.Uri>();
-
-            foreach (var page in _pages)
-            {
-                if (File.Exists(page.ScannedPageUri.Path))
-                {
-                    uris.Add(page.ScannedPageUri);
-                }
-                else
-                {
-                    uris.Add(page.OriginalPageUri);
-                }
-            }
-
-            return uris;
-        }
 
         public override long GetItemId(int position)
         {
