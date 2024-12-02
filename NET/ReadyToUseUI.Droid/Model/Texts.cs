@@ -124,9 +124,11 @@
 
         public const string travel_doc_type = "travelDocType:";
 
-        public const string save_with_ocr = "Save as PDF with OCR";
+        public const string save_sandwich_pdf = "Save as Sandwich PDF";
 
-        public const string save_without_ocr = "Save as PDF";
+        public const string save_pdf = "Save as PDF";
+        
+        public const string perform_ocr = "Perform OCR";
 
         public const string importing_and_processing = "Importing selected image and running auto document detection...";
 

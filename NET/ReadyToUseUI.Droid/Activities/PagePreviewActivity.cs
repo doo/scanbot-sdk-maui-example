@@ -25,6 +25,7 @@ using IO.Scanbot.Sdk.Ui_v2.Document.Configuration;
 using Org.Json;
 using static IO.Scanbot.Sdk.Ocr.IOpticalCharacterRecognizer;
 using ImageProcessor = IO.Scanbot.Sdk.Core.Processor.ImageProcessor;
+using Uri = Android.Net.Uri;
 
 namespace ReadyToUseUI.Droid.Activities
 {
@@ -44,7 +45,7 @@ namespace ReadyToUseUI.Droid.Activities
     }
     
     [Activity]
-    public class PagePreviewActivity : AppCompatActivity, IFiltersListener
+    public partial class PagePreviewActivity : AppCompatActivity, IFiltersListener
     {
         const int FILTER_UI_REQUEST_CODE = 7777;
         const int CAMERA_ACTIVITY = 8888;
@@ -200,112 +201,6 @@ namespace ReadyToUseUI.Droid.Activities
             filter.Enabled = !adapter.IsEmpty;
         }
 
-        public void SaveTiff() => SaveDocument(SaveType.TIFF);
-
-        public void SaveWithOcr() => SaveDocument(SaveType.OCR);
-        
-        public void SaveWithoutOcr() => SaveDocument(SaveType.Plain);
-
-        void SaveDocument(SaveType type)
-        {
-            if (!scanbotSDK.LicenseInfo.IsValid)
-            {
-                Alert.ShowLicenseDialog(this);
-                return;
-            }
-
-            Task.Run(delegate
-            {
-                var output = GetOutputUri(".pdf");
-
-                if (type == SaveType.TIFF)
-                {
-                    output = GetOutputUri(".tiff");
-                    // Please note that some compression types are only compatible for 1-bit encoded images (binarized black & white images)!
-                    var options = new IO.Scanbot.Sdk.Tiff.Model.TIFFImageWriterParameters(
-                        new ScanbotBinarizationFilter(),
-                        250,
-                        IO.Scanbot.Sdk.Tiff.Model.TIFFImageWriterCompressionOptions.CompressionCcittfax4,
-                        Array.Empty<TIFFImageWriterUserDefinedField>());
-
-                    scanbotSDK.CreateTiffWriter().WriteTIFF(document, new Java.IO.File(output.Path), options);
-                }
-                else if (type == SaveType.OCR)
-                {
-                    // This is the new OCR configuration with ML which doesn't require the languages.
-                    var recognitionMode = IOpticalCharacterRecognizer.EngineMode.ScanbotOcr;
-                    var recognizer = scanbotSDK.CreateOcrRecognizer();
-
-                    // to use legacy configuration we have to pass the installed languages.
-                    if (recognitionMode == IOpticalCharacterRecognizer.EngineMode.Tesseract)
-                    {
-                        var languages = recognizer.InstalledLanguages;
-                        if (languages.Count == 0)
-                        {
-                            RunOnUiThread(delegate
-                            {
-                                Alert.Toast(this, "OCR languages blobs are not available");
-                            });
-                            return;
-                        }
-
-                        var ocrConfig = new OcrConfig(recognitionMode, languages);
-                        recognizer.SetOcrConfig(ocrConfig);
-                    }
-                    else
-                    {
-                        recognizer.SetOcrConfig(new OcrConfig(recognitionMode));
-                    }
-
-                    var pdfAttributes = new PdfAttributes(
-                        author: "Your author",
-                        creator: "Your creator",
-                        title: "Your title",
-                        subject: "Your subject",
-                        keywords: "Your keywords");
-                    
-                    var pdfConfig = new IO.Scanbot.Pdf.Model.PdfConfig(pdfAttributes: pdfAttributes, 
-                        pageSize:PageSize.A4, pageDirection:PageDirection.Auto, pageFit:PageFit.FitIn, 
-                        dpi:72, jpegQuality:80, ResamplingMethod.None);
-                    
-                    var pdfFile = recognizer.RecognizeTextWithPdfFromDocument(document, pdfConfig);
-                    File.Move(pdfFile.SandwichedPdfDocumentFile.AbsolutePath, new Java.IO.File(output.Path).AbsolutePath);
-                }
-                else
-                {
-                    var pdfAttributes = new PdfAttributes(
-                        author: "Your author",
-                        creator: "Your creator",
-                        title: "Your title",
-                        subject: "Your subject",
-                        keywords: "Your keywords");
-                    
-                    var pdfConfig = new IO.Scanbot.Pdf.Model.PdfConfig(pdfAttributes: pdfAttributes, 
-                        pageSize:PageSize.A4, pageDirection:PageDirection.Auto, pageFit:PageFit.FitIn, 
-                        dpi:72, jpegQuality:80, ResamplingMethod.None);
-
-                    var pdfFile = scanbotSDK.CreatePdfRenderer().Render(document,new Java.IO.File(output.Path), pdfConfig: pdfConfig);
-                }
-
-                Java.IO.File file = Copier.Copy(this, output);
-
-                var intent = new Intent(Intent.ActionView, output);
-                 
-                var authority = ApplicationContext.PackageName + ".provider";
-                var uri = FileProvider.GetUriForFile(this, authority, file);
-
-                intent.SetDataAndType(uri, MimeUtils.GetMimeByName(file.Name));
-                intent.SetFlags(ActivityFlags.ClearWhenTaskReset | ActivityFlags.NewTask);
-                intent.AddFlags(ActivityFlags.GrantReadUriPermission | ActivityFlags.GrantWriteUriPermission);
-
-                RunOnUiThread(delegate
-                {
-                    StartActivity(Intent.CreateChooser(intent, output.LastPathSegment));
-                    Alert.Toast(this, "File saved to: " + output.Path);
-                });
-            });
-        }
-
         private Android.Net.Uri GetOutputUri(string extension)
         {
             var external = GetExternalFilesDir(null).AbsolutePath;
@@ -354,11 +249,11 @@ namespace ReadyToUseUI.Droid.Activities
                 {
                     _pages.Add(new PageModel
                     {
-                                        PageId = page.Uuid,
-                                        DocumentId = document.Uuid,
-                                        ScannedPageUri = page.DocumentFileUri,
-                                        ScannedPagePreviewUri = page.DocumentPreviewFileUri,
-                                        OriginalPageUri = page.OriginalFileUri
+                        PageId = page.Uuid,
+                        DocumentId = document.Uuid,
+                        ScannedPageUri = page.DocumentFileUri,
+                        ScannedPagePreviewUri = page.DocumentPreviewFileUri,
+                        OriginalPageUri = page.OriginalFileUri
                     });
                 }
             }

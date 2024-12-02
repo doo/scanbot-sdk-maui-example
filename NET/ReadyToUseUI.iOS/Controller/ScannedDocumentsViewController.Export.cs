@@ -20,12 +20,14 @@ public partial class ScannedDocumentsViewController : UIViewController
             return;
         }
 
-        var pdf = CreateButton(Texts.save_without_ocr, (action) =>  CreatePdfAsync(input, url));
-        var ocr = CreateButton(Texts.save_with_ocr, (action) =>  PerformOcrAndCreatePdfAsync(input, url));
-        var tiff = CreateButton(Texts.Tiff, (action) => WriteTiff(input, url));
-        var cancel = CreateButton("Cancel", delegate { }, UIAlertActionStyle.Cancel);
+        var pdf = CreateButton(Texts.save_pdf, (action) =>  CreatePdfAsync(_scannedDocument, url));
+        var sandwichPdf = CreateButton(Texts.save_sandwich_pdf, (action) =>  CreateSandwichedPdf(_scannedDocument, url));
+        var ocr = CreateButton(Texts.perform_ocr, (action) =>  PerformOcr(_scannedDocument));
+        var tiff = CreateButton(Texts.Tiff, (action) => WriteTiff(_scannedDocument, url));
+        var cancel = CreateButton(Texts.cancel_dialog_button, delegate { }, UIAlertActionStyle.Cancel);
 
         alertController.AddAction(pdf);
+        alertController.AddAction(sandwichPdf);
         alertController.AddAction(ocr);
         alertController.AddAction(tiff);
         alertController.AddAction(cancel);
@@ -39,12 +41,45 @@ public partial class ScannedDocumentsViewController : UIViewController
 
         PresentViewController(alertController, true, null);
     }
-    
-	private void CreatePdfAsync(NSUrl[] inputUrls, NSUrl outputUrl)
+
+    private void PerformOcr(SBSDKScannedDocument scannedDocument)
+    {
+        var recognitionMode = SBSDKOpticalCharacterRecognitionMode.ScanbotOCR;
+        // This is the new OCR configuration with ML which doesn't require the languages.
+        SBSDKOpticalCharacterRecognizerConfiguration ocrConfiguration =
+                            SBSDKOpticalCharacterRecognizerConfiguration.ScanbotOCR;
+
+        // to use legacy configuration we have to pass the installed languages.
+        if (recognitionMode == SBSDKOpticalCharacterRecognitionMode.Tesseract)
+        {
+            var installedLanguages = SBSDKOCRLanguagesManager.InstalledLanguages;
+            ocrConfiguration = SBSDKOpticalCharacterRecognizerConfiguration.TesseractWith(installedLanguages);
+        }
+
+        try {
+            var opticalCharacterRecognizer = new SBSDKOpticalCharacterRecognizer(ocrConfiguration);
+            opticalCharacterRecognizer.RecognizeOnScannedDocument(scannedDocument,
+                                completion: (ocrResult, error) =>
+            {
+                if (error != null)
+                {
+                    Alert.Show(this, "Perform OCR", error.LocalizedDescription);
+                    return;
+                }
+                
+                Alert.Show(this, "Perform OCR", ocrResult.RecognizedText);
+            });
+        }
+        catch (Exception exception)
+        {
+            Alert.Show(this, "Perform OCR", exception.Message);
+        }
+    }
+
+    private void CreatePdfAsync(SBSDKScannedDocument scannedDocument, NSUrl outputUrl)
     {
         try
         {
-            var storage = CreateStorage(inputUrls, ScanbotUI.DefaultImageStoreEncrypter);
             var outputPdfUrl = new NSUrl(outputUrl.AbsoluteString + Guid.NewGuid() + ".pdf");
             
             // Create the PDF rendering options.
@@ -65,11 +100,9 @@ public partial class ScannedDocumentsViewController : UIViewController
 
             // Create the PDF renderer and pass the PDF options to it.
             var renderer = new SBSDKPDFRenderer(options,  ScanbotUI.DefaultImageStoreEncrypter);
-    
-            renderer.RenderImageStorageAsync(imageStorage: storage, indexSet: null, output: outputPdfUrl,
+            renderer.RenderScannedDocumentAsync(scannedDocument, output: outputPdfUrl,
                                 completionHandler: (isComplete, error) =>
                                 {
-                                    storage.RemoveAllImages();
                                     if (error != null)
                                     {
                                         throw new NSErrorException(error);
@@ -83,10 +116,10 @@ public partial class ScannedDocumentsViewController : UIViewController
             Alert.Show(this, "Create PDF", ex.Message);
         }
     }
-
-    private void PerformOcrAndCreatePdfAsync(NSUrl[] inputUrls, NSUrl outputUrl)
+    
+      private void CreateSandwichedPdf(SBSDKScannedDocument scannedDocument, NSUrl outputUrl)
     {
-        var recognitionMode = SBSDKOpticalCharacterRecognitionMode.ScanbotOCR;
+         var recognitionMode = SBSDKOpticalCharacterRecognitionMode.ScanbotOCR;
         // This is the new OCR configuration with ML which doesn't require the languages.
         SBSDKOpticalCharacterRecognizerConfiguration ocrConfiguration =
                             SBSDKOpticalCharacterRecognizerConfiguration.ScanbotOCR;
@@ -98,12 +131,10 @@ public partial class ScannedDocumentsViewController : UIViewController
             ocrConfiguration = SBSDKOpticalCharacterRecognizerConfiguration.TesseractWith(installedLanguages);
         }
 
-        try
-        {
+        try {
             var opticalCharacterRecognizer = new SBSDKOpticalCharacterRecognizer(ocrConfiguration);
-            var storage = CreateStorage(inputUrls, ScanbotUI.DefaultImageStoreEncrypter);
-            opticalCharacterRecognizer.RecognizeOnImageStorage(storage,
-            completion: (ocrResult, error) =>
+            opticalCharacterRecognizer.RecognizeOnScannedDocument(scannedDocument,
+                                completion: (ocrResult, error) =>
             {
                 // Create the PDF rendering options.
                 var options = new SBSDKPDFRendererOptions();
@@ -125,36 +156,34 @@ public partial class ScannedDocumentsViewController : UIViewController
                 var renderer = new SBSDKPDFRenderer(options,
                                     ScanbotUI.DefaultImageStoreEncrypter);
 
-                renderer.RenderImageStorageAsync(imageStorage: storage,
-                                    indexSet: null, output: outputUrl,
-                                    completionHandler: (isComplete, error) =>
-                                    {
-                                        storage.RemoveAllImages();
-                                        if (error != null)
-                                        {
-                                            throw new NSErrorException(error);
-                                        }
+                var outputPdfUrl = new NSUrl(outputUrl.AbsoluteString + Guid.NewGuid() + ".pdf");
 
-                                        OpenDocument(outputUrl, false);
-                                    });
+                renderer.RenderScannedDocumentAsync(scannedDocument, output: outputPdfUrl,
+                completionHandler: (isComplete, error) =>
+                {
+                    if (error != null)
+                    {
+                            Alert.Show(this, "Sandwiched PDF", error.LocalizedDescription);
+                    }
 
-                if (ocrResult != null)
-                {
-                    OpenDocument(outputUrl, true, ocrResult.RecognizedText);
-                }
-                else
-                {
-                    ShowErrorAlert();
-                }
+                    if (ocrResult != null)
+                    {
+                        OpenDocument(outputPdfUrl, true, ocrResult.RecognizedText);
+                    }
+                    else
+                    {
+                        ShowErrorAlert();
+                    }
+                });
             });
         }
         catch (Exception ex)
         {
-            Alert.Show(this, "Perform OCR", ex.Message);
+            Alert.Show(this, "Sandwiched PDF", ex.Message);
         }
     }
 
-    private void WriteTiff(NSUrl[] inputUrls, NSUrl outputUrl)
+    private void WriteTiff(SBSDKScannedDocument scannedDocument, NSUrl outputUrl)
     {
         // Please note that some compression types are only compatible for 1-bit encoded images (binarized black & white images)!
         var options = SBSDKTIFFImageWriterParameters.DefaultParametersForBinaryImages;
@@ -164,8 +193,7 @@ public partial class ScannedDocumentsViewController : UIViewController
 
         var outputTiffUrl = new NSUrl(outputUrl.AbsoluteString + Guid.NewGuid() + ".tiff");
         var tiffWriter = new SBSDKTIFFImageWriter(parameters: options);
-        var success = tiffWriter.WriteTIFFFromToFile(inputUrls, 
-                                                        ScanbotUI.DefaultImageStoreEncrypter,
+        var success = tiffWriter.WriteTIFFWithScannedDocumentToFile(scannedDocument,
                                                         outputTiffUrl);
         if (success)
         {
