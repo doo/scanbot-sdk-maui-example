@@ -43,7 +43,7 @@ public partial class ScannedDocumentsViewController : UIViewController
 
         SetToolbarItems(toolBarButtons.ToArray(), true);
         NavigationController?.SetToolbarHidden(false, false);
-        NavigationController?.NavigationItem.SetRightBarButtonItem(new UIBarButtonItem(Texts.export, UIBarButtonItemStyle.Done, OnExportButtonClick), true);
+        NavigationItem.SetRightBarButtonItem(new UIBarButtonItem(Texts.export, UIBarButtonItemStyle.Done, OnExportButtonClick), true);
     }
 
     private void OnAnalyzeDocumentClicked(object sender, EventArgs e)

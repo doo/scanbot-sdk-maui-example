@@ -2,9 +2,10 @@
 {
 	public enum SaveType
     {
-        Plain,
-        OCR,
-        TIFF
+        Pdf,
+        SandwichPdf,
+        Ocr,
+        Tiff
     }
 }
 

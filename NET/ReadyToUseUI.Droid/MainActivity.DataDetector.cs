@@ -76,7 +76,7 @@ public partial class MainActivity
         fragment.Show(FragmentManager, HealthInsuranceCardFragment.NAME);
     }
 
-    private void RecongnizeGenericDocument()
+    private void RecognizeGenericDocument()
     {
         var configuration = new GenericDocumentRecognizerConfiguration();
         configuration.SetCancelButtonTitle("Done");

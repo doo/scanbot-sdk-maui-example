@@ -32,7 +32,7 @@ namespace ReadyToUseUI.iOS.Controller
             {
                 new ListItem("Scan MRZ",                      ScanMrz),
                 new ListItem("Scan Health Insurance card",    ScanEhic),
-                new ListItem("Generic Document Recognizer",   RecongnizeGenericDocument),
+                new ListItem("Generic Document Recognizer",   RecognizeGenericDocument),
                 new ListItem("Check Recognizer",              RecognizeCheck),
                 new ListItem("Text Data Recognizer",          TextDataRecognizerTapped),
                 new ListItem("VIN Recognizer",                VinRecognizerTapped),
