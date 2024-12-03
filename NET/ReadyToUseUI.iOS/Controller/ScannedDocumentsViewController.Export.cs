@@ -101,15 +101,15 @@ public partial class ScannedDocumentsViewController : UIViewController
             // Create the PDF renderer and pass the PDF options to it.
             var renderer = new SBSDKPDFRenderer(options,  ScanbotUI.DefaultImageStoreEncrypter);
             renderer.RenderScannedDocumentAsync(scannedDocument, output: outputPdfUrl,
-                                completionHandler: (isComplete, error) =>
-                                {
-                                    if (error != null)
-                                    {
-                                        throw new NSErrorException(error);
-                                    }
-                                    
-                                    OpenDocument(outputPdfUrl, false);
-                                });
+                completionHandler: (isComplete, error) =>
+                {
+                    if (error != null)
+                    {
+                        Alert.Show(this, "Create PDF", error.LocalizedDescription);
+                    }
+                    
+                    OpenDocument(outputPdfUrl, false);
+                });
         }
         catch (Exception ex)
         {
@@ -117,7 +117,7 @@ public partial class ScannedDocumentsViewController : UIViewController
         }
     }
     
-      private void CreateSandwichedPdf(SBSDKScannedDocument scannedDocument, NSUrl outputUrl)
+    private void CreateSandwichedPdf(SBSDKScannedDocument scannedDocument, NSUrl outputUrl)
     {
          var recognitionMode = SBSDKOpticalCharacterRecognitionMode.ScanbotOCR;
         // This is the new OCR configuration with ML which doesn't require the languages.
@@ -131,51 +131,43 @@ public partial class ScannedDocumentsViewController : UIViewController
             ocrConfiguration = SBSDKOpticalCharacterRecognizerConfiguration.TesseractWith(installedLanguages);
         }
 
-        try {
-            var opticalCharacterRecognizer = new SBSDKOpticalCharacterRecognizer(ocrConfiguration);
-            opticalCharacterRecognizer.RecognizeOnScannedDocument(scannedDocument,
-                                completion: (ocrResult, error) =>
-            {
-                // Create the PDF rendering options.
-                var options = new SBSDKPDFRendererOptions();
+        try 
+        {
+            var outputPdfUrl = new NSUrl(outputUrl.AbsoluteString + Guid.NewGuid() + ".pdf");
+            
+            // Create the PDF rendering options.
+            var options = new SBSDKPDFRendererOptions();
+            
+            // Create and set the OCR configuration for hOCR.
+            options.OcrConfiguration = ocrConfiguration;
+            
+            options.Dpi = 200;
+            options.Resample = false;
+            options.JpegQuality = 100;
+            options.PageSize = SBSDKPDFRendererPageSize.A4;
+            options.PageOrientation = SBSDKPDFRendererPageOrientation.Auto;
+            options.PageFitMode = SBSDKPDFRendererPageFitMode.FitIn;
+            options.PdfAttributes = new SBSDKPDFAttributes(
+                                author: "Your author",
+                                creator: "Your creator",
+                                title: "Your title",
+                                subject: "Your subject",
+                                keywords: ["PDF", "Scanbot", "SDK"]);
 
-                options.Dpi = 200;
-                options.Resample = false;
-                options.JpegQuality = 100;
-                options.PageSize = SBSDKPDFRendererPageSize.A4;
-                options.PageOrientation = SBSDKPDFRendererPageOrientation.Auto;
-                options.PageFitMode = SBSDKPDFRendererPageFitMode.FitIn;
-                options.PdfAttributes = new SBSDKPDFAttributes(
-                                    author: "Your author",
-                                    creator: "Your creator",
-                                    title: "Your title",
-                                    subject: "Your subject",
-                                    keywords: ["PDF", "Scanbot", "SDK"]);
-
-                // Create the PDF renderer and pass the PDF options to it.
-                var renderer = new SBSDKPDFRenderer(options,
-                                    ScanbotUI.DefaultImageStoreEncrypter);
-
-                var outputPdfUrl = new NSUrl(outputUrl.AbsoluteString + Guid.NewGuid() + ".pdf");
-
-                renderer.RenderScannedDocumentAsync(scannedDocument, output: outputPdfUrl,
+            // Create the PDF renderer and pass the PDF options to it.
+            var renderer = new SBSDKPDFRenderer(options,
+                                ScanbotUI.DefaultImageStoreEncrypter);
+ 
+            renderer.RenderScannedDocumentAsync(scannedDocument, output: outputPdfUrl,
                 completionHandler: (isComplete, error) =>
                 {
                     if (error != null)
                     {
-                            Alert.Show(this, "Sandwiched PDF", error.LocalizedDescription);
+                        Alert.Show(this, "Sandwiched PDF", error.LocalizedDescription);
                     }
-
-                    if (ocrResult != null)
-                    {
-                        OpenDocument(outputPdfUrl, true, ocrResult.RecognizedText);
-                    }
-                    else
-                    {
-                        ShowErrorAlert();
-                    }
+                    
+                    OpenDocument(outputPdfUrl, false);
                 });
-            });
         }
         catch (Exception ex)
         {
