@@ -1,4 +1,5 @@
 using Android.Content;
+using Android.Graphics;
 using AndroidX.AppCompat.App;
 using IO.Scanbot.Pdf.Model;
 using IO.Scanbot.Sdk.Docprocessing;
@@ -25,6 +26,7 @@ public class PdfSnippet : AppCompatActivity
 
 	private void CreatePdfFromDocument(Document document)
 	{
+		// Create the PDF attributes.  
 		var pdfAttributes = new PdfAttributes(
 							author: "Your author",
 							creator: "Your creator",
@@ -32,6 +34,7 @@ public class PdfSnippet : AppCompatActivity
 							subject: "Your subject",
 							keywords: "Your keywords");
                     
+		// Create the PDF rendering configurations.
 		var pdfConfig = new IO.Scanbot.Pdf.Model.PdfConfig(pdfAttributes: pdfAttributes, 
 							pageSize:PageSize.A4, 
 							pageDirection:PageDirection.Auto, 
@@ -40,8 +43,39 @@ public class PdfSnippet : AppCompatActivity
 							jpegQuality:100, 
 							ResamplingMethod.None);
 
+		// Render the images to a PDF file.
 		var isPdfRendered = _scanbotSdk.CreatePdfRenderer().Render(document, pdfConfig);
 		if (isPdfRendered && document?.PdfUri != null)
+		{
+			// Do something with the PDF file
+		}
+	}
+	
+	private void CreatePdfFromImage(List<Android.Net.Uri> inputUris)
+	{
+		// Create the PDF attributes.  
+		var pdfAttributes = new PdfAttributes(
+							author: "Your author",
+							creator: "Your creator",
+							title: "Your title",
+							subject: "Your subject",
+							keywords: "Your keywords");
+		
+		// Create the PDF rendering configurations.
+		var pdfConfig = new IO.Scanbot.Pdf.Model.PdfConfig(pdfAttributes: pdfAttributes, 
+							pageSize:PageSize.A4, 
+							pageDirection:PageDirection.Auto, 
+							pageFit:PageFit.None, 
+							dpi:200, 
+							jpegQuality:100, 
+							ResamplingMethod.None);
+
+		// Notify the renderer that the images are encrypted with global sdk-encryption settings
+		var encryptionEnabled = false;
+
+		// Render the images to a PDF file.
+		var pdfFile = _scanbotSdk.CreatePdfRenderer().Render(inputUris.ToArray(), encryptionEnabled, pdfConfig);
+		if (pdfFile != null && pdfFile.Exists())
 		{
 			// Do something with the PDF file
 		}

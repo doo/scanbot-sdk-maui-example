@@ -40,7 +40,7 @@ public class TiffSnippet
 		var tiffImageWriter = new SBSDKTIFFImageWriter(parameters: parameters, encrypter: encrypter);
 
 		// Asynchronously writes a TIFF file with scanned images into the defined URL.
-		// The compvarion handler passes a file URL where the file was to be saved, or nil if the operation did not succeed.
+		// The completion handler passes a file URL where the file was to be saved, or nil if the operation did not succeed.
 		tiffImageWriter.WriteTIFFWithToFile(images, outputTiffUrl,
 							completion: (url) =>
 							            {
