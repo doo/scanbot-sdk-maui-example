@@ -5,7 +5,7 @@ namespace ReadyToUseUI.iOS.Snippets;
 
 public class PdfSnippet
 {
-    void CreatePdf(SBSDKScannedDocument scannedDocument)
+    void CreatePdfFromDocument(SBSDKScannedDocument scannedDocument)
     {
 
         // Specify the file URL where the TIFF will be saved to. Nil makes no sense here.
@@ -37,7 +37,7 @@ public class PdfSnippet
         }
     }
 
-    void CreatePdf(UIImage image)
+    void CreatePdfFromImage(UIImage image)
     {
         // Specify the file URL where the Pdf will be saved to. Nil makes no sense here.
         var outputPdfUrl = new NSUrl("outputPdfUrl");
