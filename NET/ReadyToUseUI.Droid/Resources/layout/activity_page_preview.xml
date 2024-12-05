@@ -34,7 +34,7 @@
                 android:textStyle="normal"/>
 
             <Button
-                android:id="@+id/action_save_document"
+                android:id="@+id/action_export_document"
                 android:layout_width="72dp"
                 android:layout_height="36dp"
                 android:layout_alignParentRight="true"
@@ -88,7 +88,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <TextView
-            android:id="@+id/action_add_page"
+            android:id="@+id/action_crop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -114,7 +114,7 @@
             android:textStyle="normal" />
 
         <TextView
-            android:id="@+id/action_delete_all"
+            android:id="@+id/action_document_quality"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"

@@ -39,7 +39,7 @@ public partial class MainViewController
             PresentViewController(controller, false, null);
         }
 
-        private void RecongnizeGenericDocument()
+        private void RecognizeGenericDocument()
         {
             var configuration = SBSDKUIGenericDocumentRecognizerConfiguration.DefaultConfiguration;
             configuration.TextConfiguration.CancelButtonTitle = "Done";

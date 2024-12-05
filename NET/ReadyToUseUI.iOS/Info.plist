@@ -46,10 +46,8 @@
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Application would like to use photos app for importing images</string>
 	<key>XSAppIconAssets</key>
-    <string>Assets.xcassets/AppIcon.appiconset</string>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
+	<string>Assets.xcassets/AppIcon.appiconset</string>
 	<key>UIStatusBarStyle</key>
-	<string>UIStatusBarStyleLightContent</string>
+	<string>UIStatusBarStyleDefault</string>
 </dict>
 </plist>

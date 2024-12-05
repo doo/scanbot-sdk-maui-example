@@ -5,17 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ScanbotCameraActivity">
-    <io.scanbot.sdk.ui.camera.ScanbotCameraXView
+    <io.scanbot.sdk.docdetection.ui.DocumentScannerView
         android:id="@+id/scanbotCameraView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <io.scanbot.sdk.ui.PolygonView
-            android:id="@+id/scanbotPolygonView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:polygonStrokeWidth="3dp"
-            app:polygonStrokeColor="@android:color/holo_blue_dark" />
-    </io.scanbot.sdk.ui.camera.ScanbotCameraXView>
+        android:layout_height="match_parent" />
     <Button
         android:id="@+id/autoSnappingToggleButton"
         android:layout_width="wrap_content"
