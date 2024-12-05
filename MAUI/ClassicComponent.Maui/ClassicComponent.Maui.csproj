@@ -1,7 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     
     <PropertyGroup>
-        <TargetFrameworks>net7.0-android;net7.0-ios</TargetFrameworks>
+        <TargetFrameworks>net8.0-android;net8.0-ios</TargetFrameworks>
+        <!-- Comment out the above and add the below to run with .net7 -->
+        <!-- <TargetFrameworks>net7.0-android;net7.0-ios</TargetFrameworks> -->
         <OutputType>Exe</OutputType>
         <UseMaui>true</UseMaui>
         <SingleProject>true</SingleProject>
@@ -20,18 +22,53 @@
         <ApplicationVersion>1</ApplicationVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">13.0</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+        <Platforms>x64;ARM64</Platforms>
+        <WarningsAsErrors>NU1603</WarningsAsErrors>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-ios|AnyCPU'">
-        <CreatePackage>false</CreatePackage>
+
+    <!-- ===================== iOS Specific Targets =====================  -->
+
+    <!-- Properties for iOS Simulator (x64 architecture) -->
+    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'iossimulator-x64'">
+        <RuntimeIdentifiers>iossimulator-x64</RuntimeIdentifiers>
+        <!-- Additional properties specific to iOS simulator (x64) -->
+        <PlatformTarget>x64</PlatformTarget>
+    </PropertyGroup>
+
+    <!-- Properties for iOS Simulator (arm64 architecture) -->
+    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'iossimulator-arm64'">
+        <RuntimeIdentifiers>iossimulator-arm64</RuntimeIdentifiers>
+        <!-- Additional properties specific to iOS simulator (arm64) -->
+    </PropertyGroup>
+
+    <!-- Properties for iOS Device (arm64 architecture) -->
+    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'ios-arm64'">
+        <RuntimeIdentifiers>ios-arm64</RuntimeIdentifiers>
+        <!-- Additional properties specific to iOS device (arm64) -->
+    </PropertyGroup>
+
+    <!-- ===================== General Targets =====================  -->
+
+    <!-- Settings for all targets that are not iOS (e.g., Android ) -->
+    <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'ios'">
         <MtouchLink>SdkOnly</MtouchLink>
+        <CreatePackage>false</CreatePackage>
+        <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0-ios|AnyCPU'">
-      <CreatePackage>false</CreatePackage>
+
+    <!-- General settings for iOS targets -->
+    <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+        <MtouchLink>SdkOnly</MtouchLink>
+        <MtouchInterpreter>-all</MtouchInterpreter>
+        <CreatePackage>false</CreatePackage>
+        <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
+
+        <!-- Simulator support attribute -->
+        <ForceSimulatorX64ArchitectureInIDE>true</ForceSimulatorX64ArchitectureInIDE>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(TargetFramework)' == 'net7.0-android'">
-         <!-- Added this flag to disable the fast assembly deployment option. Otherwise it fails to run on Android device.-->
-         <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
-    </PropertyGroup>
+
+    <!-- ===================== Application Resources =====================  -->
+    
     <ItemGroup>
         <!-- App Icon -->
         <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
@@ -49,14 +86,17 @@
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
     </ItemGroup>
-    <ItemGroup Condition="$(TargetFramework.StartsWith('net7.0-android')) != true">
+
+    <!-- ===================== Platform Specific files for Native Handler implementation =====================  -->
+    <ItemGroup  Condition="$(TargetFramework.Contains('-ios'))">
         <Compile Remove="**\**\*.Android.cs" />
         <None Include="**\**\*.Android.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
     </ItemGroup>
-        <ItemGroup Condition="$(TargetFramework.StartsWith('net7.0-ios')) != true">
+    <ItemGroup  Condition="$(TargetFramework.Contains('-android'))">
         <Compile Remove="**\**\*.iOS.cs" />
         <None Include="**\**\*.iOS.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
     </ItemGroup>
+    
     <ItemGroup>
       <Folder Include="Platforms\Android\Resources\" />
       <Folder Include="Platforms\Android\Resources\layout\" />
@@ -67,6 +107,6 @@
       <None Remove="Platforms\iOS\Utils\" />
     </ItemGroup>
     <ItemGroup>
-      <PackageReference Include="ScanbotSDK.MAUI" Version="4.2.1" />
+        <PackageReference Include="ScanbotSDK.MAUI" Version="5.1.1" />
     </ItemGroup>
 </Project>

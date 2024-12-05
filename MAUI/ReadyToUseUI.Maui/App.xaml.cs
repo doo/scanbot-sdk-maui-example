@@ -6,9 +6,8 @@ namespace ReadyToUseUI.Maui
     {
         public App()
         {
-            InitializeComponent();            
+            InitializeComponent();
             MainPage = new NavigationPage(new HomePage());
         }
     }
 }
-

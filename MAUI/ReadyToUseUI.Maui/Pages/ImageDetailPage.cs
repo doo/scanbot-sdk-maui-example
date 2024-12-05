@@ -1,8 +1,10 @@
-﻿using ScanbotSDK.MAUI.Constants;
+﻿using System.ComponentModel;
+using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Document;
 using ReadyToUseUI.Maui.Utils;
 using ReadyToUseUI.Maui.SubViews.ActionBar;
-using ScanbotSDK.MAUI.Services;
 using ReadyToUseUI.Maui.Models;
+using ReadyToUseUI.Maui.SubViews;
 
 namespace ReadyToUseUI.Maui.Pages
 {
@@ -10,11 +12,25 @@ namespace ReadyToUseUI.Maui.Pages
     {
         private Image documentImage;
         private BottomActionBar bottomBar;
+        private SBLoader loader;
         private IScannedPage selectedPage;
         private IScanbotSDKService scanbotDocumentService; // for document quality detection
-
+        
+        private bool _isLoading;
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set
+            {
+                _isLoading = value;
+                loader.IsBusy = _isLoading;
+                this.OnPropertyChanged(nameof(IsLoading));
+            }
+        }
+        
         public ImageDetailPage(IScannedPage selectedPage, IScanbotSDKService service)
         {
+            this.BindingContext = this;
             this.selectedPage = selectedPage;
             this.scanbotDocumentService = service;
 
@@ -46,7 +62,18 @@ namespace ReadyToUseUI.Maui.Pages
 
             gridView.SetRow(documentImage, 0);
             gridView.SetRow(bottomBar, 1);
-            Content = gridView;
+
+            loader = new SBLoader
+            {
+                IsVisible = false
+            };
+            
+            Content = new Grid
+            {
+                Children = { gridView, loader },
+                VerticalOptions = LayoutOptions.Fill,
+                HorizontalOptions = LayoutOptions.Fill
+            };
 
             bottomBar.AddTappedEvent(bottomBar.CropButton, OnCropButtonTapped);
             bottomBar.AddTappedEvent(bottomBar.FilterButton, OnFilterButtonTapped);
@@ -80,35 +107,46 @@ namespace ReadyToUseUI.Maui.Pages
 
         private async void OnFilterButtonTapped(object sender, EventArgs e)
         {
-            if (!SDKUtils.CheckLicense(this)) { return; }
+            if (!SDKUtils.CheckLicense(this))
+            {
+                return;
+            }
 
-            var buttons = Enum.GetNames(typeof(ImageFilter));
-            var action = await DisplayActionSheet("Filter", "Cancel", null, buttons);
-
-            if (Enum.TryParse<ImageFilter>(action, out var filter))
+            IsLoading = true;
+            var filterPage = new FiltersPage();
+            filterPage.NavigateData(async (filters) =>
             {
                 documentImage.Source = null;
-                await selectedPage.SetFilterAsync(filter);
+                await selectedPage.SetFilterAsync(filters.ToArray());
                 await PageStorage.Instance.UpdateAsync(selectedPage);
-
                 documentImage.Source = await PageDocument();
-            }
+            });
+            
+            await Navigation.PushAsync(filterPage);
+            IsLoading = false;
         }
 
         private async void OnAnalyzeQualityTapped(object sender, EventArgs e)
         {
             if (!SDKUtils.CheckLicense(this)) { return; }
-
-            DocumentQuality quality = await scanbotDocumentService.DetectDocumentQualityAsync(documentImage.Source);
-
+            IsLoading = true;
+            DocumentQuality quality = await scanbotDocumentService.DetectDocumentQualityAsync(documentImage.Source, new DocumentQualityAnalyzerConfiguration
+            {
+                ImageSizeLimit = 2500,
+                MinimumNumberOfSymbols = 20
+            });
+            
+            IsLoading = false;
             ViewUtils.Alert(this, "Document Quality", $"Detected quality is: {quality}");
         }
 
         private async void OnDeleteButtonTapped(object sender, EventArgs e)
         {
+            IsLoading = true;
             documentImage.Source = null;
             await Task.WhenAll(PageStorage.Instance.DeleteAsync(selectedPage), Navigation.PopAsync());
             selectedPage = null;
+            IsLoading = false;
         }
     }
 }

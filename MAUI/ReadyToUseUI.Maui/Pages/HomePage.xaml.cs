@@ -1,7 +1,4 @@
-﻿using ScanbotSDK.MAUI.Configurations;
-using ScanbotSDK.MAUI.Constants;
-using ScanbotSDK.MAUI;
-using ReadyToUseUI.Maui.Models;
+﻿using ScanbotSDK.MAUI;
 using ReadyToUseUI.Maui.Utils;
 using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
 
@@ -9,6 +6,15 @@ namespace ReadyToUseUI.Maui.Pages;
 
 public partial class HomePage : ContentPage
 {
+    /// <summary>
+    /// Binding property configured with the Scanbot activity loader.
+    /// </summary>
+    public bool IsLoading
+    {
+        get => sbLoader.IsBusy;
+        set => sbLoader.IsBusy = value;
+    }
+
     public struct SdkFeature
     {
         public SdkFeature(string title, Func<Task> doTask = null)
@@ -32,10 +38,20 @@ public partial class HomePage : ContentPage
     {
         sdkFeatures = new List<SdkFeature>
         {
-            new SdkFeature("BARCODE DETECTOR"),
+#if LEGACY_EXAMPLES
+            new SdkFeature("BARCODE DETECTOR V1"),
             new SdkFeature("Scan QR & Barcodes", () => BarcodeScannerClicked(withImage: false)),
             new SdkFeature("Scan QR & Barcodes With Image", () => BarcodeScannerClicked(withImage: true)),
             new SdkFeature("Scan Multiple QR & Barcodes", BatchBarcodeScannerClicked),
+            new SdkFeature("BARCODE DETECTOR V2"),
+#else
+            new SdkFeature("BARCODE DETECTOR"),
+#endif
+            new SdkFeature("Single Scanning", SingleScanning),
+            new SdkFeature("Single Scanning Selection Overlay", SingleScanningWithArOverlay),
+            new SdkFeature("Batch Barcode Scanning", BatchBarcodeScanning),
+            new SdkFeature("Multiple Unique Barcode Scanning", MultipleUniqueBarcodeScanning),
+            new SdkFeature("Find and Pick Barcode Scanning", FindAndPickScanning),
             new SdkFeature("Import Image & Detect Barcodes", ImportAndDetectBarcodesClicked),
 
             new SdkFeature("DOCUMENT SCANNER"),
@@ -53,6 +69,13 @@ public partial class HomePage : ContentPage
             new SdkFeature("VIN Recognizer", VinRecognizerClicked),
             new SdkFeature("License Plate Recognizer", LicensePlateRecognizerClicked),
             new SdkFeature("Medical Certificate Recognizer", MedicalCertificateRecognizerClicked),
+            
+            new SdkFeature("DETECTION FROM IMAGE"),
+            new SdkFeature("MRZ Detector", MRZDetectorClicked),
+            new SdkFeature("EHIC Detector", EHICDetectorClicked),
+            new SdkFeature("Generic Document Detector", GenericDocumentDetectorClicked),
+            new SdkFeature("Check Detector", CheckDetectorrClicked),
+            new SdkFeature("Medical Certificate Detector", MedicalCertificateDetectorClicked),
 
             new SdkFeature("MISCELLANEOUS"),
             new SdkFeature("View License Info", ViewLicenseInfoClicked),
@@ -69,6 +92,7 @@ public partial class HomePage : ContentPage
         if (e?.CurrentSelection?.FirstOrDefault() is SdkFeature feature && feature.DoTask != null)
         {
             if (!SDKUtils.CheckLicense(this)) { return; }
+
             await feature.DoTask();
         }
         FeaturesCollectionView.SelectedItem = null;

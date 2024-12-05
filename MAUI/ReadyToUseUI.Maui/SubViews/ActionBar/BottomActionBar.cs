@@ -1,4 +1,4 @@
-﻿using ScanbotSDK.MAUI.Constants;
+﻿using ScanbotSDK.MAUI;
 
 namespace ReadyToUseUI.Maui.SubViews.ActionBar
 {
@@ -20,7 +20,7 @@ namespace ReadyToUseUI.Maui.SubViews.ActionBar
 
         public BottomActionBar(bool isDetailPage)
         {
-            BackgroundColor = SBColors.ScanbotRed;
+            BackgroundColor = Constants.Colors.ScanbotRed;
             Orientation = StackOrientation.Horizontal;
             HeightRequest = HEIGHT;
             HorizontalOptions = LayoutOptions.Fill;

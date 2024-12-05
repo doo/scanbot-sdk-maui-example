@@ -9,6 +9,18 @@
                 await context.DisplayAlert(title, message, "Close");
             });
         }
+        
+        public static async void Alert(Page context, string title, string message, Action completion)
+        {
+            await MainThread.InvokeOnMainThreadAsync(async () =>
+            {
+                var result =  await context.DisplayAlert(title, message, "View Detected Image", "Close");
+                if (result)
+                {
+                    completion?.Invoke();
+                }
+            });
+        }
 
         public static ViewCell CreateCell(string title, EventHandler action, Color color = null)
         {

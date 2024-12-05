@@ -1,28 +1,41 @@
-﻿using ScanbotSDK.MAUI.Constants;
-using ReadyToUseUI.Maui.Models;
+﻿using ReadyToUseUI.Maui.Models;
 using ReadyToUseUI.Maui.SubViews.ActionBar;
 using ReadyToUseUI.Maui.SubViews.Cells;
 using ReadyToUseUI.Maui.Utils;
-using ScanbotSDK.MAUI.Models;
-using ScanbotSDK.MAUI.Services;
 using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
 using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Common;
+using ScanbotSDK.MAUI.Document;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using ReadyToUseUI.Maui.SubViews;
 
 namespace ReadyToUseUI.Maui.Pages
 {
-    public class ImageResultsPage : ContentPage
+    public class ImageResultsPage : ContentPage, INotifyPropertyChanged
     {
         private const string PDF = "PDF", OCR = "Perform OCR", SandwichPDF = "Sandwiched PDF", TIFF = "TIFF (1-bit, B&W)";
         private Grid pageGridView;
         private ListView resultList;
         private BottomActionBar bottomBar;
-        private ActivityIndicator loader;
-
+        private SBLoader loader;
         private ObservableCollection<IScannedPage> scannedPages = new ObservableCollection<IScannedPage>();
 
+        private bool _isLoading;
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set
+            {
+                _isLoading = value;
+                loader.IsBusy = value;
+                this.OnPropertyChanged(nameof(IsLoading));
+            }
+        }
+        
         public ImageResultsPage()
         {
+            this.BindingContext = this;
             Title = "Image Results";
             BackgroundColor = Colors.White;
             resultList = new ListView
@@ -38,19 +51,7 @@ namespace ReadyToUseUI.Maui.Pages
 
             bottomBar = new BottomActionBar(isDetailPage: false);
             bottomBar.VerticalOptions = LayoutOptions.End;
-
-            loader = new ActivityIndicator
-            {
-                VerticalOptions = LayoutOptions.Fill,
-                HorizontalOptions = LayoutOptions.Fill,
-                HeightRequest = Application.Current.MainPage.Height / 3 * 2,
-                WidthRequest = Application.Current.MainPage.Width,
-                Color = SBColors.ScanbotRed,
-                IsRunning = true,
-                IsEnabled = true,
-                Scale = (DeviceInfo.Platform == DevicePlatform.iOS) ? 2 : 0.3
-            };
-
+            
             pageGridView = new Grid
             {
                 VerticalOptions = LayoutOptions.Fill,
@@ -66,6 +67,11 @@ namespace ReadyToUseUI.Maui.Pages
             pageGridView.SetRow(resultList, 0);
             pageGridView.SetRow(bottomBar, 1);
 
+            loader = new SBLoader
+            {
+                IsVisible = false
+            };
+            
             Content = new Grid
             {
                 Children = { pageGridView, loader },
@@ -80,28 +86,13 @@ namespace ReadyToUseUI.Maui.Pages
             resultList.ItemTapped += OnItemClick;
         }
 
-        private bool isLoading
-        {
-            get
-            {
-                return loader.IsRunning;
-            }
-            set
-            {
-                if (loader.IsRunning != value)
-                {
-                    loader.IsVisible = loader.IsRunning = value;
-                }
-            }
-        }
-
         protected override async void OnAppearing()
         {
             base.OnAppearing();
 
             try
             {
-                isLoading = true;
+                IsLoading = true;
                 var savedPages = await PageStorage.Instance.LoadAsync();
 
                 scannedPages.Clear();
@@ -111,7 +102,7 @@ namespace ReadyToUseUI.Maui.Pages
             }
             finally
             {
-                isLoading = false;
+                IsLoading = false;
             }
         }
 
@@ -175,7 +166,7 @@ namespace ReadyToUseUI.Maui.Pages
 
             try
             {
-                isLoading = true;
+                IsLoading = true;
                 switch (action)
                 {
                     case PDF:
@@ -196,13 +187,11 @@ namespace ReadyToUseUI.Maui.Pages
             }
             catch (Exception ex)
             {
-                // Making the error prettier.
-                var errorMessage = ex.Message.Substring(ex.Message.LastIndexOf(':')).Trim('{', '}');
-                ViewUtils.Alert(this, "Error: ", $"An error occurred while saving the document: {errorMessage}");
+                ViewUtils.Alert(this, "Error: ", $"An error occurred while saving the document: {ex.Message}");
             }
             finally
             {
-                isLoading = false;
+                IsLoading = false;
             }            
         }
 
@@ -220,7 +209,11 @@ namespace ReadyToUseUI.Maui.Pages
                                 Title = "ScanbotSDK PDF",
                                 Subject = "Generating a normal PDF",
                                 Keywords = new[] { "x-platform", "ios", "android" },
-                            }
+                            },
+                            Dpi = 72,
+                            JpegQuality = 80,
+                            PageFitMode = PDFPageFitMode.FitIn,
+                            Resample = false
                         });
             ViewUtils.Alert(this, "Success: ", "Wrote documents to: " + fileUri.AbsolutePath);
         }
@@ -256,7 +249,7 @@ namespace ReadyToUseUI.Maui.Pages
             var result = await SBSDK.SDKService.CreateSandwichPdfAsync(
                 documentSources.OfType<FileImageSource>(),
                 new PDFConfiguration
-                {
+                {  
                     PageOrientation = PDFPageOrientation.Auto,
                     PageSize = PDFPageSize.A4,
                     PdfAttributes = new PDFAttributes
@@ -266,7 +259,11 @@ namespace ReadyToUseUI.Maui.Pages
                         Title = "ScanbotSDK PDF",
                         Subject = "Generating a sandwiched PDF",
                         Keywords = new[] { "x-platform", "ios", "android" },
-                    }
+                    },
+                    Dpi = 72,
+                    JpegQuality = 80,
+                    PageFitMode = PDFPageFitMode.FitIn,
+                    Resample = false
                 }, ocrConfig);
 
             ViewUtils.Alert(this, "PDF with OCR layer stored: ", result.AbsolutePath);
@@ -276,7 +273,12 @@ namespace ReadyToUseUI.Maui.Pages
         {
             var fileUri = await SBSDK.SDKService.WriteTiffAsync(
                                  documentSources.OfType<FileImageSource>(),
-                                 new TiffOptions { OneBitEncoded = true, Dpi = 300, Compression = TiffCompressionOptions.CompressionCcittT6 }
+                                 new TiffOptions (ParametricFilter.ScanbotBinarization(OutputMode.Binary))
+                                 {
+                                     Compression = TiffCompressionOptions.CompressionCcittT6,
+                                     Dpi = 300,
+                                     OneBitEncoded = true
+                                 }
                              );
             ViewUtils.Alert(this, "Success: ", "Wrote documents to: " + fileUri.AbsolutePath);
         }
