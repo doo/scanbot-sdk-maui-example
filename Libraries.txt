@@ -44,7 +44,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ------------------------------------------------------------------------------
 
-Open Source libraries used in the Scanbot SDK for Android version 6.1.0
+Open Source libraries used in the Scanbot SDK for Android version 6.1.2
 
 CWAC-Camera
 
@@ -2967,7 +2967,7 @@ Version 1.1.0
 
 ------------------------------------------------------------------------------
 
-Open Source libraries used in ScanbotSDK for iOS version 6.1.0:
+Open Source libraries used in ScanbotSDK for iOS version 6.1.1:
 
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
