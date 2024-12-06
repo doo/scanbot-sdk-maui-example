@@ -21,7 +21,7 @@ public static partial class Snippets
 
     static void LoadDocument(Guid documentUuid)
     {
-        var loadedDocument = ScannedDocument.Load(documentUuid);
+        var loadedDocument = new ScannedDocument(documentUuid);
     }
 
     static void StoredDocumentUUIDs()
@@ -36,7 +36,7 @@ public static partial class Snippets
 
     static async Task RemoveAllPagesFromDocument(Guid documentUuid)
     {
-        var document = ScannedDocument.Load(documentUuid);
+        var document = new ScannedDocument(documentUuid);
         await document.RemoveAllPagesAsync();
     }
 

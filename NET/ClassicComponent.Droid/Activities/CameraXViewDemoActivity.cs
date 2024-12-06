@@ -8,28 +8,27 @@ using AndroidX.Core.View;
 using IO.Scanbot.Sdk.UI.Camera;
 using IO.Scanbot.Sdk.Camera;
 using IO.Scanbot.Sdk.Contourdetector;
-using IO.Scanbot.Sdk.UI;
-using IO.Scanbot.Sdk.Core.Contourdetector;
 using IO.Scanbot.Sdk.Process;
 using IO.Scanbot.Sdk;
+using IO.Scanbot.Sdk.Core.Contourdetector;
+using IO.Scanbot.Sdk.Docdetection.UI;
 
 namespace ClassicComponent.Droid
 {
     [Activity(Theme = "@style/Theme.AppCompat")]
-    public class CameraXViewDemoActivity : AppCompatActivity
+    public class CameraXViewDemoActivity : AppCompatActivity, IDocumentScannerViewCallback
     {
         public static string EXTRAS_ARG_DOC_IMAGE_FILE_URI = "documentImageFileUri";
         public static string EXTRAS_ARG_ORIGINAL_IMAGE_FILE_URI = "originalImageFileUri";
-
         private static string LOG_TAG = nameof(CameraXViewDemoActivity);
-        private ScanbotCameraXView cameraView;
-        private DocumentAutoSnappingController autoSnappingController;
-        private PolygonView polygonView;
+        
         private bool flashEnabled = false;
         private bool autoSnappingEnabled = true;
         private readonly bool ignoreBadAspectRatio = true;
-        private TextView userGuidanceTextView;
         private long lastUserGuidanceHintTs = 0L;
+
+        private DocumentScannerView _documentScannerView;
+        private TextView userGuidanceTextView;
         private ProgressBar imageProcessingProgress;
         private ShutterButton shutterButton;
         private Button autoSnappingToggleButton;
@@ -40,88 +39,73 @@ namespace ClassicComponent.Droid
         {
             SupportRequestWindowFeature(WindowCompat.FeatureActionBarOverlay);
             base.OnCreate(savedInstanceState);
-
-            scanbotSDK = new IO.Scanbot.Sdk.ScanbotSDK(this);
-
+            
             SetContentView(Resource.Layout.CameraXViewDemo);
+            
+            scanbotSDK = new IO.Scanbot.Sdk.ScanbotSDK(this);
+            _documentScannerView = FindViewById<DocumentScannerView>(Resource.Id.scanbotCameraView);
+            
+            var contourDetector = scanbotSDK.CreateContourDetector();
+            
+            DocumentScannerViewWrapper.InitCamera(_documentScannerView);
+            DocumentScannerViewWrapper.InitDetectionBehavior(_documentScannerView,
+                                contourDetector: contourDetector,
+                                new ContourDetectorResultImplementation(new ContourDetectorResultImplementation.ContourDetectorHandleResult(ShowUserGuidance)), this);
 
             SupportActionBar.Hide();
 
-            cameraView = FindViewById<ScanbotCameraXView>(Resource.Id.scanbotCameraView);
-
-            // In this example we demonstrate how to lock the orientation of the UI (Activity)
-            // as well as the orientation of the taken picture to portrait.
-            cameraView.LockToPortrait(true);
-
             // Uncomment to disable AutoFocus by manually touching the camera view:
-            cameraView.SetAutoFocusOnTouch(false);
+            _documentScannerView.CameraConfiguration.SetAutoFocusOnTouch(false);
 
             // Preview Mode: See https://github.com/doo/Scanbot-SDK-Examples/wiki/Using-ScanbotCameraView#preview-mode
-            cameraView.SetPreviewMode(CameraPreviewMode.FitIn);
+            _documentScannerView.CameraConfiguration.SetCameraPreviewMode(CameraPreviewMode.FitIn);
+          
+            // custom color to the polygon view
+            _documentScannerView.PolygonConfiguration.SetPolygonStrokeColor(Color.Red);
+            _documentScannerView.PolygonConfiguration.SetPolygonStrokeColorOK(Color.Green);
+            _documentScannerView.PolygonConfiguration.SetPolygonAutoSnappingProgressStrokeColor(Color.Black);
 
+            // set automatic snapping enabled.
+            _documentScannerView.ViewController.AutoSnappingEnabled = autoSnappingEnabled;
+            
+            SetUpUIElements();
+        }
+
+        private void SetUpUIElements()
+        {
             userGuidanceTextView = FindViewById<TextView>(Resource.Id.userGuidanceTextView);
-
             imageProcessingProgress = FindViewById<ProgressBar>(Resource.Id.imageProcessingProgress);
-
-            var contourDetector = scanbotSDK.CreateContourDetector();
-            var frameHandlerWrapper = new ContourDetectorFrameHandlerWrapper(cameraView.Context, contourDetector);
-            frameHandlerWrapper.AddResultHandler(ShowUserGuidance);
-            cameraView.Attach(frameHandlerWrapper);
-            ScanbotCameraXViewWrapper.Attach(cameraView, frameHandlerWrapper);
-
-            // Add an additional custom contour detector to add user guidance text
-            polygonView = FindViewById<PolygonView>(Resource.Id.scanbotPolygonView);
-            polygonView.SetStrokeColor(Color.Red);
-            polygonView.SetStrokeColorOK(Color.Green);
-
-            // Attach the default polygon result handler, to draw the default polygon
-            frameHandlerWrapper.FrameHandler.AddResultHandler(polygonView.ContourDetectorResultHandler);
-
-            autoSnappingController = DocumentAutoSnappingController.Attach(cameraView, contourDetector);
-
-            cameraView.AddPictureCallback(new PictureCallback(ProcessTakenPicture));
-            cameraView.SetCameraOpenCallback(new CameraOpenCallback(() =>
-            {
-                cameraView.PostDelayed(() =>
-                {
-                    // Uncomment to disable shutter sound (supported since Android 4.2+):
-                    // Please note that some devices may not allow disabling the camera shutter sound. 
-                    // If the shutter sound state cannot be set to the desired value, this method will be ignored.
-                    cameraView.SetShutterSound(false);
-                    // Enable ContinuousFocus mode:
-                    cameraView.ContinuousFocus();
-                }, 500);
-            }));
-
+            
             shutterButton = FindViewById<ShutterButton>(Resource.Id.shutterButton);
             shutterButton.Click += delegate
             {
-                cameraView.TakePicture(false);
+               _documentScannerView.ViewController.TakePicture(false);
             };
+            
             shutterButton.Visibility = ViewStates.Visible;
 
-            FindViewById(Resource.Id.scanbotFlashButton).Click += delegate
+            FindViewById(Resource.Id.scanbotFlashButton).Click += delegate 
             {
-                cameraView.UseFlash(!flashEnabled);
-                flashEnabled = !flashEnabled;
+              _documentScannerView.ViewController.UseFlash(!flashEnabled);
+              flashEnabled = !flashEnabled;
             };
 
             autoSnappingToggleButton = FindViewById<Button>(Resource.Id.autoSnappingToggleButton);
-            autoSnappingToggleButton.Click += delegate
+            autoSnappingToggleButton.Click += delegate 
             {
-                autoSnappingEnabled = !autoSnappingEnabled;
-                SetAutoSnapEnabled(autoSnappingEnabled);
+              autoSnappingEnabled = !autoSnappingEnabled;
+              SetAutoSnapEnabled(autoSnappingEnabled);
             };
 
             shutterButton.Post(() =>
             {
-                SetAutoSnapEnabled(autoSnappingEnabled);
+               SetAutoSnapEnabled(autoSnappingEnabled);
             });
         }
 
         private bool ShowUserGuidance(ContourDetectorFrameHandler.DetectedFrame frame, SdkLicenseError error)
         {
-            if (!autoSnappingEnabled) { return false; }
+            if (!autoSnappingEnabled || frame == null) { return false; }
 
             if (Java.Lang.JavaSystem.CurrentTimeMillis() - lastUserGuidanceHintTs < 400)
             {
@@ -132,20 +116,20 @@ namespace ClassicComponent.Droid
             var guideText = "";
 
             var result = frame.DetectionStatus;
-            if (result == DetectionStatus.Ok)
+            if (result == DocumentDetectionStatus.Ok)
             {
                 guideText = "Don't move.\nCapturing...";
                 color = Color.Green;
             }
-            else if (result == DetectionStatus.OkButTooSmall)
+            else if (result == DocumentDetectionStatus.OkButTooSmall)
             {
                 guideText = "Move closer";
             }
-            else if (result == DetectionStatus.OkButBadAngles)
+            else if (result == DocumentDetectionStatus.OkButBadAngles)
             {
                 guideText = "Perspective";
             }
-            else if (result == DetectionStatus.OkButBadAspectRatio)
+            else if (result == DocumentDetectionStatus.OkButBadAspectRatio)
             {
                 guideText = "Wrong aspect ratio.\n Rotate your device";
                 if (ignoreBadAspectRatio)
@@ -154,15 +138,15 @@ namespace ClassicComponent.Droid
                     color = Color.Green;
                 }
             }
-            else if (result == DetectionStatus.ErrorNothingDetected)
+            else if (result == DocumentDetectionStatus.ErrorNothingDetected)
             {
                 guideText = "No Document";
             }
-            else if (result == DetectionStatus.ErrorTooNoisy)
+            else if (result == DocumentDetectionStatus.ErrorTooNoisy)
             {
                 guideText = "Background too noisy";
             }
-            else if (result == DetectionStatus.ErrorTooDark)
+            else if (result == DocumentDetectionStatus.ErrorTooDark)
             {
                 guideText = "Poor light";
             }
@@ -180,13 +164,25 @@ namespace ClassicComponent.Droid
             return false;
         }
 
-        private void ProcessTakenPicture(byte[] image, int imageOrientation, IList<PointF> finderRect)
+        public void OnCameraOpen()
+        {
+            // Uncomment to disable shutter sound (supported since Android 4.2+):
+            // Please note that some devices may not allow disabling the camera shutter sound. 
+            // If the shutter sound state cannot be set to the desired value, this method will be ignored.
+            _documentScannerView.CameraConfiguration.SetShutterSound(false);
+            _documentScannerView.ViewController.UseFlash(flashEnabled);
+
+            // Enable ContinuousFocus mode:
+            _documentScannerView.ViewController.ContinuousFocus();
+        }
+
+        public void OnPictureTaken(byte[] image, CaptureInfo captureInfo)
         {
             // Here we get the full image from the camera and apply document detection on it.
             // Implement a suitable async(!) detection and image handling here.
             // This is just a demo showing detected image as downscaled preview image.
 
-            Log.Debug(LOG_TAG, "OnPictureTaken: imageOrientation = " + imageOrientation);
+            Log.Debug(LOG_TAG, "OnPictureTaken: imageOrientation = " + captureInfo.ImageOrientation);
 
             // Show progress spinner:
             RunOnUiThread(() =>
@@ -201,10 +197,10 @@ namespace ClassicComponent.Droid
             var originalBitmap = BitmapFactory.DecodeByteArray(image, 0, image.Length, options);
 
             // rotate original image if required:
-            if (imageOrientation > 0)
+            if (captureInfo.ImageOrientation > 0)
             {
                 Matrix matrix = new Matrix();
-                matrix.SetRotate(imageOrientation, originalBitmap.Width / 2f, originalBitmap.Height / 2f);
+                matrix.SetRotate(captureInfo.ImageOrientation, originalBitmap.Width / 2f, originalBitmap.Height / 2f);
                 originalBitmap = Bitmap.CreateBitmap(originalBitmap, 0, 0, originalBitmap.Width, originalBitmap.Height, matrix, false);
             }
 
@@ -216,7 +212,7 @@ namespace ClassicComponent.Droid
             var detector = scanbotSDK.CreateContourDetector();
             var sdkDetectionResult = detector.Detect(originalBitmap);
             //  var detectionResult = ScanbotSDK.MAUI.Native.Droid.ScanbotSDK.DetectDocument(originalBitmap);
-            if (sdkDetectionResult.Status == DetectionStatus.Ok)
+            if (sdkDetectionResult.Status == DocumentDetectionStatus.Ok)
             {
                 if (sdkDetectionResult.PolygonF != null)
                 {
@@ -242,7 +238,6 @@ namespace ClassicComponent.Droid
             SetResult(Result.Ok, intent);
 
             Finish();
-            return;
 
             /* If you want to continue scanning:
             RunOnUiThread(() => {
@@ -253,11 +248,14 @@ namespace ClassicComponent.Droid
             */
         }
 
-        protected void SetAutoSnapEnabled(bool enabled)
+        void SetAutoSnapEnabled(bool enabled)
         {
-            autoSnappingController.Enabled = enabled;
-            //contourDetectorFrameHandler.Enabled = enabled;
-            polygonView.Visibility = (enabled ? ViewStates.Visible : ViewStates.Gone);
+            _documentScannerView.ViewController.AutoSnappingEnabled = enabled;
+            _documentScannerView.ViewController.FrameProcessingEnabled = enabled;
+            
+            _documentScannerView.PolygonConfiguration.SetPolygonViewVisible(enabled);
+            _documentScannerView.PolygonConfiguration.SetPolygonAutoSnapProgressEnabled(enabled);
+            
             autoSnappingToggleButton.Text = ("Automatic " + (enabled ? "ON" : "OFF"));
             if (enabled)
             {
@@ -271,34 +269,12 @@ namespace ClassicComponent.Droid
             }
         }
     }
+}
 
-    public class PictureCallback : Java.Lang.Object, IBasePictureCallback
-    {
-        private Action<byte[], int, IList<PointF>> PictureTaken;
+internal class ContourDetectorResultImplementation(ContourDetectorResultImplementation.ContourDetectorHandleResult handleResult) : ContourDetectorResultHandlerWrapper
+{
+   internal delegate bool ContourDetectorHandleResult(ContourDetectorFrameHandler.DetectedFrame frame, SdkLicenseError error);
 
-        public PictureCallback(Action<byte[], int, IList<PointF>> pictureTaken)
-        {
-            PictureTaken = pictureTaken;
-        }
-
-        public void OnPictureTakenInternal(byte[] image, int imageOrientation, IList<PointF> finderRect, bool isCapturedAutomatically)
-        {
-            PictureTaken?.Invoke(image, imageOrientation, finderRect);
-        }
-    }
-
-    public class CameraOpenCallback : Java.Lang.Object, ICameraOpenCallback
-    {
-        private Action _cameraOpened;
-
-        public CameraOpenCallback(Action cameraOpened)
-        {
-            _cameraOpened = cameraOpened;
-        }
-
-        public void OnCameraOpened()
-        {
-            _cameraOpened?.Invoke();
-        }
-    }
+   public override bool HandleResult(ContourDetectorFrameHandler.DetectedFrame result, SdkLicenseError error) =>
+                       handleResult?.Invoke(result, error) ?? false;
 }

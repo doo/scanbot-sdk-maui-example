@@ -204,9 +204,6 @@ public partial class FiltersPage : ContentPage
             list.Add(GetParametricFilterFromItems(filterType.FilterTitle, properties));
         }
         
-        // all selected filters
-        SDKUtils.PrintJson(list);
-        
         // Note: If you wish to ignore the Legacy Filter uncoment below code 
         // list = list.Where(item => !item.IsLegacyFilter).ToList();
 

@@ -4,7 +4,7 @@ namespace ReadyToUseUI.iOS.View.Collection
 {
     public class CollectionEventArgs
     {
-        public SBSDKDocumentPage Page { get; set; }
+        public SBSDKScannedPage Page { get; set; }
     }
 
     public class ImageCollection : UICollectionView, IUICollectionViewSource,
@@ -12,7 +12,7 @@ namespace ReadyToUseUI.iOS.View.Collection
     {
         public EventHandler<CollectionEventArgs> Selected;
 
-        public List<SBSDKDocumentPage> Pages { get; set; } = new List<SBSDKDocumentPage>();
+        public List<SBSDKScannedPage> Pages { get; set; } = new List<SBSDKScannedPage>();
 
         private static readonly UICollectionViewFlowLayout _layout;
         

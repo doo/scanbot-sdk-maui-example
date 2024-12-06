@@ -23,7 +23,6 @@ namespace ReadyToUseUI.iOS.Controller
 
             ContentView = new PdfContainerView(uri, ocr);
             View = ContentView;
-
             Title = uri.LastPathComponent;
         }
 

@@ -18,15 +18,11 @@
 
         public const string data_detectors = "Data Detectors";
 
-        public const string scan_qr_code = "Scan QR-/Barcode";
-
         public const string scan_mrz = "Scan MRZ";
 
         public const string scan_mrz_image = "Scan MRZ + Image";
 
         public const string scan_mrz_back_and_front_image = "Scan MRZ + Front and Back Image";
-
-        public const string scan_bar_code_and_doc_image = "Scan QR-/Barcode + Document Image";
 
         public const string scan_mc_form = "Scan MC Form";
 
@@ -68,11 +64,11 @@
 
         public const string none = "None";
 
-        public const string crop_amp_rotate = "CROP & ROTATE";
+        public const string crop = "CROP";
 
         public const string delete = "DELETE";
 
-        public const string check_document_quality = "CHECK QUALITY";
+        public const string check_document_quality = "QUALITY";
 
         public const string page_title = "Page";
 
@@ -80,7 +76,7 @@
 
         public const string demo_expired = "Demo Expired";
 
-        public const string save = "Save";
+        public const string export = "Export";
 
         public const string scan_results = "Scan Results";
 
@@ -128,9 +124,11 @@
 
         public const string travel_doc_type = "travelDocType:";
 
-        public const string save_with_ocr = "Save as PDF with OCR";
+        public const string save_sandwich_pdf = "Save as Sandwich PDF";
 
-        public const string save_without_ocr = "Save as PDF";
+        public const string save_pdf = "Save as PDF";
+        
+        public const string perform_ocr = "Perform OCR";
 
         public const string importing_and_processing = "Importing selected image and running auto document detection...";
 

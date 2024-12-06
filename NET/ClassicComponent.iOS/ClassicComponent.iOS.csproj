@@ -1,9 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net8.0-ios</TargetFramework>
-        <!-- Comment out the above and add the below to run with .net7 -->
-        <!-- <TargetFramework>net7.0-ios</TargetFramework> -->
-
         <OutputType>Exe</OutputType>
         <Nullable>disable</Nullable>
         <ImplicitUsings>true</ImplicitUsings>
@@ -15,19 +12,37 @@
 		    <Platforms>ARM64;x64</Platforms>
         <WarningsAsErrors>NU1603</WarningsAsErrors>
 	</PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-        <CreatePackage>false</CreatePackage>
-        <CodesignProvision>Automatic</CodesignProvision>
-        <CodesignKey>iPhone Developer</CodesignKey>
-        <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
-        <MtouchLink>SdkOnly</MtouchLink>
+
+    <!-- Properties for iOS Simulator (x64 architecture) -->
+    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'iossimulator-x64'">
+        <RuntimeIdentifiers>iossimulator-x64</RuntimeIdentifiers>
+        <!-- Additional properties specific to iOS simulator (x64) -->
+        <PlatformTarget>x64</PlatformTarget>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <!-- Properties for iOS Simulator (arm64 architecture) -->
+    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'iossimulator-arm64'">
+        <RuntimeIdentifiers>iossimulator-arm64</RuntimeIdentifiers>
+        <!-- Additional properties specific to iOS simulator (arm64) -->
+    </PropertyGroup>
+    <!-- Properties for iOS Device (arm64 architecture) -->
+    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'ios-arm64'">
+        <RuntimeIdentifiers>ios-arm64</RuntimeIdentifiers>
+        <!-- Additional properties specific to iOS device (arm64) -->
+    </PropertyGroup>
+
+    <!-- General settings for iOS targets -->
+    <PropertyGroup>
+        <MtouchLink>SdkOnly</MtouchLink>
+        <MtouchInterpreter>-all</MtouchInterpreter>
         <CreatePackage>false</CreatePackage>
+        <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
+
+        <!-- Simulator support attribute -->
+        <ForceSimulatorX64ArchitectureInIDE>true</ForceSimulatorX64ArchitectureInIDE>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Scanbot.Xamarin.ImagePicker" Version="0.0.3-beta.1" />
-        <PackageReference Include="ScanbotSDK.NET" Version="5.1.0" />
+        <PackageReference Include="ScanbotSDK.NET" Version="6.1.0" />
     </ItemGroup>
     <ItemGroup>
       <InterfaceDefinition Remove="ViewControllers\ClassicComponents\ClassicComponentStoryboard.storyboard" />

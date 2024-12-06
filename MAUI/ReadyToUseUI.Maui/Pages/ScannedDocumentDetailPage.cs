@@ -82,7 +82,7 @@ namespace ReadyToUseUI.Maui.Pages
             bottomBar.AddTappedEvent(bottomBar.DeleteButton, OnDeleteButtonTapped);
         }
 
-        protected override async void OnAppearing()
+        protected override void OnAppearing()
         {
             base.OnAppearing();
 

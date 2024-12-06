@@ -70,7 +70,7 @@ namespace ClassicComponent.iOS.Utils
             }
             var image = originalImage.ImageWarpedByPolygon(parameters.Polygon, 1.0f);
             parameters.Rotation = 0;
-            image = image.ImageFilteredWithFilters(new[] { new SBSDKLegacyFilter((int)parameters.Filter) });
+            image = image.ImageFilteredWithFilters(new[] { parameters.Filter });
             return image;
         }
     }

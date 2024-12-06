@@ -1,6 +1,3 @@
-using IO.Scanbot.Imagefilters;
-using IO.Scanbot.Sdk.Process;
-
 namespace ReadyToUseUI.Droid.Model;
 
 public enum FilterType

@@ -46,7 +46,7 @@ namespace ClassicComponent.Droid
             initializer.SdkFilesDirectory(app, PageStoragePathForExample(app));
             initializer.License(app, LicenseKey);
 
-            initializer.UsePageStorageSettings(new IO.Scanbot.Sdk.Persistence.PageStorageSettings.Builder()
+            initializer.UsePageStorageSettings(new IO.Scanbot.Sdk.Persistence.Page.PageStorageSettings.Builder()
                                                .ImageQuality(80)
                                                .ImageFormat(IO.Scanbot.Sdk.Persistence.CameraImageFormat.Jpg)
                                                .PreviewTargetMax(1500) // max size for the preview images
