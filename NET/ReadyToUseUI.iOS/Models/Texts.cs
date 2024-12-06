@@ -40,7 +40,7 @@
 
         public const string add_page = "ADD PAGE";
 
-        public const string filter = "FILTER";
+        public const string filter = "Filter";
 
         public const string delete_all = "DELETE ALL";
 
@@ -70,7 +70,11 @@
 
         public const string none = "None";
 
-        public const string crop_amp_rotate = "CROP & ROTATE";
+        public const string crop = "Crop";
+        
+        public const string export = "Export";
+    
+        public const string document_quality = "Quality";
 
         public const string delete = "DELETE";
 
@@ -128,9 +132,11 @@
 
         public const string travel_doc_type = "travelDocType:";
 
-        public const string save_with_ocr = "Save as PDF with OCR";
+        public const string save_sandwich_pdf = "Save as Sandwich PDF";
 
-        public const string save_without_ocr = "Save as PDF";
+        public const string save_pdf = "Save as PDF";
+        
+        public const string perform_ocr = "Perform OCR";
 
         public const string importing_and_processing = "Importing selected image and running auto document detection...";
 

@@ -82,29 +82,12 @@
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)"/>
     </ItemGroup>
     
-    <!-- ===================== IOS Project References =====================  -->
-    <ItemGroup Condition="$(TargetFramework.Contains('-ios')) == true">
-        <PackageReference Include="NuGet.Build.Packaging" Version="0.2.2">
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
-        <PackageReference Include="System.Numerics.Vectors" Version="4.5.0"/>
-    </ItemGroup>
-
     <!-- ===================== Common Project References =====================  -->
     <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="SQLitePCLRaw.core" Version="2.1.4"/>
-        <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.4"/>
-        <PackageReference Include="sqlite-net-pcl" Version="1.8.116"/>
-        <!-- <PackageReference Include="ScanbotSDK.MAUI" Version="6.1.0-local.1"/> -->
-    </ItemGroup>
-
-    <!-- ===================== IOS OCR Data Files =====================  -->
-    <ItemGroup Condition="$(TargetFramework.Contains('-ios')) == true">
-        <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\eng.traineddata"/>
-        <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\deu.traineddata"/>
-        <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\osd.traineddata"/>
+        <PackageReference Include="ScanbotSDK.MAUI" Version="6.1.0-beta.7">
+            <!-- Required if our package is a dependency of your own package. -->
+            <PrivateAssets>None</PrivateAssets>
+        </PackageReference>
     </ItemGroup>
 
     <!-- ===================== Folders =====================  -->
@@ -137,8 +120,5 @@
           <DependentUpon>BarcodeResultPage.xaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
-    </ItemGroup>
-    <ItemGroup>
-      <ProjectReference Include="..\..\..\scanbot-sdk-maui\DocumentSDK\DocumentSDK.MAUI\DocumentSDK.MAUI.csproj" />
     </ItemGroup>
 </Project>

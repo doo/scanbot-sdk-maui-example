@@ -21,7 +21,7 @@ public static partial class Snippets
 		var firstExampleEntry = new IntroListEntry();
 
 		// Configure the introduction image to be shown.
-		//		firstExampleEntry.Image = IntroImage.ReceiptsIntroImage;
+		firstExampleEntry.Image = new ReceiptsIntroImage();
 
 		// Configure the text.
 		firstExampleEntry.Text = new StyledText
@@ -36,7 +36,7 @@ public static partial class Snippets
 		var secondExampleEntry = new IntroListEntry();
 
 		// Configure the introduction image to be shown.
-		//secondExampleEntry.Image = IntroImage.CheckIntroImage;
+		secondExampleEntry.Image = new CheckIntroImage();
 
 		// Configure the text.
 		secondExampleEntry.Text = new StyledText

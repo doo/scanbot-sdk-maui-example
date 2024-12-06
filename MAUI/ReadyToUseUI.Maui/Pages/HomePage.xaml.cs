@@ -39,10 +39,6 @@ public partial class HomePage : ContentPage
         sdkFeatures = new List<SdkFeature>
         {
             new SdkFeature("DOCUMENT SCANNER"),
-            //new ListItem("Single Document Scanning", SingleDocumentScanning),
-            //new ListItem("Single Finder Document Scanning", SingleFinderDocumentScanning),
-            //new ListItem("Multiple Document Scanning", MultipleDocumentScanning),
-            //new ListItem("Import Image", ImportImage)
             new SdkFeature("Single Document Scanning", SingleDocumentScanningClicked),
             new SdkFeature("Single Finder Document Scanning", SingleFinderDocumentScanningClicked),
             new SdkFeature("Multiple Document Scanning", MultipleDocumentScanningClicked),

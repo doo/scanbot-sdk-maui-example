@@ -1,21 +1,19 @@
-using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Document;
-using Microsoft.Maui.Graphics.Platform;
 using static ScanbotSDK.MAUI.ScanbotSDKMain;
 
 namespace ReadyToUseUI.Maui;
 
 public static partial class Snippets
 {
-    static void CreatePdfFromDocument(ScannedDocument scannedDocument)
+    static async void CreatePdfFromDocument(ScannedDocument scannedDocument)
     {
         var config = new PDFConfiguration();
-
-        var fileUri = scannedDocument.CreatePdfAsync(config);
+        var fileUri = await scannedDocument.CreatePdfAsync(config);
     }
 
-    // void CreatePdfFromImage(PlatformImage image)
-    // {
-    //     CommonOperations.CreatePdfAsync();
-    // }
+    static async void CreatePdfFromImage(Uri[] imageFiles)
+    {
+        var config = new PDFConfiguration();
+        var fileUri = await CommonOperations.CreatePdfAsync(imageFiles.Select(f => new FileImageSource { File = f.LocalPath }), config);
+    }
 }

@@ -8,10 +8,10 @@ public static partial class Snippets
 	private static async Task PageFilterSnippet()
 	{
 		// Retrieve the scanned document (replace Guid.Empty with a real value)
-		var document = ScannedDocument.Load(documentUuid: Guid.Empty);
+		var document = new ScannedDocument(documentUuid: Guid.Empty);
         
 		// Retrieve the selected document page.
-		var page = document.Pages.First();
+		var page = document[0]; //or document.Pages.First();
 		
 		// Apply rotation and filters on the page
 		// Create the instances of the filters you want to apply.
