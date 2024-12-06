@@ -82,7 +82,7 @@ namespace ReadyToUseUI.Maui.Pages
             bottomBar.AddTappedEvent(bottomBar.DeleteButton, OnDeleteButtonTapped);
         }
 
-        protected override async void OnAppearing()
+        protected override void OnAppearing()
         {
             base.OnAppearing();
 
@@ -101,6 +101,7 @@ namespace ReadyToUseUI.Maui.Pages
                         DocumentUuid = selectedDocument.Uuid.ToString(),
                         PageUuid = selectedPage.Uuid.ToString()
                     });
+                documentImage.Source = selectedPage.DocumentImagePreviewUri.ToImageSource();
             }
             catch (TaskCanceledException)
             {
@@ -121,7 +122,7 @@ namespace ReadyToUseUI.Maui.Pages
             filterPage.NavigateData(async (filters) =>
             {
                 documentImage.Source = null;
-                await selectedPage.ModifyPageAsync(filters: filters);
+                selectedPage = await selectedPage.ModifyPageAsync(filters: filters);
                 documentImage.Source = selectedPage.DocumentImagePreviewUri.ToImageSource();
             });            
             await Navigation.PushAsync(filterPage);

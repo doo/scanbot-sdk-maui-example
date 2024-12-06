@@ -4,9 +4,9 @@ using Android.Content;
 
 using AndroidX.AppCompat.App;
 using IO.Scanbot.Sdk.UI;
-using IO.Scanbot.Sdk.Core.Contourdetector;
 using IO.Scanbot.Sdk.Process;
 using System.Diagnostics;
+using IO.Scanbot.Sdk.Core.Contourdetector;
 
 namespace ClassicComponent.Droid
 {
@@ -94,8 +94,8 @@ namespace ClassicComponent.Droid
             // Since we just need detected polygon and lines here, we use ContourDetector class from the native SDK namespace.
             var detectionResult = detector.Detect(resizedBitmap);
             var detectionStatus = detectionResult.Status;
-            if (detectionStatus == DetectionStatus.Ok || detectionStatus == DetectionStatus.OkButBadAngles ||
-                detectionStatus == DetectionStatus.OkButTooSmall || detectionStatus == DetectionStatus.OkButBadAspectRatio)
+            if (detectionStatus == DocumentDetectionStatus.Ok || detectionStatus == DocumentDetectionStatus.OkButBadAngles ||
+                detectionStatus == DocumentDetectionStatus.OkButTooSmall || detectionStatus == DocumentDetectionStatus.OkButBadAspectRatio)
             {
                 polygon = detectionResult.PolygonF;
                 Debug.WriteLine("Detected polygon: " + polygon);

@@ -11,30 +11,30 @@
     android:paddingBottom="16dp">
 
     <Button
-        android:id="@+id/save_with_ocr"
-        style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+            android:id="@+id/save_pdf"
+            style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     <View
-        android:layout_width="0dp"
-        android:layout_height="0.5dp"
-        android:background="#1effffff"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/save_with_ocr" />
+            android:layout_width="0dp"
+            android:layout_height="0.5dp"
+            android:background="#1effffff"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/save_pdf" />
 
     <Button
-        android:id="@+id/save_without_ocr"
+        android:id="@+id/save_sandwich_pdf"
         style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
         android:layout_width="0dp"
         android:layout_height="48dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/save_with_ocr" />
+        app:layout_constraintTop_toBottomOf="@+id/save_pdf" />
 
     <View
         android:layout_width="0dp"
@@ -42,7 +42,24 @@
         android:background="#1effffff"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/save_without_ocr" />
+        app:layout_constraintTop_toBottomOf="@+id/save_sandwich_pdf" />
+
+    <Button
+        android:id="@+id/save_ocr"
+        style="@style/Scanbot.Demo.MaterialTwoButtonTeaser.Button"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/save_sandwich_pdf" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0.5dp"
+        android:background="#1effffff"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/save_ocr" />
 
     <Button
         android:id="@+id/save_tiff"
@@ -51,6 +68,6 @@
         android:layout_height="48dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/save_without_ocr" />
+        app:layout_constraintTop_toBottomOf="@+id/save_ocr" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

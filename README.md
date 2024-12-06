@@ -17,7 +17,7 @@ The Scanbot SDK will run without a license for one minute per session!
 
 After the trial period has expired, all SDK functions and UI components will stop working. You have to restart the app to get another one-minute trial period.
 
-To test the Scanbot SDK without crashing, you can get a free “no-strings-attached” trial license. Please submit the [Trial License Form](https://scanbot.io/trial/) on our website.
+To try the Scanbot SDK without a one-minute limit, you can get a free “no-strings-attached” trial license. Please submit the [Trial License Form](https://scanbot.io/trial/) on our website.
 
 ## Free Developer Support
 
@@ -62,7 +62,7 @@ To build the Android example project for both net7.0-android and net8.0-android,
 
 To run the project on a real device, specify a target framework with `-f net8.0-android` and the Run target via `-t:Run`, yielding the following:
 
-```dotnet build NET/ReadyToUseUI.Droid -f net8.0-android -t:Run --force --no-incremental ```
+```dotnet build NET/ReadyToUseUI.Droid -f net8.0-android -t:Run --force --no-incremental```
 
 The Classic Component has its own project. Run it with:
 

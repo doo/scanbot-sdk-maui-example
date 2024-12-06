@@ -41,9 +41,6 @@ public partial class FiltersPage : ContentPage
             FilterItem.InitSlider(nameof(GrayscaleFilter), FilterItemConstants.BorderWidthFraction, 0.06, 0.0, 0.15),
             FilterItem.InitSlider(nameof(GrayscaleFilter), FilterItemConstants.BlackOutlierFraction, 0.0, 0.0, 0.05),
             FilterItem.InitSlider(nameof(GrayscaleFilter), FilterItemConstants.WhiteOutlierFraction, 0.02, 0.0, 0.05),
-
-            FilterItem.InitPrimaryFilter(nameof(LegacyFilter)),
-            FilterItem.InitPicker(nameof(LegacyFilter), FilterItemConstants.LegacyFilters, Enum.GetNames<ImageFilter>().ToList()),
             
             FilterItem.InitPrimaryFilter(nameof(WhiteBlackPointFilter)),
             FilterItem.InitSlider(nameof(WhiteBlackPointFilter), FilterItemConstants.BlackPoint, 0.0, 0.0, 1.0),
@@ -203,12 +200,6 @@ public partial class FiltersPage : ContentPage
             var properties = FilterItems?.Where(item => item.FilterTitle == filterType.FilterTitle && !string.IsNullOrEmpty(item.Caption))?.ToList() ?? new List<FilterItem>();
             list.Add(GetParametricFilterFromItems(filterType.FilterTitle, properties));
         }
-        
-        // all selected filters
-        SDKUtils.PrintJson(list);
-        
-        // Note: If you wish to ignore the Legacy Filter uncoment below code 
-        // list = list.Where(item => !item.IsLegacyFilter).ToList();
 
         DidFinishFilterSelection(list.ToArray());
     }
@@ -275,12 +266,6 @@ public partial class FiltersPage : ContentPage
 
                 return ParametricFilter.Grayscale(borderWidth, blackOutlier, whiteOutlier);
             }
-            case nameof(LegacyFilter):
-            {
-                Enum.TryParse(properties.First().PickerSelectedValue, out ImageFilter legacyFilter);
-                return ParametricFilter.FromLegacyFilter(legacyFilter);
-            }
-
             case nameof(WhiteBlackPointFilter):
             {
                 var blackPoint = properties.First(item => item.Caption == FilterItemConstants.BlackPoint)

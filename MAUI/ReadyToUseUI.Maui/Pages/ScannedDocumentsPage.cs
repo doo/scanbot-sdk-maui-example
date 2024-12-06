@@ -106,6 +106,7 @@ namespace ReadyToUseUI.Maui.Pages
         protected override void OnAppearing()
         {
             base.OnAppearing();
+            resultList.ItemsSource = document.Pages;
         }
 
         private void OnItemClick(object sender, ItemTappedEventArgs e)

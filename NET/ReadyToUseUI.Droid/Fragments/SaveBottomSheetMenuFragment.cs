@@ -11,19 +11,27 @@ namespace ReadyToUseUI.Droid.Fragments
         {
             var view = inflater.Inflate(Resource.Layout.save_bottom_sheet, container, false);
 
-            var saveWith = view.FindViewById<Button>(Resource.Id.save_with_ocr);
-            saveWith.Text = Texts.save_with_ocr;
-            saveWith.Click += delegate
+            var savePdf = view.FindViewById<Button>(Resource.Id.save_pdf);
+            savePdf.Text = Texts.save_pdf;
+            savePdf.Click += delegate
+             {
+                 (Activity as PagePreviewActivity)?.SavePdf();
+                 DismissAllowingStateLoss();
+             };
+            
+            var saveSandwichPdf = view.FindViewById<Button>(Resource.Id.save_sandwich_pdf);
+            saveSandwichPdf.Text = Texts.save_sandwich_pdf;
+            saveSandwichPdf.Click += delegate
             {
-                (Activity as PagePreviewActivity).SaveWithOcr();
+                (Activity as PagePreviewActivity)?.SaveSandwichPdf();
                 DismissAllowingStateLoss();
             };
 
-            var saveWithout = view.FindViewById<Button>(Resource.Id.save_without_ocr);
-            saveWithout.Text = Texts.save_without_ocr;
-            saveWithout.Click += delegate
+            var performOcr = view.FindViewById<Button>(Resource.Id.save_ocr);
+            performOcr.Text = Texts.perform_ocr;
+            performOcr.Click += delegate
             {
-                (Activity as PagePreviewActivity).SaveWithoutOcr();
+                (Activity as PagePreviewActivity)?.SaveWithOcr();
                 DismissAllowingStateLoss();
             };
 

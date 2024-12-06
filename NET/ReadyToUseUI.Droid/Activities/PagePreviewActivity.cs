@@ -5,26 +5,47 @@ using Android.Views;
 using AndroidX.AppCompat.App;
 using AndroidX.Core.Content;
 using AndroidX.RecyclerView.Widget;
-using IO.Scanbot.Sdk.Persistence;
 using IO.Scanbot.Sdk.Process;
-using IO.Scanbot.Sdk.UI.View.Camera;
-using IO.Scanbot.Sdk.UI.View.Camera.Configuration;
 using IO.Scanbot.Sdk.Util.Thread;
 using ReadyToUseUI.Droid.Fragments;
 using ReadyToUseUI.Droid.Listeners;
 using ReadyToUseUI.Droid.Utils;
 using DocumentSDK.NET.Model;
-using IO.Scanbot.Imagefilters;
 using IO.Scanbot.Pdf.Model;
+using IO.Scanbot.Sdk.Docprocessing;
+using IO.Scanbot.Sdk.Imagefilters;
 using IO.Scanbot.Sdk.Tiff.Model;
 using ReadyToUseUI.Droid.Model;
 using IO.Scanbot.Sdk.Ocr;
+using IO.Scanbot.Sdk.Process.Model;
+using IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration;
+using IO.Scanbot.Sdk.Ui_v2.Common;
+using IO.Scanbot.Sdk.Ui_v2.Document;
+using IO.Scanbot.Sdk.Ui_v2.Document.Configuration;
+using Org.Json;
 using static IO.Scanbot.Sdk.Ocr.IOpticalCharacterRecognizer;
+using ImageProcessor = IO.Scanbot.Sdk.Core.Processor.ImageProcessor;
+using Uri = Android.Net.Uri;
 
 namespace ReadyToUseUI.Droid.Activities
 {
+    internal class PageModel
+    {
+        public string DocumentId { get; set; }
+        
+        public string PageId { get; set; }
+        
+        public Android.Net.Uri OriginalPagePreviewUri { get; set; }
+        
+        public Android.Net.Uri OriginalPageUri { get; set; }
+        
+        public Android.Net.Uri ScannedPageUri { get; set; }
+        
+        public Android.Net.Uri ScannedPagePreviewUri { get; set; }
+    }
+    
     [Activity]
-    public class PagePreviewActivity : AppCompatActivity, IFiltersListener
+    public partial class PagePreviewActivity : AppCompatActivity, IFiltersListener
     {
         const int FILTER_UI_REQUEST_CODE = 7777;
         const int CAMERA_ACTIVITY = 8888;
@@ -33,9 +54,8 @@ namespace ReadyToUseUI.Droid.Activities
         const string SAVE_MENU_TAG = "SAVE_MENU_TAG";
 
         private IO.Scanbot.Sdk.ScanbotSDK scanbotSDK;
-        private IO.Scanbot.Sdk.Persistence.PageFileStorage pageStorage;
-        private IO.Scanbot.Sdk.Docprocessing.PageProcessor pageProcessor;
-
+        private Document document;
+        
         PageAdapter adapter;
         RecyclerView recycleView;
 
@@ -43,18 +63,23 @@ namespace ReadyToUseUI.Droid.Activities
         SaveBottomSheetMenuFragment saveFragment;
 
         ProgressBar progress;
-        TextView delete, filter, addPage, results;
-        Button save;
+        private TextView crop, filter, quality; 
+        Button export;
+
+        internal static Intent CreateIntent(Context context, string documentId)
+        {
+            var intent = new Intent(context, typeof(PagePreviewActivity));
+            intent.PutExtra(nameof(documentId), documentId);
+            return intent;
+        }
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             scanbotSDK = new IO.Scanbot.Sdk.ScanbotSDK(this);
-            pageStorage = scanbotSDK.CreatePageFileStorage();
-            pageProcessor = scanbotSDK.CreatePageProcessor();
-
             SetContentView(Resource.Layout.activity_page_preview);
-
+            var documentId = Intent.GetStringExtra("documentId");
+            document = scanbotSDK.DocumentApi.LoadDocument(documentId);
             SetupToolbar();
 
             filterFragment = new FilterListFragment();
@@ -74,7 +99,7 @@ namespace ReadyToUseUI.Droid.Activities
 
             progress = FindViewById<ProgressBar>(Resource.Id.progressBar);
 
-            adapter = new PageAdapter(scanbotSDK.FileIOProcessor(), pageStorage);
+            adapter = new PageAdapter(scanbotSDK.FileIOProcessor(), document);
             adapter.HasStableIds = true;
             adapter.Context = this;
 
@@ -83,44 +108,57 @@ namespace ReadyToUseUI.Droid.Activities
             recycleView.SetAdapter(adapter);
             recycleView.SetLayoutManager(new GridLayoutManager(this, 3));
 
-            addPage = FindViewById<TextView>(Resource.Id.action_add_page);
-            addPage.Text = Texts.add_page;
-            addPage.Click += delegate
+            // Bottom Toolbar
+            
+            crop = FindViewById<TextView>(Resource.Id.action_crop);
+            crop.Text = Texts.crop;
+            crop.Click += delegate
             {
-                var configuration = new DocumentScannerConfiguration();
-                configuration.SetCameraPreviewMode(IO.Scanbot.Sdk.Camera.CameraPreviewMode.FillIn);
-                configuration.SetIgnoreBadAspectRatio(true);
-                var intent = DocumentScannerActivity.NewIntent(this, configuration);
+                var pageId = scanbotSDK.DocumentApi.LoadDocument(documentId)?.PageAtIndex(0)?.Uuid;
+                var configurations = CroppingActivityConfiguration.Init(documentId, pageId);
+                
+                configurations.Appearance.TopBarBackgroundColor = new ScanbotColor(Android.Graphics.Color.Red);
+                configurations.Cropping.TopBarConfirmButton.Foreground.Color = new ScanbotColor(Android.Graphics.Color.Red);
+                
+                // e.g. disable the rotation feature.
+                configurations.Cropping.BottomBar.RotateButton.Visible = false;
+
+                // e.g. configure various colors.
+                configurations.Appearance.TopBarBackgroundColor = new ScanbotColor(Color.Red);
+                configurations.Cropping.TopBarConfirmButton.Foreground.Color = new ScanbotColor(Color.White);
+
+                // e.g. customize a UI element's text.
+                configurations.Localization.CroppingTopBarCancelButtonTitle = "Cancel";
+                
+                var intent = CroppingActivity.NewIntent(this, configurations);
                 StartActivityForResult(intent, CAMERA_ACTIVITY);
             };
 
-            results = FindViewById<TextView>(Resource.Id.scan_results);
-            results.Text = Texts.scan_results;
+            quality = FindViewById<TextView>(Resource.Id.action_document_quality);
+            quality.Text = Texts.check_document_quality;
+            quality.Click += delegate
+             {
+                 var bitmap = scanbotSDK.DocumentApi.LoadDocument(documentId)?.PageAtIndex(0)?.DocumentImage;
+                 if (bitmap == null)
+                     return;
 
-            delete = FindViewById<TextView>(Resource.Id.action_delete_all);
-            delete.Text = Texts.delete_all;
-            delete.Click += delegate
-            {
-                pageStorage.RemoveAll();
-                adapter.Refresh();
-                delete.Enabled = false;
-                filter.Enabled = false;
-                save.Enabled = false;
-            };
+                 var qualityAnalyzer = scanbotSDK.CreateDocumentQualityAnalyzer();
+                 var documentQualityResult = qualityAnalyzer.AnalyzeInBitmap(bitmap, 0);
+                 Alert.ShowAlert(this, "Document Quality", documentQualityResult.Name());
+             };
 
             filter = FindViewById<TextView>(Resource.Id.action_filter);
             filter.Text = Texts.filter;
             filter.Click += delegate
             {
-                var existing = SupportFragmentManager.FindFragmentByTag(FILTERS_MENU_TAG);
                 filterFragment.Show(SupportFragmentManager, FILTERS_MENU_TAG);
             };
 
-            save = FindViewById<Button>(Resource.Id.action_save_document);
-            save.Text = Texts.save;
-            save.Click += delegate
+            // Top Toolbar
+            export = FindViewById<Button>(Resource.Id.action_export_document);
+            export.Text = Texts.export;
+            export.Click += delegate
             {
-                var existing = SupportFragmentManager.FindFragmentByTag(SAVE_MENU_TAG);
                 saveFragment.Show(SupportFragmentManager, SAVE_MENU_TAG);
             };
         }
@@ -138,8 +176,9 @@ namespace ReadyToUseUI.Droid.Activities
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
         {
             base.OnActivityResult(requestCode, resultCode, data);
-
-            adapter.Refresh();
+            
+            document = scanbotSDK.DocumentApi.LoadDocument(document.Uuid); // refresh from memory
+            adapter.Refresh(document);
             UpdateVisibility();
         }
 
@@ -157,117 +196,9 @@ namespace ReadyToUseUI.Droid.Activities
 
         private void UpdateVisibility()
         {
-            delete.Enabled = !adapter.IsEmpty;
+            quality.Visibility = adapter.ItemCount == 1 ? ViewStates.Visible : ViewStates.Invisible;
+            crop.Visibility = adapter.ItemCount == 1 ? ViewStates.Visible : ViewStates.Invisible;
             filter.Enabled = !adapter.IsEmpty;
-            save.Enabled = !adapter.IsEmpty;
-        }
-
-        public void SaveTiff() => SaveDocument(SaveType.TIFF);
-
-        public void SaveWithOcr() => SaveDocument(SaveType.OCR);
-        
-        public void SaveWithoutOcr() => SaveDocument(SaveType.Plain);
-
-        void SaveDocument(SaveType type)
-        {
-            if (!scanbotSDK.LicenseInfo.IsValid)
-            {
-                Alert.ShowLicenseDialog(this);
-                return;
-            }
-
-            Task.Run(delegate
-            {
-                var pagesUri = adapter.GetDocumentUris();
-                var output = GetOutputUri(".pdf");
-
-                if (type == SaveType.TIFF)
-                {
-                    output = GetOutputUri(".tiff");
-                    // Please note that some compression types are only compatible for 1-bit encoded images (binarized black & white images)!
-                    var options = new IO.Scanbot.Sdk.Tiff.Model.TIFFImageWriterParameters(
-                        new IO.Scanbot.Imagefilters.LegacyFilter(ImageFilterType.PureBinarized.Code),
-                        250,
-                        IO.Scanbot.Sdk.Tiff.Model.TIFFImageWriterCompressionOptions.CompressionCcittfax4,
-                        Array.Empty<TIFFImageWriterUserDefinedField>());
-
-                    scanbotSDK.CreateTiffWriter().WriteTIFFFromFiles(pagesUri.Select(i => new Java.IO.File(i.Path)).ToArray(), false, new Java.IO.File(output.Path), options);
-                }
-                else if (type == SaveType.OCR)
-                {
-                    // This is the new OCR configuration with ML which doesn't require the languages.
-                    var recognitionMode = IOpticalCharacterRecognizer.EngineMode.Tesseract;
-                    var recognizer = scanbotSDK.CreateOcrRecognizer();
-
-                    // to use legacy configuration we have to pass the installed languages.
-                    if (recognitionMode == IOpticalCharacterRecognizer.EngineMode.Tesseract)
-                    {
-                        var languages = recognizer.InstalledLanguages;
-                        if (languages.Count == 0)
-                        {
-                            RunOnUiThread(delegate
-                            {
-                                Alert.Toast(this, "OCR languages blobs are not available");
-                            });
-                            return;
-                        }
-
-                        var ocrConfig = new OcrConfig(IOpticalCharacterRecognizer.EngineMode.Tesseract, recognizer.InstalledLanguages);
-                        recognizer.SetOcrConfig(ocrConfig);
-                    }
-                    else
-                    {
-                        recognizer.SetOcrConfig(new OcrConfig(IOpticalCharacterRecognizer.EngineMode.ScanbotOcr));
-                    }
-
-                    var pdfAttributes = new PdfAttributes(
-                        author: "Your author",
-                        creator: "Your creator",
-                        title: "Your title",
-                        subject: "Your subject",
-                        keywords: "Your keywords");
-                    
-                    var pdfConfig = new IO.Scanbot.Pdf.Model.PdfConfig(pdfAttributes: pdfAttributes, 
-                        pageSize:PageSize.A4, pageDirection:PageDirection.Auto, pageFit:PageFit.FitIn, 
-                        dpi:72, jpegQuality:80, resample:false);
-                    
-                    var pdfFile = recognizer.RecognizeTextWithPdfFromUris(pagesUri, MainApplication.USE_ENCRYPTION, pdfConfig);
-                    File.Move(pdfFile.SandwichedPdfDocumentFile.AbsolutePath, new Java.IO.File(output.Path).AbsolutePath);
-                }
-                else
-                {
-                    var pdfAttributes = new PdfAttributes(
-                        author: "Your author",
-                        creator: "Your creator",
-                        title: "Your title",
-                        subject: "Your subject",
-                        keywords: "Your keywords");
-                    
-                    var pdfConfig = new IO.Scanbot.Pdf.Model.PdfConfig(pdfAttributes: pdfAttributes, 
-                        pageSize:PageSize.A4, pageDirection:PageDirection.Auto, pageFit:PageFit.FitIn, 
-                        dpi:72, jpegQuality:80, resample:false);
-
-                    var pdfFile = scanbotSDK.CreatePdfRenderer().RenderDocumentFromImages(pagesUri, sourceFilesEncrypted: false, pdfConfig: pdfConfig);
-                    File.Move(pdfFile.AbsolutePath, new Java.IO.File(output.Path).AbsolutePath);
-                }
-
-                Java.IO.File file = Copier.Copy(this, output);
-
-                var intent = new Intent(Intent.ActionView, output);
-                 
-                var authority = ApplicationContext.PackageName + ".provider";
-                var uri = FileProvider.GetUriForFile(this, authority, file);
-
-                intent.SetDataAndType(uri, MimeUtils.GetMimeByName(file.Name));
-                intent.SetFlags(ActivityFlags.ClearWhenTaskReset | ActivityFlags.NewTask);
-                intent.AddFlags(ActivityFlags.GrantReadUriPermission | ActivityFlags.GrantWriteUriPermission);
-
-                RunOnUiThread(delegate
-                {
-                    StartActivity(Intent.CreateChooser(intent, output.LastPathSegment));
-                    Alert.Toast(this, "File saved to: " + output.Path);
-                });
-            });
         }
 
         private Android.Net.Uri GetOutputUri(string extension)
@@ -288,123 +219,85 @@ namespace ReadyToUseUI.Droid.Activities
             return base.OnOptionsItemSelected(item); 
         }
 
-        public void ApplyFilter(ParametricFilter filter)
+        public void ApplyFilter(ParametricFilter selectedFilter)
         {
-            progress.Visibility = ViewStates.Visible;
-            Task.Run(delegate
+            foreach (var page in document.Pages)
             {
-                foreach (var pageId in pageStorage.StoredPages)
-                {
-                    pageProcessor.ApplyFilter(new Page().Copy(pageId: pageId), filter);
-                }
-
-                RunOnUiThread(delegate
-                {
-                    adapter.NotifyDataSetChanged();
-                    progress.Visibility = ViewStates.Gone;
-                });
-            });
-        }
-
-        public void OnRecycleViewItemClick(View v)
-        {
-            var position = recycleView.GetChildLayoutPosition(v);
-            var intent = PageFilterActivity.CreateIntent(this, adapter.PageIdForIndex(position));
-            StartActivityForResult(intent, FILTER_UI_REQUEST_CODE);
+                page.Apply(page.Rotation, page.Polygon, new[] { selectedFilter });
+            }
+            adapter.Refresh(document);                                          
         }
     }
 
-    class PageAdapter :  RecyclerView.Adapter
+    class PageAdapter : RecyclerView.Adapter
     {
         private IO.Scanbot.Sdk.Persistence.Fileio.IFileIOProcessor fileProcessor;
-        private IO.Scanbot.Sdk.Persistence.PageFileStorage pageStorage;
-        private IList<string> pageIds;
-
-        RecyclerViewItemClick listener;
-
-        public PageAdapter(IO.Scanbot.Sdk.Persistence.Fileio.IFileIOProcessor fileProcessor, IO.Scanbot.Sdk.Persistence.PageFileStorage pageStorage)
+        private List<PageModel> _pages = new List<PageModel>();
+        public PageAdapter(IO.Scanbot.Sdk.Persistence.Fileio.IFileIOProcessor fileProcessor, Document document)
         {
             this.fileProcessor = fileProcessor;
-            this.pageStorage = pageStorage;
-            Refresh();
+            Refresh(document);
         }
 
-        public void Refresh()
+        public void Refresh(Document document)
         {
-            pageIds = pageStorage.StoredPages ?? new List<string>();
+            _pages.Clear();
+
+            if (document?.Pages != null)
+            {
+                foreach (var page in document.Pages)
+                {
+                    _pages.Add(new PageModel
+                    {
+                        PageId = page.Uuid,
+                        DocumentId = document.Uuid,
+                        ScannedPageUri = page.DocumentFileUri,
+                        ScannedPagePreviewUri = page.DocumentPreviewFileUri,
+                        OriginalPageUri = page.OriginalFileUri
+                    });
+                }
+            }
+
             NotifyDataSetChanged();
         }
 
-        public string PageIdForIndex(int index)
+        public PageModel PageIdForIndex(int index)
         {
-            return pageIds[index];
+            return _pages[index];
         }
 
-        private Context context;
-        public Context Context
-        {
-            get => context;
-            set
-            {
-                context = value;
-                listener = new RecyclerViewItemClick(Context as PagePreviewActivity);
-            }
-        }
-        public override int ItemCount => pageIds.Count;
+        public Context Context;
+        
+        public override int ItemCount => _pages.Count;
 
         public bool IsEmpty { get => ItemCount == 0; }
 
-        public List<Android.Net.Uri> GetDocumentUris()
-        {
-            var uris = new List<Android.Net.Uri>();
-
-            foreach (string pageId in pageIds)
-            {
-                var documentUri = pageStorage.GetImageURI(pageId, PageFileStorage.PageFileType.Document);
-                var originalUri = pageStorage.GetImageURI(pageId, PageFileStorage.PageFileType.Original);
-                if (File.Exists(documentUri.Path))
-                {
-                    uris.Add(documentUri);
-                }
-                else
-                {
-                    uris.Add(originalUri);
-                }
-            }
-
-            return uris;
-        }
-
         public override long GetItemId(int position)
         {
-            return pageIds[position].GetHashCode();
+            return _pages[position].GetHashCode();
         }
 
         public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
         {
             var view = LayoutInflater.From(Context).Inflate(Resource.Layout.item_page, parent, false);
-            view.SetOnClickListener(listener);
             return new PageViewHolder(view);
         }
 
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
-            var pageId = pageIds[position];
-            var path = pageStorage.GetPreviewImageURI(pageId, PageFileStorage.PageFileType.Document);
-            var original = pageStorage.GetPreviewImageURI(pageId, PageFileStorage.PageFileType.Original);
-
+            var page = _pages[position];
             (holder as PageViewHolder).image.SetImageResource(0);
 
             var options = new BitmapFactory.Options();
-            if (File.Exists(path.Path))
+            if (File.Exists(page.ScannedPagePreviewUri.Path))
             {
-                var bitmap = fileProcessor.ReadImage(path, options);
+                var bitmap = fileProcessor.ReadImage(page.ScannedPagePreviewUri, options);
 
                 (holder as PageViewHolder).image.SetImageBitmap(bitmap);
             }
             else
             {
-                var bitmap = fileProcessor.ReadImage(original, options);
+                var bitmap = fileProcessor.ReadImage(page.OriginalPagePreviewUri, options);
                 (holder as PageViewHolder).image.SetImageBitmap(bitmap);
             }
         }
@@ -416,21 +309,6 @@ namespace ReadyToUseUI.Droid.Activities
         public PageViewHolder(View item) : base(item)
         {
             image = item.FindViewById<ImageView>(Resource.Id.page);
-        }
-    }
-
-    class RecyclerViewItemClick : Java.Lang.Object, View.IOnClickListener
-    {
-        public PagePreviewActivity Context { get; private set; }
-
-        public RecyclerViewItemClick(PagePreviewActivity context)
-        {
-            Context = context;
-        }
-
-        public void OnClick(View v)
-        {
-            Context.OnRecycleViewItemClick(v);
         }
     }
 }

@@ -10,12 +10,12 @@ public static partial class Snippets
     static void CreateTiffFromDocument(ScannedDocument scannedDocument)
     {
         var config = new TiffOptions();
-
         var fileUri = scannedDocument.CreateTiffAsync(config);
     }
 
-    // void CreateTiffFromImage(PlatformImage image)
-    // {
-    //     CommonOperations.CreatePdfAsync();
-    // }
+    static async void CreateTiffFromImage(Uri[] imageFiles)
+    {
+        var config = new TiffOptions();
+        var fileUri = await CommonOperations.WriteTiffAsync(imageFiles.Select(f => new FileImageSource { File = f.LocalPath }), config);
+    }
 }

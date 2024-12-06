@@ -1,6 +1,5 @@
 ﻿using Android.Runtime;
 using Android.Util;
-using IO.Scanbot.Sdk.Persistence.Fileio;
 
 namespace ReadyToUseUI.Droid
 {
@@ -38,25 +37,24 @@ namespace ReadyToUseUI.Droid
         private static void InitializeScanbotSdk(Application app)
         {
             Log.Debug(LOG_TAG, "Initializing Scanbot SDK...");
+            
             var initializer = new IO.Scanbot.Sdk.ScanbotSDKInitializer();
-
             initializer.WithLogging(useLog: true, enableNativeLogging: false);
             initializer.SdkFilesDirectory(app, PageStoragePathForExample(app));
             initializer.License(app, LicenseKey);
-
-            initializer.UsePageStorageSettings(new IO.Scanbot.Sdk.Persistence.PageStorageSettings.Builder()
-                                               .ImageQuality(80)
-                                               .ImageFormat(IO.Scanbot.Sdk.Persistence.CameraImageFormat.Jpg)
-                                               .PreviewTargetMax(1500) // max size for the preview images
-                                               .Build());
+            initializer.UsePageStorageSettings(new IO.Scanbot.Sdk.Persistence.Page.PageStorageSettings.Builder()
+                                .ImageQuality(80)
+                                .ImageFormat(IO.Scanbot.Sdk.Persistence.CameraImageFormat.Jpg)
+                                .PreviewTargetMax(1500) // max size for the preview images
+                                .Build());
             initializer.OcrBlobsPath(app, "SBSDKLanguageData");
             initializer.PrepareOCRLanguagesBlobs(true);
-
+            
             // You can enable encryption by uncommenting the following lines:
             //initializer.UseFileEncryption(enableFileEncryption: USE_ENCRYPTION, new AESEncryptedFileIOProcessor(
-            //        "S0m3W3irDL0ngPa$$w0rdino!!!!",
-            //        AESEncryptedFileIOProcessor.AESEncrypterMode.Aes256
-            //    ));
+            //       "S0m3W3irDL0ngPa$$w0rdino!!!!",
+            //       AESEncryptedFileIOProcessor.AESEncrypterMode.Aes256
+            //   ));
             // Note: all the images and files exported through the SDK will
             // not be openable from external applications, since they will be
             // encrypted.
