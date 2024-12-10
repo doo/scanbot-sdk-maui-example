@@ -1,5 +1,4 @@
-﻿using ReadyToUseUI.Maui.Models;
-using ScanbotSDK.MAUI;
+﻿using ScanbotSDK.MAUI;
 
 namespace ReadyToUseUI.Maui
 {
@@ -18,7 +17,7 @@ namespace ReadyToUseUI.Maui
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            SBSDKInitializer.Initialize(LICENSE_KEY, new ScanbotSDK.MAUI.SBSDKConfiguration
+            SBSDKInitializer.Initialize(builder, LICENSE_KEY, new ScanbotSDK.MAUI.SBSDKConfiguration
             {
                 EnableLogging = true,
                 StorageBaseDirectory = StorageBaseDirectoryForExampleApp(),
@@ -35,9 +34,6 @@ namespace ReadyToUseUI.Maui
                 // not be openable from external applications, since they will be
                 // encrypted.
             });
-
-            // SQLite Database - Migrate DBPage table for using the new ParametricFilters instead of legacy ImageFilter type.
-            PageStorage.Instance.ValidateDatabaseMigration();
             
             return builder.Build();
         }

@@ -61,6 +61,12 @@ namespace ReadyToUseUI.Maui.SubViews.ActionBar
                     HeightRequest = HEIGHT
                 });
 
+                Children.Add(DeleteButton = new BottomActionButton("DELETE")
+                {
+                    HeightRequest = HEIGHT,
+                    HorizontalOptions = LayoutOptions.End
+                });
+
                 Children.Add(DeleteAllButton = new BottomActionButton("DELETE ALL")
                 {
                     HeightRequest = HEIGHT,
