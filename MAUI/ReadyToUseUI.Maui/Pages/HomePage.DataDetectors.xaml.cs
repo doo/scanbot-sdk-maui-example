@@ -10,7 +10,7 @@ using ScanbotSDK.MAUI.MedicalCertificate;
 using ScanbotSDK.MAUI.MRZ;
 using ScanbotSDK.MAUI.TextData;
 using ScanbotSDK.MAUI.VIN;
-using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
+using static ScanbotSDK.MAUI.ScanbotSDKMain;
 
 namespace ReadyToUseUI.Maui.Pages
 {
@@ -24,7 +24,7 @@ namespace ReadyToUseUI.Maui.Pages
                 TopBarButtonsColor = Colors.Green
             };
 
-            var result = await SBSDK.ReadyToUseUIService.LaunchMrzScannerAsync(configuration);
+            var result = await RTU.MrzScanner.LaunchMrzScannerAsync(configuration);
             if (result.Status == OperationResult.Ok)
             {
                 var message = SDKUtils.ParseMRZResult(result);
@@ -40,7 +40,7 @@ namespace ReadyToUseUI.Maui.Pages
                 TopBarButtonsColor = Colors.Green
             };
 
-            var result = await SBSDK.ReadyToUseUIService.LaunchHealthInsuranceCardScannerAsync(configuration);
+            var result = await RTU.EhicScanner.LaunchHealthInsuranceCardScannerAsync(configuration);
             if (result.Status == OperationResult.Ok)
             {
                 var message = SDKUtils.ToAlertMessage(result);
@@ -54,7 +54,7 @@ namespace ReadyToUseUI.Maui.Pages
             {
                 AcceptedDocumentTypes = GenericDocumentFormat.AllDocumentTypes
             };
-            var result = await SBSDK.ReadyToUseUIService.LaunchGenericDocumentRecognizerAsync(configuration);
+            var result = await RTU.GenericDocumentRecognizer.LaunchGenericDocumentRecognizerAsync(configuration);
             if (result.Status == OperationResult.Ok)
             {
                 var message = SDKUtils.ToAlertMessage(result);
@@ -79,7 +79,7 @@ namespace ReadyToUseUI.Maui.Pages
                 }
             };
 
-            var result = await SBSDK.ReadyToUseUIService.LaunchCheckRecognizerAsync(configuration);
+            var result = await RTU.CheckRecognizer.LaunchCheckRecognizerAsync(configuration);
 
             if (result.Status == OperationResult.Ok)
             {
@@ -97,7 +97,7 @@ namespace ReadyToUseUI.Maui.Pages
                 // specify custom colors or settings here
             };
 
-            var result = await SBSDK.ReadyToUseUIService.LaunchTextDataScannerAsync(configuration);
+            var result = await RTU.TextDataScanner.LaunchTextDataScannerAsync(configuration);
 
             if (result.Status == OperationResult.Ok)
             {
@@ -112,7 +112,7 @@ namespace ReadyToUseUI.Maui.Pages
                 // specify custom colors or settings here
             };
 
-            var result = await SBSDK.ReadyToUseUIService.LaunchVINScannerAsync(configuration);
+            var result = await RTU.VinScanner.LaunchVINScannerAsync(configuration);
 
             if (result.Status == OperationResult.Ok)
             {
@@ -127,7 +127,7 @@ namespace ReadyToUseUI.Maui.Pages
 
             };
 
-            var result = await SBSDK.ReadyToUseUIService.LaunchLicensePlateScannerAsync(configuration);
+            var result = await RTU.LicensePlateScanner.LaunchLicensePlateScannerAsync(configuration);
 
             if (result.Status == OperationResult.Ok)
             {
@@ -142,7 +142,7 @@ namespace ReadyToUseUI.Maui.Pages
 
             };
             
-            var result = await SBSDK.ReadyToUseUIService.LaunchMedicalCertificateScannerAsync(configuration);
+            var result = await RTU.MedicalCertificateScanner.LaunchMedicalCertificateScannerAsync(configuration);
             if (result.Status == OperationResult.Ok)
             {
                 ViewUtils.Alert(this, $"Medical Certificate Recognition Result", FormatMedicalCertificateRecognitionResult(result));

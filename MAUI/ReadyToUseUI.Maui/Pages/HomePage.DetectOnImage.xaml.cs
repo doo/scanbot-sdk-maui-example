@@ -5,30 +5,32 @@ using ScanbotSDK.MAUI.Check;
 using ScanbotSDK.MAUI.EHIC;
 using ScanbotSDK.MAUI.GenericDocument;
 using ScanbotSDK.MAUI.MedicalCertificate;
-using SBSDK = ScanbotSDK.MAUI.ScanbotSDK;
+using static ScanbotSDK.MAUI.ScanbotSDKMain;
 namespace ReadyToUseUI.Maui.Pages;
 
 public partial class HomePage
 {
     private async Task MRZDetectorClicked()
     {
-        var source = await SBSDK.PickerService.PickImageAsync();
-        if (source == null) return;
+        var image = await ImagePicker.PickImageAsync();
 
-        var result = await SBSDK.DataDetectionService.DetectMrzFromImage(source);
+        var result = await Detectors.Mrz.DetectMrzFromImage(image);
         if (result.Status == OperationResult.Ok)
         {
             var message = SDKUtils.ParseMRZResult(result);
             ViewUtils.Alert(this, "MRZ Scanner result", message);
         }
+        else
+        {
+            ViewUtils.Alert(this, "MRZ Scanner result", "Could not detect MRZ data");
+        }
     }
 
     private async Task EHICDetectorClicked()
     {
-        var source = await SBSDK.PickerService.PickImageAsync();
-        if (source == null) return;
-        
-        var result = await SBSDK.DataDetectionService.DetectEHICFromImage(source);
+        var image = await ImagePicker.PickImageAsync();
+
+        var result = await Detectors.Ehic.DetectEHICFromImage(image);
         if (result.Status == OperationResult.Ok)
         {
             if (result.DetectionStatus == HealthInsuranceCardDetectionStatus.Success)
@@ -46,59 +48,64 @@ public partial class HomePage
 
     private async Task GenericDocumentDetectorClicked()
     {
-        var source = await SBSDK.PickerService.PickImageAsync();
-        if (source == null) return;
-        
+        var image = await ImagePicker.PickImageAsync();
+
         var configuration = new GenericDocumentDetectorConfiguration
         {
-            AcceptedDocumentTypes = new []
+            AcceptedDocumentTypes = new[]
             {
-                GenericDocumentRootType.DePassport,
-                GenericDocumentRootType.DeDriverLicenseBack,
-                GenericDocumentRootType.DeDriverLicenseFront,
-                GenericDocumentRootType.DeIdCardBack,
-                GenericDocumentRootType.DeIdCardFront,
-                GenericDocumentRootType.DeResidencePermitBack,
-                GenericDocumentRootType.DeResidencePermitFront,
-            }
+                    GenericDocumentRootType.DePassport,
+                    GenericDocumentRootType.DeDriverLicenseBack,
+                    GenericDocumentRootType.DeDriverLicenseFront,
+                    GenericDocumentRootType.DeIdCardBack,
+                    GenericDocumentRootType.DeIdCardFront,
+                    GenericDocumentRootType.DeResidencePermitBack,
+                    GenericDocumentRootType.DeResidencePermitFront,
+                }
         };
-        var result = await SBSDK.DataDetectionService.DetectGenericDocumentFromImage(source, configuration);
+        var result = await Detectors.GenericDocument.DetectGenericDocumentFromImage(image, configuration);
         if (result.Status == OperationResult.Ok)
         {
             var message = SDKUtils.ToAlertMessage(result);
             ViewUtils.Alert(this, "GDR Result", message);
         }
+        else
+        {
+            ViewUtils.Alert(this, "GDR Result", "Could not detect GDR data");
+        }
     }
 
     private async Task CheckDetectorrClicked()
     {
-        var source = await SBSDK.PickerService.PickImageAsync();
-        if (source == null) return;
-        
-        var result = await SBSDK.DataDetectionService.DetectCheckFromImage(source, new List<CheckStandard>
-        {
-            CheckStandard.AUS,
-            CheckStandard.CAN,
-            CheckStandard.FRA,
-            CheckStandard.IND,
-            CheckStandard.ISR,
-            CheckStandard.KWT,
-            CheckStandard.UAE,
-            CheckStandard.USA
-        });
-        
+        var image = await ImagePicker.PickImageAsync();
+
+        var result = await Detectors.Check.DetectCheckFromImage(image, new List<CheckStandard>
+            {
+                CheckStandard.AUS,
+                CheckStandard.CAN,
+                CheckStandard.FRA,
+                CheckStandard.IND,
+                CheckStandard.ISR,
+                CheckStandard.KWT,
+                CheckStandard.UAE,
+                CheckStandard.USA
+            });
+
         if (result.Status == OperationResult.Ok)
         {
             var message = SDKUtils.ToAlertMessage(result);
             ViewUtils.Alert(this, "Check Result", message);
         }
+        else
+        {
+            ViewUtils.Alert(this, "Check Result", "Could not detect Check data");
+        }
     }
 
     private async Task MedicalCertificateDetectorClicked()
     {
-        var source = await SBSDK.PickerService.PickImageAsync();
-        if (source == null) return;
-        
+        var image = await ImagePicker.PickImageAsync();
+
         var configuration = new MedicalCertificateDetectorConfiguration
         {
             DetectDocument = true,
@@ -107,17 +114,21 @@ public partial class HomePage
             ReturnCroppedDocumentImage = true
         };
 
-        var result = await SBSDK.DataDetectionService.DetectMedicalCertificateFromImage(source, configuration);
+        var result = await Detectors.MedicalCertificate.DetectMedicalCertificateFromImage(image, configuration);
         if (result.Status == OperationResult.Ok)
         {
             ViewUtils.Alert(this, $"Medical Certificate Recognition Result",
-                FormatMedicalCertificateRecognitionResult(result), 
+                FormatMedicalCertificateRecognitionResult(result),
                 () =>
                 {
                     var resultPage = new DetectOnImageResultPage();
                     resultPage.NavigateData(result.CroppedImageSource);
                     Navigation.PushAsync(resultPage);
                 });
+        }
+        else
+        {
+            ViewUtils.Alert(this, "Medical Certificate Recognition Result", "Could not detect Medical Certificate data");
         }
     }
 }
