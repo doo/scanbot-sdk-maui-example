@@ -90,6 +90,12 @@
         </PackageReference>
     </ItemGroup>
 
+    <ItemGroup Condition="$(TargetFramework.Contains('-ios')) == true">
+        <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\eng.traineddata"/>
+        <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\deu.traineddata"/>
+        <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\osd.traineddata"/>
+    </ItemGroup>
+
     <!-- ===================== Folders =====================  -->
     <ItemGroup>
         <Folder Include="SubViews\ParametricFilterViews\"/>
