@@ -2,8 +2,6 @@
     <!-- ===================== Common Project Configs/Architecture =====================  -->
     <PropertyGroup>
         <TargetFrameworks>net8.0-android;net8.0-ios</TargetFrameworks>
-        <!-- Comment out the above and add the below to run with .net7 -->
-        <!-- <TargetFrameworks>net7.0-android;net7.0-ios</TargetFrameworks> -->
         <OutputType>Exe</OutputType>
         <UseMaui>true</UseMaui>
         <SingleProject>true</SingleProject>
@@ -84,7 +82,7 @@
     
     <!-- ===================== Common Project References =====================  -->
     <ItemGroup>
-        <PackageReference Include="ScanbotSDK.MAUI" Version="6.1.0-rc.1">
+        <PackageReference Include="ScanbotSDK.MAUI" Version="6.1.0-rc.2">
             <!-- Required if our package is a dependency of your own package. -->
             <PrivateAssets>None</PrivateAssets>
         </PackageReference>
