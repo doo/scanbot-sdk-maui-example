@@ -22,53 +22,17 @@
         <ApplicationVersion>1</ApplicationVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">13.0</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
-<!--        <Platforms>x64;ARM64</Platforms>-->
         <WarningsAsErrors>NU1603</WarningsAsErrors>
-    </PropertyGroup>
-
-    <!-- ===================== iOS Specific Targets =====================  -->
-
-    <!-- Properties for iOS Simulator (x64 architecture) -->
-    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'iossimulator-x64'">
-        <RuntimeIdentifiers>iossimulator-x64</RuntimeIdentifiers>
-        <!-- Additional properties specific to iOS simulator (x64) -->
-        <PlatformTarget>x64</PlatformTarget>
-    </PropertyGroup>
-
-    <!-- Properties for iOS Simulator (arm64 architecture) -->
-    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'iossimulator-arm64'">
-        <RuntimeIdentifiers>iossimulator-arm64</RuntimeIdentifiers>
-        <!-- Additional properties specific to iOS simulator (arm64) -->
-    </PropertyGroup>
-
-    <!-- Properties for iOS Device (arm64 architecture) -->
-    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'ios-arm64'">
-        <RuntimeIdentifiers>ios-arm64</RuntimeIdentifiers>
-        <!-- Additional properties specific to iOS device (arm64) -->
-    </PropertyGroup>
-
-    <!-- ===================== General Targets =====================  -->
-
-    <!-- Settings for all targets that are not iOS (e.g., Android ) -->
-    <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'ios'">
-        <MtouchLink>SdkOnly</MtouchLink>
-        <CreatePackage>false</CreatePackage>
         <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
     </PropertyGroup>
 
-    <!-- General settings for iOS targets -->
-    <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
-        <MtouchLink>SdkOnly</MtouchLink>
-        <MtouchInterpreter>-all</MtouchInterpreter>
-        <CreatePackage>false</CreatePackage>
-        <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
-
-        <!-- Simulator support attribute -->
-<!--        <ForceSimulatorX64ArchitectureInIDE>true</ForceSimulatorX64ArchitectureInIDE>-->
+    <PropertyGroup Condition="$(TargetFramework.Contains('ios'))">
+        <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">ios-arm64</RuntimeIdentifier>
+        <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == 'iossimulator-arm64'">iossimulator-x64</RuntimeIdentifier>
+        <ForceSimulatorX64ArchitectureInIDE>true</ForceSimulatorX64ArchitectureInIDE>
     </PropertyGroup>
-
+    
     <!-- ===================== Application Resources =====================  -->
-
     <ItemGroup>
         <!-- App Icon -->
         <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4"/>
@@ -112,7 +76,7 @@
     </ItemGroup>
     <ItemGroup>
         <!-- Todo: Need to publish a new beta package from CI -->
-<!--        <PackageReference Include="ScanbotSDK.MAUI" Version="5.1.3-alpha.3" />-->
+        <PackageReference Include="ScanbotSDK.MAUI" Version="6.1.1-alpha.1" />
     </ItemGroup>
     <ItemGroup>
         <MauiXaml Update="Pages\DocumentScanner\DocumentScannerResultPage.xaml">
@@ -132,8 +96,5 @@
         <MauiXaml Update="Pages\HomePage.xaml">
           <SubType>Designer</SubType>
         </MauiXaml>
-    </ItemGroup>
-    <ItemGroup>
-      <ProjectReference Include="..\..\..\scanbot-sdk-maui\DocumentSDK\DocumentSDK.MAUI\DocumentSDK.MAUI.csproj" />
     </ItemGroup>
 </Project>

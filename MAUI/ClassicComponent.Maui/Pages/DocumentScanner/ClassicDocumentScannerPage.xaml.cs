@@ -6,12 +6,14 @@ using ScanbotSDK.MAUI.Document;
 
 namespace ClassicComponent.Maui;
 
-public partial class ClassicDocumentScannerPage : ContentPage, IClassicDocumentScannerViewInteraction
+public partial class ClassicDocumentScannerPage : ContentPage
 {
     public ClassicDocumentScannerPage()
 	{
 		InitializeComponent();
-		DocumentScannerView.ViewInteraction = this;
+
+		DocumentScannerView.OnSnappedDocumentImageResult += DidDetectDocument;
+		DocumentScannerView.OnUpdateDetectionStatus += UpdateDetectionHintFromStatus;
 		
 		// ==> Polygon Configuration: Uncomment below code for 
 		// DocumentScannerView.PolygonColor = Colors.Red;
@@ -42,6 +44,7 @@ public partial class ClassicDocumentScannerPage : ContentPage, IClassicDocumentS
 			new(Polygons, () => IsPolygonEnabled = !IsPolygonEnabled),
 			new(Visibility, () => IsCameraVisible = !IsCameraVisible),
 			new(Stop, null, true),
+			new(Snap, DocumentScannerView.SnapDocumentImage),
 		};
 		
 		this.BindingContext = this;
@@ -114,7 +117,11 @@ public partial class ClassicDocumentScannerPage : ContentPage, IClassicDocumentS
 		var selectedItem = (sender as Button)?.BindingContext as ClassicCollectionItem;
 		if (selectedItem == null) return;
 
-		selectedItem.Selected = !selectedItem.Selected;
+		if (selectedItem.Title != Snap)
+		{
+			selectedItem.Selected = !selectedItem.Selected;
+		}
+
 		selectedItem.ClickAction?.Invoke();
 
 		if (selectedItem.Title != Start && selectedItem.Title != Stop)

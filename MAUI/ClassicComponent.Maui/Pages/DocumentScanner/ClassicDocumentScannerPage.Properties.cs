@@ -8,6 +8,7 @@ public partial class ClassicDocumentScannerPage
 						Finder = "Finder",
 						Flash = "Flash",
 						Polygons = "Polygon",
+						Snap = "Snap",
 						Start = "Start",
 						Stop = "Stop",
 						Visibility = "Visibility";
