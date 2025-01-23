@@ -1,6 +1,8 @@
-﻿namespace ReadyToUseUI.Maui.Utils
+﻿using Microsoft.Maui.Graphics.Platform;
+
+namespace ReadyToUseUI.Maui.Utils
 {
-    public class ViewUtils
+    public static class ViewUtils
     {
         public static void Alert(Page context, string title, string message)
         {
@@ -62,6 +64,17 @@
             };
 
             return cell;
+        }
+        
+        public static async Task<ImageSource> ToImageSource(this PlatformImage image)
+        {
+            return await Task.Run(() =>
+            {
+                if (image == null)
+                    return null;
+                var stream = image.AsStream(ImageFormat.Bmp);
+                return ImageSource.FromStream(() => stream);
+            });
         }
     }
 }
