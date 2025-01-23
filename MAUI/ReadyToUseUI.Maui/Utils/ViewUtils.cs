@@ -1,6 +1,8 @@
-﻿namespace ReadyToUseUI.Maui.Utils
+﻿using Microsoft.Maui.Graphics.Platform;
+
+namespace ReadyToUseUI.Maui.Utils
 {
-    public class ViewUtils
+    public static class ViewUtils
     {
         public static void Alert(Page context, string title, string message)
         {
