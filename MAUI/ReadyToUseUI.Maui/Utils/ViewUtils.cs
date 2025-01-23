@@ -65,16 +65,5 @@ namespace ReadyToUseUI.Maui.Utils
 
             return cell;
         }
-        
-        public static async Task<ImageSource> ToImageSource(this PlatformImage image)
-        {
-            return await Task.Run(() =>
-            {
-                if (image == null)
-                    return null;
-                var stream = image.AsStream(ImageFormat.Bmp);
-                return ImageSource.FromStream(() => stream);
-            });
-        }
     }
 }
