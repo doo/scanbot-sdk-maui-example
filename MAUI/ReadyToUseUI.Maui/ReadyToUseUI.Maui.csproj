@@ -82,7 +82,7 @@
     
     <!-- ===================== Common Project References =====================  -->
     <ItemGroup>
-        <PackageReference Include="ScanbotSDK.MAUI" Version="6.1.0-rc.3">
+        <PackageReference Include="ScanbotSDK.MAUI" Version="6.1.1-alpha.2">
             <!-- Required if our package is a dependency of your own package. -->
             <PrivateAssets>None</PrivateAssets>
         </PackageReference>
