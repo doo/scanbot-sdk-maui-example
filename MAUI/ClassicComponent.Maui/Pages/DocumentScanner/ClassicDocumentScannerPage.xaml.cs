@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using ClassicComponent.Maui.Models;
 using ClassicComponent.Maui.Pages;
+using ClassicComponent.Maui.Utils;
+using Microsoft.Maui.Graphics.Platform;
 using ScanbotSDK.MAUI.Document.ClassicComponent;
 using ScanbotSDK.MAUI.Document;
 
@@ -51,10 +53,10 @@ public partial class ClassicDocumentScannerPage : ContentPage
 	}
 
 	// Receives the result of Document Scanning. 
-	public void DidDetectDocument(ImageSource documentImage, ImageSource originalImage)
+	public void DidDetectDocument(PlatformImage documentImage, PlatformImage originalImage)
 	{
 		var resultsPage = new DocumentScannerResultPage();
-		resultsPage.NavigateData(documentImage);
+		resultsPage.NavigateData(documentImage.ToImageSource());
 		Navigation.PushAsync(resultsPage);
 	}
 

@@ -46,7 +46,7 @@ namespace ClassicComponent.Maui.CustomViews
             var outResult = new BarcodeResultBundle
             {
                 Barcodes = new List<Barcode>() { barcodeItem.ToMaui() },
-                Image = barcodeItem.Image.ToImageSource()
+                Image = barcodeItem.Image?.ToPlatformImage()
             };
 
             VirtualView.OnBarcodeScanResult.Invoke(outResult);
@@ -177,7 +177,7 @@ namespace ClassicComponent.Maui.CustomViews
                 var outResult = new BarcodeResultBundle
                 {
                     Barcodes = result.BarcodeItems.Select(b => b.ToMaui()).ToList(),
-                    Image = result.PreviewFrame.ToImageSource()
+                    Image = result.PreviewFrame?.ToPlatformImage()
                 };
 
                 VirtualView.OnBarcodeScanResult?.Invoke(outResult);

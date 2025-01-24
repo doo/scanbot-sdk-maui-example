@@ -19,7 +19,7 @@
             RowDefinitions="8*,2*">
             <Grid
                 Grid.Row="0">
-            <classicView:ClassicDocumentScannerView
+            <classicView:DocumentScannerView
                 x:Name="DocumentScannerView"
                 IgnoreBadAspectRatio="True"
                 AutoSnappingEnabled="{Binding IsAutoSnappingEnabled}"
