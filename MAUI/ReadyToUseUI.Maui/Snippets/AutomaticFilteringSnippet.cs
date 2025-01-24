@@ -16,9 +16,6 @@ public partial class Snippets
         // e.g. configure various colors.
         configuration.Appearance.TopBarBackgroundColor = new ColorValue("#C8193C");
 
-        // e.g. customize a UI element's text
-        configuration.Localization.CroppingTopBarCancelButtonTitle = "Cancel";
-
         try
         {
             var document = await ScanbotSDKMain.RTU.DocumentScanner.LaunchAsync(configuration);
