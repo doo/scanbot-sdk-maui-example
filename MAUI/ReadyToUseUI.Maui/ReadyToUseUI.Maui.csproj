@@ -2,12 +2,11 @@
     <!-- ===================== Common Project Configs/Architecture =====================  -->
     <PropertyGroup>
         <TargetFrameworks>net8.0-android;net8.0-ios</TargetFrameworks>
-        <!-- Comment out the above and add the below to run with .net7 -->
-        <!-- <TargetFrameworks>net7.0-android;net7.0-ios</TargetFrameworks> -->
         <OutputType>Exe</OutputType>
         <UseMaui>true</UseMaui>
         <SingleProject>true</SingleProject>
         <ImplicitUsings>enable</ImplicitUsings>
+        <AotAssemblies>False</AotAssemblies>
         <!-- Display name -->
         <ApplicationTitle>MAUI RTU UI</ApplicationTitle>
         <!-- App Identifier -->
@@ -22,9 +21,7 @@
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21</SupportedOSPlatformVersion>
         <Platforms>x64;ARM64</Platforms>
         <WarningsAsErrors>NU1603</WarningsAsErrors>
-
-        <!-- Comment this out to see RTU v1 in the example -->
-        <!-- <DefineConstants>$(DefineConstants);LEGACY_EXAMPLES</DefineConstants> -->
+        <LangVersion>12.0</LangVersion>
     </PropertyGroup>
     
     <!-- ===================== iOS Specific Targets =====================  -->
@@ -83,28 +80,14 @@
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)"/>
     </ItemGroup>
     
-    <!-- ===================== IOS Project References =====================  -->
-    <ItemGroup Condition="$(TargetFramework.Contains('-ios')) == true">
-        <PackageReference Include="NuGet.Build.Packaging" Version="0.2.2">
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
-        <PackageReference Include="System.Numerics.Vectors" Version="4.5.0"/>
-    </ItemGroup>
-
     <!-- ===================== Common Project References =====================  -->
     <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="SQLitePCLRaw.core" Version="2.1.4"/>
-        <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.4"/>
-        <PackageReference Include="sqlite-net-pcl" Version="1.8.116"/>
-        <PackageReference Include="ScanbotSDK.MAUI" Version="5.1.1">
+        <PackageReference Include="ScanbotSDK.MAUI" Version="6.1.0">
             <!-- Required if our package is a dependency of your own package. -->
             <PrivateAssets>None</PrivateAssets>
         </PackageReference>
     </ItemGroup>
 
-    <!-- ===================== IOS OCR Data Files =====================  -->
     <ItemGroup Condition="$(TargetFramework.Contains('-ios')) == true">
         <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\eng.traineddata"/>
         <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\deu.traineddata"/>
