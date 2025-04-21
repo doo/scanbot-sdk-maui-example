@@ -29,7 +29,7 @@ namespace ReadyToUseUI.iOS.View
             // In that case, use it to decrypt the data
             if (ScanbotUI.DefaultImageStoreEncrypter != null)
             {
-                data = ScanbotUI.DefaultImageStoreEncrypter.DecryptData(data);
+                data = ScanbotUI.DefaultImageStoreEncrypter.DecryptData(data, "", out NSError error);
             }
             content.Document = new PdfDocument(data);
             

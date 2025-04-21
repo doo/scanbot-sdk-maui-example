@@ -12,24 +12,21 @@ public class PdfSnippet
         var outputPdfUrl = new NSUrl("outputPdfUrl");
 
         // Create the OCR configuration for a searchable Pdf (HOCR).
-        var ocrConfiguration = SBSDKOpticalCharacterRecognizerConfiguration.ScanbotOCR;
+        var ocrConfiguration = SBSDKOCREngineConfiguration.ScanbotOCR;
 
         // Create the default Pdf rendering options.
-        var options = new SBSDKPDFRendererOptions();
-
-        // Set the OCR Configuration.
-        options.OcrConfiguration = ocrConfiguration; // Comment this line to not generate HOCR
+        var options = new SBSDKPDFConfiguration();
 
         // Create the Pdf renderer and pass the Pdf options to it.
-        var renderer = new SBSDKPDFRenderer(options, ScanbotUI.DefaultImageStoreEncrypter);
+        var renderer = new SBSDKPDFGenerator(options, ocrConfiguration: ocrConfiguration, encrypter: ScanbotUI.DefaultImageStoreEncrypter);
         try
         {
             //If output URL is `null`the default Pdf location of the scanned document will be used.
-            renderer.RenderScannedDocument(scannedDocument, outputPdfUrl,
-                                (isCompleted, error) =>
-                                {
-                                    // completion status  
-                                });
+            renderer.GenerateFromScannedDocument(scannedDocument: scannedDocument, output: outputPdfUrl,
+                completion:(isCompleted, error) =>
+                {
+                    // completion status  
+                });
         }
         catch (Exception error)
         {
@@ -57,17 +54,17 @@ public class PdfSnippet
                             mode: SBSDKAESEncrypterMode.SBSDKAESEncrypterModeAES256);
 
         // Create the default Pdf rendering options.
-        var options = new SBSDKPDFRendererOptions();
+        var configuration = new SBSDKPDFConfiguration();
 
         // Set the maximum JPEG Quality.
-        options.JpegQuality = 100;
+        configuration.JpegQuality = 100;
 
         // Create the Pdf renderer and pass the Pdf options to it.
-        var renderer = new SBSDKPDFRenderer(options: options, encrypter: encrypter);
+        var renderer = new SBSDKPDFGenerator(configuration: configuration, ocrConfiguration: null, encrypter: encrypter);
         try
         {
             // Synchronously renders the images from the image storage into a Pdf file with the given page size, and saves the Pdf to the specified URL.
-            renderer.RenderImageStorage(imageStorage, null, outputPdfUrl, completion: (isComplete, error) =>
+            renderer.GenerateFromImageStorage(imageStorage, null, outputPdfUrl, completion: (isComplete, error) =>
             {
                 // completion status  
             });

@@ -29,7 +29,7 @@ public class SinglePageWithFinderSnippet : UIViewController
 		configuration.Screens.Camera.ViewFinder.Style = style;
         
 		// Set the desired aspect ratio of the view finder.
-		configuration.Screens.Camera.ViewFinder.AspectRatio = new SBSDKUI2AspectRatio(width: 4.0, height: 5.0);
+		configuration.Screens.Camera.ViewFinder.AspectRatio = new SBSDKAspectRatio(width: 4.0, height: 5.0);
         
 		// Set the overlay color.
 		configuration.Screens.Camera.ViewFinder.OverlayColor = new SBSDKUI2Color(colorString: "#26000000");

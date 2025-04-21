@@ -9,15 +9,13 @@ public partial class MainViewController
         {
             var config = SBSDKUIMRZScannerConfiguration.DefaultConfiguration;
             config.TextConfiguration.CancelButtonTitle = "Done";
-            var controller = SBSDKUIMRZScannerViewController
-                .CreateWithConfiguration(config, null);
-
-            controller.DidDetect += (viewController, args) =>
+            var controller = SBSDKUIMRZScannerViewController.CreateWithConfiguration(config, null);
+            controller.DidScan += (viewController, args) =>
             {
                 controller.IsRecognitionEnabled = false;
                 controller.DismissViewController(true, delegate
                 {
-                    ShowPopup(this, args.Zone.StringRepresentation);
+                    ShowPopup(this, FormattedString(args.Zone.Document));
                 });
             };
 
@@ -26,93 +24,54 @@ public partial class MainViewController
 
         private void ScanEhic()
         {
-            var configuration = SBSDKUIHealthInsuranceCardScannerConfiguration.DefaultConfiguration;
+            var configuration = SBSDKUIHealthInsuranceCardRecognizerConfiguration.DefaultConfiguration;
             configuration.TextConfiguration.CancelButtonTitle = "Done";
-            var controller = SBSDKUIHealthInsuranceCardScannerViewController
-                .CreateWithConfiguration(configuration, null);
-
+            var controller = SBSDKUIHealthInsuranceCardRecognizerViewController.CreateWithConfiguration(configuration, null);
             controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
             controller.DidDetectCard += (_, args) =>
             {
-                ShowPopup(controller, args.Card.StringRepresentation);
-            };
-            PresentViewController(controller, false, null);
-        }
-
-        private void RecognizeGenericDocument()
-        {
-            var configuration = SBSDKUIGenericDocumentRecognizerConfiguration.DefaultConfiguration;
-            configuration.TextConfiguration.CancelButtonTitle = "Done";
-            // Specify Document types if needed
-            // configuration.BehaviorConfiguration.DocumentType = SBSDKUIDocumentType.IdCardFrontBackDE;
-            var controller = SBSDKUIGenericDocumentRecognizerViewController.CreateWithConfigurationAndDelegate(configuration, null);
-
-            controller.DidFinishWithDocuments += (_, args) =>
-            {
-                if (args.Documents == null || args.Documents.Length == 0)
-                {
-                    return;
-                }
-
-                // We only take the first document for simplicity
-                var firstDocument = args.Documents.First();
-                var fields = firstDocument.Fields
-                    .Where((f) => f != null && f.Type != null && f.Type.Name != null && f.Value != null && f.Value.Text != null)
-                    .Select((f) => string.Format("{0}: {1}", f.Type.Name, f.Value.Text))
-                    .ToList();
-                var description = string.Join("\n", fields);
-                ShowPopup(this, description);
+                ShowPopup(controller, args.Card.ToJsonWithConfiguration(new SBSDKToJSONConfiguration()));
             };
             PresentViewController(controller, false, null);
         }
 
         private void RecognizeCheck()
         {
-            var configuration = SBSDKUICheckRecognizerConfiguration.DefaultConfiguration;
+            var configuration = SBSDKUICheckScannerConfiguration.DefaultConfiguration;
             configuration.TextConfiguration.CancelButtonTitle = "Done";
-            configuration.BehaviorConfiguration.AcceptedCheckStandards = new SBSDKCheckDocumentRootType[] {
-                SBSDKCheckDocumentRootType.AusCheck,
-                SBSDKCheckDocumentRootType.FraCheck,
-                SBSDKCheckDocumentRootType.IndCheck,
-                SBSDKCheckDocumentRootType.KwtCheck,
-                SBSDKCheckDocumentRootType.UsaCheck,
-                SBSDKCheckDocumentRootType.UaeCheck,
-                SBSDKCheckDocumentRootType.CanCheck,
-                SBSDKCheckDocumentRootType.IsrCheck,
-            };
-            var controller = SBSDKUICheckRecognizerViewController.CreateWithConfiguration(configuration, null);
-            controller.DidRecognizeCheck += (_, args) =>
+            configuration.BehaviorConfiguration.AcceptedCheckStandards =
+            [
+                SBSDKCheckDocumentModelRootType.AusCheck,
+                SBSDKCheckDocumentModelRootType.FraCheck,
+                SBSDKCheckDocumentModelRootType.IndCheck,
+                SBSDKCheckDocumentModelRootType.KwtCheck,
+                SBSDKCheckDocumentModelRootType.UsaCheck,
+                SBSDKCheckDocumentModelRootType.UaeCheck,
+                SBSDKCheckDocumentModelRootType.CanCheck,
+                SBSDKCheckDocumentModelRootType.IsrCheck,
+            ];
+            
+            var controller = SBSDKUICheckScannerViewController.CreateWithConfiguration(configuration, null);
+            controller.DidScanCheck += async (_, args) =>
             {
-                if (args.Result == null || args.Result.Document == null)
-                {
+                if (args?.Result == null || args.Result.Check == null)
                     return;
-                }
 
-                var fields = args.Result.Document.Fields
-                    .Where((f) => f != null && f.Type != null && f.Type.Name != null && f.Value != null && f.Value.Text != null)
-                    .Select((f) => string.Format("{0}: {1}", f.Type.Name, f.Value.Text))
-                    .ToList();
-                var description = string.Join("\n", fields);
-                Console.WriteLine(description);
-
-                controller.DismissViewController(true, null);
-
-                ShowPopup(this, description);
+                await controller.DismissViewControllerAsync(true);
+                ShowPopup(this, FormattedString(args.Result.Check));
             };
             PresentViewController(controller, false, null);
         }
 
         private void TextDataRecognizerTapped()
         {
-            var configuration = SBSDKUITextDataScannerConfiguration.DefaultConfiguration;
-            configuration.TextConfiguration.CancelButtonTitle = "Done";
-            var scanner = SBSDKUITextDataScannerViewController.CreateWithConfiguration(configuration, null);
-            scanner.DidFinishStepWithResult += (_, args) =>
+            SBSDKUI2TextPatternScannerViewController textScannerController = null;
+            var configuration = new SBSDKUI2TextPatternScannerScreenConfiguration();
+            configuration.TopBar.CancelButton.Text = "Done";
+            textScannerController = SBSDKUI2TextPatternScannerViewController.PresentOn(this, configuration, result =>
             {
-                scanner.DismissViewController(true, () => Alert.Show(this, "Result Text:", args?.Result?.Text));
-            };
-
-            PresentViewController(scanner, true, null);
+                textScannerController?.DismissViewController(true, () => Alert.Show(this, "Result Text:", result?.RawText));
+            });
         }
 
         private void VinRecognizerTapped()
@@ -122,24 +81,13 @@ public partial class MainViewController
             var scanner = SBSDKUIVINScannerViewController.CreateNew(configuration: configuration, @delegate: null);
             scanner.DidFinishWithResult += (_, args) =>
             {
-                scanner.DismissViewController(true, () => Alert.Show(this, "Result Text:", args?.Result?.Text));
+                var text = args?.Result?.TextResult?.RawText ?? string.Empty;
+                scanner.DismissViewController(true, () => Alert.Show(this, "Result Text:", text));
             };
 
             PresentViewController(scanner, true, null);
         }
-
-        private void LicensePlateRecognizerTapped()
-        {
-            var configuration = SBSDKUILicensePlateScannerConfiguration.DefaultConfiguration;
-            configuration.TextConfiguration.CancelButtonTitle = "Done";
-            var scanner = SBSDKUILicensePlateScannerViewController.CreateNew(configuration: configuration, @delegate: null);
-            scanner.DidRecognizeLicensePlate += (_, args) =>
-            {
-                Alert.Show(this, "Result Text:", args?.Result?.RawString);
-            };
-            PresentViewController(scanner, true, null);
-        }
-
+        
         private void MedicalCertificateRecognizerTapped()
         {
             var configuration = SBSDKUIMedicalCertificateScannerConfiguration.DefaultConfiguration;
@@ -147,7 +95,9 @@ public partial class MainViewController
             var scanner = SBSDKUIMedicalCertificateScannerViewController.CreateWithConfiguration(configuration, null);
             scanner.DidFinishWithResult  += (_, args) =>
             {
-                Alert.Show(this, "Result Text:", args.Result.StringRepresentation);
+                scanner.IsRecognitionEnabled = false;
+                scanner?.DismissViewController(true, null);
+                Alert.Show(this, "Result Text:", args.Result.ToJsonWithConfiguration(new SBSDKToJSONConfiguration()));
             };
             PresentViewController(scanner, true, null);
         }

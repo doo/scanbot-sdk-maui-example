@@ -118,7 +118,7 @@ public partial class MainViewController
 
         // Enable view finder
         configuration.Screens.Camera.ViewFinder.Visible = true;
-        configuration.Screens.Camera.ViewFinder.AspectRatio = new SBSDKUI2AspectRatio(width: 3, height: 4);
+        configuration.Screens.Camera.ViewFinder.AspectRatio = new SBSDKAspectRatio(width: 3, height: 4);
 
         // Enable/Disable the review screen.
         configuration.Screens.Review.Enabled = false;
@@ -160,10 +160,10 @@ public partial class MainViewController
         var image = await ImagePicker.Instance.PickImageAsync();
 
         // Create an instance of a detector
-        var detector = new SBSDKDocumentDetector();
+        var detector = new SBSDKDocumentScanner();
 
         // Run detection on the image
-        var result = detector.DetectPhotoPolygonOnImage(image, CoreGraphics.CGRect.Empty, smoothingEnabled: false);
+        var result = detector.ScanFromImage(image, false);
 
         if (result == null)
         {

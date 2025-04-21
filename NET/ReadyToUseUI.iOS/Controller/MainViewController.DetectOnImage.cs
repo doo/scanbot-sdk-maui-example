@@ -9,13 +9,13 @@ public partial class MainViewController
 	{
 		var image = await ImagePicker.Instance.PickImageAsync();
         
-		// Create an instance of the recognizezr
-		var recognizer = new SBSDKMachineReadableZoneRecognizer();
-		var result = recognizer.RecognizePersonalIdentityFromImage(image);
-		if (result != null && !string.IsNullOrEmpty(result.StringRepresentation))
-		{
-			ShowPopup(this, result.StringRepresentation);
-		}
+		// Create an instance of the recognizer
+		var recognizer = new SBSDKMRZScanner();
+		var result = recognizer.ScanFromImage(image);
+		if (result == null || !result.Success || result.Document == null)
+			return;
+
+		ShowPopup(this, FormattedString(result.Document));
 	}
 
 	private async void DetectEhic()
@@ -23,66 +23,48 @@ public partial class MainViewController
 		var image = await ImagePicker.Instance.PickImageAsync();
 		
 		var recognizer = new SBSDKHealthInsuranceCardRecognizer();
-		var result = recognizer.RecognizeOnStillImage(image);
-		if (result != null && !string.IsNullOrEmpty(result.StringRepresentation))
-		{
-			ShowPopup(this, result.StringRepresentation);
-		}
-	}
-
-	private async void DetectGenericDocument()
-	{
-		var image = await ImagePicker.Instance.PickImageAsync();
-		var recognizer = new SBSDKGenericDocumentRecognizer(SBSDKGenericDocumentRootType.AllDocumentTypes);
-
-		var result = recognizer.RecognizeDocumentOnImage(image);
-
-		if (result?.Document == null)
-		{
+		var result = recognizer.RecognizeFromImage(image, false);
+		if (result == null || result.Status != SBSDKEuropeanHealthInsuranceCardRecognitionResultRecognitionStatus.Success)
 			return;
-		}
 		
-		// We only take the first document for simplicity
-		var fields = result.Document.Fields
-							.Where(f => !string.IsNullOrEmpty(f?.Type?.Name) && !string.IsNullOrEmpty(f?.Value?.Text))
-							.Select(f => $"{f.Type.Name}: {f.Value.Text}")
-							.ToList();
-		var description = string.Join("\n", fields);
-		ShowPopup(this, description);
+		ShowPopup(this, result.ToJsonWithConfiguration(new SBSDKToJSONConfiguration()));
 	}
-
+	
 	private async void DetectCheck()
 	{
 		var image = await ImagePicker.Instance.PickImageAsync();
-		
-		var recognizer = new SBSDKCheckRecognizer();
-		recognizer.AcceptedCheckTypes = new SBSDKCheckDocumentRootType[]
-		{
-							SBSDKCheckDocumentRootType.AusCheck,
-							SBSDKCheckDocumentRootType.FraCheck,
-							SBSDKCheckDocumentRootType.IndCheck,
-							SBSDKCheckDocumentRootType.KwtCheck,
-							SBSDKCheckDocumentRootType.UsaCheck,
-							SBSDKCheckDocumentRootType.UaeCheck,
-							SBSDKCheckDocumentRootType.CanCheck,
-							SBSDKCheckDocumentRootType.IsrCheck,
-		};
 
-		var result = recognizer.RecognizeOnImage(image);
-		if (result != null && !string.IsNullOrEmpty(result.StringRepresentation))
-		{
-			ShowPopup(this, result.StringRepresentation);
-		}
+		var recognizer = new SBSDKCheckScanner();
+		recognizer.AcceptedCheckTypes = SBSDKCheckDocumentModelRootType.AllDocumentTypes;
+
+		var result = recognizer.ScanFromImage(image, false);
+		if (result?.DocumentDetectionResult == null || !result.DocumentDetectionResult.IsScanningStatusOK)
+			return;
+	
+		ShowPopup(this, FormattedString(result.Check));
 	}
 
 	private async void DetectMedicalCertificate()
 	{
 		var image = await ImagePicker.Instance.PickImageAsync();
-		var recognizer = new SBSDKMedicalCertificateRecognizer();
-		var result = recognizer.RecognizeFromImage(image, true);
-		if (result != null && !string.IsNullOrEmpty(result.StringRepresentation))
+		var recognizer = new SBSDKMedicalCertificateScanner();
+		var result = recognizer.ScanFromImage(image, new SBSDKMedicalCertificateScanningParameters());
+		if (result == null || !result.ScanningSuccessful || result.DocumentDetectionResult == null)
+			return;
+		
+		ShowPopup(this, result.DocumentDetectionResult.ToJsonWithConfiguration(new SBSDKToJSONConfiguration()));
+	}
+
+	private string FormattedString(SBSDKGenericDocument document)
+	{
+		var formattedString = string.Empty;
+		foreach (var field in document.Fields)
 		{
-			ShowPopup(this, result.StringRepresentation);
+			if (string.IsNullOrEmpty(field?.Type?.Name))
+				continue;
+			formattedString += $"{field.Type.Name}: {field.Value?.Text ?? "-"}\n";
 		}
+
+		return formattedString;
 	}
 }

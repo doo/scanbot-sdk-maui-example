@@ -32,11 +32,9 @@ namespace ReadyToUseUI.iOS.Controller
             {
                 new ListItem("Scan MRZ",                      ScanMrz),
                 new ListItem("Scan Health Insurance card",    ScanEhic),
-                new ListItem("Generic Document Recognizer",   RecognizeGenericDocument),
                 new ListItem("Check Recognizer",              RecognizeCheck),
                 new ListItem("Text Data Recognizer",          TextDataRecognizerTapped),
                 new ListItem("VIN Recognizer",                VinRecognizerTapped),
-                new ListItem("License Plate Recognizer",      LicensePlateRecognizerTapped),
                 new ListItem("Medical Certificate Recognizer", MedicalCertificateRecognizerTapped),
             };
 
@@ -44,7 +42,6 @@ namespace ReadyToUseUI.iOS.Controller
             {
                 new ListItem("Detect MRZ From Image", DetectMrz),
                 new ListItem("Detect EHIC From Image", DetectEhic),
-                new ListItem("Detect Generic Document From Image", DetectGenericDocument),
                 new ListItem("Detect Check From Image", DetectCheck),
                 new ListItem("Detect Medical Certificate From Image", DetectMedicalCertificate),
             };

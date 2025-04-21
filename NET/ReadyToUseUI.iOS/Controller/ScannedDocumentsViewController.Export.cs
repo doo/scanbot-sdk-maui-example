@@ -44,29 +44,29 @@ public partial class ScannedDocumentsViewController : UIViewController
 
     private void PerformOcr(SBSDKScannedDocument scannedDocument)
     {
-        var recognitionMode = SBSDKOpticalCharacterRecognitionMode.ScanbotOCR;
+        var recognitionMode = SBSDKOCREngineMode.ScanbotOCR;
+        
         // This is the new OCR configuration with ML which doesn't require the languages.
-        SBSDKOpticalCharacterRecognizerConfiguration ocrConfiguration =
-                            SBSDKOpticalCharacterRecognizerConfiguration.ScanbotOCR;
+        var ocrConfiguration = SBSDKOCREngineConfiguration.ScanbotOCR;
 
         // to use legacy configuration we have to pass the installed languages.
-        if (recognitionMode == SBSDKOpticalCharacterRecognitionMode.Tesseract)
+        if (recognitionMode == SBSDKOCREngineMode.Tesseract)
         {
             var installedLanguages = SBSDKOCRLanguagesManager.InstalledLanguages;
-            ocrConfiguration = SBSDKOpticalCharacterRecognizerConfiguration.TesseractWith(installedLanguages);
+            ocrConfiguration = SBSDKOCREngineConfiguration.TesseractWith(installedLanguages);
         }
 
-        try {
-            var opticalCharacterRecognizer = new SBSDKOpticalCharacterRecognizer(ocrConfiguration);
-            opticalCharacterRecognizer.RecognizeOnScannedDocument(scannedDocument,
-                                completion: (ocrResult, error) =>
+        try
+        {
+            var ocrEngine = new SBSDKOCREngine(ocrConfiguration);
+            ocrEngine.RecognizeFromScannedDocument(scannedDocument, completion: (ocrResult, error) =>
             {
                 if (error != null)
                 {
                     Alert.Show(this, "Perform OCR", error.LocalizedDescription);
                     return;
                 }
-                
+
                 Alert.Show(this, "Perform OCR", ocrResult.RecognizedText);
             });
         }
@@ -76,32 +76,35 @@ public partial class ScannedDocumentsViewController : UIViewController
         }
     }
 
-    private void CreatePdfAsync(SBSDKScannedDocument scannedDocument, NSUrl outputUrl)
+    private void CreatePdfAsync(SBSDKScannedDocument document, NSUrl outputUrl)
     {
         try
         {
+            // Set the name and path for the pdf file
             var outputPdfUrl = new NSUrl(outputUrl.AbsoluteString + Guid.NewGuid() + ".pdf");
             
-            // Create the PDF rendering options.
-            var options = new SBSDKPDFRendererOptions();
+            // Create the PDF rendering options object with default options.
+            var configuration = new SBSDKPDFConfiguration();
             
-            options.Dpi = 200;
-            options.Resample = false;
-            options.JpegQuality = 100;
-            options.PageSize = SBSDKPDFRendererPageSize.A4;
-            options.PageOrientation = SBSDKPDFRendererPageOrientation.Auto;
-            options.PageFitMode = SBSDKPDFRendererPageFitMode.FitIn;
-            options.PdfAttributes =  new SBSDKPDFAttributes(
+            configuration.Dpi = 200;
+            configuration.ResamplingMethod = SBSDKResamplingMethod.Linear;
+            configuration.JpegQuality = 100;
+            configuration.PageSize = SBSDKPageSize.A4;
+            configuration.PageDirection = SBSDKPageDirection.Auto;
+            configuration.PageFit = SBSDKPageFit.FitIn;
+            configuration.Attributes =  new SBSDKPDFAttributes(
                                 author: "Your author",
                                 creator: "Your creator",
                                 title: "Your title",
                                 subject: "Your subject",
-                                keywords: ["PDF", "Scanbot", "SDK"]);
+                                keywords: "PDF, ScanbotSDK");
 
-            // Create the PDF renderer and pass the PDF options to it.
-            var renderer = new SBSDKPDFRenderer(options,  ScanbotUI.DefaultImageStoreEncrypter);
-            renderer.RenderScannedDocumentAsync(scannedDocument, output: outputPdfUrl,
-                completionHandler: (isComplete, error) =>
+             // Renders the document into a searchable PDF at the specified file url
+             var generator = new SBSDKPDFGenerator(configuration: configuration, ocrConfiguration: null, ScanbotUI.DefaultImageStoreEncrypter);
+             
+             // Start the rendering operation and store the SBSDKProgress to watch the progress or cancel the operation.
+             generator.GenerateFromScannedDocument(document, output: outputPdfUrl, 
+                completion: (isComplete, error) =>
                 {
                     if (error != null)
                     {
@@ -117,49 +120,47 @@ public partial class ScannedDocumentsViewController : UIViewController
         }
     }
     
-    private void CreateSandwichedPdf(SBSDKScannedDocument scannedDocument, NSUrl outputUrl)
+    private void CreateSandwichedPdf(SBSDKScannedDocument document, NSUrl outputUrl)
     {
-         var recognitionMode = SBSDKOpticalCharacterRecognitionMode.ScanbotOCR;
+        var recognitionMode = SBSDKOCREngineMode.ScanbotOCR;
+        
         // This is the new OCR configuration with ML which doesn't require the languages.
-        SBSDKOpticalCharacterRecognizerConfiguration ocrConfiguration =
-                            SBSDKOpticalCharacterRecognizerConfiguration.ScanbotOCR;
+        // Create and set the OCR configuration for HOCR.
+        var ocrConfiguration = SBSDKOCREngineConfiguration.ScanbotOCR;
 
         // to use legacy configuration we have to pass the installed languages.
-        if (recognitionMode == SBSDKOpticalCharacterRecognitionMode.Tesseract)
+        if (recognitionMode == SBSDKOCREngineMode.Tesseract)
         {
             var installedLanguages = SBSDKOCRLanguagesManager.InstalledLanguages;
-            ocrConfiguration = SBSDKOpticalCharacterRecognizerConfiguration.TesseractWith(installedLanguages);
+            ocrConfiguration = SBSDKOCREngineConfiguration.TesseractWith(installedLanguages);
         }
 
         try 
         {
             var outputPdfUrl = new NSUrl(outputUrl.AbsoluteString + Guid.NewGuid() + ".pdf");
             
-            // Create the PDF rendering options.
-            var options = new SBSDKPDFRendererOptions();
+            // Create the PDF rendering options object with default options.
+            var configuration = new SBSDKPDFConfiguration();
             
-            // Create and set the OCR configuration for hOCR.
-            options.OcrConfiguration = ocrConfiguration;
-            
-            options.Dpi = 200;
-            options.Resample = false;
-            options.JpegQuality = 100;
-            options.PageSize = SBSDKPDFRendererPageSize.A4;
-            options.PageOrientation = SBSDKPDFRendererPageOrientation.Auto;
-            options.PageFitMode = SBSDKPDFRendererPageFitMode.FitIn;
-            options.PdfAttributes = new SBSDKPDFAttributes(
-                                author: "Your author",
-                                creator: "Your creator",
-                                title: "Your title",
-                                subject: "Your subject",
-                                keywords: ["PDF", "Scanbot", "SDK"]);
+            configuration.Dpi = 200;
+            configuration.ResamplingMethod = SBSDKResamplingMethod.Linear;
+            configuration.JpegQuality = 100;
+            configuration.PageSize = SBSDKPageSize.A4;
+            configuration.PageDirection = SBSDKPageDirection.Auto;
+            configuration.PageFit = SBSDKPageFit.FitIn;
+            configuration.Attributes =  new SBSDKPDFAttributes(
+                author: "Your author",
+                creator: "Your creator",
+                title: "Your title",
+                subject: "Your subject",
+                keywords: "PDF, ScanbotSDK");
 
-            // Create the PDF renderer and pass the PDF options to it.
-            var renderer = new SBSDKPDFRenderer(options,
-                                ScanbotUI.DefaultImageStoreEncrypter);
+            // Renders the document into a searchable PDF at the specified file url
+            var generator = new SBSDKPDFGenerator(configuration: configuration, ocrConfiguration: ocrConfiguration, ScanbotUI.DefaultImageStoreEncrypter);
  
-            renderer.RenderScannedDocumentAsync(scannedDocument, output: outputPdfUrl,
-                completionHandler: (isComplete, error) =>
+            // Start the rendering operation and store the SBSDKProgress to watch the progress or cancel the operation.
+            generator.GenerateFromScannedDocument(document, output: outputPdfUrl, 
+                completion: (isComplete, error) =>
                 {
                     if (error != null)
                     {
@@ -178,15 +179,14 @@ public partial class ScannedDocumentsViewController : UIViewController
     private void WriteTiff(SBSDKScannedDocument scannedDocument, NSUrl outputUrl)
     {
         // Please note that some compression types are only compatible for 1-bit encoded images (binarized black & white images)!
-        var options = SBSDKTIFFImageWriterParameters.DefaultParametersForBinaryImages;
-        options.Binarize = true;
-        options.Compression = SBSDKTIFFImageWriterCompressionOptions.Ccitt_t4;
-        options.Dpi = 250;
+        var options = new SBSDKTIFFGeneratorParameters();
+        options.BinarizationFilter = new SBSDKScanbotBinarizationFilter(SBSDKOutputMode.Binary);
+        options.Compression = SBSDKCompressionMode.CcittT4;
+        options.Dpi = 300;
 
         var outputTiffUrl = new NSUrl(outputUrl.AbsoluteString + Guid.NewGuid() + ".tiff");
-        var tiffWriter = new SBSDKTIFFImageWriter(parameters: options);
-        var success = tiffWriter.WriteTIFFWithScannedDocumentToFile(scannedDocument,
-                                                        outputTiffUrl);
+        var tiffWriter = new SBSDKTIFFGenerator(parameters: options);
+        var success = tiffWriter.GenerateFromScannedDocumentToFile(scannedDocument, outputTiffUrl);
         if (success)
         {
             var title = "Write TIFF";

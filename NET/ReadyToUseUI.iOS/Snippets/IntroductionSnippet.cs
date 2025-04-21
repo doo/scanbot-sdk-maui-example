@@ -27,7 +27,7 @@ public class IntroductionSnippet : UIViewController
 		var firstExampleEntry = new SBSDKUI2IntroListEntry();
 
 		// Configure the introduction image to be shown.
-		firstExampleEntry.Image = SBSDKUI2IntroImage.ReceiptsIntroImage;
+		firstExampleEntry.Image = SBSDKUI2DocumentIntroImage.ReceiptsIntroImage;
 
 		// Configure the text.
 		firstExampleEntry.Text = new SBSDKUI2StyledText(visible: true,
@@ -38,7 +38,7 @@ public class IntroductionSnippet : UIViewController
 		var secondExampleEntry = new SBSDKUI2IntroListEntry();
 
 		// Configure the introduction image to be shown.
-		secondExampleEntry.Image = SBSDKUI2IntroImage.CheckIntroImage;
+		secondExampleEntry.Image = SBSDKUI2DocumentIntroImage.CheckIntroImage;
 
 		// Configure the text.
 		secondExampleEntry.Text = new SBSDKUI2StyledText(visible: true,
