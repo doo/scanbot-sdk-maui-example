@@ -15,19 +15,20 @@ namespace ReadyToUseUI.Droid
         private const int IMPORT_IMAGE_REQUEST = 2001;
 
         private const int SCAN_MRZ_REQUEST = 4001;
-        private const int GENERIC_DOCUMENT_REQUEST = 4002;
+        private const int EXTRACT_DOCUMENT_DATA_REQUEST = 4002;
         private const int SCAN_DATA_REQUEST = 4003;
         private const int SCAN_VIN_REQUEST = 4004;
-        private const int SCAN_EU_LICENSE_REQUEST = 4005;
+        private const int SCAN_CREDIT_CARD_REQUEST = 4005;
         private const int SCAN_EHIC_REQUEST = 4006;
         private const int SCAN_MEDICAL_CERTIFICATE_REQUEST = 4007;
-        private const int CHECK_RECOGNIZER_REQUEST = 5001;
+        private const int SCAN_CHECK_REQUEST = 4008;
         
         private const int DETECT_MRZ_FROM_IMAGE = 6001;
         private const int DETECT_EHIC_FROM_IMAGE = 6002;
         private const int DETECT_MEDICAL_CERTIFICATE_FROM_IMAGE = 6003;
         private const int DETECT_CHECK_FROM_IMAGE = 6004;
-        private const int DETECT_GDR_FROM_IMAGE = 6005;
+        private const int DETECT_DOCUMENT_DATA_FROM_IMAGE = 6005;
+        private const int DETECT_CREDIT_CARD_FROM_IMAGE = 6006;
 
         private readonly List<ListItemButton> buttons = new List<ListItemButton>();
         private ProgressBar progress;
@@ -53,40 +54,38 @@ namespace ReadyToUseUI.Droid
             var scanner = (LinearLayout)container.FindViewById(Resource.Id.document_scanner);
             var scannerTitle = (TextView)scanner.FindViewById(Resource.Id.textView);
             scannerTitle.Text = "Document Scanner";
-            scanner.AddChildren(buttons, new[]
-            {
+            scanner.AddChildren(buttons, [
                 new ListItemButton(this, "Single Document Scanning", SingleDocumentScanning),
                 new ListItemButton(this, "Single Finder Document Scanning", SingleFinderDocumentScanning),
                 new ListItemButton(this, "Multiple Document Scanning", MultipleDocumentScanning),
                 new ListItemButton(this, "Import Image", ImportImage)
-            });
+            ]);
 
             var detectors = (LinearLayout)container.FindViewById(Resource.Id.data_detectors);
             var detectorsTitle = (TextView)detectors.FindViewById(Resource.Id.textView);
             detectorsTitle.Text = "Data Detectors";
-            detectors.AddChildren(buttons, new[]
-            {
+            detectors.AddChildren(buttons, [
+                new ListItemButton(this, "Scan Check", ScanCheck),
+                new ListItemButton(this, "Scan Credit Card", ScanCreditCard),
+                new ListItemButton(this, "Scan Document Data", ExtractDocumentData),
+                new ListItemButton(this, "Scan EU Health Insurance Card", ScanEhic),
+                new ListItemButton(this, "Scan Medical Certificate", ScanMedicalCertificate),
                 new ListItemButton(this, "Scan MRZ", ScanMrz),
-                new ListItemButton(this, "Scan Health Insurance card", ScanEhic),
-                new ListItemButton(this, "Generic Document Recognizer", RecognizeGenericDocument),
-                new ListItemButton(this, "Check Recognizer", RecognizeCheck),
-                new ListItemButton(this, "Text Data Recognizer", TextDataRecognizerTapped),
-                new ListItemButton(this, "VIN Recognizer", VinRecognizerTapped),
-                new ListItemButton(this, "License Plate Recognizer", LicensePlateRecognizerTapped),
-                new ListItemButton(this, "Medical Certificate Recognizer", ScanMedicalCertificate),
-            });
+                new ListItemButton(this, "Scan Text Pattern", TextDataRecognizerTapped),
+                new ListItemButton(this, "Scan VIN", VinRecognizerTapped),
+            ]);
 
             var detectionOnImage = (LinearLayout)container.FindViewById(Resource.Id.data_detection_on_image);
             var detectionOnImageTitle = (TextView)detectionOnImage.FindViewById(Resource.Id.textView);
             detectionOnImageTitle.Text = "Data Detection On Image";
-            detectionOnImage.AddChildren(buttons, new[]
-            {
-                new ListItemButton(this, "Detect MRZ from Image", () => LaunchImagePicker(DETECT_MRZ_FROM_IMAGE)),
-                new ListItemButton(this, "Detect EHIC from Image", () => LaunchImagePicker(DETECT_EHIC_FROM_IMAGE)),
-                new ListItemButton(this, "Detect Generic Document from Image", () => LaunchImagePicker(DETECT_GDR_FROM_IMAGE)),
-                new ListItemButton(this, "Detect Check from Image", () => LaunchImagePicker(DETECT_CHECK_FROM_IMAGE)),
-                new ListItemButton(this, "Detect Medical Certificate from Image", () => LaunchImagePicker(DETECT_MEDICAL_CERTIFICATE_FROM_IMAGE))
-            });
+            detectionOnImage.AddChildren(buttons, [
+                new ListItemButton(this, "Detect Check on Image", () => LaunchImagePicker(DETECT_CHECK_FROM_IMAGE)),
+                new ListItemButton(this, "Detect Credit Card on Image", () => LaunchImagePicker(DETECT_CREDIT_CARD_FROM_IMAGE)),
+                new ListItemButton(this, "Detect Document Data on Image", () => LaunchImagePicker(DETECT_DOCUMENT_DATA_FROM_IMAGE)),
+                new ListItemButton(this, "Detect EU Health Insurance Card on Image", () => LaunchImagePicker(DETECT_EHIC_FROM_IMAGE)),
+                new ListItemButton(this, "Detect Medical Certificate on Image", () => LaunchImagePicker(DETECT_MEDICAL_CERTIFICATE_FROM_IMAGE)),
+                new ListItemButton(this, "Detect MRZ on Image", () => LaunchImagePicker(DETECT_MRZ_FROM_IMAGE))
+            ]);
             
             progress = FindViewById<ProgressBar>(Resource.Id.progressBar);
 

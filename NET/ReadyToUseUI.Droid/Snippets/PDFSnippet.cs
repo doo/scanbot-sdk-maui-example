@@ -35,7 +35,7 @@ public class PdfSnippet : AppCompatActivity
 							keywords: "Your keywords");
                     
 		// Create the PDF rendering configurations.
-		var pdfConfig = new IO.Scanbot.Pdf.Model.PdfConfig(pdfAttributes: pdfAttributes, 
+		var pdfConfig = new IO.Scanbot.Pdf.Model.PdfConfiguration(attributes: pdfAttributes, 
 							pageSize:PageSize.A4, 
 							pageDirection:PageDirection.Auto, 
 							pageFit:PageFit.None, 
@@ -44,7 +44,7 @@ public class PdfSnippet : AppCompatActivity
 							ResamplingMethod.None);
 
 		// Render the images to a PDF file.
-		var isPdfRendered = _scanbotSdk.CreatePdfRenderer().Render(document, pdfConfig);
+		var isPdfRendered = _scanbotSdk.CreatePdfGenerator().GenerateFromDocument(document, pdfConfig);
 		if (isPdfRendered && document?.PdfUri != null)
 		{
 			// Do something with the PDF file
@@ -62,7 +62,7 @@ public class PdfSnippet : AppCompatActivity
 							keywords: "Your keywords");
 		
 		// Create the PDF rendering configurations.
-		var pdfConfig = new IO.Scanbot.Pdf.Model.PdfConfig(pdfAttributes: pdfAttributes, 
+		var pdfConfig = new IO.Scanbot.Pdf.Model.PdfConfiguration(attributes: pdfAttributes, 
 							pageSize:PageSize.A4, 
 							pageDirection:PageDirection.Auto, 
 							pageFit:PageFit.None, 
@@ -74,7 +74,7 @@ public class PdfSnippet : AppCompatActivity
 		var encryptionEnabled = false;
 
 		// Render the images to a PDF file.
-		var pdfFile = _scanbotSdk.CreatePdfRenderer().Render(inputUris.ToArray(), encryptionEnabled, pdfConfig);
+		var pdfFile = _scanbotSdk.CreatePdfGenerator().GenerateFromUris(inputUris.ToArray(), encryptionEnabled, pdfConfig);
 		if (pdfFile != null && pdfFile.Exists())
 		{
 			// Do something with the PDF file

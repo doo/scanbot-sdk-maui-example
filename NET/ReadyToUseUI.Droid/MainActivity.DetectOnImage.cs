@@ -1,5 +1,8 @@
 using Android.Content;
 using DocumentSDK.NET.Model;
+using IO.Scanbot.Sdk.Documentdata;
+using IO.Scanbot.Sdk.MC;
+using IO.Scanbot.Sdk.UI.View.MC.Configuration.Json;
 using ReadyToUseUI.Droid.Fragments;
 using ReadyToUseUI.Droid.Utils;
 
@@ -13,7 +16,8 @@ public partial class MainActivity
         { DETECT_EHIC_FROM_IMAGE, DetectEHICFromImage },
         { DETECT_CHECK_FROM_IMAGE, DetectCheckFromImage },
         { DETECT_MEDICAL_CERTIFICATE_FROM_IMAGE, DetectMedicalCertificateFromImage },
-        { DETECT_GDR_FROM_IMAGE, DetectGenericDocumentFromImage },
+        { DETECT_DOCUMENT_DATA_FROM_IMAGE, DetectDocumentDataFromImage },
+        { DETECT_CREDIT_CARD_FROM_IMAGE, DetectCreditCardFromImage },
     };
 
     private void LaunchImagePicker(int activityRequestCode)
@@ -32,50 +36,38 @@ public partial class MainActivity
     {
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
         var recognizer = scanbotSDK.CreateMrzScanner();
-        var result = recognizer.RecognizeMRZBitmap(bitmap, 0);
+        var result = recognizer.ScanFromBitmap(bitmap, 0);
 
         if (result?.Document == null) return;
 
-        var fragment = MRZDialogFragment.CreateInstance(result);
+        var fragment = MRZDialogFragment.CreateInstance(result.Document);
         fragment.Show(FragmentManager, MRZDialogFragment.NAME);
     }
 
     private void DetectCheckFromImage(Intent data)
     {
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
-        var recognizer = scanbotSDK.CreateCheckRecognizer();
-        var result = recognizer.RecognizeBitmap(bitmap, 0);
-        var fields = result.Check.Fields;
-        var description = string.Join(";\n", fields
-                            .Where(field => field != null)
-                            .Select((field) =>
-                                    {
-                                        string outStr = "";
-                                        if (field.GetType() != null && field.GetType().Name != null)
-                                        {
-                                            outStr += field.GetType().Name + " = ";
-                                        }
-                                        if (field.Value != null && field.Value.Text != null)
-                                        {
-                                            outStr += field.Value.Text;
-                                        }
-                                        return outStr;
-                                    })
-                            .ToList());
-
+        var recognizer = scanbotSDK.CreateCheckScanner();
+        var result = recognizer.ScanFromBitmap(bitmap, 0);
+        var description = result.Check.ToFormattedString();
         Alert.ShowAlert(this, "Result", description);
     }
 
     private void DetectMedicalCertificateFromImage(Intent data)
     {
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
-        var recognizer = scanbotSDK.CreateMedicalCertificateRecognizer();
-        var result = recognizer.RecognizeMcBitmap(image: bitmap,
-            orientation: 0,
+        var recognizer = scanbotSDK.CreateMedicalCertificateScanner();
+        
+        var parameters = new MedicalCertificateScanningParameters(
             shouldCropDocument: true,
-            returnCroppedDocument: true,
-            recognizePatientInfo: true,
-            recognizeBarcode: true);
+            recognizePatientInfoBox: true,
+            recognizeBarcode: true,
+            extractCroppedImage: true,
+            preprocessInput: true);
+        
+        var result = recognizer.ScanFromBitmap(image: bitmap,
+            orientation: 0,
+            parameters: parameters);
 
         if (result == null) return;
 
@@ -95,28 +87,25 @@ public partial class MainActivity
         fragment.Show(FragmentManager, HealthInsuranceCardFragment.NAME);
     }
 
-    private void DetectGenericDocumentFromImage(Intent data)
+    private void DetectDocumentDataFromImage(Intent data)
     {
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
-        var recognizer = scanbotSDK.CreateGenericDocumentRecognizer();
-        var result = recognizer.ScanBitmap(bitmap, true, 0);
-
+        var recognizer = scanbotSDK.CreateDocumentDataExtractor();
+        var result = recognizer.ExtractFromBitmap(bitmap,  0, DocumentDataExtractionMode.Live);
+    
         if (result?.Document == null) return;
-
-        var description = string.Join(";\n", result.Document.Fields
-                            .Where(field => field != null)
-                            .Select(field =>
-                                    {
-                                        string typeName = field.GetType().Name;
-                                        string valueText = field.Value?.Text;
-                                        return !string.IsNullOrEmpty(typeName) && !string.IsNullOrEmpty(valueText)
-                                                            ? $"{typeName} = {valueText}"
-                                                            : null;
-                                    })
-                            .Where(outStr => outStr != null)
-                            .ToList()
-        );
-
+        var description = result.Document.ToFormattedString();
+        Alert.ShowAlert(this, "Result", description);
+    }
+    
+    private void DetectCreditCardFromImage(Intent data)
+    {
+        var bitmap = ImageUtils.ProcessGalleryResult(this, data);
+        var recognizer = scanbotSDK.CreateCreditCardScanner();
+        var result = recognizer.ScanFromBitmap(bitmap, 0);
+    
+        if (result?.CreditCard == null) return;
+        var description = result.CreditCard.ToFormattedString();
         Alert.ShowAlert(this, "Result", description);
     }
 }

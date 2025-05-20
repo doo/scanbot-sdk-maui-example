@@ -20,31 +20,35 @@ namespace ReadyToUseUI.iOS.Controller
 
             Title = "Scanbot SDK RTU UI Example";
 
-            documentScanners = new List<ListItem>
-            {
+            documentScanners =
+            [
                 new ListItem("Single Document Scanning", SingleDocumentScanning),
                 new ListItem("Single Finder Document Scanning", SingleFinderDocumentScanning),
                 new ListItem("Multiple Document Scanning", MultipleDocumentScanning),
                 new ListItem("Import Image", ImportImage)
-            };
+            ];
 
-            dataDetectors = new List<ListItem>
-            {
-                new ListItem("Scan MRZ",                      ScanMrz),
-                new ListItem("Scan Health Insurance card",    ScanEhic),
-                new ListItem("Check Recognizer",              RecognizeCheck),
-                new ListItem("Text Data Recognizer",          TextDataRecognizerTapped),
-                new ListItem("VIN Recognizer",                VinRecognizerTapped),
-                new ListItem("Medical Certificate Recognizer", MedicalCertificateRecognizerTapped),
-            };
+            dataDetectors =
+            [
+                new ListItem("Scan Check", ScanCheck),
+                new ListItem("Scan CreditCard", ScanCreditCard),
+                new ListItem("Scan Document Data", ScanDocumentData),
+                new ListItem("Scan EU Health Insurance Card", ScanEhic),
+                new ListItem("Scan Medical Certificate", ScanMedicalCertificate),
+                new ListItem("Scan MRZ", ScanMrz),
+                new ListItem("Text Data Recognizer", ScanTextPattern),
+                new ListItem("VIN Recognizer", ScanVin),
+            ];
 
-            dataDetectionOnImage = new List<ListItem>
-            {
-                new ListItem("Detect MRZ From Image", DetectMrz),
-                new ListItem("Detect EHIC From Image", DetectEhic),
+            dataDetectionOnImage =
+            [
                 new ListItem("Detect Check From Image", DetectCheck),
+                new ListItem("Detect Credit Card From Image", DetectCreditCard),
+                new ListItem("Detect Document Data From Image", DetectDocumentData),
+                new ListItem("Detect EHIC From Image", DetectEhic),
                 new ListItem("Detect Medical Certificate From Image", DetectMedicalCertificate),
-            };
+                new ListItem("Detect MRZ From Image", DetectMrz),
+            ];
 
             contentView.AddContent("Document Scanner", documentScanners);
             contentView.AddContent("Data Detectors", dataDetectors);

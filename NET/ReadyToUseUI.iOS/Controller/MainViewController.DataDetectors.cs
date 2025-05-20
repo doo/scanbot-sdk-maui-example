@@ -34,8 +34,31 @@ public partial class MainViewController
             };
             PresentViewController(controller, false, null);
         }
+        
+        private void ScanDocumentData()
+        {
+            var configuration = SBSDKUIDocumentDataExtractorConfiguration.DefaultConfiguration;
+            configuration.TextConfiguration.CancelButtonTitle = "Done";
+            // Specify Document types if needed
+            // configuration.BehaviorConfiguration.DocumentType = SBSDKUIDocumentType.IdCardFrontBackDE;
+            var controller = SBSDKUIDocumentDataExtractorViewController.CreateWithConfigurationAndDelegate(configuration, null);
 
-        private void RecognizeCheck()
+            controller.DidFinishWithResults += (_, args) =>
+            {
+                if (args?.Results == null || args.Results.Length == 0)
+                {
+                    return;
+                }
+
+                // We only take the first document for simplicity
+                var firstDocument = args.Results.First();
+                
+                ShowPopup(this, FormattedString(firstDocument.Document));
+            };
+            PresentViewController(controller, false, null);
+        }
+
+        private void ScanCheck()
         {
             var configuration = SBSDKUICheckScannerConfiguration.DefaultConfiguration;
             configuration.TextConfiguration.CancelButtonTitle = "Done";
@@ -63,7 +86,7 @@ public partial class MainViewController
             PresentViewController(controller, false, null);
         }
 
-        private void TextDataRecognizerTapped()
+        private void ScanTextPattern()
         {
             SBSDKUI2TextPatternScannerViewController textScannerController = null;
             var configuration = new SBSDKUI2TextPatternScannerScreenConfiguration();
@@ -74,7 +97,7 @@ public partial class MainViewController
             });
         }
 
-        private void VinRecognizerTapped()
+        private void ScanVin()
         {
             var configuration = SBSDKUIVINScannerConfiguration.DefaultConfiguration;
             configuration.TextConfiguration.CancelButtonTitle = "Done";
@@ -88,7 +111,7 @@ public partial class MainViewController
             PresentViewController(scanner, true, null);
         }
         
-        private void MedicalCertificateRecognizerTapped()
+        private void ScanMedicalCertificate()
         {
             var configuration = SBSDKUIMedicalCertificateScannerConfiguration.DefaultConfiguration;
             configuration.TextConfiguration.CancelButtonTitle = "Done";
@@ -100,5 +123,19 @@ public partial class MainViewController
                 Alert.Show(this, "Result Text:", args.Result.ToJsonWithConfiguration(new SBSDKToJSONConfiguration()));
             };
             PresentViewController(scanner, true, null);
+        }
+
+        private void ScanCreditCard()
+        {
+            var configuration = new SBSDKUI2CreditCardScannerScreenConfiguration();
+            configuration.TopBar.CancelButton.Text = "Done";
+
+            SBSDKUI2CreditCardScannerViewController.PresentOn(this, configuration, async (result) =>
+            {
+                if (result == null || result.CreditCard == null)
+                    return;
+
+                ShowPopup(this, FormattedString(result.CreditCard));
+            });
         }
 }

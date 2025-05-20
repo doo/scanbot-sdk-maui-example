@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using Android.Views;
-using IO.Scanbot.Ehicscanner.Model;
+using IO.Scanbot.Sdk.Ehicscanner;
 using ReadyToUseUI.Droid.Views;
 
 namespace ReadyToUseUI.Droid.Fragments
@@ -9,13 +9,12 @@ namespace ReadyToUseUI.Droid.Fragments
     {
         public const string NAME = "HealthInsuranceCardFragment";
 
-        public static HealthInsuranceCardFragment CreateInstance(EhicRecognitionResult result)
+        public static HealthInsuranceCardFragment CreateInstance(EuropeanHealthInsuranceCardRecognitionResult result)
         {
             var fragment = new HealthInsuranceCardFragment();
 
             var args = new Bundle();
-            var fields = result.Fields.Cast<EhicField>();
-            args.PutParcelableArray(NAME, fields.ToArray());
+            args.PutParcelableArray(NAME, result.Fields.ToArray());
 
             fragment.Arguments = args;
             return fragment;
@@ -23,20 +22,21 @@ namespace ReadyToUseUI.Droid.Fragments
 
         public override View AddContentView(LayoutInflater inflater, ViewGroup container)
         {
-            var data = Arguments.GetParcelableArray(NAME).Cast<EhicField>().ToList();
+            var list = Arguments.GetParcelableArray(NAME).Cast<EuropeanHealthInsuranceCardRecognitionResult.Field>().ToList();
             var view = inflater.Inflate(Resource.Layout.fragment_barcode_dialog, container);
 
             var format = view.FindViewById<TextView>(Resource.Id.title);
             var content = view.FindViewById<TextView>(Resource.Id.barcode_result_values);
 
-            if (data.Count == 0)
+            if (list.Count == 0)
             {
                 content.Text = "No fields found";
                 return view;
             }
+
             format.Text = "Scanned EHIC Card";
 
-            var text = ParseData(data);
+            var text = ParseData(list);
 
             CopyText = text;
             content.Text = CopyText;
@@ -44,7 +44,7 @@ namespace ReadyToUseUI.Droid.Fragments
             return view;
         }
 
-        public string ParseData(List<EhicField> fields)
+        public string ParseData(List<EuropeanHealthInsuranceCardRecognitionResult.Field> fields)
         {
             var builder = new StringBuilder();
 
@@ -52,6 +52,7 @@ namespace ReadyToUseUI.Droid.Fragments
             {
                 builder.Append($"{field.Type.Name()}: {field.Value}\n");
             }
+
             return builder.ToString();
         }
     }

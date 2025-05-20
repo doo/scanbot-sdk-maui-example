@@ -1,5 +1,5 @@
 using AndroidX.AppCompat.App;
-using IO.Scanbot.Sdk.Process.Model;
+using IO.Scanbot.Sdk.Process;
 using IO.Scanbot.Sdk.Ui_v2.Common;
 using IO.Scanbot.Sdk.Ui_v2.Document;
 using IO.Scanbot.Sdk.Ui_v2.Document.Configuration;

@@ -81,4 +81,7 @@
     <ItemGroup>
         <PackageReference Include="Scanbot.Xamarin.ImagePicker" Version="0.0.3-beta.1" />
     </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\scanbot-sdk-maui\DocumentSDK\DocumentSDK.NET.iOS\DocumentSDK.NET.iOS.csproj" />
+    </ItemGroup>
 </Project>

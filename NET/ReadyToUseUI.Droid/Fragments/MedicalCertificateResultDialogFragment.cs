@@ -1,7 +1,8 @@
-﻿using System.Text;
+﻿using Android.Graphics;
+using Android.Text;
+using Android.Text.Style;
 using Android.Views;
-using IO.Scanbot.Mcscanner.Model;
-using IO.Scanbot.Sdk.Mcrecognizer.Entity;
+using IO.Scanbot.Sdk.MC;
 using ReadyToUseUI.Droid.Views;
 
 namespace ReadyToUseUI.Droid.Fragments
@@ -11,9 +12,9 @@ namespace ReadyToUseUI.Droid.Fragments
         public const string NAME = "MedicalCertificateResultDialogFragment";
         public const string MEDICAL_CERTIFICATE_RESULT_EXTRA = "MEDICAL_CERTIFICATE_RESULT_EXTRA";
 
-        private MedicalCertificateRecognizerResult _result;
+        private MedicalCertificateScanningResult _result;
 
-        public static MedicalCertificateResultDialogFragment CreateInstance(MedicalCertificateRecognizerResult result)
+        public static MedicalCertificateResultDialogFragment CreateInstance(MedicalCertificateScanningResult result)
         {
             var fragment = new MedicalCertificateResultDialogFragment();
 
@@ -26,50 +27,91 @@ namespace ReadyToUseUI.Droid.Fragments
 
         public override View AddContentView(LayoutInflater inflater, ViewGroup container)
         {
-            _result = (MedicalCertificateRecognizerResult)Arguments.GetParcelable(MEDICAL_CERTIFICATE_RESULT_EXTRA);
+            _result = (MedicalCertificateScanningResult)Arguments.GetParcelable(MEDICAL_CERTIFICATE_RESULT_EXTRA);
             var view = inflater.Inflate(Resource.Layout.fragment_medical_certificate_result_dialog, container);
 
-            CopyText = ParseData(_result);
-            view.FindViewById<TextView>(Resource.Id.tv_data).Text = CopyText;
-            view.FindViewById<ImageView>(Resource.Id.front_snap_result).SetImageBitmap(_result?.CroppedImage);
+            view.FindViewById<TextView>(Resource.Id.tv_data).TextFormatted = ParseData(_result);
+            view.FindViewById<ImageView>(Resource.Id.front_snap_result).SetImageBitmap(_result?.CroppedImage.ToBitmap());
 
             return view;
         }
 
-        private string ParseData(MedicalCertificateRecognizerResult result)
+        private SpannableStringBuilder ParseData(MedicalCertificateScanningResult result)
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            var sb = new SpannableStringBuilder();
 
-            stringBuilder.Append("Type: ").Append(result.Checkboxes
-                   ?.FirstOrDefault(medicalCertificateInfoBox => medicalCertificateInfoBox.Type == CheckBoxType.McBoxInitialCertificate)
-                   ?.HasContents == true ? "Initial" :
-                   result.Checkboxes
-                       ?.FirstOrDefault(medicalCertificateInfoBox => medicalCertificateInfoBox.Type == CheckBoxType.McBoxRenewedCertificate)
-                       ?.HasContents == true ? "Renewed" : "Unknown").Append("\n");
+            sb.Append(GetBoldSpanString("FormType:"));
+            sb.Append(GetRegularSpanString(result.FormType + "\n \n"));
+            
+            if (result.PatientInfoBox?.Fields != null && result.PatientInfoBox.Fields.Count > 0)
+            {
+                sb.Append(ExtractPatientInfo(result.PatientInfoBox.Fields));
+            }
 
-            stringBuilder.Append("Work Accident: ").Append(result.Checkboxes
-                ?.FirstOrDefault(medicalCertificateInfoBox => medicalCertificateInfoBox.Type == CheckBoxType.McBoxWorkAccident)
-                ?.HasContents == true ? "Yes" : "No").Append("\n");
+            if (result.Dates != null && result.Dates.Count > 0)
+            {
+                sb.Append(ExtractDatesInfo(result.Dates));
+            }
 
-            stringBuilder.Append("Accident Consultant: ").Append(result.Checkboxes
-                ?.FirstOrDefault(medicalCertificateInfoBox => medicalCertificateInfoBox.Type == CheckBoxType.McBoxAssignedToAccidentInsuranceDoctor)
-                ?.HasContents == true ? "Yes" : "No").Append("\n");
+            if (result.CheckBoxes != null && result.CheckBoxes.Count > 0)
+            {
+                sb.Append(ExtractCheckBoxInfo(result.CheckBoxes));
+            }
+           
+            return sb;
+        }
 
-            stringBuilder.Append("Start Date: ").Append(
-                result.Dates?.FirstOrDefault(dateRecord => dateRecord.Type == DateRecordType.DateRecordIncapableOfWorkSince)?.DateString).Append("\n");
+        private SpannableStringBuilder ExtractPatientInfo(IList<MedicalCertificatePatientInfoField> fields)
+        {
+            var sb = new SpannableStringBuilder();
+            sb.Append(GetBoldSpanString("Patient Information:\n"));
+            foreach (var field in fields)
+            {
+                sb.Append(GetBoldSpanString(field.Type.Name() + ":"));
+                sb.Append(GetRegularSpanString(field.Value));
+            }
 
-            stringBuilder.Append("End Date: ").Append(
-                result.Dates?.FirstOrDefault(dateRecord => dateRecord.Type == DateRecordType.DateRecordIncapableOfWorkUntil)?.DateString).Append("\n");
+            return sb;
+        }
+        
+        private SpannableStringBuilder ExtractDatesInfo(IList<MedicalCertificateDateRecord> resultDates)
+        {
+            var sb = new SpannableStringBuilder();
+            sb.Append(GetBoldSpanString("\nDate Information:"));
+            foreach (var record in resultDates)
+            {
+                sb.Append(GetBoldSpanString(record.Type.Name() + ":"));
+                sb.Append(GetRegularSpanString(record.Value));
+            }
 
-            stringBuilder.Append("Issue Date: ").Append(
-                result.Dates?.FirstOrDefault(dateRecord => dateRecord.Type == DateRecordType.DateRecordDiagnosedOn)?.DateString).Append("\n");
+            return sb;
+        }
 
-            stringBuilder.Append($"Form type: {result.McFormType.Name()}").Append("\n");
+        private SpannableStringBuilder ExtractCheckBoxInfo(IList<MedicalCertificateCheckBox> resultCheckBoxes)
+        {
+            var sb = new SpannableStringBuilder();
+            sb.Append(GetBoldSpanString("\nCheckBox Fields:"));
+            foreach (var checkBox in resultCheckBoxes)
+            {
+                sb.Append(GetBoldSpanString(checkBox.Type.Name() + ":"));
+                sb.Append(GetRegularSpanString(checkBox.Checked ? "Yes" : "No"));
+            }
 
-            stringBuilder.Append(string.Join("\n", result.PatientInfoBox.Fields.ToList().ConvertAll(field => $"{field.PatientInfoFieldType.Name()}: {field.Value}")));
+            return sb;
+        }
 
-            return stringBuilder.ToString();
+        private SpannableString GetBoldSpanString(string text)
+        {
+            var boldString = new SpannableString(text + "\n");
+            boldString.SetSpan(new StyleSpan(TypefaceStyle.Bold), 0, text.Length, SpanTypes.ExclusiveExclusive);
+            return boldString;
+        }
+        
+        private SpannableString GetRegularSpanString(string text)
+        {
+            var regularString = new SpannableString(text + "\n");
+            regularString.SetSpan(new StyleSpan(TypefaceStyle.Normal), 0, text.Length, SpanTypes.ExclusiveExclusive);
+            return regularString;
         }
     }
-
 }

@@ -6,6 +6,7 @@ using DocumentScannerActivity = IO.Scanbot.Sdk.Ui_v2.Document.DocumentScannerAct
 using ReadyToUseUI.Droid.Activities;
 using ReadyToUseUI.Droid.Utils;
 using DocumentSDK.NET.Model;
+using IO.Scanbot.Sdk.Common;
 
 namespace ReadyToUseUI.Droid;
 
@@ -25,11 +26,12 @@ public partial class MainActivity
         }
 
         var configuration = new DocumentScanningFlow();
+        
         configuration.OutputSettings.PagesScanLimit = 1;
-        configuration.Screens.Camera.CameraConfiguration.RequiredAspectRatios = new[]
-        {
-                new AspectRatio(21.0, 29.7) // allow only A4 format documents to be scanned
-        };
+        configuration.Screens.Camera.ScannerParameters.AspectRatios =
+        [
+            new AspectRatio(21.0, 29.7) // allow only A4 format documents to be scanned
+        ];
 
         var intent = DocumentScannerActivity.NewIntent(this, configuration);
         StartActivityForResult(intent, SCAN_DOCUMENT_REQUEST_CODE);
@@ -46,8 +48,8 @@ public partial class MainActivity
         var aspectRatio = new AspectRatio(21.0, 29.7);
 
         var configuration = new DocumentScanningFlow();
-        configuration.Screens.Camera.CameraConfiguration.AcceptedSizeScore = 0.75;
-        configuration.Screens.Camera.CameraConfiguration.RequiredAspectRatios = new[] { aspectRatio };
+        configuration.Screens.Camera.ScannerParameters.AcceptedSizeScore = 75;
+        configuration.Screens.Camera.ScannerParameters.AspectRatios = [ aspectRatio ];
         configuration.Screens.Camera.ViewFinder.Visible = true;
         configuration.Screens.Camera.ViewFinder.AspectRatio = aspectRatio;
 
@@ -97,8 +99,8 @@ public partial class MainActivity
 
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
 
-        var detector = scanbotSDK.CreateContourDetector();
-        var detectionResult = detector.Detect(bitmap);
+        var scanner = scanbotSDK.CreateDocumentScanner();
+        var detectionResult = scanner.ScanFromBitmap(bitmap);
 
         var defaultDocumentSizeLimit = 0;
         var document = scanbotSDK.DocumentApi.CreateDocument(defaultDocumentSizeLimit);
@@ -106,7 +108,8 @@ public partial class MainActivity
 
         if (detectionResult != null)
         {
-            document.PageAtIndex(0).Polygon = detectionResult.PolygonF;
+            // todo: Check the polygons
+            // document.PageAtIndex(0).Polygon = detectionResult.Points;
         }
 
         progress.Visibility = ViewStates.Gone;

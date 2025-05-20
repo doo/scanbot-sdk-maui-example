@@ -28,13 +28,17 @@ public class TIFFSnippet : AppCompatActivity
 	{
 		var tiffFile = new Java.IO.File(document?.TiffUri?.Path ?? "");
 		
-		var options = new IO.Scanbot.Sdk.Tiff.Model.TIFFImageWriterParameters(
-							binarizationFilter: new ScanbotBinarizationFilter(),
-							dpi:200,
-							compression: IO.Scanbot.Sdk.Tiff.Model.TIFFImageWriterCompressionOptions.CompressionNone,
-							userDefinedFields: Array.Empty<TIFFImageWriterUserDefinedField>());
+		var defaultParams = TiffGeneratorParameters.Default();
+		
+		var options = new IO.Scanbot.Sdk.Tiff.Model.TiffGeneratorParameters(
+			IO.Scanbot.Sdk.Tiff.Model.CompressionMode.None,
+			jpegQuality: defaultParams.JpegQuality,
+			zipCompressionLevel: defaultParams.ZipCompressionLevel,
+			dpi: 200,
+			userFields: Array.Empty<UserField>(),
+			ParametricFilter.ScanbotBinarizationFilter());
 
-		var isTiffGenerated = _scanbotSdk.CreateTiffWriter().WriteTIFF(document, tiffFile, options);
+		var isTiffGenerated = _scanbotSdk.CreateTiffGenerator().GenerateFromDocument(document, tiffFile, options);
 		if (isTiffGenerated && document?.TiffUri != null)
 		{
 			// Do something with the TIFF file
@@ -45,15 +49,20 @@ public class TIFFSnippet : AppCompatActivity
 	{
 		var tiffFile = new Java.IO.File("Your path to tif file.");
 		
-		var options = new IO.Scanbot.Sdk.Tiff.Model.TIFFImageWriterParameters(
-							binarizationFilter: new ScanbotBinarizationFilter(),
-							dpi:200,
-							compression: IO.Scanbot.Sdk.Tiff.Model.TIFFImageWriterCompressionOptions.CompressionNone,
-							userDefinedFields: Array.Empty<TIFFImageWriterUserDefinedField>());
+		var defaultParams = TiffGeneratorParameters.Default();
+		
+		var options = new IO.Scanbot.Sdk.Tiff.Model.TiffGeneratorParameters(
+			IO.Scanbot.Sdk.Tiff.Model.CompressionMode.None,
+			jpegQuality: defaultParams.JpegQuality,
+			zipCompressionLevel: defaultParams.ZipCompressionLevel,
+			dpi: 200,
+			userFields: Array.Empty<UserField>(),
+			ParametricFilter.ScanbotBinarizationFilter());
+
 		// Notify the renderer that the images are encrypted with global sdk-encryption settings
 		var encryptionEnabled = false;
 		
-		var isFileCreated = _scanbotSdk.CreateTiffWriter().WriteTIFF(inputUris.ToArray(), encryptionEnabled, tiffFile, options);
+		var isFileCreated = _scanbotSdk.CreateTiffGenerator().GenerateFromUris(inputUris.ToArray(), encryptionEnabled, tiffFile, options, Binarization.EnabledIfBinarizationFilterSet);
 		if (isFileCreated && tiffFile.Exists())
 		{
 			// Do something with the TIFF file

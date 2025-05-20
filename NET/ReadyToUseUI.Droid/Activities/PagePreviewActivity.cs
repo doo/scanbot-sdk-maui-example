@@ -17,13 +17,11 @@ using IO.Scanbot.Sdk.Imagefilters;
 using IO.Scanbot.Sdk.Tiff.Model;
 using ReadyToUseUI.Droid.Model;
 using IO.Scanbot.Sdk.Ocr;
-using IO.Scanbot.Sdk.Process.Model;
 using IO.Scanbot.Sdk.Ui_v2.Barcode.Configuration;
 using IO.Scanbot.Sdk.Ui_v2.Common;
 using IO.Scanbot.Sdk.Ui_v2.Document;
 using IO.Scanbot.Sdk.Ui_v2.Document.Configuration;
 using Org.Json;
-using static IO.Scanbot.Sdk.Ocr.IOpticalCharacterRecognizer;
 using ImageProcessor = IO.Scanbot.Sdk.Core.Processor.ImageProcessor;
 using Uri = Android.Net.Uri;
 
@@ -143,8 +141,8 @@ namespace ReadyToUseUI.Droid.Activities
                      return;
 
                  var qualityAnalyzer = scanbotSDK.CreateDocumentQualityAnalyzer();
-                 var documentQualityResult = qualityAnalyzer.AnalyzeInBitmap(bitmap, 0);
-                 Alert.ShowAlert(this, "Document Quality", documentQualityResult.Name());
+                 var documentQualityResult = qualityAnalyzer.AnalyzeOnBitmap(bitmap, 0);
+                 Alert.ShowAlert(this, "Document Quality", documentQualityResult.Quality.Name());
              };
 
             filter = FindViewById<TextView>(Resource.Id.action_filter);

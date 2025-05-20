@@ -30,6 +30,26 @@ public partial class MainViewController
 		ShowPopup(this, result.ToJsonWithConfiguration(new SBSDKToJSONConfiguration()));
 	}
 	
+	private async void DetectDocumentData()
+	{
+		var image = await ImagePicker.Instance.PickImageAsync();
+
+		var detectionTypes = SBSDKDocumentsModelRootType.AllDocumentTypes;
+		var builder = new SBSDKDocumentDataExtractorConfigurationBuilder();
+		builder.SetAcceptedDocumentTypes(detectionTypes);
+		
+		builder.SetReturnCrops(true);
+
+		var extractor = new SBSDKDocumentDataExtractor(builder.BuildConfiguration);
+
+		var result = extractor.ExtractFromImage(image, false);
+		
+		if (result?.DocumentDetectionResult == null || !result.DocumentDetectionResult.IsScanningStatusOK)
+			return;
+	
+		ShowPopup(this, FormattedString(result.Document));
+	}
+	
 	private async void DetectCheck()
 	{
 		var image = await ImagePicker.Instance.PickImageAsync();
@@ -44,6 +64,17 @@ public partial class MainViewController
 		ShowPopup(this, FormattedString(result.Check));
 	}
 
+	private async void DetectCreditCard()
+	{
+		var image = await ImagePicker.Instance.PickImageAsync();
+		var recognizer = new SBSDKCreditCardScanner();
+		var result = recognizer.ScanFromImage(image);
+		if (result?.CreditCard == null || result.ScanningStatus != SBSDKCreditCardScanningStatus.Success)
+			return;
+		
+		ShowPopup(this, FormattedString(result.CreditCard));
+	}
+	
 	private async void DetectMedicalCertificate()
 	{
 		var image = await ImagePicker.Instance.PickImageAsync();
