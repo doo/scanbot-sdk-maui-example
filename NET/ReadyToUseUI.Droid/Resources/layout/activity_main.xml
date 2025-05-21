@@ -37,7 +37,8 @@
             android:textSize="25dp"
             android:textStyle="normal"
             android:gravity="center"/>
-
+        
+        <!-- License Indicator -->
         <TextView
             android:id="@+id/licenseIndicator"
             android:layout_width="match_parent"
@@ -49,7 +50,7 @@
             android:gravity="center"
             android:textStyle="normal"/>
 
-        <!--Document Scanners -->
+        <!-- Document Scanners -->
         <LinearLayout
             android:id="@+id/document_scanner"
             android:layout_width="match_parent"
@@ -68,7 +69,7 @@
                 android:textStyle="bold"/>
         </LinearLayout>
 
-        <!--Data Detectors -->
+        <!-- Data Detectors -->
         <LinearLayout
             android:id="@+id/data_detectors"
             android:layout_width="match_parent"
@@ -87,9 +88,28 @@
                 android:textStyle="bold"/>
         </LinearLayout>
 
-        <!--Data Detection On Image -->
+        <!-- Data Detection On Image -->
         <LinearLayout
                 android:id="@+id/data_detection_on_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@android:color/white"
+                    android:gravity="center_vertical"
+                    android:layout_gravity="left"
+                    android:padding="16dp"
+                    android:background="@color/scanbotRed"
+                    android:textStyle="bold"/>
+        </LinearLayout>
+
+        <!-- Miscellaneous -->
+        <LinearLayout
+                android:id="@+id/miscellaneous_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">

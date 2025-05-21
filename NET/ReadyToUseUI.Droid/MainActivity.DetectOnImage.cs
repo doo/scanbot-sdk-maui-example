@@ -2,7 +2,6 @@ using Android.Content;
 using DocumentSDK.NET.Model;
 using IO.Scanbot.Sdk.Documentdata;
 using IO.Scanbot.Sdk.MC;
-using IO.Scanbot.Sdk.UI.View.MC.Configuration.Json;
 using ReadyToUseUI.Droid.Fragments;
 using ReadyToUseUI.Droid.Utils;
 

@@ -1,23 +1,14 @@
 using Android.Content;
 using Android.Graphics;
-using IO.Scanbot.Ehicscanner;
-using IO.Scanbot.Genericdocument.Entity;
-using IO.Scanbot.Mrz;
 using IO.Scanbot.Sdk.Check;
-using IO.Scanbot.Sdk.Check.Entity;
-using IO.Scanbot.Sdk.Creditcard;
 using IO.Scanbot.Sdk.Documentdata;
-using IO.Scanbot.Sdk.Documentdata.Entity;
-using IO.Scanbot.Sdk.Mcrecognizer;
-using IO.Scanbot.Sdk.UI.Result;
+using IO.Scanbot.Sdk.Ehicscanner;
 using IO.Scanbot.Sdk.UI.View.Base;
 using IO.Scanbot.Sdk.UI.View.Check;
-using IO.Scanbot.Sdk.Genericdocument;
-using IO.Scanbot.Sdk.Genericdocument.Entity;
 using IO.Scanbot.Sdk.MC;
-using IO.Scanbot.Sdk.Mrz;
 using IO.Scanbot.Sdk.Ui_v2.Creditcard.Configuration;
 using IO.Scanbot.Sdk.Ui_v2.Mrz;
+using IO.Scanbot.Sdk.Ui_v2.Mrz.Configuration;
 using IO.Scanbot.Sdk.Ui_v2.Textpattern;
 using IO.Scanbot.Sdk.Ui_v2.Textpattern.Configuration;
 using IO.Scanbot.Sdk.UI.View.Documentdata;
@@ -25,10 +16,6 @@ using IO.Scanbot.Sdk.UI.View.Hic;
 using IO.Scanbot.Sdk.UI.View.Hic.Configuration;
 using IO.Scanbot.Sdk.UI.View.MC;
 using IO.Scanbot.Sdk.UI.View.MC.Configuration;
-using IO.Scanbot.Sdk.UI.View.Mrz;
-using IO.Scanbot.Sdk.UI.View.Mrz.Configuration;
-using IO.Scanbot.Sdk.UI.View.Textpattern.Configuration;
-using IO.Scanbot.Sdk.UI.View.Textpattern.Entity;
 using IO.Scanbot.Sdk.UI.View.Vin;
 using IO.Scanbot.Sdk.Vin;
 using ReadyToUseUI.Droid.Fragments;
@@ -56,17 +43,15 @@ public partial class MainActivity
 
     private void ScanMrz()
     {
-        var configuration = new MRZScannerConfiguration();
-        configuration.SetCancelButtonTitle("Done");
-
-        var intent = MRZScannerActivity.NewIntent(this, configuration);
+        var configuration = new MrzScannerScreenConfiguration();
+        var intent = MrzScannerActivity.NewIntent(this, configuration);
         StartActivityForResult(intent, SCAN_MRZ_REQUEST);
     }
 
     private void HandleMrzScanResult(Intent data)
     {
-        var result = (MrzScannerResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
-        var fragment = MRZDialogFragment.CreateInstance(result.Document);
+        var result = (MrzScannerUiResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+        var fragment = MRZDialogFragment.CreateInstance(result.MrzDocument);
         fragment.Show(FragmentManager, MRZDialogFragment.NAME);
     }
 
@@ -81,8 +66,8 @@ public partial class MainActivity
 
     private void HandleEhicResult(Intent data)
     {
-        var result = (HealthInsuranceCardScannerActivity.HealthInsuranceCardScannerActivityResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
-        var fragment = HealthInsuranceCardFragment.CreateInstance(result.Component2());
+        var result = (EuropeanHealthInsuranceCardRecognitionResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+        var fragment = HealthInsuranceCardFragment.CreateInstance(result);
         fragment.Show(FragmentManager, HealthInsuranceCardFragment.NAME);
     }
 
@@ -117,14 +102,20 @@ public partial class MainActivity
 
     private void HandleDocumentDataExtractorResult(Intent data)
     {
-        var result = (DocumentDataExtractionResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
-        if (result?.Document == null)
+        var outputArray = data.GetParcelableArrayListExtra(RtuConstants.ExtraKeyRtuResult);
+        
+        // List of Generic documents
+        if (outputArray == null || outputArray.Count == 0)
         {
             Alert.ShowAlert(this, "Error", "Unable to scan the provided input.");
             return;
         }
-
-        Alert.ShowAlert(this, "Document Data Result", result.Document.ToFormattedString());
+        
+        // For this example we only refer to the first document from the result.
+        if (outputArray[0] is DocumentDataExtractionResult result)
+        {
+            Alert.ShowAlert(this, "Document Data Result", result?.Document?.ToFormattedString());
+        }
     }
 
     private void ScanCheck()

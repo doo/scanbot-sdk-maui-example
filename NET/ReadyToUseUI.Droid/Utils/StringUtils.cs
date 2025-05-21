@@ -10,6 +10,8 @@ public static class StringUtils
         var description = string.Empty;
         foreach (var field in document.Fields)
         {
+            if (field == null) continue;
+            
             var typeValue = field.Value?.Text ?? string.Empty;
             description += $"{field.Type.Name}:  {typeValue}\n";
         }

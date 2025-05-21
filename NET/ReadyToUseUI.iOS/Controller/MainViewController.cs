@@ -1,26 +1,28 @@
 using ReadyToUseUI.iOS.View;
 using ReadyToUseUI.iOS.Models;
+using ReadyToUseUI.iOS.Utils;
 using ScanbotSDK.iOS;
 
 namespace ReadyToUseUI.iOS.Controller
 {
     public partial class MainViewController : UIViewController
     {
-        private MainView contentView;
-        private List<ListItem> documentScanners;
-        private List<ListItem> dataDetectors;
-        private List<ListItem> dataDetectionOnImage;
+        private MainView _contentView;
+        private List<ListItem> _documentScanners;
+        private List<ListItem> _dataDetectors;
+        private List<ListItem> _dataDetectionOnImage;
+        private List<ListItem> _miscellaneousItems;
 
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
 
-            contentView = new MainView();
-            View = contentView;
+            _contentView = new MainView();
+            View = _contentView;
 
             Title = "Scanbot SDK RTU UI Example";
 
-            documentScanners =
+            _documentScanners =
             [
                 new ListItem("Single Document Scanning", SingleDocumentScanning),
                 new ListItem("Single Finder Document Scanning", SingleFinderDocumentScanning),
@@ -28,7 +30,7 @@ namespace ReadyToUseUI.iOS.Controller
                 new ListItem("Import Image", ImportImage)
             ];
 
-            dataDetectors =
+            _dataDetectors =
             [
                 new ListItem("Scan Check", ScanCheck),
                 new ListItem("Scan CreditCard", ScanCreditCard),
@@ -40,7 +42,7 @@ namespace ReadyToUseUI.iOS.Controller
                 new ListItem("VIN Recognizer", ScanVin),
             ];
 
-            dataDetectionOnImage =
+            _dataDetectionOnImage =
             [
                 new ListItem("Detect Check From Image", DetectCheck),
                 new ListItem("Detect Credit Card From Image", DetectCreditCard),
@@ -49,24 +51,30 @@ namespace ReadyToUseUI.iOS.Controller
                 new ListItem("Detect Medical Certificate From Image", DetectMedicalCertificate),
                 new ListItem("Detect MRZ From Image", DetectMrz),
             ];
+            
+            _miscellaneousItems =
+            [
+                new ListItem("View License Info", DisplayLicenseInfo)
+            ];
 
-            contentView.AddContent("Document Scanner", documentScanners);
-            contentView.AddContent("Data Detectors", dataDetectors);
-            contentView.AddContent("Data Detection On Image", dataDetectionOnImage);
+            _contentView.AddContent("Document Scanner", _documentScanners);
+            _contentView.AddContent("Data Detectors", _dataDetectors);
+            _contentView.AddContent("Data Detection On Image", _dataDetectionOnImage);
+            _contentView.AddContent("Miscellaneous", _miscellaneousItems);
 
-            contentView.LicenseIndicator.Text = Texts.no_license_found_the_app_will_terminate_after_one_minute;
+            _contentView.LicenseIndicator.Text = Texts.no_license_found_the_app_will_terminate_after_one_minute;
         }
-
+        
         public override void ViewWillAppear(bool animated)
         {
             base.ViewWillAppear(animated);
 
             if (!ScanbotSDKGlobal.IsLicenseValid)
             {
-                contentView.LayoutSubviews();
+                _contentView.LayoutSubviews();
             }
 
-            foreach (var button in contentView.AllButtons)
+            foreach (var button in _contentView.AllButtons)
             {
                 button.Click += OnScannerButtonClick;
             }
@@ -76,7 +84,7 @@ namespace ReadyToUseUI.iOS.Controller
         {
             base.ViewWillDisappear(animated);
 
-            foreach (var button in contentView.AllButtons)
+            foreach (var button in _contentView.AllButtons)
             {
                 button.Click -= OnScannerButtonClick;
             }
@@ -86,7 +94,7 @@ namespace ReadyToUseUI.iOS.Controller
         {
             if (!ScanbotSDKGlobal.IsLicenseValid)
             {
-                contentView.LayoutSubviews();
+                _contentView.LayoutSubviews();
                 return;
             }
 
@@ -129,6 +137,14 @@ namespace ReadyToUseUI.iOS.Controller
                     onClose?.Invoke();
                 };
             });
+        }
+        
+        private void DisplayLicenseInfo()
+        {
+            var message = "License Valid: " + (ScanbotSDKGlobal.IsLicenseValid ? "Yes" : "No");
+            message += "\nLicense status: " + ScanbotSDKGlobal.LicenseStatus;
+            
+            Alert.Show(this, "License Info", message);
         }
     }
 }

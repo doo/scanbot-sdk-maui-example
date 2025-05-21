@@ -16,9 +16,6 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Scanbot.Xamarin.ImagePicker" Version="0.0.3-beta.1" />
-<!--        <PackageReference Include="ScanbotSDK.NET" Version="6.1.0" />-->
-    </ItemGroup>
-    <ItemGroup>
-      <ProjectReference Include="..\..\..\scanbot-sdk-maui\DocumentSDK\DocumentSDK.NET.Droid\DocumentSDK.NET.Droid.csproj" />
+       <PackageReference Include="ScanbotSDK.NET" Version="7.0.0-alpha.1" />
     </ItemGroup>
 </Project>

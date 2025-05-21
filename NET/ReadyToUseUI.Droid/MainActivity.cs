@@ -11,7 +11,6 @@ namespace ReadyToUseUI.Droid
     public partial class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
     {
         private const int SCAN_DOCUMENT_REQUEST_CODE = 1000;
-
         private const int IMPORT_IMAGE_REQUEST = 2001;
 
         private const int SCAN_MRZ_REQUEST = 4001;
@@ -31,10 +30,8 @@ namespace ReadyToUseUI.Droid
         private const int DETECT_CREDIT_CARD_FROM_IMAGE = 6006;
 
         private readonly List<ListItemButton> buttons = new List<ListItemButton>();
-        private ProgressBar progress;
-
         private IO.Scanbot.Sdk.ScanbotSDK scanbotSDK;
-        // private PageFileStorage pageFileStorage;
+        private ProgressBar progress;
         private TextView licenseIndicator;
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -87,6 +84,13 @@ namespace ReadyToUseUI.Droid
                 new ListItemButton(this, "Detect MRZ on Image", () => LaunchImagePicker(DETECT_MRZ_FROM_IMAGE))
             ]);
             
+            var miscellaneousLayout = (LinearLayout)container.FindViewById(Resource.Id.miscellaneous_layout);
+            var miscellaneousLayoutTitle = (TextView)miscellaneousLayout.FindViewById(Resource.Id.textView);
+            miscellaneousLayoutTitle.Text = "Miscellaneous";
+            miscellaneousLayout.AddChildren(buttons, [
+                new ListItemButton(this, "View License Info", DisplayLicenseInfo),
+            ]);
+            
             progress = FindViewById<ProgressBar>(Resource.Id.progressBar);
 
             licenseIndicator = container.FindViewById<TextView>(Resource.Id.licenseIndicator);
@@ -97,6 +101,14 @@ namespace ReadyToUseUI.Droid
             {
                 button.Click += OnButtonClick;
             }
+        }
+
+        private void DisplayLicenseInfo()
+        {
+            var message = "License Valid: " + (scanbotSDK.LicenseInfo.IsValid ? "Yes" : "No");
+            message += "\nLicense status: " + scanbotSDK.LicenseInfo.Status.Name();
+            
+            Alert.ShowAlert(this, "License Info", message);
         }
 
         /**

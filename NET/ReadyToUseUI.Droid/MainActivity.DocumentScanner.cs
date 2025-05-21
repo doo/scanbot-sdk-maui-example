@@ -108,8 +108,7 @@ public partial class MainActivity
 
         if (detectionResult != null)
         {
-            // todo: Check the polygons
-            // document.PageAtIndex(0).Polygon = detectionResult.Points;
+            document.PageAtIndex(0).Polygon = detectionResult.PointsNormalized;
         }
 
         progress.Visibility = ViewStates.Gone;
