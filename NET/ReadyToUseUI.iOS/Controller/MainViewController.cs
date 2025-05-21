@@ -98,7 +98,20 @@ namespace ReadyToUseUI.iOS.Controller
 
         private static bool IsPresented { get; set; }
 
+        public static void ShowPopupWithAttributedText(UIViewController controller, NSAttributedString attributedString, Action onClose = null)
+        {
+            var popover = new PopupController(attributedString);
+            ShowPopupInternal(controller, popover, onClose);
+        }
+
         public static void ShowPopup(UIViewController controller, string text, Action onClose = null)
+        {
+            var images = new List<UIImage>();
+            var popover = new PopupController(text, images);
+            ShowPopupInternal(controller, popover, onClose);
+        }
+
+        private static void ShowPopupInternal(UIViewController controller, PopupController popover, Action onClose = null)
         {
             if (IsPresented)
             {
@@ -106,9 +119,6 @@ namespace ReadyToUseUI.iOS.Controller
             }
 
             IsPresented = true;
-
-            var images = new List<UIImage>();
-            var popover = new PopupController(text, images);
 
             controller.PresentViewController(popover, true, delegate
             {

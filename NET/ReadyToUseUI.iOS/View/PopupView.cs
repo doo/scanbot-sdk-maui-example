@@ -10,6 +10,18 @@
 
         public PopupView(string text)
         {
+            SetUpView();
+            Label.Text = text;
+        }
+        
+        public PopupView(NSAttributedString text)
+        {
+            SetUpView();
+            Label.AttributedText = text;
+        }
+
+        private void SetUpView()
+        {
             BackgroundColor = UIColor.White;
             Layer.CornerRadius = 5;
 
@@ -19,7 +31,6 @@
             Label = new UILabel();
             Label.Lines = 0;
             Label.LineBreakMode = UILineBreakMode.WordWrap;
-            Label.Text = text;
             Label.TextColor = UIColor.Black;
             AddSubview(Label);
 

@@ -198,15 +198,4 @@ public partial class ScannedDocumentsViewController : UIViewController
             ShowErrorAlert();
         }
     }
-
-    private SBSDKIndexedImageStorage CreateStorage(NSUrl[] uris, SBSDKStorageCrypting encrypter)
-    {
-        var url = SBSDKStorageLocation.ApplicationSupportFolderURL;
-        var tmp = NSUrl.FromFilename(string.Format("{0}/{1}", url.Scheme == "file" ? url.Path : url.AbsoluteString,
-                            Guid.NewGuid()));
-        var location = new SBSDKStorageLocation(tmp);
-        var format = SBSDKImageFileFormat.Jpeg;
-
-        return new SBSDKIndexedImageStorage(location, format, encrypter, uris);
-    }
 }
