@@ -3,7 +3,7 @@ using ScanbotSDK.iOS;
 
 namespace ClassicComponent.iOS.Utils
 {
-    public class Utilities
+    public static class Utilities
 	{
         internal static T GetViewController<T>(string storyboardID) where T : UIViewController
         {
@@ -70,8 +70,27 @@ namespace ClassicComponent.iOS.Utils
             }
             var image = originalImage.ImageWarpedByPolygon(parameters.Polygon, 1.0f);
             parameters.Rotation = 0;
-            image = image.ImageFilteredWithFilters(new[] { parameters.Filter });
+            
+            if (parameters.Filter != null)
+            {
+                image = image.ImageFilteredWithFilters([parameters.Filter]);
+            }
+
             return image;
+        }
+        
+        internal static string ToFormattedString(this ScanbotSDK.iOS.SBSDKGenericDocument document)
+        {
+            if (document?.Fields == null || document.Fields.Length == 0)
+                return string.Empty;
+        
+            var description = string.Empty;
+            foreach (var field in document.Fields)
+            {
+                var typeValue = field.Value?.Text ?? string.Empty;
+                description += $"{field.Type.Name}:  {typeValue}\n";
+            }
+            return description;
         }
     }
 }

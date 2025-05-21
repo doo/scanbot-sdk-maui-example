@@ -5,18 +5,18 @@ namespace ClassicComponent.iOS
 {
     public class CroppingDemoController : SBSDKImageEditingViewControllerDelegate
     {
-        private UIImage image;
-        private ImageProcessingParameters imageParameters;
-        private SBSDKImageEditingViewController imageEditingViewController;
-        private IModifyDocumentControllerDelegate modifyDocumentDelegate;
+        private UIImage _image;
+        private ImageProcessingParameters _imageParameters;
+        private SBSDKImageEditingViewController _imageEditingViewController;
+        private IModifyDocumentControllerDelegate _modifyDocumentDelegate;
 
         internal static UINavigationController GetViewController(UIImage originalDocumentImage, ImageProcessingParameters imageParameters, IModifyDocumentControllerDelegate controllerDelegate)
         {
             var cropViewController = new CroppingDemoController
             {
-                image = originalDocumentImage,
-                imageParameters = imageParameters,
-                modifyDocumentDelegate = controllerDelegate
+                _image = originalDocumentImage,
+                _imageParameters = imageParameters,
+                _modifyDocumentDelegate = controllerDelegate
             };
 
             var navigationController = new UINavigationController(cropViewController.GetCroppingViewController());
@@ -28,11 +28,11 @@ namespace ClassicComponent.iOS
 
         internal SBSDKImageEditingViewController GetCroppingViewController()
         {
-            imageEditingViewController = SBSDKImageEditingViewController.CreateWithImage(image,imageParameters.Polygon);
-            imageEditingViewController.Delegate = this;
-            imageEditingViewController.IsRotationEnabled = true;
-            imageEditingViewController.Rotations = imageParameters?.Rotation ?? 0;
-            return imageEditingViewController;
+            _imageEditingViewController = SBSDKImageEditingViewController.CreateWithImage(_image,_imageParameters.Polygon);
+            _imageEditingViewController.Delegate = this;
+            _imageEditingViewController.IsRotationEnabled = true;
+            _imageEditingViewController.Rotations = _imageParameters?.Rotation ?? 0;
+            return _imageEditingViewController;
         }
 
         [Export("imageEditingViewControllerToolbarStyle:")]
@@ -56,14 +56,14 @@ namespace ClassicComponent.iOS
         [Export("imageEditingViewController:didApplyChangesWithPolygon:croppedImage:")]
         public override void DidApplyChangesWith(SBSDKImageEditingViewController editingViewController, SBSDKPolygon polygon, UIImage croppedImage)
         {
-            modifyDocumentDelegate?.DidUpdateDocumentImage(editingViewController.Polygon, -editingViewController.Rotations);
-            editingViewController.NavigationController.DismissViewController(true, null);
+            _modifyDocumentDelegate?.DidUpdateDocumentImage(editingViewController.Polygon, -editingViewController.Rotations);
+            editingViewController.NavigationController?.DismissViewController(true, null);
         }
 
         [Export("imageEditingViewControllerDidCancelChanges:")]
         public override void DidCancelChanges(SBSDKImageEditingViewController editingViewController)
         {
-            editingViewController.NavigationController.DismissViewController(true, null);
+            editingViewController.NavigationController?.DismissViewController(true, null);
         }
 
         [Export("imageEditingViewControllerApplyButtonItem:")]
@@ -81,9 +81,9 @@ namespace ClassicComponent.iOS
         [Export("imageEditingViewControllerRotateClockwiseToolbarItem:")]
         public override UIBarButtonItem RotateClockwiseToolbarItem(SBSDKImageEditingViewController editingViewController)
         {
-            return new UIBarButtonItem(UIImage.FromBundle("rotateIcon"), UIBarButtonItemStyle.Plain, (sender, e) =>
+            return new UIBarButtonItem(UIImage.FromBundle("rotateIcon"), UIBarButtonItemStyle.Plain, (_,_) =>
             {
-                imageEditingViewController.RotateInputImageClockwise(true, true);
+                _imageEditingViewController?.RotateInputImageClockwise(true, true);
             });
         }
     }

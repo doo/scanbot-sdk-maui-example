@@ -4,14 +4,14 @@ using ScanbotSDK.iOS;
 
 namespace ClassicComponent.iOS
 {
-    interface IVINScannerDelegate
+    public interface IVinScannerDelegate
     {
         void ShowResult(string result);
     }
     
-    public partial class VINScannerViewController : UIViewController, IVINScannerDelegate
+    public partial class VINScannerViewController : UIViewController, IVinScannerDelegate
     {
-        SBSDKVINScannerViewController vinScannerController;
+        private SBSDKVINScannerViewController _vinScannerController;
         public VINScannerViewController(IntPtr handle) : base(handle)
         {
         }
@@ -19,11 +19,11 @@ namespace ClassicComponent.iOS
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
-            var configuration = SBSDKVehicleIdentificationNumberScannerConfiguration.DefaultConfiguration;
-            vinScannerController = new SBSDKVINScannerViewController(parentViewController: this,
+            var configuration = new SBSDKVINScannerConfiguration();
+            _vinScannerController = new SBSDKVINScannerViewController(parentViewController: this,
                                                               parentView: containerView,
                                                               configuration: configuration,
-                                                              new VINScannerDelegate(this));
+                                                              new VinScannerDelegate(this));
         }
 
         public void ShowResult(string result)
@@ -32,18 +32,11 @@ namespace ClassicComponent.iOS
         }
     }
 
-    internal class VINScannerDelegate : SBSDKVINScannerViewControllerDelegate
+    public class VinScannerDelegate(IVinScannerDelegate scannerDelegate) : SBSDKVINScannerViewControllerDelegate
     {
-        private IVINScannerDelegate scannerDelegate;
-
-        public VINScannerDelegate(IVINScannerDelegate scannerDelegate)
+        public override void DidScanValidResult(SBSDKVINScannerViewController controller, SBSDKVINScannerResult result)
         {
-            this.scannerDelegate = scannerDelegate;
-        }
-
-        public override void DidScanValidResult(SBSDKVINScannerViewController controller, SBSDKVehicleIdentificationNumberScannerResult result)
-        {
-            scannerDelegate?.ShowResult(result.Text);
+            scannerDelegate?.ShowResult(result.TextResult.RawText);
         }
     }
 }

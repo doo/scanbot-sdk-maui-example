@@ -58,7 +58,7 @@ namespace ClassicComponent.iOS
             // - https://docs.microsoft.com/en-us/dotnet/api/system.environment.specialfolder
 
             var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            var exampleTempStorage = System.IO.Path.Combine(documents, "sbsdk-maui-cc-storage");
+            var exampleTempStorage = Path.Combine(documents, "sbsdk-maui-cc-storage");
             System.IO.Directory.CreateDirectory(exampleTempStorage);
             return exampleTempStorage;
         }

@@ -3,7 +3,7 @@
     /// <summary>
     /// SDK Service model class. Used for binding data to the UITableView.
     /// </summary>
-    public class SDKService
+    public class SdkService
     {
         public string Title { get; set; }
         public bool ShowService { get; set; } = true;
@@ -13,19 +13,19 @@
     /// <summary>
     /// Service Title Constants
     /// </summary>
-    public class SDKServiceTitle
+    public abstract class SdkServiceTitle
     {
-        public const string ScanningUI = "Scanning UI";
-        public const string CroppingUI = "Cropping UI";
-        public const string ImportImageFromLibrary = "Import Image from Photo Library";
-        public const string ApplyImageFilter = "Apply Image Filter";
-        public const string CreateTIFF = "Create TIFF";
-        public const string CreatePDF = "Create PDF";
-        public const string PerformOCR = "Perform OCR";
-        public const string GenericDocumentRecognizer = "Generic Document Recognizer";
-        public const string CheckRecognizer = "Check Recognizer";
-        public const string BarcodeScanAndCount = "Barcode Scan and Count";
-        public const string VINScanner = "VIN Scanner";
+        public const string SCANNING_UI = "Scanning UI";
+        public const string CROPPING_UI = "Cropping UI";
+        public const string IMPORT_IMAGE_FROM_LIBRARY = "Import Image from Photo Library";
+        public const string APPLY_IMAGE_FILTER = "Apply Image Filter";
+        public const string CREATE_TIFF = "Create TIFF";
+        public const string CREATE_PDF = "Create PDF";
+        public const string PERFORM_OCR = "Perform OCR";
+        public const string GENERIC_DOCUMENT_RECOGNIZER = "Generic Document Recognizer";
+        public const string CHECK_RECOGNIZER = "Check Recognizer";
+        public const string BARCODE_SCAN_AND_COUNT = "Barcode Scan and Count";
+        public const string VIN_SCANNER = "VIN Scanner";
     }
 }
 

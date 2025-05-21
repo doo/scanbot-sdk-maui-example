@@ -5,44 +5,14 @@
         <Nullable>disable</Nullable>
         <ImplicitUsings>true</ImplicitUsings>
         <SupportedOSPlatformVersion>13.0</SupportedOSPlatformVersion>
-        <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
         <!-- Display name -->
         <ApplicationTitle>NET Classic Component</ApplicationTitle>
         <AssemblyName>ClassicComponent.iOS</AssemblyName>
-		    <Platforms>ARM64;x64</Platforms>
         <WarningsAsErrors>NU1603</WarningsAsErrors>
 	</PropertyGroup>
-
-    <!-- Properties for iOS Simulator (x64 architecture) -->
-    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'iossimulator-x64'">
-        <RuntimeIdentifiers>iossimulator-x64</RuntimeIdentifiers>
-        <!-- Additional properties specific to iOS simulator (x64) -->
-        <PlatformTarget>x64</PlatformTarget>
-    </PropertyGroup>
-    <!-- Properties for iOS Simulator (arm64 architecture) -->
-    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'iossimulator-arm64'">
-        <RuntimeIdentifiers>iossimulator-arm64</RuntimeIdentifiers>
-        <!-- Additional properties specific to iOS simulator (arm64) -->
-    </PropertyGroup>
-    <!-- Properties for iOS Device (arm64 architecture) -->
-    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'ios-arm64'">
-        <RuntimeIdentifiers>ios-arm64</RuntimeIdentifiers>
-        <!-- Additional properties specific to iOS device (arm64) -->
-    </PropertyGroup>
-
-    <!-- General settings for iOS targets -->
-    <PropertyGroup>
-        <MtouchLink>SdkOnly</MtouchLink>
-        <MtouchInterpreter>-all</MtouchInterpreter>
-        <CreatePackage>false</CreatePackage>
-        <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
-
-        <!-- Simulator support attribute -->
-        <ForceSimulatorX64ArchitectureInIDE>true</ForceSimulatorX64ArchitectureInIDE>
-    </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Scanbot.Xamarin.ImagePicker" Version="0.0.3-beta.1" />
-        <PackageReference Include="ScanbotSDK.NET" Version="6.1.0" />
+        <PackageReference Include="ScanbotSDK.NET" Version="7.0.0-alpha.1" />
     </ItemGroup>
     <ItemGroup>
       <InterfaceDefinition Remove="ViewControllers\ClassicComponents\ClassicComponentStoryboard.storyboard" />
@@ -58,7 +28,6 @@
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Models\" />
-      <Folder Include="ViewControllers\TableViewCells\" />
     </ItemGroup>
     <ItemGroup>
       <ImageAsset Update="Assets.xcassets\tickIcon.imageset\tickIcon%402x.png">

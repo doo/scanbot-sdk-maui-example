@@ -1,4 +1,4 @@
-﻿namespace ClassicComponent.iOS.ViewControllers;
+﻿namespace ClassicComponent.iOS;
 
 [Register ("ViewFullScreenDocumentViewController")]
 public class ViewFullScreenDocumentViewController : UIViewController {

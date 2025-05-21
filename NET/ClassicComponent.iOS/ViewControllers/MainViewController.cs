@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using ClassicComponent.iOS.Models;
 using ClassicComponent.iOS.Utils;
-using ClassicComponent.iOS.ViewControllers;
+using ClassicComponent.iOS;
 using Scanbot.ImagePicker.iOS;
 using ScanbotSDK.iOS;
 
@@ -9,7 +9,7 @@ namespace ClassicComponent.iOS
 {
     internal interface ISDKServiceSource
     {
-        List<SDKService> SDKServices { get; set; }
+        List<SdkService> SDKServices { get; set; }
         void RowSelected(int index);
     }
 
@@ -25,7 +25,7 @@ namespace ClassicComponent.iOS
 
     public partial class MainViewController : UIViewController, ISDKServiceSource, ICameraDemoViewControllerDelegate, IModifyDocumentControllerDelegate
     {
-        public List<SDKService> SDKServices { get; set; }
+        public List<SdkService> SDKServices { get; set; }
         public ProgressHUD ProgressIndicator { get; private set; }
 
         private ImageProcessingParameters imageParameters;
@@ -41,7 +41,7 @@ namespace ClassicComponent.iOS
             }
         }
 
-        private UIImage originalDocumentImage, editedDocumentImage;
+        private UIImage _originalDocumentImage, _editedDocumentImage;
 
         public MainViewController(IntPtr handle) : base(handle) { }
 
@@ -49,7 +49,7 @@ namespace ClassicComponent.iOS
         {
             base.ViewDidLoad();
             this.NavigationItem.Title = Texts.AppTitle;
-            ProgressIndicator = ProgressHUD.Load(View.Frame);
+            if (View != null) ProgressIndicator = ProgressHUD.Load(View.Frame);
             imageParameters = new ImageProcessingParameters();
             LoadFeatures();
             SetUpTableView();
@@ -60,16 +60,12 @@ namespace ClassicComponent.iOS
 
         private void LoadFeatures()
         {
-            SDKServices = new List<SDKService>
+            SDKServices = new List<SdkService>
             {
-                new SDKService { Title = SDKServiceTitle.ScanningUI, ServiceAction = LaunchScanningUI },
-                new SDKService { Title = SDKServiceTitle.CroppingUI, ServiceAction = LaunchCroppingUI },
-                new SDKService { Title = SDKServiceTitle.ImportImageFromLibrary, ServiceAction = async () => await LaunchImportImageFromLibrary() },
-                new SDKService { Title = SDKServiceTitle.CreateTIFF, ServiceAction = CreateTIFF },
-                new SDKService { Title = SDKServiceTitle.CreatePDF, ServiceAction = CreatePDF },
-                new SDKService { Title = SDKServiceTitle.PerformOCR, ServiceAction = PerformOCR },
-                new SDKService { Title = SDKServiceTitle.CheckRecognizer, ServiceAction = () => NavigationController.PushViewController(new CheckRecognizerDemoViewController(), true)},
-                new SDKService { Title = SDKServiceTitle.VINScanner, ServiceAction = LaunchVINScanner },
+                new SdkService { Title = SdkServiceTitle.SCANNING_UI, ServiceAction = LaunchScanningUi },
+                new SdkService { Title = SdkServiceTitle.CROPPING_UI, ServiceAction = LaunchCroppingUi },
+                new SdkService { Title = SdkServiceTitle.CHECK_RECOGNIZER, ServiceAction = () => NavigationController.PushViewController(new CheckRecognizerDemoViewController(), true)},
+                new SdkService { Title = SdkServiceTitle.VIN_SCANNER, ServiceAction = LaunchVinScanner },
             };
         }
 
@@ -113,7 +109,7 @@ namespace ClassicComponent.iOS
 
         private void SetUpTableView()
         {
-            tableViewSDKFeatures.Source = new SDKServiceSource(this);
+            tableViewSDKFeatures.Source = new SdkServiceSource(this);
             tableViewSDKFeatures.TableFooterView = new UIView();
         }
 
@@ -122,12 +118,12 @@ namespace ClassicComponent.iOS
             imageViewDocument.UserInteractionEnabled = true;
             imageViewDocument.AddGestureRecognizer(new UITapGestureRecognizer(() =>
             {
-                var viewController = new ViewFullScreenDocumentViewController(editedDocumentImage);
-                NavigationController.PresentViewController(viewController, true, null);
+                var viewController = new ViewFullScreenDocumentViewController(_editedDocumentImage);
+                NavigationController?.PresentViewController(viewController, true, null);
             }));
         }
 
-        bool CheckScanbotSDKLicense()
+        private bool CheckScanbotSdkLicense()
         {
             if (ScanbotSDKGlobal.IsLicenseValid)
             {
@@ -141,7 +137,7 @@ namespace ClassicComponent.iOS
 
         public void RowSelected(int index)
         {
-            if (!CheckScanbotSDKLicense()) { return; }
+            if (!CheckScanbotSdkLicense()) { return; }
 
             if (index < 0 && index > SDKServices.Count)
             {
@@ -151,87 +147,48 @@ namespace ClassicComponent.iOS
             SDKServices[index].ServiceAction?.Invoke();
         }
 
-        private void LaunchVINScanner()
+        private void LaunchVinScanner()
         {
             var viewController = Utilities.GetViewController<VINScannerViewController>(Texts.ClassicComponentStoryboard);
-            NavigationController.PushViewController(viewController, true);
+            NavigationController?.PushViewController(viewController, true);
         }
 
         #region Document Scanning UI
 
-        private void LaunchScanningUI()
+        private void LaunchScanningUi()
         {
-            var cameraViewController = new CameraDemoViewController { cameraViewControllerDelegate = this };
-            NavigationController.PushViewController(cameraViewController, true);
+            var cameraViewController = new CameraDemoViewController { CameraViewControllerDelegate = this };
+            NavigationController?.PushViewController(cameraViewController, true);
         }
 
         public void DidCaptureDocumentImage(UIImage documentImage, UIImage originalImage, SBSDKPolygon polygon)
         {
             this.imageParameters = new ImageProcessingParameters { Polygon = polygon };
-            originalDocumentImage = originalImage;
-            editedDocumentImage = documentImage;
+            _originalDocumentImage = originalImage;
+            _editedDocumentImage = documentImage;
             UpdateDocumentImageView(documentImage);
-            
-            DocumentUtilities.GetTemporaryStorage().AddImage(originalDocumentImage);
         }
 
         #endregion
 
-        private void LaunchCroppingUI()
+        private void LaunchCroppingUi()
         {
-            if (!CheckScanbotSDKLicense()) { return; }
+            if (!CheckScanbotSdkLicense()) { return; }
             if (!CheckOriginalImageUrl()) { return; }
 
-            UINavigationController viewController = CroppingDemoController.GetViewController(originalDocumentImage, imageParameters, this);
-            NavigationController.PresentViewController(viewController, true, null);
+            UINavigationController viewController = CroppingDemoController.GetViewController(_originalDocumentImage, imageParameters, this);
+            NavigationController?.PresentViewController(viewController, true, null);
         }
 
         private bool CheckOriginalImageUrl()
         {
-            if (originalDocumentImage == null)
+            if (_originalDocumentImage == null)
             {
                 UpdateHintLabel("Please snap a document image via Scanning UI or run Document Detection on an image file from the PhotoLibrary");
                 tableViewSDKFeatures.ScrollsToTop = true;
                 return false;
             }
             return true;
-        }
-
-        private async Task LaunchImportImageFromLibrary()
-        {
-            var originalImage = await ImagePicker.Instance.PickImageAsync();
-            if (originalImage != null)
-            {
-                Debug.WriteLine("Got the original image from gallery");
-                IsBusy = true;
-                var detectionResult = await Task.Run(() =>
-                {
-                    // The SDK call is sync!
-                    SBSDKDocumentDetector detector = new SBSDKDocumentDetector();
-                    return detector.DetectDocumentPolygonOnImage(originalImage, new CGRect(CGPoint.Empty, originalImage.Size), false, false);
-                });
-
-                if (detectionResult.Status == SBSDKDocumentDetectionStatus.Ok ||
-                    detectionResult.Status == SBSDKDocumentDetectionStatus.OkButTooSmall)
-                {
-                    var documentImage = originalImage;
-
-                    if (detectionResult.Polygon != null && originalImage != null)
-                    {
-                        documentImage = originalImage.ImageWarpedByPolygon(detectionResult.Polygon, imageScale: 1.0f);
-                    }
-
-                    Debug.WriteLine("Detection result image: " + documentImage);
-
-                    DidCaptureDocumentImage(documentImage, originalImage, detectionResult.Polygon);
-                }
-                else
-                {
-                    Debug.WriteLine("No Document detected! DetectionStatus = " + detectionResult.Status);
-                    UpdateHintLabel("No Document detected! DetectionStatus = " + detectionResult.Status);
-                }
-                IsBusy = false;
-            }
         }
 
         public void DidUpdateDocumentImage(SBSDKPolygon polygon = null, nint? rotation = null, SBSDKParametricFilter? filter = null)
@@ -251,95 +208,16 @@ namespace ClassicComponent.iOS
                 imageParameters.Filter = filter;
             }
 
-            editedDocumentImage = Utilities.GetProcessedImage(ref originalDocumentImage, imageParameters);
-            UpdateDocumentImageView(editedDocumentImage);
+            _editedDocumentImage = Utilities.GetProcessedImage(ref _originalDocumentImage, imageParameters);
+            UpdateDocumentImageView(_editedDocumentImage);
         }
-
-        #region PDF, OCR and TIFF Processing
-
-        private void CreatePDF()
-        {
-            if (!CheckScanbotSDKLicense()) { return; }
-            if (!CheckOriginalImageUrl()) { return; }
-
-            Task.Run(async () =>
-            {
-                IsBusy = true;
-                Debug.WriteLine("Creating PDF file ...");
-                var urls = DocumentUtilities.GetTemporaryStorage().ImageURLs;
-                var result = await DocumentUtilities.CreatePDFAsync(encrypter: ScanbotUI.DefaultImageStoreEncrypter);
-                IsBusy = false;
-                Utilities.ShowMessage("PDF file created", "" + result.AbsoluteString);
-            });
-        }
-
-        private void PerformOCR()
-        {
-            if (!CheckScanbotSDKLicense()) { return; }
-            if (!CheckOriginalImageUrl()) { return; }
-            Task.Run(async () =>
-            {
-                IsBusy = true;
-                var recognitionMode = SBSDKOpticalCharacterRecognitionMode.ScanbotOCR;
-                // This is the new OCR configuration with ML which doesn't require the languages.
-                SBSDKOpticalCharacterRecognizerConfiguration ocrConfiguration = SBSDKOpticalCharacterRecognizerConfiguration.ScanbotOCR;
-
-                // to use legacy configuration we have to pass the installed languages.
-                if (recognitionMode == SBSDKOpticalCharacterRecognitionMode.Tesseract)
-                {
-                    var installedLanguages = SBSDKOCRLanguagesManager.InstalledLanguages;
-                    ocrConfiguration = SBSDKOpticalCharacterRecognizerConfiguration.TesseractWith(installedLanguages);
-                }
-
-                SBSDKOpticalCharacterRecognizer recognizer = new SBSDKOpticalCharacterRecognizer(ocrConfiguration);
-
-                try
-                {
-                    // Please check the default parameters
-                    var (ocrResult, outputPdfUrl) = await DocumentUtilities.PerformOCRAsync(ocrRecognizer: recognizer, shouldGeneratePdf: true, encrypter: ScanbotUI.DefaultImageStoreEncrypter);
-                    IsBusy = false;
-                    if (ocrResult != null)
-                    {
-                        Utilities.ShowMessage("OCR Text", ocrResult.RecognizedText);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    IsBusy = false;
-                    Utilities.ShowMessage("OCR Text", ex.Message);
-                }
-            });
-        }
-
-        private void CreateTIFF()
-        {
-            if (!CheckScanbotSDKLicense()) { return; }
-            if (!CheckOriginalImageUrl()) { return; }
-            IsBusy = true;
-            Debug.WriteLine("Creating TIFF file ...");
-            var urls = DocumentUtilities.GetTemporaryStorage().ImageURLs;
-            var options = SBSDKTIFFImageWriterParameters.DefaultParametersForBinaryImages;
-            options.Binarize = true;
-            options.Compression = SBSDKTIFFImageWriterCompressionOptions.Ccitt_t4;
-            options.Dpi = 250;
-
-            var (success, outputTiffUrl) = DocumentUtilities.CreateTIFF(options, inputUrls: urls, ScanbotUI.DefaultImageStoreEncrypter);
-            if (success)
-            {
-                Utilities.ShowMessage("TIFF file created", "" + outputTiffUrl.AbsoluteString);
-            }
-
-            IsBusy = false;
-        }
-
-        #endregion
     }
 
-    internal class SDKServiceSource : UITableViewSource
+    internal class SdkServiceSource : UITableViewSource
     {
         private ISDKServiceSource sourceDelegate;
 
-        public SDKServiceSource(ISDKServiceSource sourceDelegate)
+        public SdkServiceSource(ISDKServiceSource sourceDelegate)
         {
             this.sourceDelegate = sourceDelegate;
         }

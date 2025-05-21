@@ -1,39 +1,38 @@
-﻿using ScanbotSDK.iOS;
+﻿using ClassicComponent.iOS.Utils;
+using ScanbotSDK.iOS;
 
-namespace ClassicComponent.iOS.ViewControllers
+namespace ClassicComponent.iOS
 {
     public class CheckRecognizerDemoViewController : UIViewController
     {
-        private SBSDKCheckRecognizerViewController recognizerViewController;
+        private SBSDKCheckScannerViewController _recognizerViewController;
 
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
-            recognizerViewController = new SBSDKCheckRecognizerViewController(this, View, new Delegate((result) => ShowResult(result)));
+
+            View.TranslatesAutoresizingMaskIntoConstraints = true;
+            _recognizerViewController = new SBSDKCheckScannerViewController();
+            this.AttachViewControllerInView(_recognizerViewController, View);
+            _recognizerViewController.Delegate = new Delegate(ShowResult);
+            _recognizerViewController.IsFlashLightEnabled = false;
         }
 
-        private void ShowResult(SBSDKCheckRecognizerResult result)
+        private void ShowResult(SBSDKCheckScanningResult result)
         {
-            var alert = UIAlertController.Create("Recognized check", result.StringRepresentation, UIAlertControllerStyle.Alert);
+            var alert = UIAlertController.Create("Recognized check", result.Check.ToFormattedString(), UIAlertControllerStyle.Alert);
             var okAction = UIAlertAction.Create("OK", UIAlertActionStyle.Default, delegate
             {
-                if (alert.PresentedViewController is UIViewController controller)
-                {
-                    controller.DismissViewController(true, null);
-                }
+                alert.PresentedViewController?.DismissViewController(true, null);
             });
 
             alert.AddAction(okAction);
-
             PresentViewController(alert, true, null);
         }
 
-        private class Delegate : SBSDKCheckRecognizerViewControllerDelegate
+        private class Delegate(Action<SBSDKCheckScanningResult> action) : SBSDKCheckScannerViewControllerDelegate
         {
-            private Action<SBSDKCheckRecognizerResult> action;
-            public Delegate(Action<SBSDKCheckRecognizerResult> action) { this.action = action; }
-
-            public override void DidRecognizeCheck(SBSDKCheckRecognizerViewController controller, SBSDKCheckRecognizerResult result)
+            public override void DidScanCheck(SBSDKCheckScannerViewController controller, SBSDKCheckScanningResult result)
             {
                 action.Invoke(result);
             }
