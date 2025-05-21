@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ScanbotCameraActivity">
-    <io.scanbot.sdk.docdetection.ui.DocumentScannerView
+    <io.scanbot.sdk.document.ui.DocumentScannerView
         android:id="@+id/scanbotCameraView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

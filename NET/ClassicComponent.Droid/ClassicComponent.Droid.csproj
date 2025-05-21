@@ -27,6 +27,6 @@
     <AndroidResource Remove="Resources\layout\CameraViewDemo.axml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ScanbotSDK.NET" Version="6.1.0" />
+    <PackageReference Include="ScanbotSDK.NET" Version="7.0.0-net-ds-local.2" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
 ﻿using Android.Graphics;
+using IO.Scanbot.Sdk.Persistence.Fileio;
 using IO.Scanbot.Sdk.Util;
 
 namespace ClassicComponent.Droid
@@ -10,7 +11,7 @@ namespace ClassicComponent.Droid
             var result = new List<string>();
             foreach (var androidUri in selectedImages)
             {
-                result.Add(FileChooserUtils.GetPath(activity, androidUri));
+                result.Add(FileChooserUtils.GetPath(activity, androidUri, new DefaultFileIOProcessor(activity)));
             }
             return result.ToArray();
         }

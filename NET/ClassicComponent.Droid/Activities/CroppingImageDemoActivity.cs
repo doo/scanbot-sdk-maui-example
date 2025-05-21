@@ -6,7 +6,7 @@ using AndroidX.AppCompat.App;
 using IO.Scanbot.Sdk.UI;
 using IO.Scanbot.Sdk.Process;
 using System.Diagnostics;
-using IO.Scanbot.Sdk.Core.Contourdetector;
+using IO.Scanbot.Sdk.Document;
 
 namespace ClassicComponent.Droid
 {
@@ -15,13 +15,12 @@ namespace ClassicComponent.Droid
     {
         public static string EXTRAS_ARG_IMAGE_FILE_URI = "EXTRAS_ARG_IMAGE_FILE_URI";
 
-        private static IList<PointF> defaultPolygon = new List<PointF>
-        {
+        private static IList<PointF> defaultPolygon = [
             new PointF(0, 0),
             new PointF(1, 0),
             new PointF(1f, 1f),
             new PointF(0, 1)
-        };
+        ];
 
         private IO.Scanbot.Sdk.ScanbotSDK SDK;
         private Android.Net.Uri imageUri;
@@ -90,19 +89,20 @@ namespace ClassicComponent.Droid
             });
 
             var polygon = defaultPolygon;
-            var detector = SDK.CreateContourDetector();
+            var detector = SDK.CreateDocumentScanner();
             // Since we just need detected polygon and lines here, we use ContourDetector class from the native SDK namespace.
-            var detectionResult = detector.Detect(resizedBitmap);
+            var detectionResult = detector.ScanFromBitmap(resizedBitmap);
             var detectionStatus = detectionResult.Status;
             if (detectionStatus == DocumentDetectionStatus.Ok || detectionStatus == DocumentDetectionStatus.OkButBadAngles ||
                 detectionStatus == DocumentDetectionStatus.OkButTooSmall || detectionStatus == DocumentDetectionStatus.OkButBadAspectRatio)
             {
-                polygon = detectionResult.PolygonF;
+                polygon = detectionResult.PointsNormalized;
                 Debug.WriteLine("Detected polygon: " + polygon);
             }
 
             editPolygonImageView.Polygon = polygon;
-            editPolygonImageView.SetLines(detectionResult.HorizontalLines, detectionResult.VerticalLines);
+            // todo: check LineSegmentInt to LineSegmentFloat
+            // editPolygonImageView.SetLines(detectionResult.HorizontalLines, detectionResult.VerticalLines);
             // important! first set the image and then the detected polygon and lines!
             editPolygonImageView.SetImageBitmap(resizedBitmap);
             // set up the MagnifierView every time when editPolygonView is set with a new image.
@@ -118,7 +118,7 @@ namespace ClassicComponent.Droid
 
             var documentImgUri = await Task.Run(() =>
             {
-                var detector = SDK.CreateContourDetector();
+                var detector = SDK.CreateDocumentScanner();
                 var documentImage = new ImageProcessor(originalBitmap).Crop(editPolygonImageView.Polygon).ProcessedBitmap();
                 var matrix = new Matrix();
                 matrix.PostRotate(rotationDegrees);

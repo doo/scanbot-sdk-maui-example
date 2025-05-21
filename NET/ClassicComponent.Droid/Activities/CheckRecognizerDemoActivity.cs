@@ -3,7 +3,6 @@ using AndroidX.AppCompat.App;
 using IO.Scanbot.Sdk;
 using IO.Scanbot.Sdk.Camera;
 using IO.Scanbot.Sdk.Check;
-using IO.Scanbot.Sdk.Check.Entity;
 using IO.Scanbot.Sdk.UI;
 using IO.Scanbot.Sdk.UI.Camera;
 
@@ -19,7 +18,7 @@ namespace ClassicComponent.Droid.Activities
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-            SetContentView(Resource.Layout.ActivityCheckRecognizer);
+            SetContentView(Resource.Layout.ActivityCheckScanner);
 
             cameraView = FindViewById<ScanbotCameraXView>(Resource.Id.camera);
             cameraView.SetPreviewMode(CameraPreviewMode.FitIn);
@@ -34,10 +33,10 @@ namespace ClassicComponent.Droid.Activities
 
             scanbotSDK = new IO.Scanbot.Sdk.ScanbotSDK(this);
 
-            var checkScanner = scanbotSDK.CreateCheckRecognizer();
+            var checkScanner = scanbotSDK.CreateCheckScanner();
 
             scanbotSDK = new IO.Scanbot.Sdk.ScanbotSDK(this);
-            var checkFrameHandlerWrapper = new CheckRecognizerFrameHandlerWrapper(checkScanner);
+            var checkFrameHandlerWrapper = new CheckScannerFrameHandlerWrapper(checkScanner);
             checkFrameHandler = checkFrameHandlerWrapper.FrameHandler;
             checkFrameHandlerWrapper.AddResultHandler(new CheckScannResultHandler(this, checkFrameHandler));
             ScanbotCameraXViewWrapper.Attach(cameraView, checkFrameHandlerWrapper);
@@ -52,7 +51,7 @@ namespace ClassicComponent.Droid.Activities
                 this,
                 scanbotSDK.LicenseInfo.IsValid ? "License is valid" : "License Expired",
                 ToastLength.Long
-            ).Show();
+            )?.Show();
         }
 
 
@@ -83,7 +82,7 @@ namespace ClassicComponent.Droid.Activities
         }
     }
 
-    public class CheckScannResultHandler : CheckRecognizerResultHandlerWrapper
+    public class CheckScannResultHandler : CheckScannerResultHandlerWrapper
     {
         private Context _context;
         private FrameHandler _frameHandler;
@@ -94,9 +93,9 @@ namespace ClassicComponent.Droid.Activities
             _frameHandler = frameHandler;
         }
 
-        public override bool HandleResult(CheckRecognizerResult result, SdkLicenseError error)
+        public override bool HandleResult(CheckScanningResult result, SdkLicenseError error)
         {
-            if (result?.Status == IO.Scanbot.Check.Model.CheckRecognizerStatus.Success)
+            if (result?.Status == IO.Scanbot.Sdk.Check.CheckMagneticInkStripScanningStatus.Success)
             {
                 _frameHandler.Enabled = false;
                 _context.StartActivity(CheckRecognizerResultActivity.NewIntent(_context, result));

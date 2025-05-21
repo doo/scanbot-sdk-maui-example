@@ -1,8 +1,8 @@
 ﻿using AndroidX.AppCompat.App;
-using IO.Scanbot.Genericdocument.Entity;
 using Android.Graphics;
 using Android.Content;
-using IO.Scanbot.Sdk.Check.Entity;
+using IO.Scanbot.Sdk.Check;
+using IO.Scanbot.Sdk.Genericdocument.Entity;
 
 namespace ClassicComponent.Droid.Activities
 {
@@ -18,7 +18,7 @@ namespace ClassicComponent.Droid.Activities
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-            SetContentView(Resource.Layout.ActivityCheckRecognizerResult);
+            SetContentView(Resource.Layout.ActivityCheckScannerResult);
 
             var fieldsLayout = FindViewById<LinearLayout>(Resource.Id.check_result_fields_layout);
             checkResultImageView = FindViewById<ImageView>(Resource.Id.check_result_image);
@@ -28,7 +28,7 @@ namespace ClassicComponent.Droid.Activities
                 AddValueView(fieldsLayout, "Type", document.GetType().Name);
                 foreach (var field in document.Fields)
                 {
-                    if (field.Value is not OcrResult ocrResult) { continue; }
+                    if (field.Value is not IO.Scanbot.Sdk.Genericdocument.Entity.OcrResult ocrResult) { continue; }
                     AddValueView(fieldsLayout, field.GetType().Name, ocrResult.Text);
                 }
             }
@@ -54,7 +54,7 @@ namespace ClassicComponent.Droid.Activities
             layout.AddView(v);
         }
 
-        public static Intent NewIntent(Context context, CheckRecognizerResult result)
+        public static Intent NewIntent(Context context, CheckScanningResult result)
         {
             var intent = new Intent(context, typeof(CheckRecognizerResultActivity));
             intent.PutExtra(EXTRA_CHECK_DOCUMENT, result.Check);

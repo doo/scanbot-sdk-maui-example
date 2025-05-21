@@ -4,19 +4,17 @@ using Android.Views;
 using Android.Util;
 using AndroidX.AppCompat.App;
 using AndroidX.Core.View;
-
-using IO.Scanbot.Sdk.UI.Camera;
-using IO.Scanbot.Sdk.Camera;
-using IO.Scanbot.Sdk.Contourdetector;
-using IO.Scanbot.Sdk.Process;
 using IO.Scanbot.Sdk;
-using IO.Scanbot.Sdk.Core.Contourdetector;
-using IO.Scanbot.Sdk.Docdetection.UI;
+using IO.Scanbot.Sdk.Camera;
+using IO.Scanbot.Sdk.Document;
+using IO.Scanbot.Sdk.Document.UI;
+using IO.Scanbot.Sdk.Process;
+using IO.Scanbot.Sdk.UI.Camera;
 
 namespace ClassicComponent.Droid
 {
     [Activity(Theme = "@style/Theme.AppCompat")]
-    public class CameraXViewDemoActivity : AppCompatActivity, IDocumentScannerViewCallback
+    public class CameraXViewDemoActivity : AppCompatActivity,  IDocumentScannerViewCallback
     {
         public static string EXTRAS_ARG_DOC_IMAGE_FILE_URI = "documentImageFileUri";
         public static string EXTRAS_ARG_ORIGINAL_IMAGE_FILE_URI = "originalImageFileUri";
@@ -45,12 +43,12 @@ namespace ClassicComponent.Droid
             scanbotSDK = new IO.Scanbot.Sdk.ScanbotSDK(this);
             _documentScannerView = FindViewById<DocumentScannerView>(Resource.Id.scanbotCameraView);
             
-            var contourDetector = scanbotSDK.CreateContourDetector();
+            var contourDetector = scanbotSDK.CreateDocumentScanner();
             
             DocumentScannerViewWrapper.InitCamera(_documentScannerView);
-            DocumentScannerViewWrapper.InitDetectionBehavior(_documentScannerView,
-                                contourDetector: contourDetector,
-                                new ContourDetectorResultImplementation(new ContourDetectorResultImplementation.ContourDetectorHandleResult(ShowUserGuidance)), this);
+            DocumentScannerViewWrapper.InitScanningBehavior(_documentScannerView,
+                                documentScanner: contourDetector,
+                                new DocumentScannerResultImplementation(new DocumentScannerResultImplementation.DocumentScannerHandleResult(ShowUserGuidance)), this);
 
             SupportActionBar.Hide();
 
@@ -103,7 +101,7 @@ namespace ClassicComponent.Droid
             });
         }
 
-        private bool ShowUserGuidance(ContourDetectorFrameHandler.DetectedFrame frame, SdkLicenseError error)
+        private bool ShowUserGuidance(DocumentScannerFrameHandler.DetectedFrame frame, SdkLicenseError error)
         {
             if (!autoSnappingEnabled || frame == null) { return false; }
 
@@ -209,14 +207,14 @@ namespace ClassicComponent.Droid
 
             Android.Net.Uri documentImgUri = null;
             // Run document detection on original image:
-            var detector = scanbotSDK.CreateContourDetector();
-            var sdkDetectionResult = detector.Detect(originalBitmap);
+            var detector = scanbotSDK.CreateDocumentScanner();
+            var sdkDetectionResult = detector.ScanFromBitmap(originalBitmap);
             //  var detectionResult = ScanbotSDK.MAUI.Native.Droid.ScanbotSDK.DetectDocument(originalBitmap);
             if (sdkDetectionResult.Status == DocumentDetectionStatus.Ok)
             {
-                if (sdkDetectionResult.PolygonF != null)
+                if (sdkDetectionResult.PointsNormalized != null)
                 {
-                    var resultImage = new ImageProcessor(originalBitmap).Crop(sdkDetectionResult.PolygonF).ProcessedBitmap();
+                    var resultImage = new ImageProcessor(originalBitmap).Crop(sdkDetectionResult.PointsNormalized).ProcessedBitmap();
                     documentImgUri = TempImageStorage.Instance.AddImage(resultImage);
                 }
                 else
@@ -271,10 +269,10 @@ namespace ClassicComponent.Droid
     }
 }
 
-internal class ContourDetectorResultImplementation(ContourDetectorResultImplementation.ContourDetectorHandleResult handleResult) : ContourDetectorResultHandlerWrapper
+internal class DocumentScannerResultImplementation(DocumentScannerResultImplementation.DocumentScannerHandleResult handleResult) : DocumentScannerResultHandlerWrapper
 {
-   internal delegate bool ContourDetectorHandleResult(ContourDetectorFrameHandler.DetectedFrame frame, SdkLicenseError error);
+   internal delegate bool DocumentScannerHandleResult(DocumentScannerFrameHandler.DetectedFrame frame, SdkLicenseError error);
 
-   public override bool HandleResult(ContourDetectorFrameHandler.DetectedFrame result, SdkLicenseError error) =>
+   public override bool HandleResult(DocumentScannerFrameHandler.DetectedFrame result, SdkLicenseError error) =>
                        handleResult?.Invoke(result, error) ?? false;
 }
