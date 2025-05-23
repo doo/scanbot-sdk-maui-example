@@ -31,21 +31,21 @@ public partial class MainActivity
 {
     private Dictionary<int, Action<Intent>> dataDetectorActions => new Dictionary<int, Action<Intent>>
     {
-        { SCAN_MRZ_REQUEST, HandleMrzScanResult },
-        { EXTRACT_DOCUMENT_DATA_REQUEST, HandleDocumentDataExtractorResult },
-        { SCAN_EHIC_REQUEST, HandleEhicResult },
-        { SCAN_VIN_REQUEST, HandleVinResult },
-        { SCAN_DATA_REQUEST, HandleTextDataResult },
-        { SCAN_MEDICAL_CERTIFICATE_REQUEST, HandleMedicaCertificateResult },
-        { SCAN_CHECK_REQUEST, HandleCheckResult },
-        { SCAN_CREDIT_CARD_REQUEST, HandleCreditCard },
+        { ScanMrzRequest, HandleMrzScanResult },
+        { ExtractDocumentDataRequest, HandleDocumentDataExtractorResult },
+        { ScanEhicRequest, HandleEhicResult },
+        { ScanVinRequest, HandleVinResult },
+        { ScanDataRequest, HandleTextDataResult },
+        { ScanMedicalCertificateRequest, HandleMedicaCertificateResult },
+        { ScanCheckRequest, HandleCheckResult },
+        { ScanCreditCardRequest, HandleCreditCard },
     };
 
     private void ScanMrz()
     {
         var configuration = new MrzScannerScreenConfiguration();
         var intent = MrzScannerActivity.NewIntent(this, configuration);
-        StartActivityForResult(intent, SCAN_MRZ_REQUEST);
+        StartActivityForResult(intent, ScanMrzRequest);
     }
 
     private void HandleMrzScanResult(Intent data)
@@ -61,14 +61,14 @@ public partial class MainActivity
         configuration.SetCancelButtonTitle("Done");
 
         var intent = HealthInsuranceCardScannerActivity.NewIntent(this, configuration);
-        StartActivityForResult(intent, SCAN_EHIC_REQUEST);
+        StartActivityForResult(intent, ScanEhicRequest);
     }
 
     private void HandleEhicResult(Intent data)
     {
         var result = (EuropeanHealthInsuranceCardRecognitionResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
         var fragment = HealthInsuranceCardFragment.CreateInstance(result);
-        fragment.Show(FragmentManager, HealthInsuranceCardFragment.NAME);
+        fragment.Show(FragmentManager, HealthInsuranceCardFragment.Name);
     }
 
     private void ExtractDocumentData()
@@ -97,7 +97,7 @@ public partial class MainActivity
         // );
 
         var intent = DocumentDataExtractorActivity.NewIntent(this, configuration);
-        StartActivityForResult(intent, EXTRACT_DOCUMENT_DATA_REQUEST);
+        StartActivityForResult(intent, ExtractDocumentDataRequest);
     }
 
     private void HandleDocumentDataExtractorResult(Intent data)
@@ -134,7 +134,7 @@ public partial class MainActivity
             RootDocumentType.CANCheck,
         ]);
         var intent = CheckScannerActivity.NewIntent(this, config);
-        StartActivityForResult(intent, SCAN_CHECK_REQUEST);
+        StartActivityForResult(intent, ScanCheckRequest);
     }
 
     private void HandleCheckResult(Intent data)
@@ -154,7 +154,7 @@ public partial class MainActivity
         var config = new TextPatternScannerScreenConfiguration();
         config.Localization.TopBarCancelButton = "Done";
 
-        StartActivityForResult(TextPatternScannerActivity.NewIntent(this, config), SCAN_DATA_REQUEST);
+        StartActivityForResult(TextPatternScannerActivity.NewIntent(this, config), ScanDataRequest);
     }
 
     private void HandleTextDataResult(Intent data)
@@ -174,7 +174,7 @@ public partial class MainActivity
         configuration.SetCancelButtonTitle("Done");
 
         var intent = VinScannerActivity.NewIntent(this, configuration);
-        StartActivityForResult(intent, SCAN_VIN_REQUEST);
+        StartActivityForResult(intent, ScanVinRequest);
     }
 
     private void HandleVinResult(Intent data)
@@ -190,7 +190,7 @@ public partial class MainActivity
         configuration.SetTopBarBackgroundColor(Color.Black);
 
         var intent = MedicalCertificateScannerActivity.NewIntent(this, configuration);
-        StartActivityForResult(intent, SCAN_MEDICAL_CERTIFICATE_REQUEST);
+        StartActivityForResult(intent, ScanMedicalCertificateRequest);
     }
 
     private void HandleMedicaCertificateResult(Intent data)
@@ -207,7 +207,7 @@ public partial class MainActivity
         configuration.TopBar.CancelButton.Text = "Done";
 
         var intent = IO.Scanbot.Sdk.Ui_v2.Creditcard.CreditCardScannerActivity.NewIntent(this, configuration);
-        StartActivityForResult(intent, SCAN_CREDIT_CARD_REQUEST);
+        StartActivityForResult(intent, ScanCreditCardRequest);
     }
 
     private void HandleCreditCard(Intent data)

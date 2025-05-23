@@ -9,14 +9,14 @@ namespace ReadyToUseUI.Droid;
 
 public partial class MainActivity
 {
-    private Dictionary<int, Action<Intent>> detectOnImageActions => new Dictionary<int, Action<Intent>>
+    private Dictionary<int, Action<Intent>> DetectOnImageActions => new Dictionary<int, Action<Intent>>
     {
-        { DETECT_MRZ_FROM_IMAGE, DetectMrzFromImage },
-        { DETECT_EHIC_FROM_IMAGE, DetectEHICFromImage },
-        { DETECT_CHECK_FROM_IMAGE, DetectCheckFromImage },
-        { DETECT_MEDICAL_CERTIFICATE_FROM_IMAGE, DetectMedicalCertificateFromImage },
-        { DETECT_DOCUMENT_DATA_FROM_IMAGE, DetectDocumentDataFromImage },
-        { DETECT_CREDIT_CARD_FROM_IMAGE, DetectCreditCardFromImage },
+        { DetectMrzFromImage, RecognizeMrzFromImage },
+        { DetectEhicFromImage, RecognizeEHICFromImage },
+        { DetectCheckFromImage, RecognizeCheckFromImage },
+        { DetectMedicalCertificateFromImage, RecognizeMedicalCertificateFromImage },
+        { DetectDocumentDataFromImage, RecognizeDocumentDataFromImage },
+        { DetectCreditCardFromImage, RecognizeCreditCardFromImage },
     };
 
     private void LaunchImagePicker(int activityRequestCode)
@@ -31,10 +31,10 @@ public partial class MainActivity
         StartActivityForResult(chooser, activityRequestCode);
     }
 
-    private void DetectMrzFromImage(Intent data)
+    private void RecognizeMrzFromImage(Intent data)
     {
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
-        var recognizer = scanbotSDK.CreateMrzScanner();
+        var recognizer = _scanbotSdk.CreateMrzScanner();
         var result = recognizer.ScanFromBitmap(bitmap, 0);
 
         if (result?.Document == null) return;
@@ -43,19 +43,19 @@ public partial class MainActivity
         fragment.Show(FragmentManager, MRZDialogFragment.NAME);
     }
 
-    private void DetectCheckFromImage(Intent data)
+    private void RecognizeCheckFromImage(Intent data)
     {
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
-        var recognizer = scanbotSDK.CreateCheckScanner();
+        var recognizer = _scanbotSdk.CreateCheckScanner();
         var result = recognizer.ScanFromBitmap(bitmap, 0);
         var description = result.Check.ToFormattedString();
         Alert.ShowAlert(this, "Result", description);
     }
 
-    private void DetectMedicalCertificateFromImage(Intent data)
+    private void RecognizeMedicalCertificateFromImage(Intent data)
     {
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
-        var recognizer = scanbotSDK.CreateMedicalCertificateScanner();
+        var recognizer = _scanbotSdk.CreateMedicalCertificateScanner();
         
         var parameters = new MedicalCertificateScanningParameters(
             shouldCropDocument: true,
@@ -74,22 +74,22 @@ public partial class MainActivity
         fragment.Show(FragmentManager, MedicalCertificateResultDialogFragment.NAME);
     }
 
-    private void DetectEHICFromImage(Intent data)
+    private void RecognizeEHICFromImage(Intent data)
     {
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
-        var recognizer = scanbotSDK.CreateHealthInsuranceCardScanner();
+        var recognizer = _scanbotSdk.CreateHealthInsuranceCardScanner();
         var result = recognizer.RecognizeBitmap(bitmap, 0);
 
         if (result == null) return;
 
         var fragment = HealthInsuranceCardFragment.CreateInstance(result);
-        fragment.Show(FragmentManager, HealthInsuranceCardFragment.NAME);
+        fragment.Show(FragmentManager, HealthInsuranceCardFragment.Name);
     }
 
-    private void DetectDocumentDataFromImage(Intent data)
+    private void RecognizeDocumentDataFromImage(Intent data)
     {
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
-        var recognizer = scanbotSDK.CreateDocumentDataExtractor();
+        var recognizer = _scanbotSdk.CreateDocumentDataExtractor();
         var result = recognizer.ExtractFromBitmap(bitmap,  0, DocumentDataExtractionMode.Live);
     
         if (result?.Document == null) return;
@@ -97,10 +97,10 @@ public partial class MainActivity
         Alert.ShowAlert(this, "Result", description);
     }
     
-    private void DetectCreditCardFromImage(Intent data)
+    private void RecognizeCreditCardFromImage(Intent data)
     {
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
-        var recognizer = scanbotSDK.CreateCreditCardScanner();
+        var recognizer = _scanbotSdk.CreateCreditCardScanner();
         var result = recognizer.ScanFromBitmap(bitmap, 0);
     
         if (result?.CreditCard == null) return;

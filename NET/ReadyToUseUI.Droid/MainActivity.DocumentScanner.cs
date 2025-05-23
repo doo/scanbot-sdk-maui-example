@@ -14,8 +14,8 @@ public partial class MainActivity
 {
     private Dictionary<int, Action<Intent>> documentScannerActions => new Dictionary<int, Action<Intent>>
     {
-        { SCAN_DOCUMENT_REQUEST_CODE, HandleDocumentScannerResult },
-        { IMPORT_IMAGE_REQUEST, HandleImageImport },
+        { ScanDocumentRequestCode, HandleDocumentScannerResult },
+        { ImportImageRequest, HandleImageImport },
     };
 
     private void SingleDocumentScanning()
@@ -34,7 +34,7 @@ public partial class MainActivity
         ];
 
         var intent = DocumentScannerActivity.NewIntent(this, configuration);
-        StartActivityForResult(intent, SCAN_DOCUMENT_REQUEST_CODE);
+        StartActivityForResult(intent, ScanDocumentRequestCode);
     }
 
     private void SingleFinderDocumentScanning()
@@ -54,7 +54,7 @@ public partial class MainActivity
         configuration.Screens.Camera.ViewFinder.AspectRatio = aspectRatio;
 
         var intent = DocumentScannerActivity.NewIntent(this, configuration);
-        StartActivityForResult(intent, SCAN_DOCUMENT_REQUEST_CODE);
+        StartActivityForResult(intent, ScanDocumentRequestCode);
     }
 
     private void MultipleDocumentScanning()
@@ -69,7 +69,7 @@ public partial class MainActivity
         configuration.Screens.Camera.BottomBar.ShutterButton.InnerColor = new ScanbotColor(Android.Graphics.Color.Red);
 
         var intent = DocumentScannerActivity.NewIntent(this, configuration);
-        StartActivityForResult(intent, SCAN_DOCUMENT_REQUEST_CODE);
+        StartActivityForResult(intent, ScanDocumentRequestCode);
     }
 
     private void HandleDocumentScannerResult(Intent data)
@@ -88,22 +88,22 @@ public partial class MainActivity
         intent.PutExtra(Intent.ExtraAllowMultiple, false);
 
         var chooser = Intent.CreateChooser(intent, Texts.share_title);
-        StartActivityForResult(chooser, IMPORT_IMAGE_REQUEST);
+        StartActivityForResult(chooser, ImportImageRequest);
     }
 
     private void HandleImageImport(Intent data)
     {
-        progress.Visibility = ViewStates.Visible;
+        _progress.Visibility = ViewStates.Visible;
 
         Alert.Toast(this, Texts.importing_and_processing);
 
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
 
-        var scanner = scanbotSDK.CreateDocumentScanner();
+        var scanner = _scanbotSdk.CreateDocumentScanner();
         var detectionResult = scanner.ScanFromBitmap(bitmap);
 
         var defaultDocumentSizeLimit = 0;
-        var document = scanbotSDK.DocumentApi.CreateDocument(defaultDocumentSizeLimit);
+        var document = _scanbotSdk.DocumentApi.CreateDocument(defaultDocumentSizeLimit);
         document.AddPage(bitmap);
 
         if (detectionResult != null)
@@ -111,7 +111,7 @@ public partial class MainActivity
             document.PageAtIndex(0).Polygon = detectionResult.PointsNormalized;
         }
 
-        progress.Visibility = ViewStates.Gone;
+        _progress.Visibility = ViewStates.Gone;
 
         var intent = PagePreviewActivity.CreateIntent(this, document.Uuid);
         StartActivity(intent);
