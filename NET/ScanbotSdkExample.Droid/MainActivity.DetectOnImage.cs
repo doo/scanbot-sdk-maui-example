@@ -4,6 +4,7 @@ using IO.Scanbot.Sdk.Documentdata;
 using IO.Scanbot.Sdk.MC;
 using ScanbotSdkExample.Droid.Fragments;
 using ScanbotSdkExample.Droid.Utils;
+using ScanbotSdkExample.Droid.Views;
 
 namespace ScanbotSdkExample.Droid;
 
@@ -12,10 +13,10 @@ public partial class MainActivity
     private Dictionary<int, Action<Intent>> DetectOnImageActions => new Dictionary<int, Action<Intent>>
     {
         { DetectMrzFromImageCode, RecognizeMrzFromImage },
-        { DetectEhicFromImageCode, RecognizeEHICFromImage },
+        { DetectEhicFromImageCode, RecognizeEhicFromImage },
         { DetectCheckFromImageCode, RecognizeCheckFromImage },
         { DetectMedicalCertificateFromImageCode, RecognizeMedicalCertificateFromImage },
-        { DetectDocumentDataFromImageCode, RecognizeDocumentDataFromImage },
+        { ExtractDocumentDataFromImageCode, ExtractDocumentDataFromImage },
         { DetectCreditCardFromImageCode, RecognizeCreditCardFromImage },
     };
 
@@ -27,7 +28,7 @@ public partial class MainActivity
         intent.PutExtra(Intent.ExtraLocalOnly, false);
         intent.PutExtra(Intent.ExtraAllowMultiple, false);
 
-        var chooser = Intent.CreateChooser(intent, Texts.share_title);
+        var chooser = Intent.CreateChooser(intent, Texts.ShareTitle);
         StartActivityForResult(chooser, activityRequestCode);
     }
 
@@ -37,10 +38,14 @@ public partial class MainActivity
         var recognizer = _scanbotSdk.CreateMrzScanner();
         var result = recognizer.ScanFromBitmap(bitmap, 0);
 
-        if (result?.Document == null) return;
+        if (result?.Document == null)
+        {
+            Alert.ShowAlert(this, "Info", "No MRZ found");
+            return;
+        }
 
         var fragment = MRZDialogFragment.CreateInstance(result.Document);
-        fragment.Show(FragmentManager, MRZDialogFragment.NAME);
+        ShowFragment(fragment, MRZDialogFragment.Name);
     }
 
     private void RecognizeCheckFromImage(Intent data)
@@ -48,10 +53,17 @@ public partial class MainActivity
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
         var recognizer = _scanbotSdk.CreateCheckScanner();
         var result = recognizer.ScanFromBitmap(bitmap, 0);
+        
+        if (result?.Check == null)
+        {
+            Alert.ShowAlert(this, "Info", "No Check found.");
+            return;
+        }
+        
         var description = result.Check.ToFormattedString();
         Alert.ShowAlert(this, "Result", description);
     }
-
+    
     private void RecognizeMedicalCertificateFromImage(Intent data)
     {
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
@@ -68,31 +80,44 @@ public partial class MainActivity
             orientation: 0,
             parameters: parameters);
 
-        if (result == null) return;
+        if (result == null)
+        {
+            Alert.ShowAlert(this, "Info", "No Medical certificate found.");
+            return;
+        }
 
         var fragment = MedicalCertificateResultDialogFragment.CreateInstance(result);
-        fragment.Show(FragmentManager, MedicalCertificateResultDialogFragment.NAME);
+        ShowFragment(fragment, MedicalCertificateResultDialogFragment.Name);
     }
 
-    private void RecognizeEHICFromImage(Intent data)
+    private void RecognizeEhicFromImage(Intent data)
     {
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
         var recognizer = _scanbotSdk.CreateHealthInsuranceCardScanner();
         var result = recognizer.RecognizeBitmap(bitmap, 0);
 
-        if (result == null) return;
+        if (result == null)
+        {
+            Alert.ShowAlert(this, "Info", "No EHIC found.");
+            return;
+        }
 
         var fragment = HealthInsuranceCardFragment.CreateInstance(result);
-        fragment.Show(FragmentManager, HealthInsuranceCardFragment.Name);
+        ShowFragment(fragment, HealthInsuranceCardFragment.Name);
     }
 
-    private void RecognizeDocumentDataFromImage(Intent data)
+    private void ExtractDocumentDataFromImage(Intent data)
     {
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
         var recognizer = _scanbotSdk.CreateDocumentDataExtractor();
-        var result = recognizer.ExtractFromBitmap(bitmap,  0, DocumentDataExtractionMode.Live);
-    
-        if (result?.Document == null) return;
+        var result = recognizer.ExtractFromBitmap(bitmap,  0, DocumentDataExtractionMode.SingleShot);
+        
+        if (result?.Document == null) 
+        {
+            Alert.ShowAlert(this, "Info", "No Document found.");
+            return;
+        }
+        
         var description = result.Document.ToFormattedString();
         Alert.ShowAlert(this, "Result", description);
     }
@@ -103,8 +128,18 @@ public partial class MainActivity
         var recognizer = _scanbotSdk.CreateCreditCardScanner();
         var result = recognizer.ScanFromBitmap(bitmap, 0);
     
-        if (result?.CreditCard == null) return;
+        if (result?.CreditCard == null) 
+        {
+            Alert.ShowAlert(this, "Info", "No Credit card found.");
+            return;
+        }
+        
         var description = result.CreditCard.ToFormattedString();
         Alert.ShowAlert(this, "Result", description);
+    }
+
+    private void ShowFragment(BaseDialogFragment fragment, string name)
+    {
+        fragment?.Show(FragmentManager, name);
     }
 }

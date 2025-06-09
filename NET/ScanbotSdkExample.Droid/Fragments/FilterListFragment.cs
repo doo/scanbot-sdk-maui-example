@@ -3,7 +3,7 @@ using Android.Graphics;
 using Android.Views;
 using Google.Android.Material.BottomSheet;
 using IO.Scanbot.Sdk.Imagefilters;
-using IO.Scanbot.Sdk.Process;
+using R = _Microsoft.Android.Resource.Designer.ResourceConstant;
 using ScanbotSdkExample.Droid.Listeners;
 using ScanbotSdkExample.Droid.Model;
 using Orientation = Android.Widget.Orientation;
@@ -41,8 +41,8 @@ public class FilterListFragment : BottomSheetDialogFragment, IFilterItemAdapter
 
     public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        var view = inflater.Inflate(Resource.Layout.filter_list_layout, container, false);
-        var listView = view.FindViewById<ListView>(Resource.Id.listView);
+        var view = inflater.Inflate(R.Layout.filter_list_layout, container, false);
+        var listView = view.FindViewById<ListView>(R.Id.listView);
         var adapter = new FilterItemAdapter(this);
         
         listView.Adapter = adapter;

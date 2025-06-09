@@ -48,9 +48,8 @@ namespace ScanbotSdkExample.Droid.Activities
             SupportActionBar?.Hide();
 
             // Uncomment to disable AutoFocus by manually touching the camera view:
-            _documentScannerView.CameraConfiguration.SetAutoFocusOnTouch(false);
-
-            // Preview Mode: See https://github.com/doo/Scanbot-SDK-Examples/wiki/Using-ScanbotCameraView#preview-mode
+            // _documentScannerView.CameraConfiguration.SetAutoFocusOnTouch(false);
+            
             _documentScannerView.CameraConfiguration.SetCameraPreviewMode(CameraPreviewMode.FitIn);
           
             // custom color to the polygon view

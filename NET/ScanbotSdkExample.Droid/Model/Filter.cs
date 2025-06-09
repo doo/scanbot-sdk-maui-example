@@ -1,11 +1,5 @@
 namespace ScanbotSdkExample.Droid.Model;
 
-public enum FilterType
-{
-    LegacyFilter,
-    NewFilter
-}
-
 public struct FilterItem
 {
     public string Title { get; set; }

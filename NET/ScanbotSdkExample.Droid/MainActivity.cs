@@ -4,11 +4,10 @@ using Android.Content;
 using Android.Runtime;
 using ScanbotSdkExample.Droid.Utils;
 using ScanbotSdkExample.Droid.Model;
-using ScanbotSdkExample.Droid.Activities;
 
 namespace ScanbotSdkExample.Droid
 {
-    [Activity(Label = "SBSDK Droid", MainLauncher = true, Icon = "@mipmap/icon")]
+    [Activity(Label = "@string/app_name", MainLauncher = true, Icon = "@mipmap/icon")]
     public partial class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
     {
         private const int ScanDocumentRequestCode = 1000;
@@ -25,10 +24,11 @@ namespace ScanbotSdkExample.Droid
         private const int DetectEhicFromImageCode = 6002;
         private const int DetectMedicalCertificateFromImageCode = 6003;
         private const int DetectCheckFromImageCode = 6004;
-        private const int DetectDocumentDataFromImageCode = 6005;
+        private const int ExtractDocumentDataFromImageCode = 6005;
         private const int DetectCreditCardFromImageCode = 6006;
+        private const string ViewLicenseInfo = "View License Info";
 
-        private readonly List<ListItemButton> _buttons = new List<ListItemButton>();
+        private readonly List<ListItemButton> _buttons = [];
         private IO.Scanbot.Sdk.ScanbotSDK _scanbotSdk;
         private ProgressBar _progress;
         private TextView _licenseIndicator;
@@ -37,30 +37,22 @@ namespace ScanbotSdkExample.Droid
         {
             base.OnCreate(savedInstanceState);
 
-            // Set our view from the "main" layout resource
             SetContentView(ResourceConstant.Layout.activity_main);
 
             _scanbotSdk = new IO.Scanbot.Sdk.ScanbotSDK(this);
-            // pageFileStorage = scanbotSDK.CreatePageFileStorage();
 
             var container = (LinearLayout)FindViewById(ResourceConstant.Id.container)!;
-            var title = container.FindViewById<TextView>(ResourceConstant.Id.textView)!;
-            title.Text = Texts.scanbot_sdk_demo;
             
             var scanner = (LinearLayout)container.FindViewById(ResourceConstant.Id.document_scanner)!;
-            var scannerTitle = (TextView)scanner.FindViewById(ResourceConstant.Id.textView)!;
-            scannerTitle.Text = "Document Scanner";
             scanner.AddChildren(_buttons, [
                 new ListItemButton(this, "Single Document Scanning", SingleDocumentScanning),
                 new ListItemButton(this, "Single Finder Document Scanning", SingleFinderDocumentScanning),
                 new ListItemButton(this, "Multiple Document Scanning", MultipleDocumentScanning),
-                new ListItemButton(this, "Import Image", ImportImage),
+                new ListItemButton(this, "Create Document From Image", CreateDocFromImage),
                 new ListItemButton(this, "Classic Document Scanner View", ClassicDocumentScannerView),
             ]);
 
             var detectors = (LinearLayout)container.FindViewById(ResourceConstant.Id.data_detectors)!;
-            var detectorsTitle = (TextView)detectors.FindViewById(ResourceConstant.Id.textView)!;
-            detectorsTitle.Text = "Data Detectors";
             detectors.AddChildren(_buttons, [
                 new ListItemButton(this, "Scan Check", ScanCheck),
                 new ListItemButton(this, "Scan Credit Card", ScanCreditCard),
@@ -73,28 +65,22 @@ namespace ScanbotSdkExample.Droid
             ]);
 
             var detectionOnImage = (LinearLayout)container.FindViewById(ResourceConstant.Id.data_detection_on_image)!;
-            var detectionOnImageTitle = (TextView)detectionOnImage.FindViewById(ResourceConstant.Id.textView)!;
-            detectionOnImageTitle.Text = "Data Detection On Image";
             detectionOnImage.AddChildren(_buttons, [
                 new ListItemButton(this, "Detect Check on Image", () => LaunchImagePicker(DetectCheckFromImageCode)),
                 new ListItemButton(this, "Detect Credit Card on Image", () => LaunchImagePicker(DetectCreditCardFromImageCode)),
-                new ListItemButton(this, "Detect Document Data on Image", () => LaunchImagePicker(DetectDocumentDataFromImageCode)),
+                new ListItemButton(this, "Extract Document Data from Image", () => LaunchImagePicker(ExtractDocumentDataFromImageCode)),
                 new ListItemButton(this, "Detect EU Health Insurance Card on Image", () => LaunchImagePicker(DetectEhicFromImageCode)),
                 new ListItemButton(this, "Detect Medical Certificate on Image", () => LaunchImagePicker(DetectMedicalCertificateFromImageCode)),
                 new ListItemButton(this, "Detect MRZ on Image", () => LaunchImagePicker(DetectMrzFromImageCode))
             ]);
             
             var miscellaneousLayout = (LinearLayout)container.FindViewById(ResourceConstant.Id.miscellaneous_layout)!;
-            var miscellaneousLayoutTitle = (TextView)miscellaneousLayout.FindViewById(ResourceConstant.Id.textView)!;
-            miscellaneousLayoutTitle.Text = "Miscellaneous";
-            miscellaneousLayout.AddChildren(_buttons, [
-                new ListItemButton(this, "View License Info", DisplayLicenseInfo),
-            ]);
+            miscellaneousLayout.AddChildren(_buttons, new ListItemButton(this, ViewLicenseInfo, DisplayLicenseInfo));
             
             _progress = FindViewById<ProgressBar>(ResourceConstant.Id.progressBar)!;
 
             _licenseIndicator = container.FindViewById<TextView>(ResourceConstant.Id.licenseIndicator)!;
-            _licenseIndicator.Text = Texts.no_license_found_the_app_will_terminate_after_one_minute;
+            _licenseIndicator.Text = Texts.NoLicenseFoundTheAppWillTerminateAfterOneMinute;
             _licenseIndicator.Visibility = string.IsNullOrEmpty(MainApplication.LicenseKey) ? ViewStates.Visible : ViewStates.Gone;
 
             foreach (var button in _buttons)
@@ -134,7 +120,7 @@ namespace ScanbotSdkExample.Droid
                 documentScannerAction(data);
             }
 
-            if (dataDetectorActions.TryGetValue(requestCode, out var dataDetectorAction))
+            if (DataDetectorActions.TryGetValue(requestCode, out var dataDetectorAction))
             {
                 dataDetectorAction(data);
             }            
@@ -142,12 +128,12 @@ namespace ScanbotSdkExample.Droid
             if (DetectOnImageActions.TryGetValue(requestCode, out var detectOnImageAction))
             {
                 detectOnImageAction(data);
-            }            
+            }
         }
 
         private void OnButtonClick(object sender, EventArgs e)
         {
-            if (!CheckLicense())
+            if (!CheckLicense() && ((Button)sender).Text != ViewLicenseInfo)
             {
                 return;
             }

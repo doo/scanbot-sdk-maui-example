@@ -26,7 +26,7 @@ public partial class PagePreviewActivity
 
         void SaveDocument(SaveType type)
         {
-            if (!scanbotSDK.LicenseInfo.IsValid)
+            if (!_scanbotSdk.LicenseInfo.IsValid)
             {
                 Alert.ShowLicenseDialog(this);
                 return;
@@ -96,7 +96,7 @@ public partial class PagePreviewActivity
 						jpegQuality: 80,
 						ResamplingMethod.None);
 
-		scanbotSDK.CreatePdfGenerator().GenerateFromDocument(document, new Java.IO.File(output.Path), pdfConfig: pdfConfig);
+		_scanbotSdk.CreatePdfGenerator().GenerateFromDocument(_document, new Java.IO.File(output.Path), pdfConfig: pdfConfig);
 		return output;
 	}
 
@@ -111,7 +111,7 @@ public partial class PagePreviewActivity
 		// to use legacy configuration we have to pass the installed languages.
 		if (recognitionMode == IOcrEngine.EngineMode.Tesseract)
 		{
-			var languages = scanbotSDK.CreateOcrEngine().InstalledLanguages;
+			var languages = _scanbotSdk.CreateOcrEngine().InstalledLanguages;
 			if (languages.Count == 0)
 			{
 				RunOnUiThread(delegate { Alert.Toast(this, "OCR languages blobs are not available"); });
@@ -136,13 +136,13 @@ public partial class PagePreviewActivity
 							jpegQuality: 80,
 							ResamplingMethod.None);
 
-		var pdfGenerated = scanbotSDK.CreatePdfGenerator().GenerateWithOcrFromDocument(document, pdfConfig, ocrConfig);
+		var pdfGenerated = _scanbotSdk.CreatePdfGenerator().GenerateWithOcrFromDocument(_document, pdfConfig, ocrConfig);
 		if (pdfGenerated)
 		{
-			if (string.IsNullOrEmpty(document.PdfUri?.Path))
+			if (string.IsNullOrEmpty(_document.PdfUri?.Path))
 				return output;
 			
-			File.Move(document.PdfUri.Path, new Java.IO.File(output.Path!).AbsolutePath);
+			File.Move(_document.PdfUri.Path, new Java.IO.File(output.Path!).AbsolutePath);
 		}
 
 		return output;
@@ -152,7 +152,7 @@ public partial class PagePreviewActivity
 	{
 		// This is the new OCR configuration with ML which doesn't require the languages.
 		var recognitionMode = IOcrEngine.EngineMode.ScanbotOcr;
-		var recognizer = scanbotSDK.CreateOcrEngine();
+		var recognizer = _scanbotSdk.CreateOcrEngine();
 
 		// to use legacy configuration we have to pass the installed languages.
 		if (recognitionMode == IOcrEngine.EngineMode.Tesseract)
@@ -172,7 +172,7 @@ public partial class PagePreviewActivity
 			recognizer.SetOcrConfig(new IOcrEngine.OcrConfig(recognitionMode));
 		}
 
-		var ocrResult = recognizer.RecognizeFromDocument(document);
+		var ocrResult = recognizer.RecognizeFromDocument(_document);
 		RunOnUiThread(delegate
 	      {
 	          Alert.ShowAlert(this, "Ocr Result", ocrResult.RecognizedText);
@@ -193,7 +193,7 @@ public partial class PagePreviewActivity
 			userFields: Array.Empty<UserField>(),
 			ParametricFilter.ScanbotBinarizationFilter());
 
-		scanbotSDK.CreateTiffGenerator().GenerateFromDocument(document, new Java.IO.File(output.Path), options);
+		_scanbotSdk.CreateTiffGenerator().GenerateFromDocument(_document, new Java.IO.File(output.Path), options);
 		return output;
 	}
 }

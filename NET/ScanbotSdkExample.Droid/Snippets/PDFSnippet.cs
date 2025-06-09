@@ -35,7 +35,7 @@ public class PdfSnippet : AppCompatActivity
 							keywords: "Your keywords");
                     
 		// Create the PDF rendering configurations.
-		var pdfConfig = new IO.Scanbot.Pdf.Model.PdfConfiguration(attributes: pdfAttributes, 
+		var pdfConfig = new PdfConfiguration(attributes: pdfAttributes, 
 							pageSize:PageSize.A4, 
 							pageDirection:PageDirection.Auto, 
 							pageFit:PageFit.None, 
@@ -62,7 +62,7 @@ public class PdfSnippet : AppCompatActivity
 							keywords: "Your keywords");
 		
 		// Create the PDF rendering configurations.
-		var pdfConfig = new IO.Scanbot.Pdf.Model.PdfConfiguration(attributes: pdfAttributes, 
+		var pdfConfig = new PdfConfiguration(attributes: pdfAttributes, 
 							pageSize:PageSize.A4, 
 							pageDirection:PageDirection.Auto, 
 							pageFit:PageFit.None, 

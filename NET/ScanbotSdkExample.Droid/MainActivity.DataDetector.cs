@@ -6,6 +6,7 @@ using IO.Scanbot.Sdk.Ehicscanner;
 using IO.Scanbot.Sdk.UI.View.Base;
 using IO.Scanbot.Sdk.UI.View.Check;
 using IO.Scanbot.Sdk.MC;
+using IO.Scanbot.Sdk.Ui_v2.Creditcard;
 using IO.Scanbot.Sdk.Ui_v2.Creditcard.Configuration;
 using IO.Scanbot.Sdk.Ui_v2.Mrz;
 using IO.Scanbot.Sdk.Ui_v2.Mrz.Configuration;
@@ -29,14 +30,14 @@ namespace ScanbotSdkExample.Droid;
 
 public partial class MainActivity
 {
-    private Dictionary<int, Action<Intent>> dataDetectorActions => new Dictionary<int, Action<Intent>>
+    private Dictionary<int, Action<Intent>> DataDetectorActions => new Dictionary<int, Action<Intent>>
     {
         { ScanMrzRequestCode, HandleMrzScanResult },
         { ExtractDocumentDataRequestCode, HandleDocumentDataExtractorResult },
         { ScanEhicRequestCode, HandleEhicResult },
         { ScanVinRequestCode, HandleVinResult },
         { ScanDataRequestCode, HandleTextDataResult },
-        { ScanMedicalCertificateRequestCode, HandleMedicaCertificateResult },
+        { ScanMedicalCertificateRequestCode, HandleMedicalCertificateResult },
         { ScanCheckRequestCode, HandleCheckResult },
         { ScanCreditCardRequestCode, HandleCreditCard },
     };
@@ -52,7 +53,7 @@ public partial class MainActivity
     {
         var result = (MrzScannerUiResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
         var fragment = MRZDialogFragment.CreateInstance(result.MrzDocument);
-        fragment.Show(FragmentManager, MRZDialogFragment.NAME);
+        ShowFragment(fragment, MRZDialogFragment.Name);
     }
 
     private void ScanEhic()
@@ -68,6 +69,7 @@ public partial class MainActivity
     {
         var result = (EuropeanHealthInsuranceCardRecognitionResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
         var fragment = HealthInsuranceCardFragment.CreateInstance(result);
+        ShowFragment(fragment, HealthInsuranceCardFragment.Name);
         fragment.Show(FragmentManager, HealthInsuranceCardFragment.Name);
     }
 
@@ -193,20 +195,20 @@ public partial class MainActivity
         StartActivityForResult(intent, ScanMedicalCertificateRequestCode);
     }
 
-    private void HandleMedicaCertificateResult(Intent data)
+    private void HandleMedicalCertificateResult(Intent data)
     {
         var result = (MedicalCertificateScanningResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
 
         var fragment = MedicalCertificateResultDialogFragment.CreateInstance(result);
-        fragment.Show(FragmentManager, MedicalCertificateResultDialogFragment.NAME);
+        fragment.Show(FragmentManager, MedicalCertificateResultDialogFragment.Name);
     }
 
     private void ScanCreditCard()
     {
-        var configuration = new IO.Scanbot.Sdk.Ui_v2.Creditcard.Configuration.CreditCardScannerScreenConfiguration();
+        var configuration = new CreditCardScannerScreenConfiguration();
         configuration.TopBar.CancelButton.Text = "Done";
 
-        var intent = IO.Scanbot.Sdk.Ui_v2.Creditcard.CreditCardScannerActivity.NewIntent(this, configuration);
+        var intent = CreditCardScannerActivity.NewIntent(this, configuration);
         StartActivityForResult(intent, ScanCreditCardRequestCode);
     }
 

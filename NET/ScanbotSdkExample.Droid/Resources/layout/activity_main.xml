@@ -27,11 +27,11 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
+            android:text="@string/main_activity_title"
             android:fontFamily="sans-serif-medium"
             android:textColor="#ffffff"
             android:textSize="25dp"
@@ -57,7 +57,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <TextView
-                android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
@@ -65,6 +64,7 @@
                 android:gravity="center_vertical"
                 android:layout_gravity="left"
                 android:padding="16dp"
+                android:text="@string/document_scanner_title"
                 android:background="@color/scanbotRed"
                 android:textStyle="bold"/>
         </LinearLayout>
@@ -76,7 +76,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <TextView
-                android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
@@ -84,6 +83,7 @@
                 android:gravity="center_vertical"
                 android:layout_gravity="left"
                 android:padding="16dp"
+                android:text="@string/data_detectors_title"
                 android:background="@color/scanbotRed"
                 android:textStyle="bold"/>
         </LinearLayout>
@@ -95,7 +95,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
             <TextView
-                    android:id="@+id/textView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
@@ -103,6 +102,7 @@
                     android:gravity="center_vertical"
                     android:layout_gravity="left"
                     android:padding="16dp"
+                    android:text="@string/data_detectors_on_image_title"
                     android:background="@color/scanbotRed"
                     android:textStyle="bold"/>
         </LinearLayout>
@@ -114,7 +114,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
             <TextView
-                    android:id="@+id/textView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
@@ -122,6 +121,7 @@
                     android:gravity="center_vertical"
                     android:layout_gravity="left"
                     android:padding="16dp"
+                    android:text="@string/miscellaneous_title"
                     android:background="@color/scanbotRed"
                     android:textStyle="bold"/>
         </LinearLayout>

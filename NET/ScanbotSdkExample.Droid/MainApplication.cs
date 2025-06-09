@@ -10,12 +10,12 @@ namespace ScanbotSdkExample.Droid
     public class MainApplication : Application
     {
         // Set the below to true to test our encryption functionality.
-        public const bool USE_ENCRYPTION = false;
+        public const bool UseEncryption = false;
         // Note: all the images and files exported through the SDK will
         // not be openable from external applications, since they will be
         // encrypted.
 
-        static readonly string LOG_TAG = nameof(MainApplication);
+        static readonly string LogTag = nameof(MainApplication);
 
         // TODO Add the Scanbot SDK license key here.
         // Please note: The Scanbot SDK will run without a license key for one minute per session!
@@ -36,11 +36,14 @@ namespace ScanbotSdkExample.Droid
 
         private static void InitializeScanbotSdk(Application app)
         {
-            Log.Debug(LOG_TAG, "Initializing Scanbot SDK...");
+            Log.Debug(LogTag, "Initializing Scanbot SDK...");
             
             var initializer = new IO.Scanbot.Sdk.ScanbotSDKInitializer();
             initializer.WithLogging(useLog: true, enableNativeLogging: false);
-            initializer.SdkFilesDirectory(app, PageStoragePathForExample(app));
+            
+            // Uncomment below code to set a custom storage path.
+            //initializer.SdkFilesDirectory(app, PageStoragePathForExample(app));
+            
             initializer.License(app, LicenseKey);
             initializer.UsePageStorageSettings(new IO.Scanbot.Sdk.Persistence.Page.PageStorageSettings.Builder()
                                 .ImageQuality(80)
