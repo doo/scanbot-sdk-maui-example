@@ -2,13 +2,13 @@
 
 namespace ScanbotSdkExample.iOS.View
 {
-    public class FilterView : UIView
+    public sealed class FilterView : UIView
     {
-        public UIImageView ImageView { get; private set; }
+        public UIImageView ImageView { get; set; }
 
-        public UIPickerView Filters { get; private set; }
+        private UIPickerView Filters { get; set; }
 
-        public FilterPickerModel Model { get; private set; }
+        private FilterPickerModel Model { get; set; }
 
         public FilterView()
         {
@@ -63,7 +63,7 @@ namespace ScanbotSdkExample.iOS.View
 
     public class FilterPickerModel : UIPickerViewModel
     {
-        private const string iOSPrefix = "SBSDK";
+        private const string ScanbotSdkPrefix = "SBSDK";
 
         public List<FilterItem> Items = new List<FilterItem>();
 
@@ -83,12 +83,12 @@ namespace ScanbotSdkExample.iOS.View
                 return new NSAttributedString(text, UIFont.BoldSystemFontOfSize(16), foregroundColor:Colors.ScanbotRed);
             }
             
-            if (text.Contains(iOSPrefix))
+            if (text.Contains(ScanbotSdkPrefix))
             {
-                text = text.Replace(iOSPrefix, string.Empty);
+                text = text.Replace(ScanbotSdkPrefix, string.Empty);
             }
             
-            var attributed = new NSAttributedString(text, null, Models.Colors.AppleBlue);
+            var attributed = new NSAttributedString(text, null, Colors.AppleBlue);
             return attributed;
         }
 

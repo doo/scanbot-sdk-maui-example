@@ -23,7 +23,11 @@ namespace ScanbotSdkExample.iOS.View.Collection
 
         void Initialize()
         {
-            ImageView = new UIImageView();
+            ImageView = new UIImageView
+            {
+                ContentMode = UIViewContentMode.ScaleAspectFit,
+            };
+            
             AddSubview(ImageView);
         }
 

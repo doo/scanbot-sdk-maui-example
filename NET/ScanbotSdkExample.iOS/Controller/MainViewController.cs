@@ -27,7 +27,7 @@ namespace ScanbotSdkExample.iOS.Controller
                 new ListItem("Single Document Scanning", SingleDocumentScanning),
                 new ListItem("Single Finder Document Scanning", SingleFinderDocumentScanning),
                 new ListItem("Multiple Document Scanning", MultipleDocumentScanning),
-                new ListItem("Import Image", ImportImage),
+                new ListItem("Create Document From Image", CreateDocFromImage),
                 new ListItem("Classic Document Scanner View", ClassicDocumentScannerView)
             ];
 
@@ -47,7 +47,7 @@ namespace ScanbotSdkExample.iOS.Controller
             [
                 new ListItem("Detect Check From Image", DetectCheck),
                 new ListItem("Detect Credit Card From Image", DetectCreditCard),
-                new ListItem("Detect Document Data From Image", DetectDocumentData),
+                new ListItem("Extract Document Data From Image", ExtractDocumentData),
                 new ListItem("Detect EHIC From Image", DetectEhic),
                 new ListItem("Detect Medical Certificate From Image", DetectMedicalCertificate),
                 new ListItem("Detect MRZ From Image", DetectMrz),
@@ -63,7 +63,7 @@ namespace ScanbotSdkExample.iOS.Controller
             _contentView.AddContent("Data Detection On Image", _dataDetectionOnImage);
             _contentView.AddContent("Miscellaneous", _miscellaneousItems);
 
-            _contentView.LicenseIndicator.Text = Texts.no_license_found_the_app_will_terminate_after_one_minute;
+            _contentView.LicenseIndicator.Text = Texts.NoLicenseFoundTheAppWillTerminateAfterOneMinute;
         }
         
         public override void ViewWillAppear(bool animated)

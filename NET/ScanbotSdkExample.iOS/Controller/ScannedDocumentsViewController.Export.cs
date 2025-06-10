@@ -10,7 +10,7 @@ public partial class ScannedDocumentsViewController
     {
         var docs = NSSearchPathDirectory.DocumentDirectory;
         var url = NSFileManager.DefaultManager.GetUrls(docs, NSSearchPathDomain.User)[0];
-        var alertController = UIAlertController.Create(Texts.save, Texts.SaveHow, UIAlertControllerStyle.ActionSheet);
+        var alertController = UIAlertController.Create(Texts.Save, Texts.SaveHow, UIAlertControllerStyle.ActionSheet);
         if (!ScanbotSDKGlobal.IsLicenseValid)
         {
             var title = "Oops";
@@ -19,11 +19,11 @@ public partial class ScannedDocumentsViewController
             return;
         }
 
-        var pdf = CreateButton(Texts.save_pdf, (_) =>  CreatePdfAsync(_scannedDocument, url));
-        var sandwichPdf = CreateButton(Texts.save_sandwich_pdf, (_) =>  CreateSandwichedPdf(_scannedDocument, url));
-        var ocr = CreateButton(Texts.perform_ocr, (_) =>  PerformOcr(_scannedDocument));
+        var pdf = CreateButton(Texts.SavePdf, (_) =>  CreatePdfAsync(_scannedDocument, url));
+        var sandwichPdf = CreateButton(Texts.SaveSandwichPdf, (_) =>  CreateSandwichedPdf(_scannedDocument, url));
+        var ocr = CreateButton(Texts.PerformOcr, (_) =>  PerformOcr(_scannedDocument));
         var tiff = CreateButton(Texts.Tiff, (_) => WriteTiff(_scannedDocument, url));
-        var cancel = CreateButton(Texts.cancel_dialog_button, delegate { }, UIAlertActionStyle.Cancel);
+        var cancel = CreateButton(Texts.CancelDialogButton, delegate { }, UIAlertActionStyle.Cancel);
 
         alertController.AddAction(pdf);
         alertController.AddAction(sandwichPdf);

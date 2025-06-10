@@ -6,16 +6,16 @@ namespace ScanbotSdkExample.iOS.Controller
 {
     public class FilterController : UIViewController
     {
-        private FilterView ContentView;
+        private FilterView _contentView;
         private SBSDKParametricFilter _selectedParametricFilter;
         private SBSDKScannedDocument _scannedDocument;
-        private readonly List<FilterItem> Filters;
+        private readonly List<FilterItem> _filters;
         private Action<SBSDKParametricFilter> _onFilterSelected;
 
         public FilterController()
         {
-            this.Filters = new List<FilterItem>
-            {
+            _filters =
+            [
                 new FilterItem("New Filters"),
                 new FilterItem(nameof(SBSDKScanbotBinarizationFilter), () => OnFilterSelected(new SBSDKScanbotBinarizationFilter(outputMode: SBSDKOutputMode.Binary))),
                 new FilterItem(nameof(SBSDKCustomBinarizationFilter), () => OnFilterSelected(new SBSDKCustomBinarizationFilter(outputMode: SBSDKOutputMode.Binary, denoise: 0.5, radius: 32, preset: SBSDKBinarizationFilterPreset.SBSDKBinarizationFilterPresetPreset1))),
@@ -24,7 +24,7 @@ namespace ScanbotSdkExample.iOS.Controller
                 new FilterItem(nameof(SBSDKContrastFilter), () => OnFilterSelected(new SBSDKContrastFilter(contrast: 2))),
                 new FilterItem(nameof(SBSDKGrayscaleFilter), () => OnFilterSelected(new SBSDKGrayscaleFilter(blackOutliersFraction: 0.0, borderWidthFraction: 0.6, whiteOutliersFraction: 0.02))),
                 new FilterItem(nameof(SBSDKWhiteBlackPointFilter), () => OnFilterSelected(new SBSDKWhiteBlackPointFilter(blackPoint: 0.2, whitePoint: 0.8)))
-            };
+            ];
         }
 
         internal void NavigateData(Action<SBSDKParametricFilter> onFilterSelected, SBSDKScannedDocument scannedDocument)
@@ -37,11 +37,11 @@ namespace ScanbotSdkExample.iOS.Controller
         {
             base.ViewDidLoad();
 
-            ContentView = new FilterView();
-            View = ContentView;
+            _contentView = new FilterView();
+            View = _contentView;
 
-            ContentView.SetPickerModel(Filters);
-            ContentView.ImageView.Image = _scannedDocument.Pages.First().DocumentImage;
+            _contentView.SetPickerModel(_filters);
+            _contentView.ImageView.Image = _scannedDocument.Pages.First().DocumentImage;
 
             Title = "Choose filter";
 
@@ -55,10 +55,10 @@ namespace ScanbotSdkExample.iOS.Controller
 
             foreach (var page in _scannedDocument.Pages)
             {
-                page.Filters = new[] { _selectedParametricFilter };
+                page.Filters = [ _selectedParametricFilter ];
             }
             
-            ContentView.ImageView.Image = _scannedDocument.Pages.First().DocumentImage;
+            _contentView.ImageView.Image = _scannedDocument.Pages.First().DocumentImage;
         }
 
         private void FilterChosen(object sender, EventArgs e)

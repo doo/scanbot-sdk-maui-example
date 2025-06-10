@@ -2,23 +2,23 @@
 
 namespace ScanbotSdkExample.iOS.View
 {
-    public class ScannerButton : UIView
+    public sealed class ScannerButton : UIView
     {
         public event EventHandler<EventArgs> Click;
         public ListItem Data { get; private set; }
 
-        private UILabel title;
+        private readonly UILabel _title;
 
         public ScannerButton(ListItem data)
         {
-            this.Data = data;
+            Data = data;
 
-            title = new UILabel();
-            title.Text = data.Title;
-            title.Font = UIFont.FromName("HelveticaNeue-Bold", 15f);
-            title.TextColor = Models.Colors.NearWhite;
+            _title = new UILabel();
+            _title.Text = data.Title;
+            _title.Font = UIFont.FromName("HelveticaNeue-Bold", 15f);
+            _title.TextColor = Colors.NearWhite;
             
-            AddSubview(title);
+            AddSubview(_title);
         }
 
         public override void LayoutSubviews()
@@ -26,7 +26,7 @@ namespace ScanbotSdkExample.iOS.View
             base.LayoutSubviews();
 
             float padding = 0;
-            title.Frame = new CGRect(padding, 0, (float)Frame.Width - 2 * padding, Frame.Height);
+            _title.Frame = new CGRect(padding, 0, (float)Frame.Width - 2 * padding, Frame.Height);
         }
 
         public override void TouchesBegan(NSSet touches, UIEvent evt)

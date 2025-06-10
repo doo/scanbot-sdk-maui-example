@@ -3,47 +3,52 @@ using ScanbotSDK.iOS;
 
 namespace ScanbotSdkExample.iOS.View
 {
-    public class PdfContainerView : UIView
+    public sealed class PdfContainerView : UIView
     {
-        UILabel title;
-        PdfView content;
+        private readonly UILabel _title;
+        readonly PdfView _content;
 
         public PdfContainerView(NSUrl uri, bool ocr)
         {
             BackgroundColor = UIColor.White;
 
-            title = new UILabel();
-            title.TextAlignment = UITextAlignment.Center;
-            title.TextColor = Models.Colors.DarkGray;
-            title.Font = UIFont.FromName("HelveticaNeue-Bold", 13f);
-            title.Lines = 0;
+            _title = new UILabel();
+            _title.TextAlignment = UITextAlignment.Center;
+            _title.TextColor = Models.Colors.DarkGray;
+            _title.Font = UIFont.FromName("HelveticaNeue-Bold", 13f);
+            _title.Lines = 0;
 
-            AddSubview(title);
+            AddSubview(_title);
 
-            content = new PdfView();
-            content.DisplayMode = PdfDisplayMode.SinglePageContinuous;
-            content.AutoScales = true;
+            _content = new PdfView();
+            _content.DisplayMode = PdfDisplayMode.SinglePageContinuous;
+            _content.AutoScales = true;
 
-            var data = NSData.FromFile(uri.Path);
-            // If data is encrypted, SBSDK.Encrypter will be evaluated.
-            // In that case, use it to decrypt the data
-            if (ScanbotUI.DefaultImageStoreEncrypter != null)
+            if (uri.Path != null)
             {
-                data = ScanbotUI.DefaultImageStoreEncrypter.DecryptData(data, "", out NSError error);
+                var data = NSData.FromFile(uri.Path);
+                // If data is encrypted, SBSDK.Encrypter will be evaluated.
+                // In that case, use it to decrypt the data
+                if (ScanbotUI.DefaultImageStoreEncrypter != null)
+                {
+                    data = ScanbotUI.DefaultImageStoreEncrypter.DecryptData(data, "", out NSError error);
+                }
+
+                if (data != null)
+                    _content.Document = new PdfDocument(data);
             }
-            content.Document = new PdfDocument(data);
-            
-            AddSubview(content);
+
+            AddSubview(_content);
 
             if (ocr)
             {
-                title.Text =
+                _title.Text =
                     "Good job! You created a sandwich .pdf.\n" +
                     "Go ahead, try to select part of the text of your saved file";
             }
             else
             {
-                title.Text =
+                _title.Text =
                     "Good job! You saved a plain pdf.\n" +
                     "Try to select part of your text, you won't be able to";
             }
@@ -60,12 +65,12 @@ namespace ScanbotSdkExample.iOS.View
             float w = (float)Frame.Width - 2 * padding;
             float h = w / 5;
 
-            title.Frame = new CGRect(x, y, w, h);
+            _title.Frame = new CGRect(x, y, w, h);
 
             y += h + padding;
             h = (float)Frame.Height - (h + 3 * padding);
 
-            content.Frame = new CGRect(x, y, w, h);
+            _content.Frame = new CGRect(x, y, w, h);
         }
     }
 }

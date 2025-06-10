@@ -34,16 +34,16 @@ public partial class MainViewController
 		
 		var recognizer = new SBSDKHealthInsuranceCardRecognizer();
 		var result = recognizer.RecognizeFromImage(image, false);
-		if (result == null || result.Status != SBSDKEuropeanHealthInsuranceCardRecognitionResultRecognitionStatus.Success)
+		if (result?.Fields == null || result.Status != SBSDKEuropeanHealthInsuranceCardRecognitionResultRecognitionStatus.Success)
 		{
 			Alert.Show(this, "Error", "Unable to detect the document.");
 			return;
 		}
 
-		ShowPopup(this, result.Fields?.ToFormattedString());
+		ShowPopup(this, result.Fields.ToFormattedString());
 	}
 	
-	private async void DetectDocumentData()
+	private async void ExtractDocumentData()
 	{
 		var image = await ImagePicker.Instance.PickImageAsync();
 
@@ -92,7 +92,7 @@ public partial class MainViewController
 			Alert.Show(this, "Error", "Unable to detect the document.");
 			return;
 		}
-		ShowPopup(this, result.CreditCard?.ToFormattedString());
+		ShowPopup(this, result.CreditCard.ToFormattedString());
 	}
 	
 	private async void DetectMedicalCertificate()
@@ -106,6 +106,6 @@ public partial class MainViewController
 			return;
 		}
 		
-		ShowPopupWithAttributedText(this, result?.ToFormattedAttributeString());
+		ShowPopupWithAttributedText(this, result.ToFormattedAttributeString());
 	}
 }

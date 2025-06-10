@@ -7,8 +7,6 @@ namespace ScanbotSdkExample.iOS
     [Register("AppDelegate")]
     public class AppDelegate : UIApplicationDelegate
     {
-        public static float TopInset { get; private set; }
-
         public UINavigationController Controller { get; private set; }
 
         public override UIWindow Window { get; set; }
@@ -60,7 +58,7 @@ namespace ScanbotSdkExample.iOS
             Debug.WriteLine("Scanbot SDK Example: Initializing Scanbot SDK...");
 
             ScanbotSDKGlobal.SetLoggingEnabled(true);
-            SBSDKDocumentPageFileStorage.DefaultStorage = new SBSDKDocumentPageFileStorage(SBSDKImageFileFormat.Jpeg, (nuint)ImageQuality, new SBSDKStorageLocation(NSUrl.FromFilename(PageStoragePathForExample())));
+            SBSDKDocumentPageFileStorage.DefaultStorage = new SBSDKDocumentPageFileStorage(SBSDKImageFileFormat.Jpeg, ImageQuality, new SBSDKStorageLocation(NSUrl.FromFilename(PageStoragePathForExample())));
 
             // Uncomment the below to test our encyption functionality.
             // ScanbotUI.DefaultImageStoreEncrypter = new SBSDKAESEncrypter("S0m3W3irDL0ngPa$$w0rdino!!!!", SBSDKAESEncrypterMode.SBSDKAESEncrypterModeAES128);
