@@ -16,9 +16,8 @@ public partial class MainViewController
 			IncompleteResultHandling = SBSDKMRZIncompleteResultHandling.Accept
 		};
 		
-		// Create an instance of the recognizer
-		var recognizer = new SBSDKMRZScanner(config);
-		var result = recognizer.ScanFromImage(image);
+		var scanner = new SBSDKMRZScanner(config);
+		var result = scanner.ScanFromImage(image);
 		if (result?.Document == null)
 		{
 			Alert.Show(this, "Error", "Unable to detect the document.");
@@ -70,9 +69,10 @@ public partial class MainViewController
 
 		var config = new SBSDKCheckScannerConfiguration();
 		config.DocumentDetectionMode = SBSDKCheckDocumentDetectionMode.DetectDocument;
-		var recognizer = new SBSDKCheckScanner(config, SBSDKCheckDocumentModelRootType.AllDocumentTypes);
-
-		var result = recognizer.ScanFromImage(image, false);
+		
+		var scanner = new SBSDKCheckScanner(config, SBSDKCheckDocumentModelRootType.AllDocumentTypes);
+		
+		var result = scanner.ScanFromImage(image, false);
 		if (result?.Check == null)
 		{
 			Alert.Show(this, "Error", "Unable to detect the document.");
@@ -85,8 +85,12 @@ public partial class MainViewController
 	private async void DetectCreditCard()
 	{
 		var image = await ImagePicker.Instance.PickImageAsync();
-		var recognizer = new SBSDKCreditCardScanner();
-		var result = recognizer.ScanFromImage(image);
+		
+		var configuration = new SBSDKCreditCardScannerConfiguration();
+		configuration.ScanningMode = SBSDKCreditCardScanningMode.SingleShot;
+		
+		var scanner = new SBSDKCreditCardScanner(configuration);
+		var result = scanner.ScanFromImage(image);
 		if (result?.CreditCard == null || result.ScanningStatus != SBSDKCreditCardScanningStatus.Success)
 		{
 			Alert.Show(this, "Error", "Unable to detect the document.");
