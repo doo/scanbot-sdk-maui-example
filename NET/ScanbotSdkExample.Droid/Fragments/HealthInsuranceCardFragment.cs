@@ -25,10 +25,10 @@ namespace ScanbotSdkExample.Droid.Fragments
         public override View AddContentView(LayoutInflater inflater, ViewGroup container)
         {
             var list = Arguments.GetParcelableArray(Name).Cast<EuropeanHealthInsuranceCardRecognitionResult.Field>().ToList();
-            var view = inflater.Inflate(R.Layout.fragment_barcode_dialog, container)!;
+            var view = inflater.Inflate(R.Layout.fragment_ehic_dialog, container)!;
 
-            var format = view.FindViewById<TextView>(R.Id.title)!;
-            var content = view.FindViewById<TextView>(R.Id.barcode_result_values)!;
+            var format = view.FindViewById<TextView>(R.Id.title_text_view)!;
+            var content = view.FindViewById<TextView>(R.Id.ehic_info_text_view)!;
 
             if (list.Count == 0)
             {

@@ -6,8 +6,4 @@
     <string name="data_detectors_title">Data Detectors</string>
     <string name="data_detectors_on_image_title">Data Detection On Image</string>
     <string name="miscellaneous_title">Miscellaneous</string>
-
-    <string name="detected_barcodes_caption">Detected barcodes:</string>
-    
-    
 </resources>
