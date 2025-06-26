@@ -1,44 +1,42 @@
 ﻿using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Common;
 
-namespace ReadyToUseUI.Maui
+namespace ReadyToUseUI.Maui;
+public static partial class MauiProgram
 {
-    public static partial class MauiProgram
+    private const string LicenseKey =  "";
+
+    public static MauiApp CreateMauiApp()
     {
-        internal const string LICENSE_KEY = null;
-
-        public static MauiApp CreateMauiApp()
-        {
-            var builder = MauiApp.CreateBuilder();
-            builder
-                .UseMauiApp<App>()
-                .ConfigureFonts(fonts =>
-                {
-                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                });
-
-            SBSDKInitializer.Initialize(builder, LICENSE_KEY, new ScanbotSDK.MAUI.SBSDKConfiguration
+        var builder = MauiApp.CreateBuilder();
+        builder
+            .UseMauiApp<App>()
+            .ConfigureFonts(fonts =>
             {
-                EnableLogging = true,
-                StorageBaseDirectory = StorageBaseDirectoryForExampleApp(),
-                StorageImageFormat = CameraImageFormat.Jpg,
-                StorageImageQuality = 50,
-                DetectorType = DocumentDetectorType.MLBased,
-                // You can enable encryption by uncommenting the following lines:
-                //Encryption = new SBSDKEncryption
-                //{
-                //    Password = "SomeSecretPa$$w0rdForFileEncryption",
-                //    Mode = EncryptionMode.AES256
-                //}
-                // Note: all the images and files exported through the SDK will
-                // not be openable from external applications, since they will be
-                // encrypted.
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
+
+        SBSDKInitializer.Initialize(builder, LicenseKey, new ScanbotSDK.MAUI.SBSDKConfiguration
+        {
+            EnableLogging = true,
+            StorageBaseDirectory = StorageBaseDirectoryForExampleApp(),
+            StorageImageFormat = CameraImageFormat.Jpg,
+            StorageImageQuality = 50,
+            EngineMode = DocumentScannerEngineMode.Ml,
+            // You can enable encryption by uncommenting the following lines:
+            //Encryption = new SBSDKEncryption
+            //{
+            //    Password = "SomeSecretPa$$w0rdForFileEncryption",
+            //    Mode = EncryptionMode.AES256
+            //}
+            // Note: all the images and files exported through the SDK will
+            // not be openable from external applications, since they will be
+            // encrypted.
+        });
             
-            return builder.Build();
-        }
-
-        private static partial string StorageBaseDirectoryForExampleApp();
+        return builder.Build();
     }
-}
 
+    private static partial string StorageBaseDirectoryForExampleApp();
+}

@@ -19,50 +19,8 @@
         <!-- Supported Platforms -->
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">13.0</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21</SupportedOSPlatformVersion>
-        <Platforms>x64;ARM64</Platforms>
         <WarningsAsErrors>NU1603</WarningsAsErrors>
         <LangVersion>12.0</LangVersion>
-    </PropertyGroup>
-    
-    <!-- ===================== iOS Specific Targets =====================  -->
-    
-    <!-- Properties for iOS Simulator (x64 architecture) -->
-    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'iossimulator-x64'">
-        <RuntimeIdentifiers>iossimulator-x64</RuntimeIdentifiers>
-        <!-- Additional properties specific to iOS simulator (x64) -->
-        <PlatformTarget>x64</PlatformTarget>
-    </PropertyGroup>
-    
-    <!-- Properties for iOS Simulator (arm64 architecture) -->
-    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'iossimulator-arm64'">
-        <RuntimeIdentifiers>iossimulator-arm64</RuntimeIdentifiers>
-        <!-- Additional properties specific to iOS simulator (arm64) -->
-    </PropertyGroup>
-    
-    <!-- Properties for iOS Device (arm64 architecture) -->
-    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'ios-arm64'">
-        <RuntimeIdentifiers>ios-arm64</RuntimeIdentifiers>
-        <!-- Additional properties specific to iOS device (arm64) -->
-    </PropertyGroup>
-
-    <!-- ===================== General Targets =====================  -->
-    
-    <!-- Settings for all targets that are not iOS (e.g., Android ) -->
-    <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'ios'">
-        <MtouchLink>SdkOnly</MtouchLink>
-        <CreatePackage>false</CreatePackage>
-        <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
-    </PropertyGroup>
-
-    <!-- General settings for iOS targets -->
-    <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
-        <MtouchLink>SdkOnly</MtouchLink>
-        <MtouchInterpreter>-all</MtouchInterpreter>
-        <CreatePackage>false</CreatePackage>
-        <RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
-
-        <!-- Simulator support attribute -->
-        <ForceSimulatorX64ArchitectureInIDE>true</ForceSimulatorX64ArchitectureInIDE>
     </PropertyGroup>
     
     <!-- ===================== Application Resources =====================  -->
@@ -81,11 +39,12 @@
     </ItemGroup>
     
     <!-- ===================== Common Project References =====================  -->
-    <ItemGroup>
-        <PackageReference Include="ScanbotSDK.MAUI" Version="6.1.0">
+    <ItemGroup><!-- <PackageReference Include="ScanbotSDK.MAUI" Version="6.1.0"> -->
             <!-- Required if our package is a dependency of your own package. -->
-            <PrivateAssets>None</PrivateAssets>
-        </PackageReference>
+            <!-- <PrivateAssets>None</PrivateAssets> -->
+        <!-- </PackageReference> -->
+    
+      <ProjectReference Include="..\..\..\scanbot-sdk-maui\DocumentSDK\DocumentSDK.MAUI\DocumentSDK.MAUI.csproj" />
     </ItemGroup>
 
     <ItemGroup Condition="$(TargetFramework.Contains('-ios')) == true">

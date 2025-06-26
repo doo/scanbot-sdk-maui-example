@@ -26,56 +26,61 @@ public partial class HomePage : ContentPage
         public string Title { get; private set; }
         public Func<Task> DoTask { get; private set; }
 
-        public bool ShowHeading { get => DoTask == null; }
-        public bool ShowFeature { get => DoTask != null; }
+        public bool ShowHeading => DoTask == null;
+        public bool ShowFeature => DoTask != null;
     }
 
-    private List<SdkFeature> sdkFeatures;
-
-    public List<SdkFeature> SDKFeatures { get => sdkFeatures; }
+    private List<SdkFeature> _sdkFeatures = [];
+    public List<SdkFeature> SdkFeatures
+    {
+        get => _sdkFeatures;
+        set => _sdkFeatures = value;
+    }
 
     public HomePage()
     {
-        sdkFeatures = new List<SdkFeature>
-        {
+        SdkFeatures =
+        [
             new SdkFeature("DOCUMENT SCANNER"),
             new SdkFeature("Single Document Scanning", SingleDocumentScanningClicked),
             new SdkFeature("Single Finder Document Scanning", SingleFinderDocumentScanningClicked),
             new SdkFeature("Multiple Document Scanning", MultipleDocumentScanningClicked),
             new SdkFeature("Import Import Image", ImportButtonClicked),
-            
+
             new SdkFeature("DATA DETECTORS"),
-            new SdkFeature("MRZ Scanner", MRZScannerClicked),
-            new SdkFeature("EHIC Scanner", EHICScannerClicked),
-            new SdkFeature("Generic Document Recognizer", GenericDocumentRecognizerClicked),
-            new SdkFeature("Check Recognizer", CheckRecognizerClicked),
-            new SdkFeature("Text Data Recognizer", TextDataRecognizerClicked),
-            new SdkFeature("VIN Recognizer", VinRecognizerClicked),
-            new SdkFeature("License Plate Recognizer", LicensePlateRecognizerClicked),
-            new SdkFeature("Medical Certificate Recognizer", MedicalCertificateRecognizerClicked),
             
+            new SdkFeature("Check Scanner", CheckScannerClicked),
+            new SdkFeature("Credit Card Scanner", CreditCardScannerClicked),
+            new SdkFeature("European Health Insurance Scanner", EhicScannerClicked),
+            new SdkFeature("Document Data Scanner", DocumentDataScannerClicked),
+            new SdkFeature("Medical Certificate Scanner", MedicalCertificateRecognizerClicked),
+            new SdkFeature("Mrz Scanner", MrzScannerClicked),
+            new SdkFeature("Text Pattern Scanner", TextPatternScannerClicked),
+            new SdkFeature("Vin Scanner", VinScannerClicked),
+
             new SdkFeature("DETECTION FROM IMAGE"),
-            new SdkFeature("MRZ Detector", MRZDetectorClicked),
-            new SdkFeature("EHIC Detector", EHICDetectorClicked),
-            new SdkFeature("Generic Document Detector", GenericDocumentDetectorClicked),
-            new SdkFeature("Check Detector", CheckDetectorrClicked),
-            new SdkFeature("Medical Certificate Detector", MedicalCertificateDetectorClicked),
+            new SdkFeature("Check Recognizer", CheckDetectorClicked),
+            new SdkFeature("Credit Card Recognizer", CreditCardDetectorClicked),
+            new SdkFeature("MRZ Recognizer", MrzDetectorClicked),
+            new SdkFeature("EHIC Recognizer", EhicDetectorClicked),
+            new SdkFeature("Document Data Extractor", DocumentDataExtractorClicked),
+            new SdkFeature("Medical Certificate Recognizer", MedicalCertificateDetectorClicked),
 
             new SdkFeature("MISCELLANEOUS"),
             new SdkFeature("View License Info", ViewLicenseInfoClicked),
             new SdkFeature("Learn more about Scanbot SDK", LearnMoreClicked)
-        };
+        ];
 
         this.BindingContext = this;
         InitializeComponent();
     }
 
     /// Item Selected method invoked on the ListView item selection.
-    async void SdkFeatureSelected(System.Object sender, Microsoft.Maui.Controls.SelectionChangedEventArgs e)
+    async void SdkFeatureSelected(Object sender, SelectionChangedEventArgs e)
     {
         if (e?.CurrentSelection?.FirstOrDefault() is SdkFeature feature && feature.DoTask != null)
         {
-            if (!SDKUtils.CheckLicense(this)) { return; }
+            if (!SdkUtils.CheckLicense(this)) { return; }
 
             try
             {
@@ -83,7 +88,7 @@ public partial class HomePage : ContentPage
             }
             catch
             {
-
+                // ignored
             }
         }
         FeaturesCollectionView.SelectedItem = null;

@@ -30,7 +30,7 @@ namespace ReadyToUseUI.Maui.SubViews.Cells
             View = parentView;
         }
 
-        protected override async void OnBindingContextChanged()
+        protected override void OnBindingContextChanged()
         {
             base.OnBindingContextChanged();
             if (BindingContext == null)
@@ -40,10 +40,9 @@ namespace ReadyToUseUI.Maui.SubViews.Cells
             currentPage = (ScannedDocument.Page)BindingContext;
             // If encryption is enabled, load the decrypted document.
             // Else accessible via page.Document
-            //Document.Source = await Source.DecryptedDocumentPreview();
+            // Document.Source = await Source.DecryptedDocumentPreview();
 
             pagePreview.Source = currentPage.DocumentImagePreviewUri.ToImageSource();
-
         }
     }
 }

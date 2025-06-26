@@ -1,134 +1,135 @@
 using ReadyToUseUI.Maui.Pages.DetectOnImageResults;
 using ReadyToUseUI.Maui.Utils;
 using ScanbotSDK.MAUI;
-using ScanbotSDK.MAUI.Check;
-using ScanbotSDK.MAUI.EHIC;
-using ScanbotSDK.MAUI.GenericDocument;
-using ScanbotSDK.MAUI.MedicalCertificate;
 using static ScanbotSDK.MAUI.ScanbotSDKMain;
+using CheckScannerConfiguration = ScanbotSDK.MAUI.CheckScannerConfiguration;
+
 namespace ReadyToUseUI.Maui.Pages;
 
 public partial class HomePage
 {
-    private async Task MRZDetectorClicked()
+    private async Task MrzDetectorClicked()
     {
         var image = await ImagePicker.PickImageAsync();
 
-        var result = await Detectors.Mrz.DetectMrzFromImage(image);
-        if (result.Status == OperationResult.Ok)
-        {
-            var message = SDKUtils.ParseMRZResult(result);
-            ViewUtils.Alert(this, "MRZ Scanner result", message);
-        }
-        else
+        var configuration = new MrzScannerConfiguration();
+        var result = await Detector.Mrz.DetectMrzFromImageAsync(image, configuration: configuration);
+        if (result == null)
         {
             ViewUtils.Alert(this, "MRZ Scanner result", "Could not detect MRZ data");
+            return;
         }
+        ViewUtils.Alert(this, "MRZ Scanner result", SdkUtils.GenericDocumentToString(result.Document));
     }
 
-    private async Task EHICDetectorClicked()
+    private async Task EhicDetectorClicked()
     {
         var image = await ImagePicker.PickImageAsync();
 
-        var result = await Detectors.Ehic.DetectEHICFromImage(image);
-        if (result.Status == OperationResult.Ok)
+        var configuration = new EuropeanHealthInsuranceCardRecognizerConfiguration();
+        var result = await Detector.Ehic.DetectEhicFromImageAsync(image, configuration: configuration);
+        if (result == null || result.Status == EuropeanHealthInsuranceCardRecognitionResult.RecognitionStatus.FailedDetection)
         {
-            if (result.DetectionStatus == HealthInsuranceCardDetectionStatus.Success)
-            {
-                var message = SDKUtils.ToAlertMessage(result);
-                ViewUtils.Alert(this, "EHIC Scanner result", message);
-            }
-            else
-            {
-                var message = "Something went wrong, please try again.\nDetection status: " + result.DetectionStatus;
-                ViewUtils.Alert(this, "EHIC Scanner result", message);
-            }
+            var status = result?.Status ?? EuropeanHealthInsuranceCardRecognitionResult.RecognitionStatus.FailedDetection;
+            var errorMessage = "Something went wrong, please try again.\nDetection status: " + status; 
+            ViewUtils.Alert(this, "EHIC Scanner result", errorMessage);
+            return;
         }
+        
+        var message = SdkUtils.ToAlertMessage(result);
+        ViewUtils.Alert(this, "EHIC Scanner result", message);
     }
 
-    private async Task GenericDocumentDetectorClicked()
+    private async Task DocumentDataExtractorClicked()
     {
         var image = await ImagePicker.PickImageAsync();
 
-        var configuration = new GenericDocumentDetectorConfiguration
+        var configuration = new DocumentDataExtractorConfiguration
         {
-            AcceptedDocumentTypes = new[]
-            {
-                    GenericDocumentRootType.DePassport,
-                    GenericDocumentRootType.DeDriverLicenseBack,
-                    GenericDocumentRootType.DeDriverLicenseFront,
-                    GenericDocumentRootType.DeIdCardBack,
-                    GenericDocumentRootType.DeIdCardFront,
-                    GenericDocumentRootType.DeResidencePermitBack,
-                    GenericDocumentRootType.DeResidencePermitFront,
-                }
+            // todo: confirm about the GenericDocument Detect on image types.
+            // AcceptedDocumentTypes = new[]
+            // {
+            //         GenericDocumentRootType.DePassport,
+            //         GenericDocumentRootType.DeDriverLicenseBack,
+            //         GenericDocumentRootType.DeDriverLicenseFront,
+            //         GenericDocumentRootType.DeIdCardBack,
+            //         GenericDocumentRootType.DeIdCardFront,
+            //         GenericDocumentRootType.DeResidencePermitBack,
+            //         GenericDocumentRootType.DeResidencePermitFront,
+            //     }
         };
-        var result = await Detectors.GenericDocument.DetectGenericDocumentFromImage(image, configuration);
-        if (result.Status == OperationResult.Ok)
-        {
-            var message = SDKUtils.ToAlertMessage(result);
-            ViewUtils.Alert(this, "GDR Result", message);
-        }
-        else
+        var result = await Detector.DocumentData.ExtractDocumentDataFromImageAsync(image, configuration);
+        if (result == null)
         {
             ViewUtils.Alert(this, "GDR Result", "Could not detect GDR data");
+            return;
         }
+
+        var message = SdkUtils.GenericDocumentToString(result.Document);
+        ViewUtils.Alert(this, "GDR Result", message);
     }
 
-    private async Task CheckDetectorrClicked()
+    private async Task CheckDetectorClicked()
     {
         var image = await ImagePicker.PickImageAsync();
-
-        var result = await Detectors.Check.DetectCheckFromImage(image, new List<CheckStandard>
-            {
-                CheckStandard.AUS,
-                CheckStandard.CAN,
-                CheckStandard.FRA,
-                CheckStandard.IND,
-                CheckStandard.ISR,
-                CheckStandard.KWT,
-                CheckStandard.UAE,
-                CheckStandard.USA
-            });
-
-        if (result.Status == OperationResult.Ok)
+        var result = await Detector.Check.DetectCheckFromImageAsync(image, new CheckScannerConfiguration
         {
-            var message = SDKUtils.ToAlertMessage(result);
-            ViewUtils.Alert(this, "Check Result", message);
-        }
-        else
+            AcceptedCheckStandards =
+            [
+                CheckStandard.Aus,
+                CheckStandard.Can,
+                CheckStandard.Fra,
+                CheckStandard.Ind,
+                CheckStandard.Isr,
+                CheckStandard.Kwt,
+                CheckStandard.Uae,
+                CheckStandard.Usa
+            ]
+        });
+
+        if (result == null || result.Status != CheckMagneticInkStripScanningStatus.Success)
         {
             ViewUtils.Alert(this, "Check Result", "Could not detect Check data");
+            return;
         }
+
+        var message = SdkUtils.ToAlertMessage(result);
+        ViewUtils.Alert(this, "Check Result", message);
     }
 
     private async Task MedicalCertificateDetectorClicked()
     {
         var image = await ImagePicker.PickImageAsync();
 
-        var configuration = new MedicalCertificateDetectorConfiguration
-        {
-            DetectDocument = true,
-            RecognizeBarcode = true,
-            RecognizePatientInfo = true,
-            ReturnCroppedDocumentImage = true
-        };
-
-        var result = await Detectors.MedicalCertificate.DetectMedicalCertificateFromImage(image, configuration);
-        if (result.Status == OperationResult.Ok)
-        {
-            ViewUtils.Alert(this, $"Medical Certificate Recognition Result",
-                FormatMedicalCertificateRecognitionResult(result),
-                () =>
-                {
-                    var resultPage = new DetectOnImageResultPage();
-                    resultPage.NavigateData(result.CroppedImageSource);
-                    Navigation.PushAsync(resultPage);
-                });
-        }
-        else
+        var configuration = new MedicalCertificateScanningParameters();
+        var result = await Detector.MedicalCertificate.DetectMedicalCertificateFromImageAsync(image, configuration);
+        if (!result.ScanningSuccessful || result.DocumentDetectionResult.Status != DocumentDetectionStatus.Ok)
         {
             ViewUtils.Alert(this, "Medical Certificate Recognition Result", "Could not detect Medical Certificate data");
+            return;
         }
+        
+        ViewUtils.Alert(this, $"Medical Certificate Recognition Result", result.ToFormattedString(),
+            () =>
+            {
+                var resultPage = new DetectOnImageResultPage();
+                var source = ImageSource.FromStream(() => result.CroppedImage.ToPlatformImage().AsStream());
+                resultPage.NavigateData(source);
+                Navigation.PushAsync(resultPage);
+            });
+    }
+
+    private async Task CreditCardDetectorClicked()
+    {
+        var image = await ImagePicker.PickImageAsync();
+
+        var configuration = new CreditCardScannerConfiguration();
+        var result = await Detector.CreditCard.DetectCreditCardFromImageAsync(image, configuration: configuration);
+        if (result == null)
+        {
+            ViewUtils.Alert(this, "MRZ Scanner result", "Could not detect MRZ data");
+            return;
+        }
+        ViewUtils.Alert(this, "MRZ Scanner result", SdkUtils.GenericDocumentToString(result.CreditCard));
     }
 }

@@ -3,24 +3,19 @@ using ReadyToUseUI.Maui.SubViews.Cells;
 using ReadyToUseUI.Maui.Utils;
 using static ScanbotSDK.MAUI.ScanbotSDKMain;
 using ScanbotSDK.MAUI;
-using ScanbotSDK.MAUI.Common;
 using ScanbotSDK.MAUI.Document;
-using ScanbotSDK.MAUI.Document.Legacy;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using ReadyToUseUI.Maui.SubViews;
 
 namespace ReadyToUseUI.Maui.Pages
 {
-    public class ScannedDocumentsPage : ContentPage, INotifyPropertyChanged
+    public class ScannedDocumentsPage : ContentPage
     {
-        private const string PDF = "PDF", OCR = "Perform OCR", SandwichPDF = "Sandwiched PDF", TIFF = "TIFF (1-bit, B&W)";
-        private Grid pageGridView;
-        private ListView resultList;
-        private BottomActionBar bottomBar;
-        private SBLoader loader;
+        private const string Pdf = "PDF", Ocr = "Perform OCR", SandwichPdf = "Sandwiched PDF", Tiff = "TIFF (1-bit, B&W)";
+        private readonly Grid _pageGridView;
+        private readonly ListView _resultList;
+        private readonly SBLoader _loader;
 
-        private ScannedDocument document;
+        private ScannedDocument _document;
 
         private bool _isLoading;
         public bool IsLoading
@@ -29,32 +24,32 @@ namespace ReadyToUseUI.Maui.Pages
             set
             {
                 _isLoading = value;
-                loader.IsBusy = value;
-                this.OnPropertyChanged(nameof(IsLoading));
+                _loader.IsBusy = value;
+                OnPropertyChanged(nameof(IsLoading));
             }
         }
 
         private struct TempLoader : IDisposable
         {
-            private ScannedDocumentsPage page;
+            private readonly ScannedDocumentsPage _page;
             public TempLoader(ScannedDocumentsPage page)
             {
-                this.page = page;
+                _page = page;
                 page.IsLoading = true;
             }
 
             public void Dispose()
             {
-                page.IsLoading = false;
+                _page.IsLoading = false;
             }
         }
 
         public ScannedDocumentsPage(ScannedDocument document)
         {
-            this.document = document;
+            this._document = document;
             Title = "Document";
             BackgroundColor = Colors.White;
-            resultList = new ListView
+            _resultList = new ListView
             {
                 VerticalOptions = LayoutOptions.Start,
                 HorizontalOptions = LayoutOptions.Fill,
@@ -65,14 +60,14 @@ namespace ReadyToUseUI.Maui.Pages
                 ItemsSource = document.Pages
             };
 
-            bottomBar = new BottomActionBar(isDetailPage: false);
+            var bottomBar = new BottomActionBar(isDetailPage: false);
             bottomBar.VerticalOptions = LayoutOptions.End;
 
-            pageGridView = new Grid
+            _pageGridView = new Grid
             {
                 VerticalOptions = LayoutOptions.Fill,
                 HorizontalOptions = LayoutOptions.Fill,
-                Children = { resultList, bottomBar },
+                Children = { _resultList, bottomBar },
                 RowDefinitions = new RowDefinitionCollection
                 {
                     new RowDefinition(GridLength.Star),
@@ -80,17 +75,17 @@ namespace ReadyToUseUI.Maui.Pages
                 }
             };
 
-            pageGridView.SetRow(resultList, 0);
-            pageGridView.SetRow(bottomBar, 1);
+            _pageGridView.SetRow(_resultList, 0);
+            _pageGridView.SetRow(bottomBar, 1);
 
-            loader = new SBLoader
+            _loader = new SBLoader
             {
                 IsVisible = false
             };
 
             Content = new Grid
             {
-                Children = { pageGridView, loader },
+                Children = { _pageGridView, _loader },
                 VerticalOptions = LayoutOptions.Fill,
                 HorizontalOptions = LayoutOptions.Fill
             };
@@ -100,38 +95,38 @@ namespace ReadyToUseUI.Maui.Pages
             bottomBar.AddTappedEvent(bottomBar.DeleteButton, OnDeleteButtonTapped);
             bottomBar.AddTappedEvent(bottomBar.DeleteAllButton, OnDeleteAllButtonTapped);
 
-            resultList.ItemTapped += OnItemClick;
+            _resultList.ItemTapped += OnItemClick;
         }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            resultList.ItemsSource = document.Pages;
+            _resultList.ItemsSource = _document.Pages;
         }
 
         private void OnItemClick(object sender, ItemTappedEventArgs e)
         {
-            if (e.Item is ScannedDocument.Page selectedPage && selectedPage != null)
+            if (e.Item != null && e.Item is ScannedDocument.Page selectedPage)
             {
-                Navigation.PushAsync(new ScannedDocumentDetailPage(document, selectedPage));
+                Navigation.PushAsync(new ScannedDocumentDetailPage(_document, selectedPage));
             }
         }
 
         async void OnAddButtonTapped(object sender, EventArgs e)
         {
-            if (!SDKUtils.CheckLicense(this)) { return; }
+            if (!SdkUtils.CheckLicense(this)) { return; }
 
             try
             {
                 using var loader = new TempLoader(this);
 
-                document = await RTU.DocumentScanner.LaunchAsync(new DocumentScanningFlow
+                _document = await Rtu.DocumentScanner.LaunchAsync(new DocumentScanningFlow
                 {
-                    DocumentUuid = document.Uuid.ToString()
+                    DocumentUuid = _document.Uuid.ToString()
                 });
 
-                resultList.ItemsSource = document.Pages;
-                pageGridView.PlatformSizeChanged();
+                _resultList.ItemsSource = _document.Pages;
+                _pageGridView.PlatformSizeChanged();
             }
             // if the cancel button is clicked
             catch (TaskCanceledException)
@@ -142,9 +137,9 @@ namespace ReadyToUseUI.Maui.Pages
 
         async void OnSaveButtonTapped(object sender, EventArgs e)
         {
-            if (!SDKUtils.CheckLicense(this)) { return; }
+            if (!SdkUtils.CheckLicense(this)) { return; }
 
-            var parameters = new string[] { PDF, OCR, SandwichPDF, TIFF };
+            var parameters = new [] { Pdf, Ocr, SandwichPdf, Tiff };
             string action = await DisplayActionSheet("Save Image as", "Cancel", null, parameters);
 
             if (action == null || action.Equals("Cancel"))
@@ -157,16 +152,16 @@ namespace ReadyToUseUI.Maui.Pages
             {
                 switch (action)
                 {
-                    case PDF:
+                    case Pdf:
                         await GeneratePdfAsync();
                         break;
-                    case OCR:
+                    case Ocr:
                         await PerformOcrAsync();
                         break;
-                    case SandwichPDF:
+                    case SandwichPdf:
                         await GenerateSandwichPdfAsync();
                         break;
-                    case TIFF:
+                    case Tiff:
                         await GenerateTiffAsync();
                         break;
                     default:
@@ -181,22 +176,22 @@ namespace ReadyToUseUI.Maui.Pages
 
         private async Task GeneratePdfAsync()
         {
-            var fileUri = await document.CreatePdfAsync(new PDFConfiguration
+            var fileUri = await _document.CreatePdfAsync(new PdfConfiguration
             {
-                PageOrientation = PDFPageOrientation.Auto,
-                PageSize = PDFPageSize.A4,
-                PdfAttributes = new PDFAttributes
+                PageDirection = PageDirection.Auto,
+                PageSize = PageSize.A4,
+                Attributes = new PdfAttributes
                 {
                     Author = "Scanbot User",
                     Creator = "ScanbotSDK",
                     Title = "ScanbotSDK PDF",
                     Subject = "Generating a normal PDF",
-                    Keywords = new[] { "x-platform", "ios", "android" },
+                    Keywords = "x-platform, ios, android"
                 },
                 Dpi = 72,
                 JpegQuality = 80,
-                PageFitMode = PDFPageFitMode.FitIn,
-                Resample = false
+                PageFit = PageFit.FitIn,
+                ResamplingMethod = ResamplingMethod.None
             });
             ViewUtils.Alert(this, "Success: ", "Wrote pdf to: " + fileUri.AbsolutePath);
         }
@@ -210,9 +205,9 @@ namespace ReadyToUseUI.Maui.Pages
             // var ocrConfig = OcrConfig.Tesseract(withLanguageString: new List<string>{ "en", "de" });
 
             // Using the default OCR option
-            var ocrConfig = OcrConfig.ScanbotOCR;
+            var ocrConfig = ScanbotSDK.MAUI.Ocr.OcrConfig.ScanbotOcr;
 
-            var pages = document.Pages.Select(p => new FileImageSource { File = p.OriginalImageUri.LocalPath });
+            var pages = _document.Pages.Select(p => new FileImageSource { File = p.OriginalImageUri.LocalPath });
             var result = await CommonOperations.PerformOcrAsync(pages, configuration: ocrConfig);
 
             // You can access the results with: result.Pages
@@ -228,26 +223,26 @@ namespace ReadyToUseUI.Maui.Pages
             // var ocrConfig = OcrConfig.Tesseract(withLanguageString: new List<string>{ "en", "de" });
 
             // Using the default OCR option
-            var ocrConfig = OcrConfig.ScanbotOCR;
+            var ocrConfig = ScanbotSDK.MAUI.Ocr.OcrConfig.ScanbotOcr;
 
             var result = await CommonOperations.CreateSandwichPdfAsync(
-                document.Pages.Select(p => new FileImageSource { File = p.OriginalImageUri.LocalPath }),
-                new PDFConfiguration
+                _document.Pages.Select(p => new FileImageSource { File = p.OriginalImageUri.LocalPath }),
+                new PdfConfiguration
                 {
-                    PageOrientation = PDFPageOrientation.Auto,
-                    PageSize = PDFPageSize.A4,
-                    PdfAttributes = new PDFAttributes
+                    PageDirection = PageDirection.Auto,
+                    PageSize = PageSize.A4,
+                    Attributes = new PdfAttributes
                     {
                         Author = "Scanbot User",
                         Creator = "ScanbotSDK",
                         Title = "ScanbotSDK PDF",
                         Subject = "Generating a sandwiched PDF",
-                        Keywords = new[] { "x-platform", "ios", "android" },
+                        Keywords = "x-platform, ios, android"
                     },
                     Dpi = 72,
                     JpegQuality = 80,
-                    PageFitMode = PDFPageFitMode.FitIn,
-                    Resample = false
+                    PageFit = PageFit.FitIn,
+                    ResamplingMethod = ResamplingMethod.None
                 }, ocrConfig);
 
             ViewUtils.Alert(this, "PDF with OCR layer stored: ", result.AbsolutePath);
@@ -255,14 +250,15 @@ namespace ReadyToUseUI.Maui.Pages
 
         private async Task GenerateTiffAsync()
         {
-            var fileUri = await document.CreateTiffAsync(
-                                 new TiffOptions(ParametricFilter.ScanbotBinarization(OutputMode.Binary))
-                                 {
-                                     Compression = TiffCompressionOptions.CompressionCcittT6,
-                                     Dpi = 300,
-                                     OneBitEncoded = true
-                                 }
-                             );
+            var fileUri = await _document.CreateTiffAsync(new TiffGeneratorParameters
+                {
+                    Compression = CompressionMode.CcittT6,
+                    Dpi = 72,
+                    JpegQuality = 80,
+                    BinarizationFilter = ParametricFilter.ScanbotBinarization(OutputMode.Binary),
+                    ZipCompressionLevel = 6,
+                }
+            );
             ViewUtils.Alert(this, "Success: ", "Wrote tiff to: " + fileUri.AbsolutePath);
         }
 
@@ -288,7 +284,7 @@ namespace ReadyToUseUI.Maui.Pages
             var result = await this.DisplayAlert("Attention!", message, "Yes", "No");
             if (result)
             {
-                await document.DeleteAsync();
+                await _document.DeleteAsync();
                 await Navigation.PushAsync(new HomePage());
             }
         }

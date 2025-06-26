@@ -1,22 +1,19 @@
-﻿using System.ComponentModel;
-using ScanbotSDK.MAUI;
-using ScanbotSDK.MAUI.Document;
-using ScanbotSDK.MAUI.Document.Legacy;
+﻿using ScanbotSDK.MAUI.Document;
 using ReadyToUseUI.Maui.Utils;
 using ReadyToUseUI.Maui.SubViews.ActionBar;
 using ReadyToUseUI.Maui.SubViews;
 using static ScanbotSDK.MAUI.ScanbotSDKMain;
+using DocumentQualityAnalyzerConfiguration = ScanbotSDK.MAUI.DocumentQualityAnalyzerConfiguration;
 
 namespace ReadyToUseUI.Maui.Pages
 {
     public class ScannedDocumentDetailPage : ContentPage
     {
-        private Image documentImage;
-        private BottomActionBar bottomBar;
-        private SBLoader loader;
+        private readonly Image _documentImage;
+        private readonly SBLoader _loader;
 
-        private ScannedDocument selectedDocument;
-        private ScannedDocument.Page selectedPage;
+        private readonly ScannedDocument _selectedDocument;
+        private ScannedDocument.Page _selectedPage;
         
         private bool _isLoading;
         public bool IsLoading
@@ -25,35 +22,35 @@ namespace ReadyToUseUI.Maui.Pages
             set
             {
                 _isLoading = value;
-                loader.IsBusy = _isLoading;
+                _loader.IsBusy = _isLoading;
                 this.OnPropertyChanged(nameof(IsLoading));
             }
         }
         
         public ScannedDocumentDetailPage(ScannedDocument selectedDocument, ScannedDocument.Page selectedPage)
         {
-            this.selectedDocument = selectedDocument;
-            this.selectedPage = selectedPage;
+            this._selectedDocument = selectedDocument;
+            this._selectedPage = selectedPage;
 
-            documentImage = new Image
+            _documentImage = new Image
             {
                 HorizontalOptions = LayoutOptions.Fill,
                 BackgroundColor = Colors.LightGray,
                 Aspect = Aspect.AspectFit,
             };
-            documentImage.SizeChanged += delegate
+            _documentImage.SizeChanged += delegate
             {
                 // Don't allow images larger than 2/3 of the screen
-                documentImage.HeightRequest = Content.Height / 3 * 2;
+                _documentImage.HeightRequest = Content.Height / 3 * 2;
             };
 
-            bottomBar = new BottomActionBar(isDetailPage: true);
+            var bottomBar = new BottomActionBar(isDetailPage: true);
 
             var gridView = new Grid
             {
                 VerticalOptions = LayoutOptions.Fill,
                 HorizontalOptions = LayoutOptions.Fill,
-                Children = { documentImage, bottomBar },
+                Children = { _documentImage, bottomBar },
                 RowDefinitions = new RowDefinitionCollection
                 {
                     new RowDefinition(GridLength.Star),
@@ -61,17 +58,17 @@ namespace ReadyToUseUI.Maui.Pages
                 }
             };
 
-            gridView.SetRow(documentImage, 0);
+            gridView.SetRow(_documentImage, 0);
             gridView.SetRow(bottomBar, 1);
 
-            loader = new SBLoader
+            _loader = new SBLoader
             {
                 IsVisible = false
             };
             
             Content = new Grid
             {
-                Children = { gridView, loader },
+                Children = { gridView, _loader },
                 VerticalOptions = LayoutOptions.Fill,
                 HorizontalOptions = LayoutOptions.Fill
             };
@@ -86,22 +83,22 @@ namespace ReadyToUseUI.Maui.Pages
         {
             base.OnAppearing();
 
-            documentImage.Source = selectedPage.DocumentImagePreviewUri.ToImageSource();
+            _documentImage.Source = _selectedPage.DocumentImagePreviewUri.ToImageSource();
         }
 
         private async void OnCropButtonTapped(object sender, EventArgs e)
         {
-            if (!SDKUtils.CheckLicense(this)) { return; }
+            if (!SdkUtils.CheckLicense(this)) { return; }
 
             try
             {
-                var result = await RTU.CroppingScreen.LaunchAsync(
+                var result = await Rtu.CroppingScreen.LaunchAsync(
                     new CroppingConfiguration() 
                     {
-                        DocumentUuid = selectedDocument.Uuid.ToString(),
-                        PageUuid = selectedPage.Uuid.ToString()
+                        DocumentUuid = _selectedDocument.Uuid.ToString(),
+                        PageUuid = _selectedPage.Uuid.ToString()
                     });
-                documentImage.Source = selectedPage.DocumentImagePreviewUri.ToImageSource();
+                _documentImage.Source = _selectedPage.DocumentImagePreviewUri.ToImageSource();
             }
             catch (TaskCanceledException)
             {
@@ -112,18 +109,18 @@ namespace ReadyToUseUI.Maui.Pages
 
         private async void OnFilterButtonTapped(object sender, EventArgs e)
         {
-            if (!SDKUtils.CheckLicense(this))
+            if (!SdkUtils.CheckLicense(this))
             {
                 return;
             }
 
             IsLoading = true;
             var filterPage = new FiltersPage();
-            filterPage.NavigateData(async (filters) =>
+            filterPage.NavigateData(async filters =>
             {
-                documentImage.Source = null;
-                selectedPage = await selectedPage.ModifyPageAsync(filters: filters);
-                documentImage.Source = selectedPage.DocumentImagePreviewUri.ToImageSource();
+                _documentImage.Source = null;
+                _selectedPage = await _selectedPage.ModifyPageAsync(filters: filters);
+                _documentImage.Source = _selectedPage.DocumentImagePreviewUri.ToImageSource();
             });            
             await Navigation.PushAsync(filterPage);
             IsLoading = false;
@@ -131,12 +128,12 @@ namespace ReadyToUseUI.Maui.Pages
 
         private async void OnAnalyzeQualityTapped(object sender, EventArgs e)
         {
-            if (!SDKUtils.CheckLicense(this)) { return; }
+            if (!SdkUtils.CheckLicense(this)) { return; }
             IsLoading = true;
-            DocumentQuality quality = await CommonOperations.DetectDocumentQualityAsync(selectedPage.DocumentImage, new DocumentQualityAnalyzerConfiguration
+            var quality = await CommonOperations.DetectDocumentQualityAsync(_selectedPage.DocumentImage, new DocumentQualityAnalyzerConfiguration
             {
-                ImageSizeLimit = 2500,
-                MinimumNumberOfSymbols = 20
+                MaxImageSize = 2500,
+                MinEstimatedNumberOfSymbolsForDocument = 20
             });
             
             IsLoading = false;
@@ -149,8 +146,8 @@ namespace ReadyToUseUI.Maui.Pages
             var result = await this.DisplayAlert("Attention!", message, "Yes", "No");
             if (result)
             {
-                await selectedDocument.RemovePageAsync(selectedPage);
-                await Navigation.PushAsync(new ScannedDocumentsPage(selectedDocument));
+                await _selectedDocument.RemovePageAsync(_selectedPage);
+                await Navigation.PushAsync(new ScannedDocumentsPage(_selectedDocument));
             }
         }
     }

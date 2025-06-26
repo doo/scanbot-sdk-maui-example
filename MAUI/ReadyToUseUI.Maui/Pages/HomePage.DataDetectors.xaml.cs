@@ -1,180 +1,128 @@
-﻿using System.Text;
-using ReadyToUseUI.Maui.Utils;
+﻿using ReadyToUseUI.Maui.Utils;
 using ScanbotSDK.MAUI;
-using ScanbotSDK.MAUI.Check;
-using ScanbotSDK.MAUI.Common;
-using ScanbotSDK.MAUI.EHIC;
-using ScanbotSDK.MAUI.GenericDocument;
-using ScanbotSDK.MAUI.LicensePlate;
+using ScanbotSDK.MAUI.CreditCard;
+using ScanbotSDK.MAUI.Ehic;
+using ScanbotSDK.MAUI.DocumentData;
 using ScanbotSDK.MAUI.MedicalCertificate;
 using ScanbotSDK.MAUI.MRZ;
-using ScanbotSDK.MAUI.TextData;
-using ScanbotSDK.MAUI.VIN;
+using ScanbotSDK.MAUI.textpattern;
 using static ScanbotSDK.MAUI.ScanbotSDKMain;
+using VinScannerConfiguration = ScanbotSDK.MAUI.Vin.VinScannerConfiguration;
 
-namespace ReadyToUseUI.Maui.Pages
+namespace ReadyToUseUI.Maui.Pages;
+public partial class HomePage
 {
-    public partial class HomePage
+    private async Task MrzScannerClicked()
     {
-        private async Task MRZScannerClicked()
+        var configuration = new MrzScannerScreenConfiguration();
+
+        var result = await Rtu.MrzScanner.LaunchAsync(configuration);
+        if (result.Status == OperationResult.Ok)
         {
-            var configuration = new MrzScannerConfiguration
-            {
-                CancelButtonTitle = "Done",
-                TopBarButtonsColor = Colors.Green
-            };
-
-            var result = await RTU.MrzScanner.LaunchMrzScannerAsync(configuration);
-            if (result.Status == OperationResult.Ok)
-            {
-                var message = SDKUtils.ParseMRZResult(result);
-                ViewUtils.Alert(this, "MRZ Scanner result", message);
-            }
+            var message = SdkUtils.ParseMrzResult(result.Result);
+            ViewUtils.Alert(this, "MRZ Scanner result", message);
         }
+    }
 
-        private async Task EHICScannerClicked()
+    private async Task EhicScannerClicked()
+    {
+        var configuration = new EhicScannerConfiguration
         {
-            var configuration = new HealthInsuranceCardConfiguration
-            {
-                CancelButtonTitle = "Done",
-                TopBarButtonsColor = Colors.Green
-            };
+            CancelButtonTitle = "Done",
+            TopBarButtonsColor = Colors.Green
+        };
 
-            var result = await RTU.EhicScanner.LaunchHealthInsuranceCardScannerAsync(configuration);
-            if (result.Status == OperationResult.Ok)
-            {
-                var message = SDKUtils.ToAlertMessage(result);
-                ViewUtils.Alert(this, "EHIC Scanner result", message);
-            }
-        }
-
-        private async Task GenericDocumentRecognizerClicked()
+        var result = await Rtu.EhicScanner.LaunchAsync(configuration);
+        if (result.Status == OperationResult.Ok)
         {
-            var configuration = new GenericDocumentRecognizerConfiguration
-            {
-                AcceptedDocumentTypes = GenericDocumentFormat.AllDocumentTypes
-            };
-            var result = await RTU.GenericDocumentRecognizer.LaunchGenericDocumentRecognizerAsync(configuration);
-            if (result.Status == OperationResult.Ok)
-            {
-                var message = SDKUtils.ToAlertMessage(result);
-                ViewUtils.Alert(this, "GDR Result", message);
-            }
+            var message = SdkUtils.ToAlertMessage(result.Result);
+            ViewUtils.Alert(this, "EHIC Scanner result", message);
         }
+    }
 
-        private async Task CheckRecognizerClicked()
+    private async Task DocumentDataScannerClicked()
+    {
+        var configuration = new ScanbotSDK.MAUI.DocumentData.DocumentDataExtractorConfiguration
         {
-            var configuration = new CheckRecognizerConfiguration
-            {
-                AcceptedCheckStandards = new List<CheckStandard>() 
-                {
-                    CheckStandard.AUS,
-                    CheckStandard.CAN,
-                    CheckStandard.FRA,
-                    CheckStandard.IND,
-                    CheckStandard.ISR,
-                    CheckStandard.KWT,
-                    CheckStandard.UAE,
-                    CheckStandard.USA
-                }
-            };
-
-            var result = await RTU.CheckRecognizer.LaunchCheckRecognizerAsync(configuration);
-
-            if (result.Status == OperationResult.Ok)
-            {
-                var message = SDKUtils.ToAlertMessage(result);
-                ViewUtils.Alert(this, "Check Result", message);
-            }
-        }
-
-        private async Task TextDataRecognizerClicked()
+            AcceptedDocumentTypes = DocumentDataFormat.AllDocumentTypes
+        };
+            
+        var result = await Rtu.DocumentDataExtractor.LaunchAsync(configuration);
+        if (result.Status == OperationResult.Ok)
         {
-            // The AspectRatio is a required parameter for the Text Data Scanner.
-            var aspectRatio = new AspectRatio(5, 1);
-            var configuration = new TextDataScannerConfiguration(new TextDataScannerStep("", "", 0, aspectRatio))
-            {
-                // specify custom colors or settings here
-            };
-
-            var result = await RTU.TextDataScanner.LaunchTextDataScannerAsync(configuration);
-
-            if (result.Status == OperationResult.Ok)
-            {
-                ViewUtils.Alert(this, $"Text Data Result", result.Text);
-            }
+            var message = SdkUtils.ToAlertMessage(result.Result);
+            ViewUtils.Alert(this, "GDR Result", message);
         }
+    }
 
-        private async Task VinRecognizerClicked()
+    private async Task CheckScannerClicked()
+    {
+        var configuration = new ScanbotSDK.MAUI.Check.CheckScannerConfiguration
         {
-            var configuration = new VINScannerConfiguration
-            {
-                // specify custom colors or settings here
-            };
+            AcceptedCheckStandards =
+            [
+                CheckStandard.Aus,
+                CheckStandard.Can,
+                CheckStandard.Fra,
+                CheckStandard.Ind,
+                CheckStandard.Isr,
+                CheckStandard.Kwt,
+                CheckStandard.Uae,
+                CheckStandard.Usa
+            ]
+        };
 
-            var result = await RTU.VinScanner.LaunchVINScannerAsync(configuration);
-
-            if (result.Status == OperationResult.Ok)
-            {
-                ViewUtils.Alert(this, $"Vin Scanner Result", result.Text);
-            }
-        }
-
-        private async Task LicensePlateRecognizerClicked()
+        var result = await Rtu.CheckScanner.LaunchAsync(configuration);
+        if (result.Status == OperationResult.Ok)
         {
-            var configuration = new LicensePlateScannerConfiguration
-            {
-
-            };
-
-            var result = await RTU.LicensePlateScanner.LaunchLicensePlateScannerAsync(configuration);
-
-            if (result.Status == OperationResult.Ok)
-            {
-                ViewUtils.Alert(this, $"License Plate Result", result.Text);
-            }
+            var message = SdkUtils.ToAlertMessage(result.Result);
+            ViewUtils.Alert(this, "Check Result", message);
         }
+    }
+
+    private async Task TextPatternScannerClicked()
+    {
+        var configuration = new TextPatternScannerScreenConfiguration();
+        var result = await Rtu.TextPatternScanner.LaunchAsync(configuration);
+
+        if (result.Status == OperationResult.Ok)
+        {
+            ViewUtils.Alert(this, $"Text Data Result", result.Result.RawText);
+        }
+    }
+
+    private async Task VinScannerClicked()
+    {
+        var configuration = new VinScannerConfiguration
+        {
+            // specify custom colors or settings here
+        };
+
+        var result = await Rtu.VinScanner.LaunchAsync(configuration);
+
+        if (result.Status == OperationResult.Ok)
+        {
+            ViewUtils.Alert(this, $"Vin Scanner Result", result.Result.TextResult.RawText);
+        }
+    }
         
-        private async Task MedicalCertificateRecognizerClicked()
+    private async Task MedicalCertificateRecognizerClicked()
+    {
+        var configuration = new MedicalCertificateScannerConfiguration();
+        var result = await Rtu.MedicalCertificateScanner.LaunchAsync(configuration);
+        if (result.Status == OperationResult.Ok)
         {
-            var configuration = new MedicalCertificateRecognizerConfiguration
-            {
-
-            };
-            
-            var result = await RTU.MedicalCertificateScanner.LaunchMedicalCertificateScannerAsync(configuration);
-            if (result.Status == OperationResult.Ok)
-            {
-                ViewUtils.Alert(this, $"Medical Certificate Recognition Result", FormatMedicalCertificateRecognitionResult(result));
-            }
+            ViewUtils.Alert(this, $"Medical Certificate Recognition Result", result.Result.ToFormattedString());
         }
+    }
 
-        internal string FormatMedicalCertificateRecognitionResult(MedicalCertificateResult result)
+    private async Task CreditCardScannerClicked()
+    {
+        var configuration = new CreditCardScannerScreenConfiguration();
+        var result = await Rtu.CreditCard.LaunchAsync(configuration);
+        if (result.Status == OperationResult.Ok)
         {
-            StringBuilder stringBuilder = new StringBuilder();
-            
-            stringBuilder.Append("Type: ").Append(result.Checkboxes?.FirstOrDefault(medicalCertificateInfoBox => medicalCertificateInfoBox.Type == MedicalCertificateCheckboxType.InitialCertificate) != null ? "Initial" :
-                result.Checkboxes?.FirstOrDefault(medicalCertificateInfoBox => medicalCertificateInfoBox.Type == MedicalCertificateCheckboxType.RenewedCertificate) != null ? "Renewed" : "Unknown").Append("\n");
-            
-            stringBuilder.Append("Work Accident: ").Append(result.Checkboxes
-                ?.FirstOrDefault(medicalCertificateInfoBox => medicalCertificateInfoBox.Type == MedicalCertificateCheckboxType.WorkAccident) != null ? "Yes" : "No").Append("\n");
-            
-            stringBuilder.Append("Accident Consultant: ").Append(result.Checkboxes
-                ?.FirstOrDefault(medicalCertificateInfoBox => medicalCertificateInfoBox.Type == MedicalCertificateCheckboxType.AssignedToAccidentInsuranceDoctor)
-                != null ? "Yes" : "No").Append("\n");
-            
-            stringBuilder.Append("Start Date: ").Append(result.Dates?.FirstOrDefault(dateRecord => dateRecord.Type == MedicalCertificateDateType.IncapableOfWorkSince)?.DateString).Append("\n");
-            
-            stringBuilder.Append("End Date: ").Append(result.Dates?.FirstOrDefault(dateRecord => dateRecord.Type ==  MedicalCertificateDateType.IncapableOfWorkUntil)?.DateString).Append("\n");
-            
-            stringBuilder.Append("Issue Date: ").Append(result.Dates?.FirstOrDefault(dateRecord => dateRecord.Type == MedicalCertificateDateType.DiagnosedOn)?.DateString).Append("\n");
-            
-            stringBuilder.Append($"Form type: {result.Type}").Append("\n");
-            
-            stringBuilder.Append(string.Join("\n", result.PatientFields.ToList().ConvertAll(field => $"{field.Type}: {field.Value}")));
-            
-            return stringBuilder?.ToString();
+            ViewUtils.Alert(this, $"Credit Card Scanner Result", SdkUtils.GenericDocumentToString(result.Result.CreditCard));
         }
     }
 }
-

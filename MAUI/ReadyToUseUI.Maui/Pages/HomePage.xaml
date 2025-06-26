@@ -11,7 +11,7 @@
             <StackLayout>
                 <CollectionView
                     x:Name="FeaturesCollectionView"
-                    ItemsSource="{Binding SDKFeatures}"
+                    ItemsSource="{Binding SdkFeatures}"
                     SelectionChanged="SdkFeatureSelected"
                     SelectionMode="Single"
                     VerticalScrollBarVisibility="Default">

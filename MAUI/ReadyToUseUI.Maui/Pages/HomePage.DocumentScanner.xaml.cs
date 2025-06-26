@@ -46,7 +46,7 @@ namespace ReadyToUseUI.Maui.Pages
             configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
 
 
-            var result = await RTU.DocumentScanner.LaunchAsync(configuration);
+            var result = await Rtu.DocumentScanner.LaunchAsync(configuration);
 
             await Navigation.PushAsync(new ScannedDocumentsPage(result));
         }
@@ -81,7 +81,7 @@ namespace ReadyToUseUI.Maui.Pages
             configuration.Screens.Camera.UserGuidance.StatesTitles.TooSmall = "Document too small";
             configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
 
-            var result = await RTU.DocumentScanner.LaunchAsync(configuration);
+            var result = await Rtu.DocumentScanner.LaunchAsync(configuration);
 
             await Navigation.PushAsync(new ScannedDocumentsPage(result));
         }
@@ -137,7 +137,7 @@ namespace ReadyToUseUI.Maui.Pages
             configuration.Screens.Cropping.BottomBar.RotateButton.Visible = true;
             configuration.Screens.Cropping.BottomBar.DetectButton.Visible = true;
 
-            var result = await RTU.DocumentScanner.LaunchAsync(configuration);
+            var result = await Rtu.DocumentScanner.LaunchAsync(configuration);
 
             await Navigation.PushAsync(new ScannedDocumentsPage(result));
         }
@@ -155,7 +155,7 @@ namespace ReadyToUseUI.Maui.Pages
                 var page = document.AddPage(image);
 
                 // Run document detection on it
-                var result = await RTU.CroppingScreen.LaunchAsync(
+                var result = await Rtu.CroppingScreen.LaunchAsync(
                     new CroppingConfiguration() 
                     {
                         DocumentUuid = document.Uuid.ToString(),

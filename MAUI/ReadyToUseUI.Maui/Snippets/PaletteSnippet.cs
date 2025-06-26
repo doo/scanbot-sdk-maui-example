@@ -34,7 +34,7 @@ public static partial class Snippets
 
 		try
 		{
-			var document = await ScanbotSDKMain.RTU.DocumentScanner.LaunchAsync(configuration);
+			var document = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
 			// Handle the document.
 		}
 		catch (TaskCanceledException)

@@ -1,74 +1,64 @@
 ﻿using System.Text;
-using ReadyToUseUI.Maui.Pages.DocumentFilters;
 using ScanbotSDK.MAUI;
-using ScanbotSDK.MAUI.Check;
 using ScanbotSDK.MAUI.Common;
-using ScanbotSDK.MAUI.EHIC;
-using ScanbotSDK.MAUI.GenericDocument;
 using ScanbotSDK.MAUI.MRZ;
-using BarcodeItem = ScanbotSDK.MAUI.Barcode.BarcodeItem;
 
-namespace ReadyToUseUI.Maui.Utils
+namespace ReadyToUseUI.Maui.Utils;
+
+public static class SdkUtils
 {
-    public static class SDKUtils
+    public static bool CheckLicense(Microsoft.Maui.Controls.Page context)
     {
-        public static bool CheckLicense(Page context)
+        if (!ScanbotSDKMain.IsLicenseValid)
         {
-            if (!ScanbotSDKMain.IsLicenseValid)
-            {
-                ViewUtils.Alert(context, "Oops!", "License expired or invalid");
-            }
-            return ScanbotSDKMain.IsLicenseValid;
+            ViewUtils.Alert(context, "Oops!", "License expired or invalid");
         }
+        return ScanbotSDKMain.IsLicenseValid;
+    }
 
-        public static string ParseBarcodes(List<BarcodeItem> barcodes)
+    public static string ParseMrzResult(MrzScannerUiResult result)
+    {
+        var builder = new StringBuilder();
+        builder.AppendLine($"DocumentType: {result.MrzDocument.Type}");
+        foreach (var field in result.MrzDocument.Fields)
         {
-            var builder = new StringBuilder();
-
-            foreach (var code in barcodes)
-            {
-                builder.AppendLine($"{code}: {code.Type}");
-            }
-
-            return builder.ToString();
+            builder.AppendLine($"{field.Type.Name}: {field.Value.Text} ({field.Value.Confidence:F2})");
         }
+        return builder.ToString();
+    }
 
-        public static string ParseMRZResult(MrzScannerResult result)
+    public static string ToAlertMessage(EuropeanHealthInsuranceCardRecognitionResult result)
+    {
+        var builder = new StringBuilder();
+        builder.AppendLine($"DocumentType: European Health insurance card");
+        foreach (var field in result.Fields)
         {
-            var builder = new StringBuilder();
-            builder.AppendLine($"DocumentType: {result.DocumentType}");
-            foreach (var field in result.Document.Fields)
-            {
-                builder.AppendLine($"{field.Name}: {field.Value.Text} ({field.Value.Confidence:F2})");
-            }
-            return builder.ToString();
+            builder.AppendLine($"{field.Type}: {field.Value} ({field.Confidence:F2})");
         }
+        return builder.ToString();
+    }
 
-        public static string ToAlertMessage(HealthInsuranceCardScannerResult result)
+    public static string ToAlertMessage(DocumentDataExtractionResult[] result) {
+        return GenericDocumentToString(result.First().Document);
+    }
+
+    public static string ToAlertMessage(CheckScanningResult result)
+    {
+        return GenericDocumentToString(result.Check);
+    }
+
+    internal static string GenericDocumentToString(GenericDocument document)
+    {
+        var formattedString = string.Empty;
+        if (document?.Fields == null) return formattedString;
+		
+        foreach (var field in document.Fields)
         {
-            var builder = new StringBuilder();
-            builder.AppendLine($"DocumentType: European Health insurance card");
-            foreach (var field in result.Fields)
-            {
-                builder.AppendLine($"{field.Type}: {field.Value} ({field.Confidence:F2})");
-            }
-            return builder.ToString();
+            if (string.IsNullOrEmpty(field?.Type?.Name))
+                continue;
+            formattedString += $"{field.Type.Name}: {field.Value?.Text ?? "-"}\n";
         }
 
-        public static string ToAlertMessage(GenericDocumentRecognizerResult result) {
-            return GenericDocumentToString(result.Documents.First());
-        }
-
-        public static string ToAlertMessage(CheckRecognizerResult result)
-        {
-            return GenericDocumentToString(result.Document);
-        }
-
-        private static string GenericDocumentToString(ScanbotSDK.MAUI.Common.GenericDocument document)
-        {
-            return string.Join("\n", document.Fields
-                .Where((f) => f != null && f.Name != null && f.Name != null && f.Value.Text != null)
-                .Select((f) => string.Format("{0}: {1}", f.Name, f.Value.Text)));
-        }
+        return formattedString;
     }
 }

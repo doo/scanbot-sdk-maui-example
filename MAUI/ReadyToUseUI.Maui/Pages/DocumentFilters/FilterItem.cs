@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using ScanbotSDK.MAUI.DocumentFormats.Barcode;
 
 namespace ReadyToUseUI.Maui.Pages.DocumentFilters;
 
@@ -37,7 +36,7 @@ public class FilterItem : INotifyPropertyChanged
     private string _caption;
     private double _sliderValue;
     private List<string> _pickerItems;
-    private string _pickerSelectedValue { get; set; }
+    private string _pickerSelectedValue;
     private double _minValue;
     private double _maxValue;
     
