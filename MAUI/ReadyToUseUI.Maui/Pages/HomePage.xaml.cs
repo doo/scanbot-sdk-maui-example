@@ -46,6 +46,9 @@ public partial class HomePage : ContentPage
             new SdkFeature("Single Finder Document Scanning", SingleFinderDocumentScanningClicked),
             new SdkFeature("Multiple Document Scanning", MultipleDocumentScanningClicked),
             new SdkFeature("Import Import Image", ImportButtonClicked),
+            
+            new SdkFeature("DOCUMENT SCANNER V1"),
+            new SdkFeature("Scan V1 Document", ScanV1DocumentClicked),
 
             new SdkFeature("DATA DETECTORS"),
             
@@ -73,6 +76,15 @@ public partial class HomePage : ContentPage
 
         this.BindingContext = this;
         InitializeComponent();
+    }
+
+    private async Task ScanV1DocumentClicked()
+    {
+        var scanner = await ScanbotSDKMain.Rtu.Legacy.DocumentScanner.LaunchDocumentScannerAsync(new ScanbotSDK.MAUI.Document.RTU.v1.DocumentScannerConfiguration());
+        await Navigation.PushModalAsync(new DocumentPreviewPage
+        {
+            DocPreviewSource = scanner.Pages.First().DocumentPreview
+        });
     }
 
     /// Item Selected method invoked on the ListView item selection.
