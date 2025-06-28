@@ -13,7 +13,7 @@ public partial class HomePage
         var image = await ImagePicker.PickImageAsync();
 
         var configuration = new MrzScannerConfiguration();
-        var result = await Detector.Mrz.DetectMrzFromImageAsync(image, configuration: configuration);
+        var result = await Detector.Mrz.DetectOnImageAsync(image, configuration: configuration);
         if (result == null)
         {
             ViewUtils.Alert(this, "MRZ Scanner result", "Could not detect MRZ data");
@@ -27,7 +27,7 @@ public partial class HomePage
         var image = await ImagePicker.PickImageAsync();
 
         var configuration = new EuropeanHealthInsuranceCardRecognizerConfiguration();
-        var result = await Detector.Ehic.DetectEhicFromImageAsync(image, configuration: configuration);
+        var result = await Detector.Ehic.DetectOnImageAsync(image, configuration: configuration);
         if (result == null || result.Status == EuropeanHealthInsuranceCardRecognitionResult.RecognitionStatus.FailedDetection)
         {
             var status = result?.Status ?? EuropeanHealthInsuranceCardRecognitionResult.RecognitionStatus.FailedDetection;
@@ -58,7 +58,7 @@ public partial class HomePage
             //         GenericDocumentRootType.DeResidencePermitFront,
             //     }
         };
-        var result = await Detector.DocumentData.ExtractDocumentDataFromImageAsync(image, configuration);
+        var result = await Detector.DocumentData.DetectOnImageAsync(image, configuration);
         if (result == null)
         {
             ViewUtils.Alert(this, "GDR Result", "Could not detect GDR data");
@@ -72,7 +72,7 @@ public partial class HomePage
     private async Task CheckDetectorClicked()
     {
         var image = await ImagePicker.PickImageAsync();
-        var result = await Detector.Check.DetectCheckFromImageAsync(image, new CheckScannerConfiguration
+        var result = await Detector.Check.DetectOnImageAsync(image, new CheckScannerConfiguration
         {
             AcceptedCheckStandards =
             [
@@ -102,7 +102,7 @@ public partial class HomePage
         var image = await ImagePicker.PickImageAsync();
 
         var configuration = new MedicalCertificateScanningParameters();
-        var result = await Detector.MedicalCertificate.DetectMedicalCertificateFromImageAsync(image, configuration);
+        var result = await Detector.MedicalCertificate.DetectOnImageAsync(image, configuration);
         if (!result.ScanningSuccessful || result.DocumentDetectionResult.Status != DocumentDetectionStatus.Ok)
         {
             ViewUtils.Alert(this, "Medical Certificate Recognition Result", "Could not detect Medical Certificate data");
@@ -124,7 +124,7 @@ public partial class HomePage
         var image = await ImagePicker.PickImageAsync();
 
         var configuration = new CreditCardScannerConfiguration();
-        var result = await Detector.CreditCard.DetectCreditCardFromImageAsync(image, configuration: configuration);
+        var result = await Detector.CreditCard.DetectOnImageAsync(image, configuration: configuration);
         if (result == null)
         {
             ViewUtils.Alert(this, "MRZ Scanner result", "Could not detect MRZ data");
