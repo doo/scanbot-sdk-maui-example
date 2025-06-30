@@ -4,9 +4,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ScanbotSdkExample.Maui.ClassicDocumentScannerPage"
              xmlns:classicView="clr-namespace:ScanbotSDK.MAUI.Document.ClassicComponent;assembly=DocumentSDK.MAUI"
-             xmlns:customButton="clr-namespace:ScanbotSdkExample.Maui.CustomViews;assembly=ScanbotSdkExample.Maui">
+             xmlns:customButton="clr-namespace:ScanbotSdkExample.Maui.CustomViews;assembly=ScanbotSdkExample.Maui"
+             xmlns:models="clr-namespace:ScanbotSdkExample.Maui.Models;assembly=ScanbotSdkExample.Maui"
+             xmlns:self="clr-namespace:ScanbotSdkExample.Maui"
+             x:DataType="self:ClassicDocumentScannerPage">
     <ContentPage.Resources>
-        <Style x:Key="scannerButonStyle" TargetType="Button">
+        <Style x:Key="ScannerButonStyle" TargetType="Button">
             <Setter Property="CornerRadius">10</Setter>
             <Setter Property="BackgroundColor">WhiteSmoke</Setter>
             <Setter Property="TextColor">DarkSlateGrey</Setter>
@@ -21,7 +24,7 @@
                 Grid.Row="0">
             <classicView:DocumentScannerView
                 x:Name="DocumentScannerView"
-                IgnoreBadAspectRatio="True"
+                IgnoreOrientationMismatch="True"
                 AutoSnappingEnabled="{Binding IsAutoSnappingEnabled}"
                 FlashEnabled="{Binding IsFlashEnabled}"
                 FinderEnabled="{Binding IsFinderEnabled}"
@@ -39,11 +42,11 @@
                 Grid.Row="1"
                 ItemsSource="{Binding ScannerButtons}">
                 <CollectionView.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate x:DataType="models:ClassicCollectionItem">
                         <customButton:ToggleButton
                             Text="{Binding Title}"
                             Clicked="ScannerButtonOnClicked"
-                            Style="{x:StaticResource Key=scannerButonStyle}"
+                            Style="{x:StaticResource Key=ScannerButonStyle}"
                             IsSelected="{Binding Selected}"/>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>

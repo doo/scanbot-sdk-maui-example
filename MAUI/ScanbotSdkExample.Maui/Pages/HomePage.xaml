@@ -5,6 +5,7 @@
              x:Class="ScanbotSdkExample.Maui.Pages.HomePage"
              xmlns:color="clr-namespace:ScanbotSDK.MAUI;assembly=ScanbotSDK.Shared"
              xmlns:customView="clr-namespace:ScanbotSdkExample.Maui.SubViews;assembly=ScanbotSdkExample.Maui"
+             xmlns:models="clr-namespace:ScanbotSdkExample.Maui.Models"
              Title="Scanbot SDK MAUI">
     <Grid>
         <ScrollView>
@@ -16,7 +17,7 @@
                     SelectionMode="Single"
                     VerticalScrollBarVisibility="Default">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="models:SdkFeature">
                             <StackLayout>
                                 <Label
                                     Padding="10,0"
@@ -48,6 +49,6 @@
                 <StackLayout HeightRequest="10" />
             </StackLayout>
         </ScrollView>
-        <customView:SBLoader x:Name="sbLoader" IsVisible="False" />
+        <customView:SBLoader x:Name="SbLoader" IsVisible="False" />
     </Grid>
 </ContentPage>

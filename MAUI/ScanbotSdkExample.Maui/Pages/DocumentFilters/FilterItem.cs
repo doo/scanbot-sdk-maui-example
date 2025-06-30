@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace ScanbotSdkExample.Maui.Pages.DocumentFilters;
+namespace ScanbotSdkExample.Maui.Pages;
 
 public class FilterItemConstants
 {

@@ -19,7 +19,7 @@ public static class SdkUtils
     public static string ParseMrzResult(MrzScannerUiResult result)
     {
         var builder = new StringBuilder();
-        builder.AppendLine($"DocumentType: {result.MrzDocument.Type}");
+        builder.AppendLine($"DocumentType: {result.MrzDocument.Type.Name}");
         foreach (var field in result.MrzDocument.Fields)
         {
             builder.AppendLine($"{field.Type.Name}: {field.Value.Text} ({field.Value.Confidence:F2})");

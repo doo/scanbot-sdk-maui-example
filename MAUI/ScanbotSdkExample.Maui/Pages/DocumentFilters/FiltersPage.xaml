@@ -3,13 +3,15 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ScanbotSdkExample.Maui.Pages.FiltersPage"
-             xmlns:local="clr-namespace:ScanbotSdkExample.Maui.Pages.DocumentFilters"
-             xmlns:color="clr-namespace:ScanbotSDK.MAUI;assembly=ScanbotSDK.Shared">
+             xmlns:local="clr-namespace:ScanbotSdkExample.Maui.Pages"
+             xmlns:color="clr-namespace:ScanbotSDK.MAUI;assembly=ScanbotSDK.Shared"
+             xmlns:page="clr-namespace:ScanbotSdkExample.Maui.Pages"
+             x:DataType="page:FiltersPage">
     <ContentPage.Resources>
         <!-- Data Template Listing -->
         
         <!-- Primary Filter Template-->
-        <DataTemplate x:Key="primaryFilterTemplate">
+        <DataTemplate x:Key="PrimaryFilterTemplate" x:DataType="page:FilterItem">
             <StackLayout Padding="10" HeightRequest="50"
                          BackgroundColor="{Binding Source={x:Static color:Constants+Colors.ScanbotRed}}">
                 <Grid>
@@ -30,7 +32,7 @@
         </DataTemplate>
 
         <!-- Picker Type Filters-->
-        <DataTemplate x:Key="pickerItemTemplate">
+        <DataTemplate x:Key="PickerItemTemplate" x:DataType="page:FilterItem">
             <StackLayout Padding="19,9">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -50,7 +52,7 @@
         </DataTemplate>
 
         <!-- Legacy Filters-->
-        <DataTemplate x:Key="subFilterTemplate">
+        <DataTemplate x:Key="SubFilterTemplate" x:DataType="page:FilterItem">
             <StackLayout Padding="19,9">
                 <Label Text="{Binding Caption }" />
                 <Frame HeightRequest="1" HorizontalOptions="Fill" BackgroundColor="DarkGray" />
@@ -58,7 +60,7 @@
         </DataTemplate>
 
         <!-- Slider Filter Item-->
-        <DataTemplate x:Key="sliderItemTemplate">
+        <DataTemplate x:Key="SliderItemTemplate" x:DataType="page:FilterItem">
             <StackLayout Padding="19,9">
                 <Label Text="{Binding Caption }" FontSize="14" />
                 <Grid>
@@ -70,11 +72,11 @@
             </StackLayout>
         </DataTemplate>
 
-        <local:FilterItemTemplateSelector x:Key="filterItemTemplateSelector"
-                                          PrimaryFilterTemplate = "{StaticResource primaryFilterTemplate}"
-                                          PickerItemTemplate="{StaticResource pickerItemTemplate}"
-                                          SubFilterTemplate="{StaticResource subFilterTemplate}"
-                                          SliderItemTemplate="{StaticResource sliderItemTemplate}" />
+        <local:FilterItemTemplateSelector x:Key="FilterItemTemplateSelector"
+                                          PrimaryFilterTemplate = "{StaticResource PrimaryFilterTemplate}"
+                                          PickerItemTemplate="{StaticResource PickerItemTemplate}"
+                                          SubFilterTemplate="{StaticResource SubFilterTemplate}"
+                                          SliderItemTemplate="{StaticResource SliderItemTemplate}" />
 
         <!-- Item Template Listing -->
     </ContentPage.Resources>
@@ -86,7 +88,7 @@
                     ItemsSource="{Binding FilterItems}"
                     SelectionMode="None"
                     VerticalScrollBarVisibility="Default"
-                    ItemTemplate="{StaticResource filterItemTemplateSelector}">
+                    ItemTemplate="{StaticResource FilterItemTemplateSelector}">
                 </CollectionView>
             </StackLayout>
         </ScrollView>

@@ -4,7 +4,7 @@ using ScanbotSDK.MAUI.Common;
 namespace ScanbotSdkExample.Maui;
 public static partial class MauiProgram
 {
-    private const string LicenseKey =  "";
+    private const string LicenseKey = "";
 
     public static MauiApp CreateMauiApp()
     {
@@ -17,7 +17,7 @@ public static partial class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        SBSDKInitializer.Initialize(builder, LicenseKey, new ScanbotSDK.MAUI.SBSDKConfiguration
+        SBSDKInitializer.Initialize(builder, LicenseKey, new SBSDKConfiguration
         {
             EnableLogging = true,
             StorageBaseDirectory = StorageBaseDirectoryForExampleApp(),

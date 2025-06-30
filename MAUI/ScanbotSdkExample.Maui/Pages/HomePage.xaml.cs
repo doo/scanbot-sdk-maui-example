@@ -1,41 +1,24 @@
 ﻿using ScanbotSDK.MAUI;
+using ScanbotSdkExample.Maui.Models;
 using ScanbotSdkExample.Maui.Utils;
-using SBSDK = ScanbotSDK.MAUI.ScanbotSDKMain;
 
 namespace ScanbotSdkExample.Maui.Pages;
 
-public partial class HomePage : ContentPage
+public partial class HomePage
 {
+    private const string ViewLicenseInfo = "View License Info";
+    private const string LicenseInvalidMessage = "The license is invalid or expired.";
+    
     /// <summary>
     /// Binding property configured with the Scanbot activity loader.
     /// </summary>
     public bool IsLoading
     {
-        get => sbLoader.IsBusy;
-        set => sbLoader.IsBusy = value;
+        get => SbLoader.IsBusy;
+        set => SbLoader.IsBusy = value;
     }
 
-    public struct SdkFeature
-    {
-        public SdkFeature(string title, Func<Task> doTask = null)
-        {
-            Title = title;
-            DoTask = doTask;
-        }
-
-        public string Title { get; private set; }
-        public Func<Task> DoTask { get; private set; }
-
-        public bool ShowHeading => DoTask == null;
-        public bool ShowFeature => DoTask != null;
-    }
-
-    private List<SdkFeature> _sdkFeatures = [];
-    public List<SdkFeature> SdkFeatures
-    {
-        get => _sdkFeatures;
-        set => _sdkFeatures = value;
-    }
+    public List<SdkFeature> SdkFeatures { get; set; }
 
     public HomePage()
     {
@@ -71,7 +54,7 @@ public partial class HomePage : ContentPage
             new SdkFeature("Medical Certificate Recognizer", MedicalCertificateDetectorClicked),
 
             new SdkFeature("MISCELLANEOUS"),
-            new SdkFeature("View License Info", ViewLicenseInfoClicked),
+            new SdkFeature(ViewLicenseInfo, ViewLicenseInfoClicked),
             new SdkFeature("Learn more about Scanbot SDK", LearnMoreClicked)
         ];
         
@@ -91,20 +74,25 @@ public partial class HomePage : ContentPage
     /// Item Selected method invoked on the ListView item selection.
     async void SdkFeatureSelected(Object sender, SelectionChangedEventArgs e)
     {
-        if (e?.CurrentSelection?.FirstOrDefault() is SdkFeature feature && feature.DoTask != null)
+        if (e?.CurrentSelection?.FirstOrDefault() is not SdkFeature feature || feature.DoTask == null)
         {
-            if (!SdkUtils.CheckLicense(this)) { return; }
-
-            try
-            {
-                await feature.DoTask();
-            }
-            catch
-            {
-                // ignored
-            }
+            return;
         }
-        FeaturesCollectionView.SelectedItem = null;
+
+        if (!ScanbotSDKMain.IsLicenseValid && feature.Title != ViewLicenseInfo)
+        {
+            ViewUtils.Alert(this, "Oops!", LicenseInvalidMessage);
+            return;
+        }
+
+        try
+        {
+            await feature.DoTask();
+        }
+        catch
+        {
+            // ignored
+        }
     }
 
     // ------------------------------------
@@ -112,7 +100,17 @@ public partial class HomePage : ContentPage
     // ------------------------------------
     private Task ViewLicenseInfoClicked()
     {
-        var message = SBSDK.IsLicenseValid ? "Scanbot SDK License is valid" : "Scanbot SDK License is expired";
+        var info = ScanbotSDKMain.LicenseInfo;
+        var message = $"License status: {info.Status}\n";
+        if (info.IsValid) 
+        {
+            message += $"It is valid until {info.ExpirationDate?.ToLocalTime()}.";
+        }
+        else
+        {
+            message = LicenseInvalidMessage;
+        }
+        
         ViewUtils.Alert(this, "License info", message);
         return Task.CompletedTask;
     }

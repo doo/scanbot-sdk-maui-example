@@ -1,8 +1,5 @@
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using ScanbotSDK.MAUI;
-using ScanbotSdkExample.Maui.Pages.DocumentFilters;
 
 namespace ScanbotSdkExample.Maui.Pages;
 
@@ -15,13 +12,13 @@ public partial class FiltersPage
     }
     private void PopulateData()
     {
-        FilterItems = new ObservableCollection<FilterItem>
-        {
+        FilterItems =
+        [
             FilterItem.InitPrimaryFilter(FilterItemConstants.None),
 
             FilterItem.InitPrimaryFilter(nameof(ScanbotBinarizationFilter)),
             FilterItem.InitPicker(nameof(ScanbotBinarizationFilter), FilterItemConstants.OutputMode, Enum.GetNames<OutputMode>().ToList()),
-
+            
             FilterItem.InitPrimaryFilter(nameof(CustomBinarizationFilter)),
             FilterItem.InitPicker(nameof(CustomBinarizationFilter), FilterItemConstants.Presets, Enum.GetNames<BinarizationFilterPreset>().ToList()),
             FilterItem.InitPicker(nameof(CustomBinarizationFilter), FilterItemConstants.OutputMode, Enum.GetNames<OutputMode>().ToList()),
@@ -40,11 +37,11 @@ public partial class FiltersPage
             FilterItem.InitSlider(nameof(GrayscaleFilter), FilterItemConstants.BorderWidthFraction, 0.06, 0.0, 0.15),
             FilterItem.InitSlider(nameof(GrayscaleFilter), FilterItemConstants.BlackOutlierFraction, 0.0, 0.0, 0.05),
             FilterItem.InitSlider(nameof(GrayscaleFilter), FilterItemConstants.WhiteOutlierFraction, 0.02, 0.0, 0.05),
-            
+
             FilterItem.InitPrimaryFilter(nameof(WhiteBlackPointFilter)),
             FilterItem.InitSlider(nameof(WhiteBlackPointFilter), FilterItemConstants.BlackPoint, 0.0, 0.0, 1.0),
             FilterItem.InitSlider(nameof(WhiteBlackPointFilter), FilterItemConstants.WhitePoint, 0.0, 0.0, 1.0),
-        };
+        ];
     }
 
     private ObservableCollection<FilterItem> _filterItems;
@@ -160,24 +157,17 @@ public partial class FiltersPage
         
         if (sender.BindingContext is FilterItem selectedItem)
         {
-            var index = FilterItems.ToList().FindIndex(item => item.FilterTitle == selectedItem?.FilterTitle);
+            var index = FilterItems.ToList().FindIndex(item => item.FilterTitle == selectedItem.FilterTitle);
             action?.Invoke(index);
         }
     }
 
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
     /// <summary>
-    /// Extract the selected filters from the FilterItems and init the ParametricFiltrsList
+    /// Extract the selected filters from the FilterItems and init the ParametricFiltersList
     /// </summary>
     private async void DoneButtonClicked()
     {
-        var selectedFilters = FilterItems?.Where(item => item.IsSelected)?.ToList() ?? new List<FilterItem>(); // gets only primary filters with CheckBox.
+        var selectedFilters = FilterItems?.Where(item => item.IsSelected).ToList() ?? new List<FilterItem>(); // gets only primary filters with CheckBox.
         
         if (ValidateEmptyValues(selectedFilters))
         {

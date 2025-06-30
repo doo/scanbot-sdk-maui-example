@@ -1,6 +1,6 @@
 using Microsoft.Maui.Controls.Internals;
 
-namespace ScanbotSdkExample.Maui.Pages.DocumentFilters;
+namespace ScanbotSdkExample.Maui.Pages;
 
 public class FilterItemTemplateSelector : DataTemplateSelector
 {
