@@ -118,7 +118,7 @@ public partial class HomePage
         }
     }
         
-    private async Task MedicalCertificateRecognizerClicked()
+    private async Task MedicalCertificateScannerClicked()
     {
         var configuration = new MedicalCertificateScannerConfiguration();
         var result = await Rtu.MedicalCertificateScanner.LaunchAsync(configuration);

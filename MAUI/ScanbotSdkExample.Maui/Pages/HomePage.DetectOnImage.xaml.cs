@@ -21,12 +21,12 @@ public partial class HomePage
         };
 
         var result = await Detector.Mrz.DetectOnImageAsync(image, configuration: configuration);
-        if (result == null)
+        if (result?.Document == null || result?.Success == false)
         {
-            ViewUtils.Alert(this, "MRZ Scanner result", "Could not detect MRZ data");
+            ViewUtils.Alert(this, "Error", "Could not detect the MRZ data.");
             return;
         }
-        ViewUtils.Alert(this, "MRZ Scanner result", SdkUtils.GenericDocumentToString(result.Document));
+        ViewUtils.Alert(this, "MRZ result", SdkUtils.GenericDocumentToString(result.Document));
     }
 
     private async Task EhicDetectorClicked()
@@ -41,10 +41,8 @@ public partial class HomePage
 
         var result = await Detector.Ehic.DetectOnImageAsync(image, configuration: configuration);
         if (result == null || result.Status == EuropeanHealthInsuranceCardRecognitionResult.RecognitionStatus.FailedDetection)
-        {
-            var status = result?.Status ?? EuropeanHealthInsuranceCardRecognitionResult.RecognitionStatus.FailedDetection;
-            var errorMessage = "Something went wrong, please try again.\nDetection status: " + status; 
-            ViewUtils.Alert(this, "EHIC Scanner result", errorMessage);
+        { 
+            ViewUtils.Alert(this, "Error", "Could not detect the Ehic data.");
             return;
         }
         
@@ -80,9 +78,9 @@ public partial class HomePage
             ]
         };
         var result = await Detector.DocumentData.DetectOnImageAsync(image, configuration);
-        if (result == null)
+        if (result?.Document == null || result.DocumentDetectionResult.Status != DocumentDetectionStatus.Ok)
         {
-            ViewUtils.Alert(this, "Document Data Result", "Could not detect GDR data");
+            ViewUtils.Alert(this, "Error", "Could not extract the Document data.");
             return;
         }
 
@@ -111,9 +109,9 @@ public partial class HomePage
             DocumentDetectionMode = CheckDocumentDetectionMode.DetectAndCropDocument
         });
 
-        if (result == null || result.Status != CheckMagneticInkStripScanningStatus.Success)
+        if (result?.Check == null || result.Status != CheckMagneticInkStripScanningStatus.Success)
         {
-            ViewUtils.Alert(this, "Check Result", "Could not detect Check data");
+            ViewUtils.Alert(this, "Error", "Could not detect the Check data.");
             return;
         }
 
@@ -133,20 +131,20 @@ public partial class HomePage
         };
         
         var result = await Detector.MedicalCertificate.DetectOnImageAsync(image, configuration);
-        if (!result.ScanningSuccessful || result.DocumentDetectionResult.Status != DocumentDetectionStatus.Ok)
+        if (result?.DocumentDetectionResult == null || result.DocumentDetectionResult.Status != DocumentDetectionStatus.Ok || !result.ScanningSuccessful)
         {
-            ViewUtils.Alert(this, "Medical Certificate Result", "Could not detect Medical Certificate data");
+            ViewUtils.Alert(this, "Error", "Could not detect the Medical Certificate data.");
             return;
         }
 
         if (result.CroppedImage == null)
         {
-            ViewUtils.Alert(this, $"Medical Certificate Result", result.ToFormattedString());
+            ViewUtils.Alert(this, "Error", result.ToFormattedString());
             return;
         }
         
         // Executes when the ExtractCroppedImage is set to true.
-        ViewUtils.Alert(this, $"Medical Certificate Result", result.ToFormattedString(), () =>
+        ViewUtils.Alert(this, "Medical Certificate Result", result.ToFormattedString(), () =>
         {
             var resultPage = new DetectOnImageResultPage();
             var source = ImageSource.FromStream(() => result.CroppedImage.ToPlatformImage().AsStream());
@@ -162,14 +160,14 @@ public partial class HomePage
         
         var configuration = new CreditCardScannerConfiguration
         {
-            RequireCardholderName = true
             // Configure other parameters as needed.
+            RequireCardholderName = true
         };
         
         var result = await Detector.CreditCard.DetectOnImageAsync(image, configuration: configuration);
-        if (result == null)
+        if (result?.CreditCard == null || result.ScanningStatus != CreditCardScanningStatus.Success)
         {
-            ViewUtils.Alert(this, "Credit Card result", "Could not detect the credit card data.");
+            ViewUtils.Alert(this, "Error", "Could not detect the Credit card data.");
             return;
         }
         ViewUtils.Alert(this, "Credit Card result", SdkUtils.GenericDocumentToString(result.CreditCard));

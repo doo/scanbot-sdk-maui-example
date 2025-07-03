@@ -40,7 +40,7 @@ public partial class HomePage
             new SdkFeature("Credit Card Scanner", CreditCardScannerClicked),
             new SdkFeature("European Health Insurance Scanner", EhicScannerClicked),
             new SdkFeature("Document Data Scanner", DocumentDataScannerClicked),
-            new SdkFeature("Medical Certificate Scanner", MedicalCertificateRecognizerClicked),
+            new SdkFeature("Medical Certificate Scanner", MedicalCertificateScannerClicked),
             new SdkFeature("Mrz Scanner", MrzScannerClicked),
             new SdkFeature("Text Pattern Scanner", TextPatternScannerClicked),
             new SdkFeature("Vin Scanner", VinScannerClicked),
