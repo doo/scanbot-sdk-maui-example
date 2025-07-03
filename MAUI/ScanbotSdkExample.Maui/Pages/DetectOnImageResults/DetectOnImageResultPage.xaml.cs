@@ -16,7 +16,7 @@ public partial class DetectOnImageResultPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        resultImageView.Source = _resultImageSource;
+        ResultImageView.Source = _resultImageSource;
     }
 
     private async void BtnGoback_Clicked(object sender, EventArgs e)

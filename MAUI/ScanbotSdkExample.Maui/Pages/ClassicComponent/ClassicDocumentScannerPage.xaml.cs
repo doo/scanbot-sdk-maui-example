@@ -42,12 +42,22 @@ public partial class ClassicDocumentScannerPage : ContentPage
 			new(Finder, () => IsFinderEnabled = !IsFinderEnabled),
 			new(Flash, () => IsFlashEnabled = !IsFlashEnabled),
 			new(Polygons, () => IsPolygonEnabled = !IsPolygonEnabled),
-			new(Visibility, () => IsCameraVisible = !IsCameraVisible),
+			new(Visibility, ToggleVisibility),
 			new(Stop, null, true),
 			new(Snap, DocumentScannerView.SnapDocumentImage),
 		};
 		
 		BindingContext = this;
+	}
+
+	public void ToggleVisibility()
+	{
+		IsCameraVisible = !IsCameraVisible;
+
+		if (!IsCameraVisible)
+		{
+			ScanningHintLabel.IsVisible = false;
+		}
 	}
 
 	// Receives the result of Document Scanning. 
@@ -69,7 +79,6 @@ public partial class ClassicDocumentScannerPage : ContentPage
 				hint = "The document is Ok";
 				backgroundColor = Colors.Green;
 				break;
-		
 			case DocumentDetectionStatus.OkButTooSmall:
 				hint = "Please move the camera closer to the document.";
 				backgroundColor = Colors.Yellow;
@@ -98,10 +107,14 @@ public partial class ClassicDocumentScannerPage : ContentPage
 				hint = "Unable to acquire the document.";
 				backgroundColor = Colors.Red;
 				break;
+			default:
+				ScanningHintLabel.IsVisible = false;
+				return;
 		}
 
 		ScanningHintLabel.Text = hint;
 		ScanningHintLabel.BackgroundColor = backgroundColor.WithAlpha(0.5f);
+		ScanningHintLabel.IsVisible = true;
 	}
 	
 	private void ScannerButtonOnClicked(object sender, EventArgs e)

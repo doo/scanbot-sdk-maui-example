@@ -40,13 +40,6 @@
     </ItemGroup>
     
     <!-- ===================== Common Project References =====================  -->
-    <ItemGroup><!-- <PackageReference Include="ScanbotSDK.MAUI" Version="7.0.0-beta.1"> -->
-            <!-- Required if our package is a dependency of your own package. -->
-            <!-- <PrivateAssets>None</PrivateAssets> -->
-        <!-- </PackageReference> -->
-    
-      <PackageReference Include="ScanbotSDK.MAUI" Version="7.0.0-maui-ds-local.2" />
-    </ItemGroup>
     <ItemGroup Condition="$(TargetFramework.Contains('-ios')) == true">
         <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\eng.traineddata"/>
         <BundleResource Include="Resources\ScanbotSDKOCRData.bundle\deu.traineddata"/>
@@ -83,5 +76,8 @@
           <DependentUpon>BarcodeResultPage.xaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="ScanbotSDK.MAUI" Version="7.0.0-alpha.2" />
     </ItemGroup>
 </Project>

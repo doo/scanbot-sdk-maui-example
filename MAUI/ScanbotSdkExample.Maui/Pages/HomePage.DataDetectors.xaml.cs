@@ -2,6 +2,7 @@
 using ScanbotSDK.MAUI.CreditCard;
 using ScanbotSDK.MAUI.Ehic;
 using ScanbotSDK.MAUI.DocumentData;
+using ScanbotSDK.MAUI.DocumentsModel;
 using ScanbotSDK.MAUI.MedicalCertificate;
 using ScanbotSDK.MAUI.MRZ;
 using ScanbotSDK.MAUI.textpattern;
@@ -20,7 +21,7 @@ public partial class HomePage
         if (result.Status == OperationResult.Ok)
         {
             var message = SdkUtils.ParseMrzResult(result.Result);
-            ViewUtils.Alert(this, "MRZ Scanner result", message);
+            ViewUtils.Alert(this, "MRZ Result", message);
         }
     }
 
@@ -36,7 +37,7 @@ public partial class HomePage
         if (result.Status == OperationResult.Ok)
         {
             var message = SdkUtils.ToAlertMessage(result.Result);
-            ViewUtils.Alert(this, "EHIC Scanner result", message);
+            ViewUtils.Alert(this, "EHIC Result", message);
         }
     }
 
@@ -44,14 +45,25 @@ public partial class HomePage
     {
         var configuration = new ScanbotSDK.MAUI.DocumentData.DocumentDataExtractorConfiguration
         {
-            AcceptedDocumentTypes = DocumentDataFormat.AllDocumentTypes
+            AcceptedDocumentTypes = 
+            [
+                DocumentDataRootType.DeIdCardFront,
+                DocumentDataRootType.DeIdCardBack,
+                DocumentDataRootType.DePassport,
+                DocumentDataRootType.DeDriverLicenseFront,
+                DocumentDataRootType.DeDriverLicenseBack,
+                DocumentDataRootType.DeResidencePermitFront,
+                DocumentDataRootType.DeResidencePermitBack,
+                DocumentDataRootType.EuropeanHealthInsuranceCard,
+                DocumentDataRootType.DeHealthInsuranceCardFront
+            ]
         };
             
         var result = await Rtu.DocumentDataExtractor.LaunchAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
             var message = SdkUtils.ToAlertMessage(result.Result);
-            ViewUtils.Alert(this, "GDR Result", message);
+            ViewUtils.Alert(this, "Document Data Result", message);
         }
     }
 
@@ -87,7 +99,7 @@ public partial class HomePage
 
         if (result.Status == OperationResult.Ok)
         {
-            ViewUtils.Alert(this, $"Text Data Result", result.Result.RawText);
+            ViewUtils.Alert(this, $"Text Pattern Result", result.Result.RawText);
         }
     }
 
@@ -112,7 +124,7 @@ public partial class HomePage
         var result = await Rtu.MedicalCertificateScanner.LaunchAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
-            ViewUtils.Alert(this, $"Medical Certificate Recognition Result", result.Result.ToFormattedString());
+            ViewUtils.Alert(this, $"Medical Certificate Result", result.Result.ToFormattedString());
         }
     }
 
@@ -122,7 +134,7 @@ public partial class HomePage
         var result = await Rtu.CreditCard.LaunchAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
-            ViewUtils.Alert(this, $"Credit Card Scanner Result", SdkUtils.GenericDocumentToString(result.Result.CreditCard));
+            ViewUtils.Alert(this, $"Credit Card Result", SdkUtils.GenericDocumentToString(result.Result.CreditCard));
         }
     }
 }

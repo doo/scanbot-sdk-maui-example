@@ -1,4 +1,5 @@
 ﻿using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Barcode;
 using ScanbotSdkExample.Maui.Models;
 using ScanbotSdkExample.Maui.Utils;
 
@@ -30,8 +31,7 @@ public partial class HomePage
             new SdkFeature("Multiple Document Scanning", MultipleDocumentScanningClicked),
             new SdkFeature("Import Import Image", ImportButtonClicked),
             
-            new SdkFeature("DOCUMENT SCANNER V1"),
-            new SdkFeature("Scan V1 Document", ScanV1DocumentClicked),
+            new SdkFeature("CLASSIC COMPONENT"),
             new SdkFeature("Classic Document Scanner", ClassicDocumentScannerViewClicked),
 
             new SdkFeature("DATA DETECTORS"),
@@ -62,19 +62,14 @@ public partial class HomePage
         InitializeComponent();
     }
 
-    private async Task ScanV1DocumentClicked()
-    {
-        var scanner = await ScanbotSDKMain.Rtu.Legacy.DocumentScanner.LaunchDocumentScannerAsync(new ScanbotSDK.MAUI.Document.RTU.v1.DocumentScannerConfiguration());
-        await Navigation.PushModalAsync(new DocumentPreviewPage
-        {
-            DocPreviewSource = scanner.Pages.First().DocumentPreview
-        });
-    }
-
     /// Item Selected method invoked on the ListView item selection.
     async void SdkFeatureSelected(Object sender, SelectionChangedEventArgs e)
     {
-        if (e?.CurrentSelection?.FirstOrDefault() is not SdkFeature feature || feature.DoTask == null)
+        FeaturesCollectionView.SelectedItem = null;
+        if (e.CurrentSelection == null || e.CurrentSelection.Count == 0)
+            return;
+        
+        if (e.CurrentSelection.FirstOrDefault() is not SdkFeature feature || feature.DoTask == null)
         {
             return;
         }

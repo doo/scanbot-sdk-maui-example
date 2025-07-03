@@ -148,6 +148,8 @@ public partial class HomePage
             IsLoading = true;
                 
             var image = await ScanbotSDKMain.ImagePicker.PickImageAsync();
+            if (image is null) return;
+            
             var document = new ScannedDocument();
 
             // Import the selected image as original image and create a Page object
