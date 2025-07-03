@@ -11,7 +11,7 @@ public class ScannedDocumentsPage : ContentPage
 {
     private const string Pdf = "PDF", Ocr = "Perform OCR", SandwichPdf = "Sandwiched PDF", Tiff = "TIFF (1-bit, B&W)";
     private readonly Grid _pageGridView;
-    private readonly ListView _resultList;
+    private readonly CollectionView _resultList;
     private readonly SBLoader _loader;
 
     private ScannedDocument _document;
@@ -48,17 +48,28 @@ public class ScannedDocumentsPage : ContentPage
         _document = document;
         Title = "Document";
         BackgroundColor = Colors.White;
-        _resultList = new ListView
+        var screenWidth = DeviceDisplay.MainDisplayInfo.Width / DeviceDisplay.MainDisplayInfo.Density;
+        var itemSize = (screenWidth - 30) / 2; 
+        _resultList = new CollectionView
         {
             VerticalOptions = LayoutOptions.Start,
             HorizontalOptions = LayoutOptions.Fill,
-            BackgroundColor = Colors.White,
-            RowHeight = 120,
-            HeightRequest = Application.Current.MainPage.Height,
-            ItemTemplate = new DataTemplate(typeof(ScannedDocumentPageItemTemplate)),
+            
+            ItemsLayout = new GridItemsLayout(2, ItemsLayoutOrientation.Vertical)
+            {
+                HorizontalItemSpacing = 5,
+                VerticalItemSpacing = 5
+            },
+            FlowDirection = FlowDirection.MatchParent,
+            ItemTemplate = new DataTemplate(() => new ScannedDocumentPageItemTemplate
+            {
+                WidthRequest = itemSize,
+                HeightRequest = itemSize,
+                PageItemTapped = OnSelectDocumentPage
+            }),
             ItemsSource = document.Pages
         };
-
+        
         var bottomBar = new BottomActionBar(isDetailPage: false)
         {
             VerticalOptions = LayoutOptions.End
@@ -95,8 +106,6 @@ public class ScannedDocumentsPage : ContentPage
         bottomBar.AddTappedEvent(bottomBar.SaveButton, OnSaveButtonTapped);
         bottomBar.AddTappedEvent(bottomBar.DeleteButton, OnDeleteButtonTapped);
         bottomBar.AddTappedEvent(bottomBar.DeleteAllButton, OnDeleteAllButtonTapped);
-
-        _resultList.ItemTapped += OnItemClick;
     }
 
     protected override void OnAppearing()
@@ -105,12 +114,10 @@ public class ScannedDocumentsPage : ContentPage
         _resultList.ItemsSource = _document.Pages;
     }
 
-    private void OnItemClick(object sender, ItemTappedEventArgs e)
+    private void OnSelectDocumentPage(ScannedDocument.Page selectedPage)
     {
-        if (e.Item != null && e.Item is ScannedDocument.Page selectedPage)
-        {
-            Navigation.PushAsync(new ScannedDocumentDetailPage(_document, selectedPage));
-        }
+        if (selectedPage == null) return;
+        Navigation.PushAsync(new ScannedDocumentDetailPage(_document, selectedPage));
     }
 
     async void OnAddButtonTapped(object sender, EventArgs e)

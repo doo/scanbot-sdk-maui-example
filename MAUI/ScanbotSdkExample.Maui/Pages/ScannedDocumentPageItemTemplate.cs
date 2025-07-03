@@ -2,21 +2,22 @@
 
 namespace ScanbotSdkExample.Maui.SubViews.Cells;
 
-public class ScannedDocumentPageItemTemplate : ViewCell
+public class ScannedDocumentPageItemTemplate : ContentView
 {
     private ScannedDocument.Page _currentPage;
 
     private readonly Image _pagePreview;
+    internal Action<ScannedDocument.Page> PageItemTapped;
 
     public ScannedDocumentPageItemTemplate()
     {
         _pagePreview = new Image
         {
             VerticalOptions = LayoutOptions.Fill,
-            HorizontalOptions = LayoutOptions.Start,
-            Margin = new Thickness(10, 10, 10, 10),
+            HorizontalOptions = LayoutOptions.Fill,
+            Margin = new Thickness(5),
             Aspect = Aspect.AspectFit,
-            WidthRequest = 100
+            BackgroundColor = Colors.White,
         };
 
         var parentView = new Grid
@@ -24,8 +25,17 @@ public class ScannedDocumentPageItemTemplate : ViewCell
             VerticalOptions = LayoutOptions.Fill,
             HorizontalOptions = LayoutOptions.Fill,
         };
+      
         parentView.Children.Add(_pagePreview);
-        View = parentView;
+        Content = parentView;
+        var gestureRecognizer = new TapGestureRecognizer();
+        gestureRecognizer.Tapped += ItemTapped;
+        Content.GestureRecognizers.Add(gestureRecognizer);
+    }
+
+    private void ItemTapped(object sender, TappedEventArgs e)
+    {
+        PageItemTapped?.Invoke(_currentPage);
     }
 
     protected override void OnBindingContextChanged()

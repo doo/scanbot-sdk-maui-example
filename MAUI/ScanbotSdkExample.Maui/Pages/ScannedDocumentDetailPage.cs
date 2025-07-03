@@ -31,7 +31,7 @@ public class ScannedDocumentDetailPage : ContentPage
     {
         _selectedDocument = selectedDocument;
         _selectedPage = selectedPage;
-
+        Title = "Page";
         _documentImage = new Image
         {
             HorizontalOptions = LayoutOptions.Fill,
