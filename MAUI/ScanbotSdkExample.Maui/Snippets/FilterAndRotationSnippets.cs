@@ -13,7 +13,7 @@ public static partial class Snippets
         var document = new ScannedDocument(documentUuid: documentUuid);
 
         // Retrieve the selected document page.
-        var page = document[0]; //or document.Pages.First();
+        var page = document.Pages.First();
 
         // Apply rotation and filters on the page
         var rotation = DisplayRotation.Rotation90;

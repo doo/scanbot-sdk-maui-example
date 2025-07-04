@@ -78,7 +78,7 @@ public partial class HomePage
             ]
         };
         var result = await Detector.DocumentData.DetectOnImageAsync(image, configuration);
-        if (result?.Document == null || result.DocumentDetectionResult.Status != DocumentDetectionStatus.Ok)
+        if (result?.Document == null || result.Status != DocumentDataExtractionStatus.Success)
         {
             ViewUtils.Alert(this, "Error", "Could not extract the Document data.");
             return;
@@ -114,9 +114,21 @@ public partial class HomePage
             ViewUtils.Alert(this, "Error", "Could not detect the Check data.");
             return;
         }
+        
+        if (result.CroppedImage == null)
+        {
+            ViewUtils.Alert(this, "Check Result", SdkUtils.GenericDocumentToString(result.Check));
+            return;
+        }
 
-        var message = SdkUtils.ToAlertMessage(result);
-        ViewUtils.Alert(this, "Check Result", message);
+        // Executes when the ExtractCroppedImage is set to true.
+        ViewUtils.Alert(this, "Check Result", SdkUtils.ToAlertMessage(result), () =>
+        {
+            var resultPage = new DetectOnImageResultPage();
+            var source = ImageSource.FromStream(() => result.CroppedImage.ToPlatformImage().AsStream());
+            resultPage.NavigateData(source);
+            Navigation.PushAsync(resultPage);
+        });
     }
 
     private async Task MedicalCertificateDetectorClicked()
@@ -126,7 +138,7 @@ public partial class HomePage
         
         var configuration = new MedicalCertificateScanningParameters
         {
-            ExtractCroppedImage = false
+            ExtractCroppedImage = true
             // Configure other parameters as needed.
         };
         
@@ -139,7 +151,7 @@ public partial class HomePage
 
         if (result.CroppedImage == null)
         {
-            ViewUtils.Alert(this, "Error", result.ToFormattedString());
+            ViewUtils.Alert(this, "Medical Certificate Result", result.ToFormattedString());
             return;
         }
         

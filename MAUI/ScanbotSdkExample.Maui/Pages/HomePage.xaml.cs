@@ -1,5 +1,6 @@
 ﻿using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Barcode;
+using ScanbotSDK.MAUI.Common;
 using ScanbotSdkExample.Maui.Models;
 using ScanbotSdkExample.Maui.Utils;
 
@@ -68,7 +69,7 @@ public partial class HomePage
         FeaturesCollectionView.SelectedItem = null;
         if (e.CurrentSelection == null || e.CurrentSelection.Count == 0)
             return;
-        
+
         if (e.CurrentSelection.FirstOrDefault() is not SdkFeature feature || feature.DoTask == null)
         {
             return;
@@ -80,14 +81,7 @@ public partial class HomePage
             return;
         }
 
-        try
-        {
-            await feature.DoTask();
-        }
-        catch
-        {
-            // ignored
-        }
+        await feature.DoTask();
     }
 
     // ------------------------------------
