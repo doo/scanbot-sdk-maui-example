@@ -3,9 +3,9 @@ using ScanbotSDK.MAUI.Document;
 using Microsoft.Maui.Graphics.Platform;
 using static ScanbotSDK.MAUI.ScanbotSDKMain;
 
-namespace ScanbotSdkExample.Maui;
+namespace ScanbotSdkExample.Maui.Snippets.DocumentScanner;
 
-public static partial class Snippets
+public static class TiffSnippets
 {
     static void CreateTiffFromDocument(ScannedDocument scannedDocument)
     {

@@ -2,9 +2,9 @@ using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Document;
 using static ScanbotSDK.MAUI.ScanbotSDKMain;
 
-namespace ScanbotSdkExample.Maui;
+namespace ScanbotSdkExample.Maui.Snippets.DocumentScanner;
 
-public static partial class Snippets
+public static class PdfSnippets
 {
     static async void CreatePdfFromDocument(ScannedDocument scannedDocument)
     {

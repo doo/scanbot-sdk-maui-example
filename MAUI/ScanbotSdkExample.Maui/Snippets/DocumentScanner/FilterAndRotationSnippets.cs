@@ -3,11 +3,11 @@ using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Common;
 using ScanbotSDK.MAUI.Document;
 
-namespace ScanbotSdkExample.Maui;
+namespace ScanbotSdkExample.Maui.Snippets.DocumentScanner;
 
-public static partial class Snippets
+public static class FilterAndRotateOnDocumentPage
 {
-    private static async Task FilterAndRotateOnDocumentPage(Guid documentUuid)
+    private static async Task LaunchAsync(Guid documentUuid)
     {
         // Retrieve the scanned document (replace Guid.Empty with a real value)
         var document = new ScannedDocument(documentUuid: documentUuid);

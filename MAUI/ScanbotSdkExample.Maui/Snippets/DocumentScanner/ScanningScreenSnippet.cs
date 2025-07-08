@@ -1,12 +1,12 @@
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Document;
 
-namespace ScanbotSdkExample.Maui;
+namespace ScanbotSdkExample.Maui.Snippets.DocumentScanner;
 
-public static partial class Snippets
+public static class ScanningScreenSnippet
 {
 
-    private static async Task ScanningScreenSnippet()
+    private static async Task LaunchAsync()
     {
         // Create the default configuration object.
         var configuration = new DocumentScanningFlow(); ;

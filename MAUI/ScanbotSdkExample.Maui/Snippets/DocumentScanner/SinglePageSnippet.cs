@@ -2,11 +2,11 @@ using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Document;
 using ScanbotSDK.MAUI.Common;
 
-namespace ScanbotSdkExample.Maui;
+namespace ScanbotSdkExample.Maui.Snippets.DocumentScanner;
 
-public static partial class Snippets
+public static class SinglePageSnippet
 {
-	private static async Task SinglePageWithFinderSnippet()
+	private static async Task LaunchAsync()
 	{
 		// Create the default configuration object.
 		var configuration = new DocumentScanningFlow();
@@ -43,7 +43,7 @@ public static partial class Snippets
 		// Disable the review screen.
 		configuration.Screens.Review.Enabled = false;
 
-		// // Present the recognizer view controller modal on this view controller.
+		// Present the recognizer view controller modal on this view controller.
 		try
 		{
 			var document = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
