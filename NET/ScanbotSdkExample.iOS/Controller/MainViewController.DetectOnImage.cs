@@ -18,7 +18,7 @@ public partial class MainViewController
 		
 		var scanner = new SBSDKMRZScanner(config);
 		var result = scanner.ScanFromImage(image);
-		if (result?.Document == null)
+		if (result?.Document == null || !result.Success)
 		{
 			Alert.Show(this, "Error", "Unable to detect the MRZ.");
 			return;
@@ -54,7 +54,7 @@ public partial class MainViewController
 		var extractor = new SBSDKDocumentDataExtractor(builder.BuildConfiguration);
 
 		var result = extractor.ExtractFromImage(image, false);
-		if (result?.Document == null || !result.DocumentDetectionResult.IsScanningStatusOK)
+		if (result?.Document == null || result.Status != SBSDKDocumentDataExtractionStatus.Success)
 		{
 			Alert.Show(this, "Error", "Unable to extract the Document data.");
 			return;
@@ -73,7 +73,7 @@ public partial class MainViewController
 		var scanner = new SBSDKCheckScanner(config, SBSDKCheckDocumentModelRootType.AllDocumentTypes);
 		
 		var result = scanner.ScanFromImage(image, false);
-		if (result?.Check == null)
+		if (result?.Check == null || result.Status != SBSDKCheckMagneticInkStripScanningStatus.Success)
 		{
 			Alert.Show(this, "Error", "Unable to detect the Check.");
 			return;
@@ -104,7 +104,7 @@ public partial class MainViewController
 		var image = await ImagePicker.Instance.PickImageAsync();
 		var scanner = new SBSDKMedicalCertificateScanner();
 		var result = scanner.ScanFromImage(image, new SBSDKMedicalCertificateScanningParameters());
-		if (result == null || !result.ScanningSuccessful || result.DocumentDetectionResult == null)
+		if (result == null || !result.ScanningSuccessful)
 		{
 			Alert.Show(this, "Error", "Unable to detect the Medical certificate.");
 			return;

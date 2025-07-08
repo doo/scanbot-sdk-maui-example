@@ -1,6 +1,10 @@
 using Android.Content;
+using IO.Scanbot.Sdk.Check;
+using IO.Scanbot.Sdk.Creditcard;
+using IO.Scanbot.Sdk.Document;
 using ScanbotSdkExample.Droid.Model;
 using IO.Scanbot.Sdk.Documentdata;
+using IO.Scanbot.Sdk.Ehicscanner;
 using IO.Scanbot.Sdk.MC;
 using ScanbotSdkExample.Droid.Fragments;
 using ScanbotSdkExample.Droid.Utils;
@@ -38,7 +42,7 @@ public partial class MainActivity
         var recognizer = _scanbotSdk.CreateMrzScanner();
         var result = recognizer.ScanFromBitmap(bitmap, 0);
 
-        if (result?.Document == null)
+        if (result?.Document == null || !result.Success)
         {
             Alert.Show(this, "Error", "Unable to detect the MRZ.");
             return;
@@ -54,7 +58,7 @@ public partial class MainActivity
         var recognizer = _scanbotSdk.CreateCheckScanner();
         var result = recognizer.ScanFromBitmap(bitmap, 0);
         
-        if (result?.Check == null)
+        if (result?.Check == null || result.Status != CheckMagneticInkStripScanningStatus.Success)
         {
             Alert.Show(this, "Error", "Unable to detect the Check.");
             return;
@@ -80,7 +84,7 @@ public partial class MainActivity
             orientation: 0,
             parameters: parameters);
 
-        if (result == null)
+        if (result == null || !result.ScanningSuccessful || result.DocumentDetectionResult.Status != DocumentDetectionStatus.Ok)
         {
             Alert.Show(this, "Error", "Unable to detect the Medical certificate.");
             return;
@@ -96,7 +100,7 @@ public partial class MainActivity
         var recognizer = _scanbotSdk.CreateHealthInsuranceCardScanner();
         var result = recognizer.RecognizeBitmap(bitmap, 0);
 
-        if (result == null)
+        if (result == null || result.Status != EuropeanHealthInsuranceCardRecognitionResult.RecognitionStatus.Success)
         {
             Alert.Show(this, "Error", "Unable to detect the EHIC.");
             return;
@@ -112,7 +116,7 @@ public partial class MainActivity
         var recognizer = _scanbotSdk.CreateDocumentDataExtractor();
         var result = recognizer.ExtractFromBitmap(bitmap,  0, DocumentDataExtractionMode.SingleShot);
         
-        if (result?.Document == null) 
+        if (result?.Document == null || result.DocumentDetectionResult.Status != DocumentDetectionStatus.Ok) 
         {
             Alert.Show(this, "Error", "Unable to extract the Document data.");
             return;
@@ -128,7 +132,7 @@ public partial class MainActivity
         var recognizer = _scanbotSdk.CreateCreditCardScanner();
         var result = recognizer.ScanFromBitmap(bitmap, 0);
     
-        if (result?.CreditCard == null) 
+        if (result?.CreditCard == null || result.ScanningStatus != CreditCardScanningStatus.Success) 
         {
             Alert.Show(this, "Error", "Unable to detect the Credit card.");
             return;
