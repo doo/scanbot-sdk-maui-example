@@ -151,7 +151,7 @@ public partial class MainActivity
         Alert.ShowAlert(this, "Check Scanner Result", checkResult.Check.ToFormattedString());
     }
 
-    private void TextDataRecognizerTapped()
+    private void ScanTextPattern()
     {
         var config = new TextPatternScannerScreenConfiguration();
         config.Localization.TopBarCancelButton = "Done";
@@ -170,7 +170,7 @@ public partial class MainActivity
         Alert.ShowAlert(this, "TextPatternScanner Result", results.RawText);
     }
 
-    private void VinRecognizerTapped()
+    private void ScanVin()
     {
         var configuration = new VinScannerConfiguration();
         configuration.SetCancelButtonTitle("Done");

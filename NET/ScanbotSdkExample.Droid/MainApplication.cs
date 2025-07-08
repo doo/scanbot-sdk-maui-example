@@ -1,5 +1,6 @@
 ﻿using Android.Runtime;
 using Android.Util;
+using IO.Scanbot.Sdk.Persistence.Fileio;
 
 namespace ScanbotSdkExample.Droid
 {
@@ -54,10 +55,10 @@ namespace ScanbotSdkExample.Droid
             initializer.PrepareOCRLanguagesBlobs(true);
             
             // You can enable encryption by uncommenting the following lines:
-            //initializer.UseFileEncryption(enableFileEncryption: USE_ENCRYPTION, new AESEncryptedFileIOProcessor(
-            //       "S0m3W3irDL0ngPa$$w0rdino!!!!",
-            //       AESEncryptedFileIOProcessor.AESEncrypterMode.Aes256
-            //   ));
+            // initializer.UseFileEncryption(enableFileEncryption: UseEncryption, new AESEncryptedFileIOProcessor(
+            //        "S0m3W3irDL0ngPa$$w0rdino!!!!",
+            //        AESEncryptedFileIOProcessor.AESEncrypterMode.Aes256
+            //    ));
             // Note: all the images and files exported through the SDK will
             // not be openable from external applications, since they will be
             // encrypted.
