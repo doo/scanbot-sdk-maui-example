@@ -175,7 +175,7 @@ public partial class PagePreviewActivity
 		var ocrResult = recognizer.RecognizeFromDocument(_document);
 		RunOnUiThread(delegate
 	      {
-	          Alert.ShowAlert(this, "Ocr Result", ocrResult.RecognizedText);
+	          Alert.Show(this, "Ocr Result", ocrResult.RecognizedText);
 	      });
 	}
 

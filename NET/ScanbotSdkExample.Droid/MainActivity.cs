@@ -94,7 +94,7 @@ public partial class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
         var message = "License Valid: " + (_scanbotSdk.LicenseInfo.IsValid ? "Yes" : "No");
         message += "\nLicense status: " + _scanbotSdk.LicenseInfo.Status.Name();
             
-        Alert.ShowAlert(this, "License Info", message);
+        Alert.Show(this, "License Info", message);
     }
 
     /**

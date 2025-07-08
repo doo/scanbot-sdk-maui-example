@@ -40,7 +40,7 @@ public partial class MainActivity
 
         if (result?.Document == null)
         {
-            Alert.ShowAlert(this, "Info", "No MRZ found");
+            Alert.Show(this, "Error", "Unable to detect the MRZ.");
             return;
         }
 
@@ -56,12 +56,12 @@ public partial class MainActivity
         
         if (result?.Check == null)
         {
-            Alert.ShowAlert(this, "Info", "No Check found.");
+            Alert.Show(this, "Error", "Unable to detect the Check.");
             return;
         }
         
         var description = result.Check.ToFormattedString();
-        Alert.ShowAlert(this, "Result", description);
+        Alert.Show(this, "Result", description);
     }
     
     private void RecognizeMedicalCertificateFromImage(Intent data)
@@ -82,7 +82,7 @@ public partial class MainActivity
 
         if (result == null)
         {
-            Alert.ShowAlert(this, "Info", "No Medical certificate found.");
+            Alert.Show(this, "Error", "Unable to detect the Medical certificate.");
             return;
         }
 
@@ -98,7 +98,7 @@ public partial class MainActivity
 
         if (result == null)
         {
-            Alert.ShowAlert(this, "Info", "No EHIC found.");
+            Alert.Show(this, "Error", "Unable to detect the EHIC.");
             return;
         }
 
@@ -114,12 +114,12 @@ public partial class MainActivity
         
         if (result?.Document == null) 
         {
-            Alert.ShowAlert(this, "Info", "No Document found.");
+            Alert.Show(this, "Error", "Unable to extract the Document data.");
             return;
         }
         
         var description = result.Document.ToFormattedString();
-        Alert.ShowAlert(this, "Result", description);
+        Alert.Show(this, "Result", description);
     }
     
     private void RecognizeCreditCardFromImage(Intent data)
@@ -130,12 +130,12 @@ public partial class MainActivity
     
         if (result?.CreditCard == null) 
         {
-            Alert.ShowAlert(this, "Info", "No Credit card found.");
+            Alert.Show(this, "Error", "Unable to detect the Credit card.");
             return;
         }
         
         var description = result.CreditCard.ToFormattedString();
-        Alert.ShowAlert(this, "Result", description);
+        Alert.Show(this, "Result", description);
     }
 
     private void ShowFragment(BaseDialogFragment fragment, string name)

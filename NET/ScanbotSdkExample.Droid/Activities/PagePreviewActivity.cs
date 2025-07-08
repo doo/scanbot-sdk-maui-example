@@ -112,7 +112,7 @@ public partial class PagePreviewActivity : AppCompatActivity, IFiltersListener
 
             var qualityAnalyzer = _scanbotSdk.CreateDocumentQualityAnalyzer();
             var documentQualityResult = qualityAnalyzer.AnalyzeOnBitmap(bitmap, 0);
-            Alert.ShowAlert(this, "Document Quality", documentQualityResult.Quality.Name());
+            Alert.Show(this, "Document Quality", documentQualityResult.Quality.Name());
         };
 
         _filter = (TextView)FindViewById(R.Id.action_filter)!;

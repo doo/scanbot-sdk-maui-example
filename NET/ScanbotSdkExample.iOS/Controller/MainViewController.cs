@@ -45,12 +45,12 @@ namespace ScanbotSdkExample.iOS.Controller
 
             _dataDetectionOnImage =
             [
-                new ListItem("Detect Check From Image", DetectCheck),
-                new ListItem("Detect Credit Card From Image", DetectCreditCard),
-                new ListItem("Extract Document Data From Image", ExtractDocumentData),
-                new ListItem("Detect EHIC From Image", DetectEhic),
-                new ListItem("Detect Medical Certificate From Image", DetectMedicalCertificate),
-                new ListItem("Detect MRZ From Image", DetectMrz),
+                new ListItem("Detect Check From Image", RecognizeCheck),
+                new ListItem("Detect Credit Card From Image", RecognizeCreditCard),
+                new ListItem("Extract Document Data From Image", RecognizeDocumentData),
+                new ListItem("Detect EHIC From Image", RecognizeEhic),
+                new ListItem("Detect Medical Certificate From Image", RecognizeMedicalCertificate),
+                new ListItem("Detect MRZ From Image", RecognizeMrz),
             ];
             
             _miscellaneousItems =

@@ -109,14 +109,14 @@ public partial class MainActivity
         // List of Generic documents
         if (outputArray == null || outputArray.Count == 0)
         {
-            Alert.ShowAlert(this, "Error", "Unable to scan the provided input.");
+            Alert.Show(this, "Error", "Unable to scan the provided input.");
             return;
         }
         
         // For this example we only refer to the first document from the result.
         if (outputArray[0] is DocumentDataExtractionResult result)
         {
-            Alert.ShowAlert(this, "Document Data Result", result?.Document?.ToFormattedString());
+            Alert.Show(this, "Document Data Result", result?.Document?.ToFormattedString());
         }
     }
 
@@ -144,11 +144,11 @@ public partial class MainActivity
         var checkResult = (CheckScanningResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
         if (checkResult?.Check?.Fields == null)
         {
-            Alert.ShowAlert(this, "Error", "Unable to scan the provided input.");
+            Alert.Show(this, "Error", "Unable to scan the provided input.");
             return;
         }
 
-        Alert.ShowAlert(this, "Check Scanner Result", checkResult.Check.ToFormattedString());
+        Alert.Show(this, "Check Scanner Result", checkResult.Check.ToFormattedString());
     }
 
     private void ScanTextPattern()
@@ -167,7 +167,7 @@ public partial class MainActivity
             return;
         }
 
-        Alert.ShowAlert(this, "TextPatternScanner Result", results.RawText);
+        Alert.Show(this, "TextPatternScanner Result", results.RawText);
     }
 
     private void ScanVin()
@@ -217,10 +217,10 @@ public partial class MainActivity
         var resultCreditCard = (CreditCardScannerUiResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
         if (resultCreditCard?.CreditCard?.Fields == null)
         {
-            Alert.ShowAlert(this, "Error", "Unable to scan the provided input.");
+            Alert.Show(this, "Error", "Unable to scan the provided input.");
             return;
         }
 
-        Alert.ShowAlert(this, "Credit Card Scanner Result", resultCreditCard.CreditCard.ToFormattedString());
+        Alert.Show(this, "Credit Card Scanner Result", resultCreditCard.CreditCard.ToFormattedString());
     }
 }
