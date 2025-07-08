@@ -33,7 +33,6 @@
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Assets.xcassets\" />
-        <Folder Include="Snippets\" />
     </ItemGroup>
     <ItemGroup>
         <ImageAsset Update="Assets.xcassets\AppIcon.appiconset\Contents.json">
