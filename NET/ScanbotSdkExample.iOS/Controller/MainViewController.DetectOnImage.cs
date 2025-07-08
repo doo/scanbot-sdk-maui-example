@@ -33,7 +33,7 @@ public partial class MainViewController
 		
 		var recognizer = new SBSDKHealthInsuranceCardRecognizer();
 		var result = recognizer.RecognizeFromImage(image, false);
-		if (result?.Fields == null || result.Status != SBSDKEuropeanHealthInsuranceCardRecognitionResultRecognitionStatus.Success)
+		if (result?.Fields == null)
 		{
 			Alert.Show(this, "Error", "Unable to detect the EHIC.");
 			return;
@@ -54,7 +54,7 @@ public partial class MainViewController
 		var extractor = new SBSDKDocumentDataExtractor(builder.BuildConfiguration);
 
 		var result = extractor.ExtractFromImage(image, false);
-		if (result?.Document == null || result.Status != SBSDKDocumentDataExtractionStatus.Success)
+		if (result?.Document == null)
 		{
 			Alert.Show(this, "Error", "Unable to extract the Document data.");
 			return;
@@ -73,7 +73,7 @@ public partial class MainViewController
 		var scanner = new SBSDKCheckScanner(config, SBSDKCheckDocumentModelRootType.AllDocumentTypes);
 		
 		var result = scanner.ScanFromImage(image, false);
-		if (result?.Check == null || result.Status != SBSDKCheckMagneticInkStripScanningStatus.Success)
+		if (result?.Check == null)
 		{
 			Alert.Show(this, "Error", "Unable to detect the Check.");
 			return;
@@ -91,7 +91,7 @@ public partial class MainViewController
 		
 		var scanner = new SBSDKCreditCardScanner(configuration);
 		var result = scanner.ScanFromImage(image);
-		if (result?.CreditCard == null || result.ScanningStatus != SBSDKCreditCardScanningStatus.Success)
+		if (result?.CreditCard == null)
 		{
 			Alert.Show(this, "Error", "Unable to detect the Credit card.");
 			return;

@@ -58,7 +58,7 @@ public partial class MainActivity
         var recognizer = _scanbotSdk.CreateCheckScanner();
         var result = recognizer.ScanFromBitmap(bitmap, 0);
         
-        if (result?.Check == null || result.Status != CheckMagneticInkStripScanningStatus.Success)
+        if (result?.Check == null)
         {
             Alert.Show(this, "Error", "Unable to detect the Check.");
             return;
@@ -84,7 +84,7 @@ public partial class MainActivity
             orientation: 0,
             parameters: parameters);
 
-        if (result == null || !result.ScanningSuccessful || result.DocumentDetectionResult.Status != DocumentDetectionStatus.Ok)
+        if (result == null || !result.ScanningSuccessful)
         {
             Alert.Show(this, "Error", "Unable to detect the Medical certificate.");
             return;
@@ -100,7 +100,7 @@ public partial class MainActivity
         var recognizer = _scanbotSdk.CreateHealthInsuranceCardScanner();
         var result = recognizer.RecognizeBitmap(bitmap, 0);
 
-        if (result == null || result.Status != EuropeanHealthInsuranceCardRecognitionResult.RecognitionStatus.Success)
+        if (result == null)
         {
             Alert.Show(this, "Error", "Unable to detect the EHIC.");
             return;
@@ -116,7 +116,7 @@ public partial class MainActivity
         var recognizer = _scanbotSdk.CreateDocumentDataExtractor();
         var result = recognizer.ExtractFromBitmap(bitmap,  0, DocumentDataExtractionMode.SingleShot);
         
-        if (result?.Document == null || result.DocumentDetectionResult.Status != DocumentDetectionStatus.Ok) 
+        if (result?.Document == null) 
         {
             Alert.Show(this, "Error", "Unable to extract the Document data.");
             return;
@@ -132,7 +132,7 @@ public partial class MainActivity
         var recognizer = _scanbotSdk.CreateCreditCardScanner();
         var result = recognizer.ScanFromBitmap(bitmap, 0);
     
-        if (result?.CreditCard == null || result.ScanningStatus != CreditCardScanningStatus.Success) 
+        if (result?.CreditCard == null) 
         {
             Alert.Show(this, "Error", "Unable to detect the Credit card.");
             return;
