@@ -25,11 +25,11 @@ public static partial class MauiProgram
             StorageImageQuality = 50,
             EngineMode = DocumentScannerEngineMode.Ml,
             // You can enable encryption by uncommenting the following lines:
-            //Encryption = new SBSDKEncryption
-            //{
-            //    Password = "SomeSecretPa$$w0rdForFileEncryption",
-            //    Mode = EncryptionMode.AES256
-            //}
+            // Encryption = new SBSDKEncryption
+            // {
+            //     Password = "SomeSecretPa$$w0rdForFileEncryption",
+            //     Mode = StorageEncryptionMode.Aes256
+            // }
             // Note: all the images and files exported through the SDK will
             // not be openable from external applications, since they will be
             // encrypted.

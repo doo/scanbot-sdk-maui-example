@@ -1,13 +1,12 @@
 ﻿using ScanbotSdkExample.Maui.Pages;
 
-namespace ScanbotSdkExample.Maui
+namespace ScanbotSdkExample.Maui;
+
+public partial class App : Application
 {
-    public partial class App : Application
+    public App()
     {
-        public App()
-        {
-            InitializeComponent();
-            MainPage = new NavigationPage(new HomePage());
-        }
+        InitializeComponent();
+        MainPage = new NavigationPage(new HomePage());
     }
 }
