@@ -31,7 +31,7 @@ public partial class MainViewController
         PresentViewController(controller, false, null);
     }
 
-    private void ScanDocumentData()
+    private void ExtractDocumentData()
     {
         var configuration = SBSDKUIDocumentDataExtractorConfiguration.DefaultConfiguration;
         configuration.TextConfiguration.CancelButtonTitle = "Done";

@@ -56,7 +56,7 @@ public partial class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
         detectors.AddChildren(_buttons, [
             new ListItemButton(this, "Scan Check", ScanCheck),
             new ListItemButton(this, "Scan Credit Card", ScanCreditCard),
-            new ListItemButton(this, "Scan Document Data", ExtractDocumentData),
+            new ListItemButton(this, "Extract Document Data", ExtractDocumentData),
             new ListItemButton(this, "Scan EU Health Insurance Card", ScanEhic),
             new ListItemButton(this, "Scan Medical Certificate", ScanMedicalCertificate),
             new ListItemButton(this, "Scan MRZ", ScanMrz),

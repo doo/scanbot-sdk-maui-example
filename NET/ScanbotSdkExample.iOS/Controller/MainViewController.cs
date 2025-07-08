@@ -35,7 +35,7 @@ namespace ScanbotSdkExample.iOS.Controller
             [
                 new ListItem("Scan Check", ScanCheck),
                 new ListItem("Scan CreditCard", ScanCreditCard),
-                new ListItem("Scan Document Data", ScanDocumentData),
+                new ListItem("Extract Document Data", ExtractDocumentData),
                 new ListItem("Scan EU Health Insurance Card", ScanEhic),
                 new ListItem("Scan Medical Certificate", ScanMedicalCertificate),
                 new ListItem("Scan MRZ", ScanMrz),
