@@ -1,5 +1,0 @@
-﻿<resources>
-    <string name="app_name">ReadyToUseUI.Droid</string>
-    <string name="app_text">Hello, Android!</string>
-    <string name="detected_barcodes_caption">Detected barcodes:</string>
-</resources>
