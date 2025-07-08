@@ -2,37 +2,32 @@
 
 namespace ScanbotSdkExample.iOS.View
 {
-    public class ButtonContainer : UIView
+    public sealed class ButtonContainer : UIView
     {
-        public UIView TitleContainerView { get; private set; }
-        public UILabel Title { get; private set; }
-
+        private UIView TitleContainerView { get; set; }
+        private UILabel Title { get; set; }
         public List<ScannerButton> Buttons { get; private set; }
 
-        float padding = 15;
-        float titleHeight, buttonHeight;
-        public float Height
-        {
-            get
-            {
-                return titleHeight +
-                    (Buttons.Count * buttonHeight) + 
-                    (Buttons.Count * padding) + padding;
-            }
-        }
+        private const float Padding = 15;
+        private readonly float _titleHeight;
+        private readonly float _buttonHeight;
+        public float Height =>
+            _titleHeight +
+            (Buttons.Count * _buttonHeight) + 
+            (Buttons.Count * Padding) + Padding;
 
         public ButtonContainer(string title, List<ListItem> data)
         {
-            titleHeight = 40;
-            buttonHeight = 30;
+            _titleHeight = 40;
+            _buttonHeight = 30;
             
             Title = new UILabel();
             Title.Text = title;
             Title.Font = UIFont.FromName("HelveticaNeue-Bold", 16f);
-            Title.TextColor = Models.Colors.NearWhite;
+            Title.TextColor = Colors.NearWhite;
             Title.BackgroundColor = UIColor.Clear;
             
-            TitleContainerView = new UIView(new CGRect(0, 0, this.Frame.Width, titleHeight));
+            TitleContainerView = new UIView(new CGRect(0, 0, this.Frame.Width, _titleHeight));
             TitleContainerView.BackgroundColor = Colors.ScanbotRed;
             TitleContainerView.Add(Title);
 
@@ -51,21 +46,21 @@ namespace ScanbotSdkExample.iOS.View
         {
             base.LayoutSubviews();
 
-            float x = padding;
-            float y = padding;
-            float w = (float)(Frame.Width - 2 * padding);
-            float h = titleHeight;
+            float x = Padding;
+            float y;
+            float w = (float)(Frame.Width - 2 * Padding);
+            float h = _titleHeight;
 
             TitleContainerView.Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width, h);
             Title.Frame = new CGRect(x, 0, w, h);
             
-            y = h + padding;
-            h = buttonHeight;
+            y = h + Padding;
+            h = _buttonHeight;
 
             foreach(ScannerButton button in Buttons)
             {
                 button.Frame = new CGRect(x, y, w, h);
-                y += h + padding;
+                y += h + Padding;
             }
         }
     }

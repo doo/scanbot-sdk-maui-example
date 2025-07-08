@@ -3,12 +3,11 @@ using ScanbotSDK.iOS;
 
 namespace ScanbotSdkExample.iOS.View
 {
-    public class MainView : UIScrollView
+    public sealed class MainView : UIScrollView
     {
+        private List<ButtonContainer> ButtonContainers { get; set; } = [];
         public UILabel LicenseIndicator { get; private set; }
-
-        public List<ButtonContainer> ButtonContainers { get; private set; } = new List<ButtonContainer> { };
-
+        
         public List<ScannerButton> AllButtons => ButtonContainers.Aggregate(new List<ScannerButton>(), (buttons, container) =>
         {
             buttons.AddRange(container.Buttons);
@@ -20,11 +19,10 @@ namespace ScanbotSdkExample.iOS.View
             base.LayoutSubviews();
 
             float largePadding = 20;
-
             float x = 0;
             float y = largePadding;
             float w = (float)Frame.Width;
-            float h = ScanbotSDKGlobal.IsLicenseValid ? 50 : 0;
+            float h = ScanbotSDKGlobal.IsLicenseValid ? 0 : 50;
 
             LicenseIndicator.Frame = new CGRect(x, y, w, h);
             y += h;
@@ -40,15 +38,13 @@ namespace ScanbotSdkExample.iOS.View
 
         public MainView()
         {
-            BackgroundColor = Models.Colors.DarkGray;
+            BackgroundColor = Colors.DarkGray;
 
             LicenseIndicator = new UILabel();
             LicenseIndicator.TextColor = UIColor.White;
-            LicenseIndicator.BackgroundColor = Models.Colors.ScanbotRed;
-            LicenseIndicator.Layer.CornerRadius = 5;
+            LicenseIndicator.BackgroundColor = Colors.ScanbotRed;
             LicenseIndicator.Font = UIFont.FromName("HelveticaNeue", 13);
             LicenseIndicator.Lines = 0;
-            LicenseIndicator.ClipsToBounds = true;
             LicenseIndicator.TextAlignment = UITextAlignment.Center;
 
             AddSubview(LicenseIndicator);

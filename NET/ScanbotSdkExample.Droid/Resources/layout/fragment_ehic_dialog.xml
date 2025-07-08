@@ -12,20 +12,19 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/title"
+            android:id="@+id/title_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
             android:fontFamily="sans-serif-medium"
             android:letterSpacing="0.01"
-            android:text="@string/detected_barcodes_caption"
             android:textColor="#ffffff"
             android:textSize="20sp"
             android:textStyle="normal" />
 
         <TextView
-            android:id="@+id/barcode_result_values"
+            android:id="@+id/ehic_info_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"

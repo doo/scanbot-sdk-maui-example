@@ -4,22 +4,22 @@ using Android.Text.Style;
 using Android.Views;
 using IO.Scanbot.Sdk.MC;
 using ScanbotSdkExample.Droid.Views;
+using R = _Microsoft.Android.Resource.Designer.ResourceConstant;
 
 namespace ScanbotSdkExample.Droid.Fragments
 {
     public class MedicalCertificateResultDialogFragment : BaseDialogFragment
     {
-        public const string NAME = "MedicalCertificateResultDialogFragment";
-        public const string MEDICAL_CERTIFICATE_RESULT_EXTRA = "MEDICAL_CERTIFICATE_RESULT_EXTRA";
-
+        public const string Name = "MedicalCertificateResultDialogFragment";
+        private const string MedicalCertificateResultExtra = "MEDICAL_CERTIFICATE_RESULT_EXTRA";
         private MedicalCertificateScanningResult _result;
 
         public static MedicalCertificateResultDialogFragment CreateInstance(MedicalCertificateScanningResult result)
         {
             var fragment = new MedicalCertificateResultDialogFragment();
-
             var args = new Bundle();
-            args.PutParcelable(MEDICAL_CERTIFICATE_RESULT_EXTRA, result);
+            args.PutParcelable(MedicalCertificateResultExtra, result);
+            
             fragment.Arguments = args;
 
             return fragment;
@@ -27,11 +27,23 @@ namespace ScanbotSdkExample.Droid.Fragments
 
         public override View AddContentView(LayoutInflater inflater, ViewGroup container)
         {
-            _result = (MedicalCertificateScanningResult)Arguments.GetParcelable(MEDICAL_CERTIFICATE_RESULT_EXTRA);
-            var view = inflater.Inflate(Resource.Layout.fragment_medical_certificate_result_dialog, container);
+            _result = (MedicalCertificateScanningResult)Arguments.GetParcelable(MedicalCertificateResultExtra);
+            var view = inflater.Inflate(R.Layout.fragment_medical_certificate_result_dialog, container)!;
+            var textView = ((TextView)view.FindViewById(R.Id.tv_data))!;
+            
+            if (_result == null || _result.FormType == MedicalCertificateFormType.Unknown)
+            {
+                textView.Text = "No Medical certificate found.";
+                return view;
+            }
+            
+            textView.TextFormatted = ParseData(_result);
 
-            view.FindViewById<TextView>(Resource.Id.tv_data).TextFormatted = ParseData(_result);
-            view.FindViewById<ImageView>(Resource.Id.front_snap_result).SetImageBitmap(_result?.CroppedImage.ToBitmap());
+            var bitmap = _result.CroppedImage?.ToBitmap();
+            if (bitmap != null)
+            {
+                view.FindViewById<ImageView>(R.Id.front_snap_result)!.SetImageBitmap(bitmap);
+            }
 
             return view;
         }

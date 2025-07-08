@@ -27,7 +27,7 @@ namespace ScanbotSdkExample.iOS.Controller
                 new ListItem("Single Document Scanning", SingleDocumentScanning),
                 new ListItem("Single Finder Document Scanning", SingleFinderDocumentScanning),
                 new ListItem("Multiple Document Scanning", MultipleDocumentScanning),
-                new ListItem("Import Image", ImportImage),
+                new ListItem("Create Document From Image", CreateDocFromImage),
                 new ListItem("Classic Document Scanner View", ClassicDocumentScannerView)
             ];
 
@@ -35,7 +35,7 @@ namespace ScanbotSdkExample.iOS.Controller
             [
                 new ListItem("Scan Check", ScanCheck),
                 new ListItem("Scan CreditCard", ScanCreditCard),
-                new ListItem("Scan Document Data", ScanDocumentData),
+                new ListItem("Extract Document Data", ExtractDocumentData),
                 new ListItem("Scan EU Health Insurance Card", ScanEhic),
                 new ListItem("Scan Medical Certificate", ScanMedicalCertificate),
                 new ListItem("Scan MRZ", ScanMrz),
@@ -45,12 +45,12 @@ namespace ScanbotSdkExample.iOS.Controller
 
             _dataDetectionOnImage =
             [
-                new ListItem("Detect Check From Image", DetectCheck),
-                new ListItem("Detect Credit Card From Image", DetectCreditCard),
-                new ListItem("Detect Document Data From Image", DetectDocumentData),
-                new ListItem("Detect EHIC From Image", DetectEhic),
-                new ListItem("Detect Medical Certificate From Image", DetectMedicalCertificate),
-                new ListItem("Detect MRZ From Image", DetectMrz),
+                new ListItem("Detect Check From Image", RecognizeCheck),
+                new ListItem("Detect Credit Card From Image", RecognizeCreditCard),
+                new ListItem("Extract Document Data From Image", RecognizeDocumentData),
+                new ListItem("Detect EHIC From Image", RecognizeEhic),
+                new ListItem("Detect Medical Certificate From Image", RecognizeMedicalCertificate),
+                new ListItem("Detect MRZ From Image", RecognizeMrz),
             ];
             
             _miscellaneousItems =
@@ -63,7 +63,7 @@ namespace ScanbotSdkExample.iOS.Controller
             _contentView.AddContent("Data Detection On Image", _dataDetectionOnImage);
             _contentView.AddContent("Miscellaneous", _miscellaneousItems);
 
-            _contentView.LicenseIndicator.Text = Texts.no_license_found_the_app_will_terminate_after_one_minute;
+            _contentView.LicenseIndicator.Text = Texts.NoLicenseFoundTheAppWillTerminateAfterOneMinute;
         }
         
         public override void ViewWillAppear(bool animated)

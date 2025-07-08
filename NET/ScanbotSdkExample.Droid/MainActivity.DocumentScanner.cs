@@ -74,12 +74,15 @@ public partial class MainActivity
 
     private void HandleDocumentScannerResult(Intent data)
     {
-        var documentId = data?.GetStringExtra(IO.Scanbot.Sdk.Ui_v2.Common.Activity.ActivityConstants.ExtraKeyRtuResult) as string;
+        var documentId = data?.GetStringExtra(IO.Scanbot.Sdk.Ui_v2.Common.Activity.ActivityConstants.ExtraKeyRtuResult);
+
+        if (documentId == null) return;
+        
         var intent = PagePreviewActivity.CreateIntent(this, documentId);
         StartActivity(intent);
     }
 
-    private void ImportImage()
+    private void CreateDocFromImage()
     {
         var intent = new Intent();
         intent.SetType("image/*");
@@ -87,7 +90,7 @@ public partial class MainActivity
         intent.PutExtra(Intent.ExtraLocalOnly, false);
         intent.PutExtra(Intent.ExtraAllowMultiple, false);
 
-        var chooser = Intent.CreateChooser(intent, Texts.share_title);
+        var chooser = Intent.CreateChooser(intent, Texts.ShareTitle);
         StartActivityForResult(chooser, ImportImageRequestCode);
     }
 
@@ -95,7 +98,7 @@ public partial class MainActivity
     {
         _progress.Visibility = ViewStates.Visible;
 
-        Alert.Toast(this, Texts.importing_and_processing);
+        Alert.Toast(this, Texts.ImportingAndProcessing);
 
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
 

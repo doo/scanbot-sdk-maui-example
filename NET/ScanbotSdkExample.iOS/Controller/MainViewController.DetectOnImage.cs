@@ -6,7 +6,7 @@ namespace ScanbotSdkExample.iOS.Controller;
 
 public partial class MainViewController
 {
-	private async void DetectMrz()
+	private async void RecognizeMrz()
 	{
 		var image = await ImagePicker.Instance.PickImageAsync();
 
@@ -16,34 +16,33 @@ public partial class MainViewController
 			IncompleteResultHandling = SBSDKMRZIncompleteResultHandling.Accept
 		};
 		
-		// Create an instance of the recognizer
-		var recognizer = new SBSDKMRZScanner(config);
-		var result = recognizer.ScanFromImage(image);
-		if (result?.Document == null)
+		var scanner = new SBSDKMRZScanner(config);
+		var result = scanner.ScanFromImage(image);
+		if (result?.Document == null || !result.Success)
 		{
-			Alert.Show(this, "Error", "Unable to detect the document.");
+			Alert.Show(this, "Error", "Unable to detect the MRZ.");
 			return;
 		}
 
 		ShowPopup(this, result.Document?.ToFormattedString());
 	}
 
-	private async void DetectEhic()
+	private async void RecognizeEhic()
 	{
 		var image = await ImagePicker.Instance.PickImageAsync();
 		
 		var recognizer = new SBSDKHealthInsuranceCardRecognizer();
 		var result = recognizer.RecognizeFromImage(image, false);
-		if (result == null || result.Status != SBSDKEuropeanHealthInsuranceCardRecognitionResultRecognitionStatus.Success)
+		if (result?.Fields == null)
 		{
-			Alert.Show(this, "Error", "Unable to detect the document.");
+			Alert.Show(this, "Error", "Unable to detect the EHIC.");
 			return;
 		}
 
-		ShowPopup(this, result.Fields?.ToFormattedString());
+		ShowPopup(this, result.Fields.ToFormattedString());
 	}
 	
-	private async void DetectDocumentData()
+	private async void RecognizeDocumentData()
 	{
 		var image = await ImagePicker.Instance.PickImageAsync();
 
@@ -55,57 +54,62 @@ public partial class MainViewController
 		var extractor = new SBSDKDocumentDataExtractor(builder.BuildConfiguration);
 
 		var result = extractor.ExtractFromImage(image, false);
-		if (result?.Document == null || !result.DocumentDetectionResult.IsScanningStatusOK)
+		if (result?.Document == null)
 		{
-			Alert.Show(this, "Error", "Unable to detect the document.");
+			Alert.Show(this, "Error", "Unable to extract the Document data.");
 			return;
 		}
 	
 		ShowPopup(this, result.Document?.ToFormattedString());
 	}
 	
-	private async void DetectCheck()
+	private async void RecognizeCheck()
 	{
 		var image = await ImagePicker.Instance.PickImageAsync();
 
 		var config = new SBSDKCheckScannerConfiguration();
 		config.DocumentDetectionMode = SBSDKCheckDocumentDetectionMode.DetectDocument;
-		var recognizer = new SBSDKCheckScanner(config, SBSDKCheckDocumentModelRootType.AllDocumentTypes);
-
-		var result = recognizer.ScanFromImage(image, false);
+		
+		var scanner = new SBSDKCheckScanner(config, SBSDKCheckDocumentModelRootType.AllDocumentTypes);
+		
+		var result = scanner.ScanFromImage(image, false);
 		if (result?.Check == null)
 		{
-			Alert.Show(this, "Error", "Unable to detect the document.");
+			Alert.Show(this, "Error", "Unable to detect the Check.");
 			return;
 		}
 	
 		ShowPopup(this, result.Check?.ToFormattedString());
 	}
 
-	private async void DetectCreditCard()
+	private async void RecognizeCreditCard()
 	{
 		var image = await ImagePicker.Instance.PickImageAsync();
-		var recognizer = new SBSDKCreditCardScanner();
-		var result = recognizer.ScanFromImage(image);
-		if (result?.CreditCard == null || result.ScanningStatus != SBSDKCreditCardScanningStatus.Success)
+		
+		var configuration = new SBSDKCreditCardScannerConfiguration();
+		configuration.ScanningMode = SBSDKCreditCardScanningMode.SingleShot;
+		
+		var scanner = new SBSDKCreditCardScanner(configuration);
+		var result = scanner.ScanFromImage(image);
+		if (result?.CreditCard == null)
 		{
-			Alert.Show(this, "Error", "Unable to detect the document.");
+			Alert.Show(this, "Error", "Unable to detect the Credit card.");
 			return;
 		}
-		ShowPopup(this, result.CreditCard?.ToFormattedString());
+		ShowPopup(this, result.CreditCard.ToFormattedString());
 	}
 	
-	private async void DetectMedicalCertificate()
+	private async void RecognizeMedicalCertificate()
 	{
 		var image = await ImagePicker.Instance.PickImageAsync();
 		var scanner = new SBSDKMedicalCertificateScanner();
 		var result = scanner.ScanFromImage(image, new SBSDKMedicalCertificateScanningParameters());
-		if (result == null || !result.ScanningSuccessful || result.DocumentDetectionResult == null)
+		if (result == null || !result.ScanningSuccessful)
 		{
-			Alert.Show(this, "Error", "Unable to detect the document.");
+			Alert.Show(this, "Error", "Unable to detect the Medical certificate.");
 			return;
 		}
 		
-		ShowPopupWithAttributedText(this, result?.ToFormattedAttributeString());
+		ShowPopupWithAttributedText(this, result.ToFormattedAttributeString());
 	}
 }

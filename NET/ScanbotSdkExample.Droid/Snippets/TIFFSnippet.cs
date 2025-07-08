@@ -30,8 +30,8 @@ public class TIFFSnippet : AppCompatActivity
 		
 		var defaultParams = TiffGeneratorParameters.Default();
 		
-		var options = new IO.Scanbot.Sdk.Tiff.Model.TiffGeneratorParameters(
-			IO.Scanbot.Sdk.Tiff.Model.CompressionMode.None,
+		var options = new TiffGeneratorParameters(
+			CompressionMode.None,
 			jpegQuality: defaultParams.JpegQuality,
 			zipCompressionLevel: defaultParams.ZipCompressionLevel,
 			dpi: 200,
@@ -51,8 +51,8 @@ public class TIFFSnippet : AppCompatActivity
 		
 		var defaultParams = TiffGeneratorParameters.Default();
 		
-		var options = new IO.Scanbot.Sdk.Tiff.Model.TiffGeneratorParameters(
-			IO.Scanbot.Sdk.Tiff.Model.CompressionMode.None,
+		var options = new TiffGeneratorParameters(
+			CompressionMode.None,
 			jpegQuality: defaultParams.JpegQuality,
 			zipCompressionLevel: defaultParams.ZipCompressionLevel,
 			dpi: 200,

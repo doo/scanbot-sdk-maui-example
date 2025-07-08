@@ -1,12 +1,11 @@
 ﻿using Android.Views;
 using DialogFragment = Android.App.DialogFragment;
+using R = _Microsoft.Android.Resource.Designer.ResourceConstant;
 
 namespace ScanbotSdkExample.Droid.Views
 {
     public class BaseDialogFragment : DialogFragment
     {
-        public const string SCANNER_RESULT_EXTRA = "SCANNER_RESULT_EXTRA";
-
         public string CopyText { get; set; }
 
         public virtual View AddContentView(LayoutInflater inflater, ViewGroup container)
@@ -18,7 +17,7 @@ namespace ScanbotSdkExample.Droid.Views
         {
             var builder = new AndroidX.AppCompat.App.AlertDialog.Builder(Activity);
             var inflater = LayoutInflater.From(Activity);
-            var container = (ViewGroup)inflater.Inflate(Resource.Layout.holo_dialog_frame, null, false);
+            var container = (ViewGroup)inflater.Inflate(R.Layout.holo_dialog_frame, null, false);
             AddContentView(inflater, container);
 
             builder.SetView(container);

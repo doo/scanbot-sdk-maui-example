@@ -2,7 +2,7 @@
 
 namespace ScanbotSdkExample.iOS.Controller
 {
-    public class PopupController : UIViewController
+    public sealed class PopupController : UIViewController
     {
         public PopupView Content { get; set; }
         private readonly string _text;
@@ -34,7 +34,7 @@ namespace ScanbotSdkExample.iOS.Controller
         public override void ViewDidLoad()
         {
             float hPadding = 20;
-            float vPadding = (float)View.Frame.Height / 6;
+            float vPadding = (float)View!.Frame.Height / 6;
 
             float x = hPadding;
             float y = vPadding;

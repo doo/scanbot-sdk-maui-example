@@ -2,7 +2,7 @@
 
 namespace ScanbotSdkExample.iOS.View
 {
-    public class ImageCollectionView : UIView
+    public sealed class ImageCollectionView : UIView
     {
         public ImageCollection Collection { get; private set; }
 

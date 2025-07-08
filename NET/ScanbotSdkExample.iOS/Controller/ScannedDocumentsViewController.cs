@@ -29,21 +29,21 @@ public partial class ScannedDocumentsViewController : UIViewController
 
         var toolBarButtons = new List<UIBarButtonItem>
         {
-            new UIBarButtonItem(Texts.filter, UIBarButtonItemStyle.Done, OnFilterButtonClicked)
+            new UIBarButtonItem(Texts.Filter, UIBarButtonItemStyle.Done, OnFilterButtonClicked)
         };
 
         if (_scannedDocument.Pages.Length == 1) // Single page document
         {
             toolBarButtons.AddRange(new List<UIBarButtonItem>
             {
-                new UIBarButtonItem(Texts.document_quality, UIBarButtonItemStyle.Done, OnAnalyzeDocumentClicked),
-                new UIBarButtonItem(Texts.crop, UIBarButtonItemStyle.Done, OnManualCropClicked)
+                new UIBarButtonItem(Texts.DocumentQuality, UIBarButtonItemStyle.Done, OnAnalyzeDocumentClicked),
+                new UIBarButtonItem(Texts.Crop, UIBarButtonItemStyle.Done, OnManualCropClicked)
             });
         }
 
         SetToolbarItems(toolBarButtons.ToArray(), true);
         NavigationController?.SetToolbarHidden(false, false);
-        NavigationItem.SetRightBarButtonItem(new UIBarButtonItem(Texts.export, UIBarButtonItemStyle.Done, OnExportButtonClick), true);
+        NavigationItem.SetRightBarButtonItem(new UIBarButtonItem(Texts.Export, UIBarButtonItemStyle.Done, OnExportButtonClick), true);
     }
 
     private void OnAnalyzeDocumentClicked(object sender, EventArgs e)
@@ -60,8 +60,7 @@ public partial class ScannedDocumentsViewController : UIViewController
 
         // Get the document quality analysis result by passing the image to the analyzer
         var documentQuality = documentAnalyzer.AnalyzeOnImage(documentPageImage);
-
-        Alert.Show(this, "Document Quality", documentQuality?.Quality?.ToString() ?? "");
+        Alert.Show(this, "Document Quality", Map(documentQuality?.Quality));
     }
 
     private void OnManualCropClicked(object sender, EventArgs e)
@@ -117,9 +116,27 @@ public partial class ScannedDocumentsViewController : UIViewController
         controller.NavigateData(_ => LoadPages(), _scannedDocument);
         NavigationController?.PushViewController(controller, true);
     }
-
-    public void DidSelectFilter(SBSDKParametricFilter filter)
+    
+    // Map document quality analysis result into string
+    private string Map(SBSDKDocumentQuality documentQuality)
     {
-        LoadPages();
+        if (documentQuality == null) return "No Document";
+        
+        if (SBSDKDocumentQuality.VeryPoor.Equals(documentQuality))
+            return "Very Poor";
+
+        if (SBSDKDocumentQuality.Poor.Equals(documentQuality))
+            return "Poor";
+
+        if (SBSDKDocumentQuality.Reasonable.Equals(documentQuality))
+            return "Reasonable";
+
+        if (SBSDKDocumentQuality.Good.Equals(documentQuality))
+            return "Good";
+
+        if (SBSDKDocumentQuality.Excellent.Equals(documentQuality))
+            return "Excellent";
+
+        return "No Document";
     }
 }

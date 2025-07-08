@@ -1,5 +1,9 @@
 ﻿<resources>
-    <string name="app_name">ScanbotSdkExample.Droid</string>
-    <string name="app_text">Hello, Android!</string>
-    <string name="detected_barcodes_caption">Detected barcodes:</string>
+    <string name="app_name">Scanbot NET</string>
+    <string name="main_activity_title">Scanbot SDK RTU UI Example</string>
+
+    <string name="document_scanner_title">Document Scanner</string>
+    <string name="data_detectors_title">Data Detectors</string>
+    <string name="data_detectors_on_image_title">Data Detection On Image</string>
+    <string name="miscellaneous_title">Miscellaneous</string>
 </resources>

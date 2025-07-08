@@ -1,6 +1,6 @@
 ﻿namespace ScanbotSdkExample.iOS.View
 {
-    public class PopupView : UIView
+    public sealed class PopupView : UIView
     {
         public UILabel Label { get; private set; }
 
@@ -75,21 +75,20 @@
         }
     }
 
-    public class PopupButton : UIView
+    public sealed class PopupButton : UIView
     {
         public EventHandler<EventArgs> Click;
-
-        UILabel label;
+        private readonly UILabel _label;
 
         public PopupButton(string text)
         {
-            label = new UILabel();
-            label.Text = text;
-            label.TextColor = Models.Colors.AppleBlue;
-            label.ClipsToBounds = true;
-            label.TextAlignment = UITextAlignment.Center;
-            label.Font = UIFont.FromName("HelveticaNeue-Bold", 15);
-            AddSubview(label);
+            _label = new UILabel();
+            _label.Text = text;
+            _label.TextColor = Models.Colors.AppleBlue;
+            _label.ClipsToBounds = true;
+            _label.TextAlignment = UITextAlignment.Center;
+            _label.Font = UIFont.FromName("HelveticaNeue-Bold", 15);
+            AddSubview(_label);
 
             ClipsToBounds = true;
         }
@@ -98,7 +97,7 @@
         {
             base.LayoutSubviews();
 
-            label.Frame = Bounds;
+            _label.Frame = Bounds;
         }
 
         public override void TouchesBegan(NSSet touches, UIEvent evt)
@@ -123,20 +122,19 @@
 
     public class PopupImageContainer : UIView
     {
-        List<UIImageView> views = new List<UIImageView>();
-
-        List<UIImage> images;
+        private readonly List<UIImageView> _views = new List<UIImageView>();
+        private List<UIImage> _images;
         public List<UIImage> Items
         {
-            get => images;
+            get => _images;
             set
             {
-                images = value;
-                foreach (var image in images)
+                _images = value;
+                foreach (var image in _images)
                 {
                     var view = new UIImageView();
                     view.Image = image;
-                    views.Add(view);
+                    _views.Add(view);
                     AddSubview(view);
                 }
             }
@@ -153,12 +151,11 @@
             float w = ((float)Frame.Width - 2 * padding) / 3;
             float h = (float)Frame.Height;
 
-            foreach (var view in views)
+            foreach (var view in _views)
             {
                 view.Frame = new CGRect(x, y, w, h);
                 x += w + padding;
             }
         }
     }
-
 }
