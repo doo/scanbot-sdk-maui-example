@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ScanbotSdkExample.Maui.Pages.FiltersPage"
+             xmlns:local="clr-namespace:ScanbotSdkExample.Maui.Pages"
+             xmlns:color="clr-namespace:ScanbotSDK.MAUI;assembly=ScanbotSDK.Shared"
+             xmlns:page="clr-namespace:ScanbotSdkExample.Maui.Pages"
+             x:DataType="page:FiltersPage">
+    <ContentPage.Resources>
+        <!-- Data Template Listing -->
+        
+        <!-- Primary Filter Template-->
+        <DataTemplate x:Key="PrimaryFilterTemplate" x:DataType="page:FilterItem">
+            <StackLayout Padding="10" HeightRequest="50"
+                         BackgroundColor="{Binding Source={x:Static color:Constants+Colors.ScanbotRed}}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="9*" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0"
+                           Text="{Binding FilterTitle }"
+                           FontSize="18"
+                           TextColor="White"
+                           FontAttributes="Bold" />
+                    <CheckBox Grid.Column="1"
+                              IsChecked="{Binding IsSelected}"
+                              CheckedChanged="CheckBox_OnCheckedChanged" />
+                </Grid>
+            </StackLayout>
+        </DataTemplate>
+
+        <!-- Picker Type Filters-->
+        <DataTemplate x:Key="PickerItemTemplate" x:DataType="page:FilterItem">
+            <StackLayout Padding="19,9">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="4*" />
+                        <ColumnDefinition Width="6*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Column="0" Text="{Binding Caption}" VerticalOptions="Center"  FontSize="14" HorizontalOptions="Start" />
+                    <Picker Grid.Column="1" 
+                            ItemsSource="{Binding PickerItems}"
+                            FontSize="14" 
+                            HorizontalOptions="Fill"
+                            SelectedItem="{Binding PickerSelectedValue}"
+                            SelectedIndexChanged="Picker_OnSelectedIndexChanged"/>
+                </Grid>
+            </StackLayout>
+        </DataTemplate>
+
+        <!-- Legacy Filters-->
+        <DataTemplate x:Key="SubFilterTemplate" x:DataType="page:FilterItem">
+            <StackLayout Padding="19,9">
+                <Label Text="{Binding Caption }" />
+                <Frame HeightRequest="1" HorizontalOptions="Fill" BackgroundColor="DarkGray" />
+            </StackLayout>
+        </DataTemplate>
+
+        <!-- Slider Filter Item-->
+        <DataTemplate x:Key="SliderItemTemplate" x:DataType="page:FilterItem">
+            <StackLayout Padding="19,9">
+                <Label Text="{Binding Caption }" FontSize="14" />
+                <Grid>
+                    <Label HorizontalOptions="Start" Text="{Binding MinValue}" FontSize="14" />
+                    <Label HorizontalOptions="Center"  Text="{Binding Source={x:Reference slider}, Path=Value, StringFormat='{0:0.##}'}" FontSize="14" />
+                    <Label HorizontalOptions="End" Text="{Binding MaxValue}" FontSize="14" />
+                </Grid>
+                <Slider x:Name="slider" Value="{Binding SliderValue }" Minimum="{Binding MinValue}" Maximum="{Binding MaxValue}" ValueChanged="Slider_OnValueChanged" />
+            </StackLayout>
+        </DataTemplate>
+
+        <local:FilterItemTemplateSelector x:Key="FilterItemTemplateSelector"
+                                          PrimaryFilterTemplate = "{StaticResource PrimaryFilterTemplate}"
+                                          PickerItemTemplate="{StaticResource PickerItemTemplate}"
+                                          SubFilterTemplate="{StaticResource SubFilterTemplate}"
+                                          SliderItemTemplate="{StaticResource SliderItemTemplate}" />
+
+        <!-- Item Template Listing -->
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <ScrollView VerticalScrollBarVisibility="Never">
+            <StackLayout>
+                <CollectionView
+                    x:Name="FilterssCollectionView"
+                    ItemsSource="{Binding FilterItems}"
+                    SelectionMode="None"
+                    VerticalScrollBarVisibility="Default"
+                    ItemTemplate="{StaticResource FilterItemTemplateSelector}">
+                </CollectionView>
+            </StackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>

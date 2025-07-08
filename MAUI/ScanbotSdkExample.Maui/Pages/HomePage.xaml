@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ScanbotSdkExample.Maui.Pages.HomePage"
+             xmlns:color="clr-namespace:ScanbotSDK.MAUI;assembly=ScanbotSDK.Shared"
+             xmlns:customView="clr-namespace:ScanbotSdkExample.Maui.SubViews;assembly=ScanbotSdkExample.Maui"
+             xmlns:models="clr-namespace:ScanbotSdkExample.Maui.Models"
+             Title="Scanbot SDK MAUI">
+    <Grid>
+        <ScrollView>
+            <StackLayout>
+                <CollectionView
+                    x:Name="FeaturesCollectionView"
+                    ItemsSource="{Binding SdkFeatures}"
+                    SelectionChanged="SdkFeatureSelected"
+                    SelectionMode="Single"
+                    VerticalScrollBarVisibility="Default">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:SdkFeature">
+                            <StackLayout>
+                                <Label
+                                    Padding="10,0"
+                                    IsVisible="{Binding ShowHeading}"
+                                    HeightRequest="55"
+                                    IsEnabled="False"
+                                    FontSize="Medium"
+                                    FontAttributes="Bold"
+                                    Text="{Binding Title}"
+                                    VerticalTextAlignment="Center"
+                                    TextColor="White"
+                                    BackgroundColor="{Binding Source={x:Static color:Constants+Colors.ScanbotRed}}" />
+                                <Label
+                                    Padding="10,0"
+                                    IsVisible="{Binding ShowFeature}"
+                                    HeightRequest="45"
+                                    IsEnabled="True"
+                                    FontSize="15"
+                                    Text="{Binding Title}"
+                                    TextColor="Gray"
+                                    VerticalTextAlignment="Center" />
+                                <StackLayout
+                                    BackgroundColor="LightGray"
+                                    HeightRequest="0.5" />
+                            </StackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+                <StackLayout HeightRequest="10" />
+            </StackLayout>
+        </ScrollView>
+        <customView:SBLoader x:Name="SbLoader" IsVisible="False" />
+    </Grid>
+</ContentPage>
