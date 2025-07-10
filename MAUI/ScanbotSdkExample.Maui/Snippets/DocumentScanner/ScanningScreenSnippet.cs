@@ -11,7 +11,7 @@ public static class ScanningScreenSnippet
         // Create the default configuration object.
         var configuration = new DocumentScanningFlow(); ;
 
-        // MARK: Set the limit for the number of pages you want to scan.
+        // Set the limit for the number of pages you want to scan.
         configuration.OutputSettings.PagesScanLimit = 30;
 
         // Pass the DOCUMENT_UUID here to resume an old session, or pass null; to start a new session or to resume a draft session.
@@ -23,7 +23,8 @@ public static class ScanningScreenSnippet
         // Retrieve the camera screen configuration.
         var cameraScreenConfig = configuration.Screens.Camera;
 
-        // MARK: Configure the user guidance.
+        // Configure the user guidance.
+
         // Configure the top user guidance.
         cameraScreenConfig.TopUserGuidance.Visible = true;
         cameraScreenConfig.TopUserGuidance.Background.FillColor = new ColorValue("#4A000000");
@@ -55,7 +56,8 @@ public static class ScanningScreenSnippet
         cameraScreenConfig.UserGuidance.StatesTitles.CaptureManual = "The document is ready to be captured";
 
 
-        // MARK: Configure the bottom bar and the bottom bar buttons.
+        // Configure the bottom bar and the bottom bar buttons.
+        
         // Set the background color of the bottom bar.
         configuration.Appearance.BottomBarBackgroundColor = new ColorValue("#C8193C");
 
@@ -77,7 +79,8 @@ public static class ScanningScreenSnippet
         cameraScreenConfig.BottomBar.TorchOffButton.Title.Text = "Off";
 
 
-        // MARK: Configure the document capture feedback.
+        // Configure the document capture feedback.
+
         // Configure the camera blink behavior when an image is captured.
         cameraScreenConfig.CaptureFeedback.CameraBlinkEnabled = true;
 

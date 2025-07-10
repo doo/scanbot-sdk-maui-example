@@ -78,6 +78,6 @@
         </Compile>
     </ItemGroup>
     <ItemGroup>
-              <PackageReference Include="ScanbotSDK.MAUI" Version="7.0.0-alpha.3" />
+        <PackageReference Include="ScanbotSDK.MAUI" Version="7.0.0-rc.1" />
     </ItemGroup>
 </Project>

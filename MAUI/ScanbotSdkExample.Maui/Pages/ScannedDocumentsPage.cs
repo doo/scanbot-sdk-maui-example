@@ -127,12 +127,12 @@ public class ScannedDocumentsPage : ContentPage
         try
         {
             using var loader = new TempLoader(this);
-
-            _document = await Rtu.DocumentScanner.LaunchAsync(new DocumentScanningFlow
+            var result = await Rtu.DocumentScanner.LaunchAsync(new DocumentScanningFlow
             {
                 DocumentUuid = _document.Uuid.ToString()
             });
-
+            
+            _document = result.Result; 
             _resultList.ItemsSource = _document.Pages;
             _pageGridView.PlatformSizeChanged();
         }

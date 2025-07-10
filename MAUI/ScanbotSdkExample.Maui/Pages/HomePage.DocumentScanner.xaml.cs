@@ -44,10 +44,11 @@ public partial class HomePage
         configuration.Screens.Camera.UserGuidance.StatesTitles.TooSmall = "Document too small";
         configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
 
-
         var result = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
-
-        await Navigation.PushAsync(new ScannedDocumentsPage(result));
+        if (result.Status == OperationResult.Ok)
+        {
+            await Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
+        }
     }
 
     private async Task SingleFinderDocumentScanningClicked()
@@ -81,8 +82,10 @@ public partial class HomePage
         configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
 
         var result = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
-
-        await Navigation.PushAsync(new ScannedDocumentsPage(result));
+        if (result.Status == OperationResult.Ok)
+        {
+            await Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
+        }
     }
 
     private async Task MultipleDocumentScanningClicked()
@@ -137,8 +140,10 @@ public partial class HomePage
         configuration.Screens.Cropping.BottomBar.DetectButton.Visible = true;
 
         var result = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
-
-        await Navigation.PushAsync(new ScannedDocumentsPage(result));
+        if (result.Status == OperationResult.Ok)
+        {
+            await Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
+        }
     }
 
     private async Task ImportButtonClicked()
