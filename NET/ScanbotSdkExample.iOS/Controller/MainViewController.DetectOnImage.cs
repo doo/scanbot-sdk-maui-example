@@ -17,7 +17,7 @@ public partial class MainViewController
 		};
 		
 		var scanner = new SBSDKMRZScanner(config);
-		var result = scanner.ScanFromImage(image);
+		var result = scanner.ScanFromImage(image, false);
 		if (result?.Document == null || !result.Success)
 		{
 			Alert.Show(this, "Error", "Unable to detect the MRZ.");
