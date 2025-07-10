@@ -2,7 +2,7 @@ using ScanbotSDK.iOS;
 
 namespace ScanbotSdkExample.iOS.Snippets.TextPatternScanner;
 
-class PalleteSnippet : UIViewController
+class PaletteSnippet : UIViewController
 {
     public override void ViewDidLoad()
     {
