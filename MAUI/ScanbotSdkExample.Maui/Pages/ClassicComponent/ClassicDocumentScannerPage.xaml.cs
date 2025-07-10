@@ -107,6 +107,10 @@ public partial class ClassicDocumentScannerPage : ContentPage
 				hint = "Unable to acquire the document.";
 				backgroundColor = Colors.Red;
 				break;
+			case DocumentDetectionStatus.OkButOrientationMismatch:
+				hint = "Unable to acquire the document.";
+				backgroundColor = Colors.Red;
+				break;
 			default:
 				ScanningHintLabel.IsVisible = false;
 				return;
