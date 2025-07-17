@@ -34,7 +34,7 @@ public class PaletteSnippet
 
         // Present the view controller modally.
         var result = await ScanbotSDKMain.Rtu.MrzScanner.LaunchAsync(configuration);
-        if (result?.Result?.MrzDocument == null)
+        if (result.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful
             return;

@@ -10,14 +10,15 @@ public static class LaunchSnippet
         // Create the default configuration object.
         var configuration = new DocumentScanningFlow();
 
-        try
-        {
-            var document = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
-            // Handle the document.
-        }
-        catch (TaskCanceledException)
+        // Launch the scanner
+        var response = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
+        if (response.Status != OperationResult.Ok)
         {
             // Indicates that the cancel button was tapped.
+            return;
         }
+        
+        // Handle the document.
+        var scannerDocument = response.Result;
     }
 }

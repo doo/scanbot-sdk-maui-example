@@ -32,14 +32,15 @@ public static class PaletteSnippet
         palette.SbColorSurfaceHigh = new ColorValue("#7A000000");
         palette.SbColorModalOverlay = new ColorValue("#A3000000");
 
-        try
-        {
-            var document = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
-            // Handle the document.
-        }
-        catch (TaskCanceledException)
+        // Launch the scanner
+        var response = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
+        if (response.Status != OperationResult.Ok)
         {
             // Indicates that the cancel button was tapped.
+            return;
         }
+        
+        // Handle the document.
+        var scannerDocument = response.Result;
     }
 }

@@ -54,14 +54,15 @@ public static class ReviewScreenSnippet
         configuration.Screens.ReorderPages = reorderScreenConfiguration;
         configuration.Screens.Cropping = croppingScreenConfiguration;
 
-        try
-        {
-            var document = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
-            // Handle the document.
-        }
-        catch (TaskCanceledException)
+        // Launch the scanner
+        var response = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
+        if (response.Status != OperationResult.Ok)
         {
             // Indicates that the cancel button was tapped.
+            return;
         }
+        
+        // Handle the document.
+        var scannerDocument = response.Result;
     }
 }

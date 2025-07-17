@@ -40,7 +40,7 @@ public class ActionBarSnippet
 
         // Present the view controller modally.
         var result = await ScanbotSDKMain.Rtu.TextPatternScanner.LaunchAsync(configuration);
-       if (result?.Result?.RawText == null)
+       if (result.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful
             return;

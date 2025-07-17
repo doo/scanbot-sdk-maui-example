@@ -199,7 +199,9 @@ public class ScannedDocumentsPage : ContentPage
             PageFit = PageFit.FitIn,
             ResamplingMethod = ResamplingMethod.None
         });
-        ViewUtils.Alert(this, "Success: ", "Wrote pdf to: " + fileUri.AbsolutePath);
+        
+        // Sharing the Pdf.
+        await ShareFileAsync(fileUri.LocalPath, "application/pdf");
     }
 
     private async Task PerformOcrAsync()
@@ -215,7 +217,7 @@ public class ScannedDocumentsPage : ContentPage
 
         var pages = _document.Pages.Select(p => new FileImageSource { File = p.OriginalImageUri.LocalPath });
         var result = await CommonOperations.PerformOcrAsync(pages, configuration: ocrConfig);
-
+        
         // You can access the results with: result.Pages
         ViewUtils.Alert(this, "OCR", result.Text);
     }
@@ -251,7 +253,8 @@ public class ScannedDocumentsPage : ContentPage
                 ResamplingMethod = ResamplingMethod.None
             }, ocrConfig);
 
-        ViewUtils.Alert(this, "PDF with OCR layer stored: ", result.AbsolutePath);
+        // Sharing the Pdf.
+        await ShareFileAsync(result.LocalPath, "application/pdf");
     }
 
     private async Task GenerateTiffAsync()
@@ -265,7 +268,9 @@ public class ScannedDocumentsPage : ContentPage
                 ZipCompressionLevel = 6,
             }
         );
-        ViewUtils.Alert(this, "Success: ", "Wrote tiff to: " + fileUri.AbsolutePath);
+
+        // Sharing the Tiff file.
+        await ShareFileAsync(fileUri.LocalPath, "image/tiff");
     }
 
     private async void OnDeleteAllButtonTapped(object sender, EventArgs e)
@@ -289,5 +294,21 @@ public class ScannedDocumentsPage : ContentPage
         using var loader = new TempLoader(this);
         await _document.DeleteAsync();
         await Navigation.PopAsync(true);
+    }
+
+    public async Task ShareFileAsync(string localFilePath, string contentType)
+    {
+        if (string.IsNullOrEmpty(localFilePath) || !File.Exists(localFilePath))
+        {
+            // Handle file-not-found scenario
+            ViewUtils.Alert(this, "Error", "Unable to find the file:" + localFilePath);
+            return;
+        }
+
+        await Microsoft.Maui.ApplicationModel.DataTransfer.Share.RequestAsync(new ShareFileRequest
+        {
+            Title = "Share PDF",
+            File = new ShareFile(localFilePath, contentType ?? string.Empty)
+        });
     }
 }

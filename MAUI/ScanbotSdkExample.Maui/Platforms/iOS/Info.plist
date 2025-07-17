@@ -41,6 +41,8 @@
 	<string>Resources/AppIcon.appiconset</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Please provide the camera permission.</string>
+	<key>UISupportsDocumentBrowser</key>
+	<true/>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>NSPhotoLibraryAddUsageDescription</key>
