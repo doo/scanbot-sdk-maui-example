@@ -34,12 +34,12 @@ public class PaletteSnippet
 
         // Present the view controller modally.
         var result = await ScanbotSDKMain.Rtu.CreditCard.LaunchAsync(configuration);
-        if (result?.Result?.CreditCard == null || result.Result.RecognitionStatus != CreditCardScanningStatus.Success)
+        if (result.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful
             return;
         }
-        
+
         // Wrap the resulted generic document to the strongly typed credit card.
         var creditCard = new CreditCard(result.Result.CreditCard);
         
