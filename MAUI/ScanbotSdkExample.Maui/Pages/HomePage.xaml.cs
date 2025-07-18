@@ -1,4 +1,5 @@
-﻿using ScanbotSDK.MAUI;
+﻿using Microsoft.Maui.Graphics.Platform;
+using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Barcode;
 using ScanbotSDK.MAUI.Common;
 using ScanbotSdkExample.Maui.Models;
@@ -111,4 +112,22 @@ public partial class HomePage
     {
         await Browser.OpenAsync(new Uri("https://scanbot.io/developer/net-maui-barcode-scanner-sdk/"), BrowserLaunchMode.SystemPreferred);
     }
+
+    /// <summary>
+    /// Picks image from the photos application.
+    /// </summary>
+    /// <returns></returns>
+    private async Task<PlatformImage> PickImageFromGallery()
+    {
+        try
+        {
+            return await ScanbotSDKMain.ImagePicker.PickImageAsync();
+        }
+        catch (TaskCanceledException)
+        {
+            // Cancel button tapped on gallery page.
+            return null;
+        }
+    }
+    
 }
