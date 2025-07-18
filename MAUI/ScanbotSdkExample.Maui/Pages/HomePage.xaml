@@ -19,6 +19,17 @@
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="models:SdkFeature">
                             <StackLayout>
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup Name="CommonStates">
+                                        <VisualState Name="Selected">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor"
+                                                        Value="Transparent"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+
                                 <Label
                                     Padding="10,0"
                                     IsVisible="{Binding ShowHeading}"
