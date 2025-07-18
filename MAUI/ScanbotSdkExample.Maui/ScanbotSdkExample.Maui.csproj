@@ -8,7 +8,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <AotAssemblies>False</AotAssemblies>
         <!-- Display name -->
-        <ApplicationTitle>MAUI RTU UI</ApplicationTitle>
+        <ApplicationTitle>ScanbotSDK</ApplicationTitle>
         <!-- App Identifier -->
         <ApplicationId>io.scanbot.example.sdk.maui</ApplicationId>
         <ApplicationIdGuid>e4ba4957-9c1e-4228-8037-7e92a44e5778</ApplicationIdGuid>
