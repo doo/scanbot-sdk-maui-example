@@ -11,7 +11,7 @@ public partial class HomePage
 {
     private async Task MrzDetectorClicked()
     {
-        var image = await ImagePicker.PickImageAsync();
+        var image = await PickImageFromGallery();
         if (image is null) return;
 
         var configuration = new MrzScannerConfiguration
@@ -31,7 +31,7 @@ public partial class HomePage
 
     private async Task EhicDetectorClicked()
     {
-        var image = await ImagePicker.PickImageAsync();
+        var image = await PickImageFromGallery();
 
         var configuration = new EuropeanHealthInsuranceCardRecognizerConfiguration
         {
@@ -52,7 +52,7 @@ public partial class HomePage
 
     private async Task DocumentDataExtractorClicked()
     {
-        var image = await ImagePicker.PickImageAsync();
+        var image = await PickImageFromGallery();
         if (image is null) return;
         
         var configuration = new DocumentDataExtractorConfiguration
@@ -90,7 +90,7 @@ public partial class HomePage
 
     private async Task CheckDetectorClicked()
     {
-        var image = await ImagePicker.PickImageAsync();
+        var image = await PickImageFromGallery();
         if (image is null) return;
         
         var result = await Detector.Check.DetectOnImageAsync(image, new CheckScannerConfiguration
@@ -133,7 +133,7 @@ public partial class HomePage
 
     private async Task MedicalCertificateDetectorClicked()
     {
-        var image = await ImagePicker.PickImageAsync();
+        var image = await PickImageFromGallery();
         if (image is null) return;
         
         var configuration = new MedicalCertificateScanningParameters
@@ -167,7 +167,7 @@ public partial class HomePage
 
     private async Task CreditCardDetectorClicked()
     {
-        var image = await ImagePicker.PickImageAsync();
+        var image = await PickImageFromGallery();
         if (image is null) return;
         
         var configuration = new CreditCardScannerConfiguration
