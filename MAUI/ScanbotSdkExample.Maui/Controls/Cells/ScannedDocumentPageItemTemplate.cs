@@ -1,6 +1,6 @@
 ﻿using ScanbotSDK.MAUI.Document;
 
-namespace ScanbotSdkExample.Maui.SubViews.Cells;
+namespace ScanbotSdkExample.Maui.Controls.Cells;
 
 public class ScannedDocumentPageItemTemplate : ContentView
 {

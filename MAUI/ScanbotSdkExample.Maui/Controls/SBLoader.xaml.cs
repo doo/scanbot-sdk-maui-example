@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 
-namespace ScanbotSdkExample.Maui.SubViews;
+namespace ScanbotSdkExample.Maui.Controls;
 
 public partial class SBLoader : ContentView
 {

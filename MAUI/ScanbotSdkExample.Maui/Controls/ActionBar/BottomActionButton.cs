@@ -1,4 +1,4 @@
-﻿namespace ScanbotSdkExample.Maui.SubViews.ActionBar;
+﻿namespace ScanbotSdkExample.Maui.Controls.ActionBar;
 public class BottomActionButton : StackLayout
 {
     public Label Label { get; private set; }

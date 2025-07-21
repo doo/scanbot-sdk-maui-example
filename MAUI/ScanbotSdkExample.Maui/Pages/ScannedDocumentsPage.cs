@@ -1,9 +1,9 @@
 ﻿using static ScanbotSDK.MAUI.ScanbotSDKMain;
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Document;
-using ScanbotSdkExample.Maui.SubViews;
-using ScanbotSdkExample.Maui.SubViews.ActionBar;
-using ScanbotSdkExample.Maui.SubViews.Cells;
+using ScanbotSdkExample.Maui.Controls;
+using ScanbotSdkExample.Maui.Controls.ActionBar;
+using ScanbotSdkExample.Maui.Controls.Cells;
 using ScanbotSdkExample.Maui.Utils;
 
 namespace ScanbotSdkExample.Maui.Pages;

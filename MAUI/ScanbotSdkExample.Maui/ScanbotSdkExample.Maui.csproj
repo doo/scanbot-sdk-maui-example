@@ -47,9 +47,6 @@
     </ItemGroup>
 
     <!-- ===================== Folders =====================  -->
-    <ItemGroup>
-        <Folder Include="SubViews\ParametricFilterViews\"/>
-    </ItemGroup>
 
     <!-- ===================== Xaml and Xaml.cs files =====================  -->
     <ItemGroup>

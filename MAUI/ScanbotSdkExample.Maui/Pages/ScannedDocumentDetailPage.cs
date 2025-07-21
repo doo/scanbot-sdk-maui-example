@@ -1,6 +1,6 @@
 ﻿using ScanbotSDK.MAUI.Document;
-using ScanbotSdkExample.Maui.SubViews;
-using ScanbotSdkExample.Maui.SubViews.ActionBar;
+using ScanbotSdkExample.Maui.Controls;
+using ScanbotSdkExample.Maui.Controls.ActionBar;
 using ScanbotSdkExample.Maui.Utils;
 using static ScanbotSDK.MAUI.ScanbotSDKMain;
 using DocumentQualityAnalyzerConfiguration = ScanbotSDK.MAUI.DocumentQualityAnalyzerConfiguration;

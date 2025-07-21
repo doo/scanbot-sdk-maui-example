@@ -1,4 +1,4 @@
-namespace ScanbotSdkExample.Maui.CustomViews;
+namespace ScanbotSdkExample.Maui.Controls;
 
 public class ToggleButton : Button
 {

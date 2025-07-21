@@ -4,7 +4,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ScanbotSdkExample.Maui.Pages.HomePage"
              xmlns:color="clr-namespace:ScanbotSDK.MAUI;assembly=ScanbotSDK.Shared"
-             xmlns:customView="clr-namespace:ScanbotSdkExample.Maui.SubViews;assembly=ScanbotSdkExample.Maui"
+             xmlns:customView="clr-namespace:ScanbotSdkExample.Maui.Controls;assembly=ScanbotSdkExample.Maui"
              xmlns:models="clr-namespace:ScanbotSdkExample.Maui.Models"
              Title="Scanbot SDK MAUI">
     <Grid>

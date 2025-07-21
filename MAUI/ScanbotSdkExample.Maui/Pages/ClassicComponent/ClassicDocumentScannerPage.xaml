@@ -4,7 +4,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ScanbotSdkExample.Maui.ClassicDocumentScannerPage"
              xmlns:classicView="clr-namespace:ScanbotSDK.MAUI.Document.ClassicComponent;assembly=DocumentSDK.MAUI"
-             xmlns:customButton="clr-namespace:ScanbotSdkExample.Maui.CustomViews;assembly=ScanbotSdkExample.Maui"
+             xmlns:customButton="clr-namespace:ScanbotSdkExample.Maui.Controls;assembly=ScanbotSdkExample.Maui"
              xmlns:models="clr-namespace:ScanbotSdkExample.Maui.Models;assembly=ScanbotSdkExample.Maui"
              xmlns:self="clr-namespace:ScanbotSdkExample.Maui"
              x:DataType="self:ClassicDocumentScannerPage">

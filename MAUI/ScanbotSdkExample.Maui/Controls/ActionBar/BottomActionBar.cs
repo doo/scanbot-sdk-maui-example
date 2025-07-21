@@ -1,6 +1,6 @@
 ﻿using ScanbotSDK.MAUI;
 
-namespace ScanbotSdkExample.Maui.SubViews.ActionBar;
+namespace ScanbotSdkExample.Maui.Controls.ActionBar;
 public class BottomActionBar : StackLayout
 {
     public const int HEIGHT = 50;
