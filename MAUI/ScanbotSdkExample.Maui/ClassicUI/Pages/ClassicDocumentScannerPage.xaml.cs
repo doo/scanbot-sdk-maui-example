@@ -1,13 +1,22 @@
 using System.Diagnostics;
 using ScanbotSdkExample.Maui.Models;
-using ScanbotSdkExample.Maui.Pages;
+using ScanbotSdkExample.Maui.Results;
 using Microsoft.Maui.Graphics.Platform;
 using ScanbotSDK.MAUI;
 
-namespace ScanbotSdkExample.Maui;
+namespace ScanbotSdkExample.Maui.ClassicUI.Pages;
 
 public partial class ClassicDocumentScannerPage : ContentPage
 {
+	private const string AutoSnap = "Autosnap",
+		Finder = "Finder",
+		Flash = "Flash",
+		Polygons = "Polygon",
+		Snap = "Snap",
+		Start = "Start",
+		Stop = "Stop",
+		Visibility = "Visibility";
+
     public ClassicDocumentScannerPage()
 	{
 		InitializeComponent();
@@ -48,6 +57,78 @@ public partial class ClassicDocumentScannerPage : ContentPage
 		};
 		
 		BindingContext = this;
+	}
+
+	private bool _isAutoSnappingEnabled;
+
+	public bool IsAutoSnappingEnabled
+	{
+		get => _isAutoSnappingEnabled;
+		set
+		{
+			_isAutoSnappingEnabled = value;
+			OnPropertyChanged();
+		}
+	}
+
+	private bool _flashEnabled;
+
+	public bool IsFlashEnabled
+	{
+		get => _flashEnabled;
+		set
+		{
+			_flashEnabled = value;
+			OnPropertyChanged();
+		}
+	}
+
+	private bool _polygonEnabled;
+
+	public bool IsPolygonEnabled
+	{
+		get => _polygonEnabled;
+		set
+		{
+			_polygonEnabled = value;
+			OnPropertyChanged();
+		}
+	}
+
+	private bool _isFinderEnabled;
+
+	public bool IsFinderEnabled
+	{
+		get => _isFinderEnabled;
+		set
+		{
+			_isFinderEnabled = value;
+			OnPropertyChanged();
+		}
+	}
+
+	private bool _isCameraVisible = true;
+
+	public bool IsCameraVisible
+	{
+		get => _isCameraVisible;
+		set
+		{
+			_isCameraVisible = value;
+			OnPropertyChanged();
+		}
+	}
+
+	private List<ClassicCollectionItem> _scannerButtons = new List<ClassicCollectionItem>();
+
+	public List<ClassicCollectionItem> ScannerButtons
+	{
+		get => _scannerButtons;
+		set
+		{
+			_scannerButtons = value;
+			OnPropertyChanged();
+		}
 	}
 
 	public void ToggleVisibility()

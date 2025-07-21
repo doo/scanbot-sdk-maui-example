@@ -1,7 +1,7 @@
 using Microsoft.Maui.Graphics.Platform;
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.DocumentsModel;
-using ScanbotSdkExample.Maui.Pages.DetectOnImageResults;
+using ScanbotSdkExample.Maui.Results;
 using ScanbotSdkExample.Maui.Utils;
 using static ScanbotSDK.MAUI.ScanbotSDKMain;
 using CheckScannerConfiguration = ScanbotSDK.MAUI.CheckScannerConfiguration;

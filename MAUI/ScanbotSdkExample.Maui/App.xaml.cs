@@ -1,6 +1,4 @@
-﻿using ScanbotSdkExample.Maui.Pages;
-
-namespace ScanbotSdkExample.Maui;
+﻿namespace ScanbotSdkExample.Maui;
 
 public partial class App : Application
 {

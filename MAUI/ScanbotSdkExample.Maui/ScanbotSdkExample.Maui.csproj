@@ -53,10 +53,19 @@
         <MauiXaml Update="Pages\DocumentFilters\FilteredImagePage.xaml">
             <SubType>Designer</SubType>
         </MauiXaml>
-        <MauiXaml Update="Pages\DocumentFilters\FiltersPage.xaml">
-            <SubType>Designer</SubType>
-        </MauiXaml>
         <MauiXaml Update="Pages\BarcodeResults\BarcodeResultPage.xaml">
+          <SubType>Designer</SubType>
+        </MauiXaml>
+        <MauiXaml Update="HomePage.xaml">
+          <SubType>Designer</SubType>
+        </MauiXaml>
+        <MauiXaml Update="FiltersPage.xaml">
+          <SubType>Designer</SubType>
+        </MauiXaml>
+        <MauiXaml Update="Results\DocumentScannerResultPage.xaml">
+          <SubType>Designer</SubType>
+        </MauiXaml>
+        <MauiXaml Update="ClassicUI\Pages\ClassicDocumentScannerPage.xaml">
           <SubType>Designer</SubType>
         </MauiXaml>
     </ItemGroup>
@@ -65,12 +74,24 @@
             <DependentUpon>FilteredImagePage.xaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
-        <Compile Update="Pages\DocumentFilters\FiltersPage.xaml.cs">
-            <DependentUpon>FiltersPage.xaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
         <Compile Update="Pages\BarcodeResults\BarcodeResultPage.xaml.cs">
           <DependentUpon>BarcodeResultPage.xaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="HomePage.xaml.cs">
+          <DependentUpon>HomePage.xaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="FiltersPage.xaml.cs">
+          <DependentUpon>FiltersPage.xaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Results\DocumentScannerResultPage.xaml.cs">
+          <DependentUpon>DocumentScannerResultPage.xaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="ClassicUI\Pages\ClassicDocumentScannerPage.xaml.cs">
+          <DependentUpon>ClassicDocumentScannerPage.xaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
     </ItemGroup>

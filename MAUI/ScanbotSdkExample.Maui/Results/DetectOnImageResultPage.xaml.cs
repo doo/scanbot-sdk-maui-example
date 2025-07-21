@@ -1,4 +1,4 @@
-namespace ScanbotSdkExample.Maui.Pages.DetectOnImageResults;
+namespace ScanbotSdkExample.Maui.Results;
 
 public partial class DetectOnImageResultPage : ContentPage
 {
@@ -19,7 +19,7 @@ public partial class DetectOnImageResultPage : ContentPage
         ResultImageView.Source = _resultImageSource;
     }
 
-    private async void BtnGoback_Clicked(object sender, EventArgs e)
+    private async void OnGoBackClicked(object sender, EventArgs e)
     {
         await Navigation.PopAsync(true);
     }

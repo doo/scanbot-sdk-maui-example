@@ -1,12 +1,12 @@
-﻿using static ScanbotSDK.MAUI.ScanbotSDKMain;
-using ScanbotSDK.MAUI;
+﻿using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Document;
+using ScanbotSDK.MAUI.Ocr;
 using ScanbotSdkExample.Maui.Controls;
 using ScanbotSdkExample.Maui.Controls.ActionBar;
-using ScanbotSdkExample.Maui.Controls.Cells;
 using ScanbotSdkExample.Maui.Utils;
+using static ScanbotSDK.MAUI.ScanbotSDKMain;
 
-namespace ScanbotSdkExample.Maui.Pages;
+namespace ScanbotSdkExample.Maui.Results;
 public class ScannedDocumentsPage : ContentPage
 {
     private const string Pdf = "PDF", Ocr = "Perform OCR", SandwichPdf = "Sandwiched PDF", Tiff = "TIFF (1-bit, B&W)";
@@ -24,14 +24,14 @@ public class ScannedDocumentsPage : ContentPage
         {
             _isLoading = value;
             _loader.IsBusy = value;
-            OnPropertyChanged(nameof(IsLoading));
+            OnPropertyChanged();
         }
     }
 
-    private readonly struct TempLoader : IDisposable
+    private readonly struct PageLoader : IDisposable
     {
         private readonly ScannedDocumentsPage _page;
-        public TempLoader(ScannedDocumentsPage page)
+        public PageLoader(ScannedDocumentsPage page)
         {
             _page = page;
             page.IsLoading = true;
@@ -61,7 +61,7 @@ public class ScannedDocumentsPage : ContentPage
                 VerticalItemSpacing = 5
             },
             FlowDirection = FlowDirection.MatchParent,
-            ItemTemplate = new DataTemplate(() => new ScannedDocumentPageItemTemplate
+            ItemTemplate = new DataTemplate(() => new ScannedDocumentPageView
             {
                 WidthRequest = itemSize,
                 HeightRequest = itemSize,
@@ -120,13 +120,13 @@ public class ScannedDocumentsPage : ContentPage
         Navigation.PushAsync(new ScannedDocumentDetailPage(_document, selectedPage));
     }
 
-    async void OnAddButtonTapped(object sender, EventArgs e)
+    private async void OnAddButtonTapped(object sender, EventArgs e)
     {
         if (!SdkUtils.CheckLicense(this)) { return; }
 
         try
         {
-            using var loader = new TempLoader(this);
+            using var loader = new PageLoader(this);
             var result = await Rtu.DocumentScanner.LaunchAsync(new DocumentScanningFlow
             {
                 DocumentUuid = _document.Uuid.ToString()
@@ -143,7 +143,7 @@ public class ScannedDocumentsPage : ContentPage
         }
     }
 
-    async void OnSaveButtonTapped(object sender, EventArgs e)
+    private async void OnSaveButtonTapped(object sender, EventArgs e)
     {
         if (!SdkUtils.CheckLicense(this) || !_document.Pages.Any()) { return; }
 
@@ -155,7 +155,7 @@ public class ScannedDocumentsPage : ContentPage
             return;
         }
 
-        using var loader = new TempLoader(this);
+        using var loader = new PageLoader(this);
         try
         {
             switch (action)
@@ -213,7 +213,7 @@ public class ScannedDocumentsPage : ContentPage
         // var ocrConfig = OcrConfig.Tesseract(withLanguageString: new List<string>{ "en", "de" });
 
         // Using the default OCR option
-        var ocrConfig = ScanbotSDK.MAUI.Ocr.OcrConfig.ScanbotOcr;
+        var ocrConfig = OcrConfig.ScanbotOcr;
 
         var pages = _document.Pages.Select(p => new FileImageSource { File = p.OriginalImageUri.LocalPath });
         var result = await CommonOperations.PerformOcrAsync(pages, configuration: ocrConfig);
@@ -231,7 +231,7 @@ public class ScannedDocumentsPage : ContentPage
         // var ocrConfig = OcrConfig.Tesseract(withLanguageString: new List<string>{ "en", "de" });
 
         // Using the default OCR option
-        var ocrConfig = ScanbotSDK.MAUI.Ocr.OcrConfig.ScanbotOcr;
+        var ocrConfig = OcrConfig.ScanbotOcr;
 
         var result = await CommonOperations.CreateSandwichPdfAsync(
             _document.Pages.Select(p => new FileImageSource { File = p.OriginalImageUri.LocalPath }),
@@ -280,7 +280,7 @@ public class ScannedDocumentsPage : ContentPage
         var result = await DisplayAlert("Attention!", message, "Confirm", "Cancel");
         if (!result) return;
         
-        using var loader = new TempLoader(this);
+        using var loader = new PageLoader(this);
         await ScannedDocument.DeleteAllDocumentsAsync();
         await DisplayAlert("Alert", $"Deleted {documentCount} documents", "OK");
         await Navigation.PopAsync(true);
@@ -291,12 +291,12 @@ public class ScannedDocumentsPage : ContentPage
         var message = "This will delete the current document that contains all the pages visible on the screen.";
         var result = await DisplayAlert("Attention!", message, "Confirm", "Cancel");
         if (!result) return;
-        using var loader = new TempLoader(this);
+        using var loader = new PageLoader(this);
         await _document.DeleteAsync();
         await Navigation.PopAsync(true);
     }
 
-    public async Task ShareFileAsync(string localFilePath, string contentType)
+    private async Task ShareFileAsync(string localFilePath, string contentType)
     {
         if (string.IsNullOrEmpty(localFilePath) || !File.Exists(localFilePath))
         {
@@ -305,7 +305,7 @@ public class ScannedDocumentsPage : ContentPage
             return;
         }
 
-        await Microsoft.Maui.ApplicationModel.DataTransfer.Share.RequestAsync(new ShareFileRequest
+        await Share.RequestAsync(new ShareFileRequest
         {
             Title = "Share PDF",
             File = new ShareFile(localFilePath, contentType ?? string.Empty)

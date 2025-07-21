@@ -1,15 +1,15 @@
 ﻿using ScanbotSDK.MAUI.Document;
 
-namespace ScanbotSdkExample.Maui.Controls.Cells;
+namespace ScanbotSdkExample.Maui.Controls;
 
-public class ScannedDocumentPageItemTemplate : ContentView
+public class ScannedDocumentPageView : ContentView
 {
     private ScannedDocument.Page _currentPage;
 
     private readonly Image _pagePreview;
     internal Action<ScannedDocument.Page> PageItemTapped;
 
-    public ScannedDocumentPageItemTemplate()
+    public ScannedDocumentPageView()
     {
         _pagePreview = new Image
         {

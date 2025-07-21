@@ -5,7 +5,7 @@ using ScanbotSdkExample.Maui.Utils;
 using static ScanbotSDK.MAUI.ScanbotSDKMain;
 using DocumentQualityAnalyzerConfiguration = ScanbotSDK.MAUI.DocumentQualityAnalyzerConfiguration;
 
-namespace ScanbotSdkExample.Maui.Pages;
+namespace ScanbotSdkExample.Maui.Results;
 
 public class ScannedDocumentDetailPage : ContentPage
 {

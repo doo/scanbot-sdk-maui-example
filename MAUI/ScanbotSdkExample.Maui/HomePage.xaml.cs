@@ -1,10 +1,11 @@
 ﻿using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Document;
 using ScanbotSdkExample.Maui.Models;
+using ScanbotSdkExample.Maui.Results;
 using ScanbotSdkExample.Maui.ReadyToUseUI;
 using ScanbotSdkExample.Maui.Utils;
 
-namespace ScanbotSdkExample.Maui.Pages;
+namespace ScanbotSdkExample.Maui;
 
 public partial class HomePage
 {

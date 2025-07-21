@@ -1,7 +1,8 @@
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Common;
 using ScanbotSDK.MAUI.Document;
-using ScanbotSdkExample.Maui.Pages;
+using ScanbotSdkExample.Maui.ClassicUI.Pages;
+using ScanbotSdkExample.Maui.Results;
 
 namespace ScanbotSdkExample.Maui.ReadyToUseUI;
 

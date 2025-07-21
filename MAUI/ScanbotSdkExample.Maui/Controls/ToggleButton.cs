@@ -2,7 +2,6 @@ namespace ScanbotSdkExample.Maui.Controls;
 
 public class ToggleButton : Button
 {
-	
     /// <summary>
     /// Toggle Flash Binding property
     /// </summary>
@@ -25,13 +24,6 @@ public class ToggleButton : Button
 
     private void ButtonEnabled(bool value)
     {
-        if (value)
-        {
-            BackgroundColor = Colors.LightBlue;
-        }
-        else
-        {
-            BackgroundColor = Colors.WhiteSmoke;
-        }
+        BackgroundColor = value ? Colors.LightBlue : Colors.WhiteSmoke;
     }
 }

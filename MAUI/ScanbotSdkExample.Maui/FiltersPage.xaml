@@ -2,16 +2,17 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ScanbotSdkExample.Maui.Pages.FiltersPage"
-             xmlns:local="clr-namespace:ScanbotSdkExample.Maui.Pages"
+             x:Class="ScanbotSdkExample.Maui.FiltersPage"
+             xmlns:local="clr-namespace:ScanbotSdkExample.Maui"
              xmlns:color="clr-namespace:ScanbotSDK.MAUI;assembly=ScanbotSDK.Shared"
-             xmlns:page="clr-namespace:ScanbotSdkExample.Maui.Pages"
-             x:DataType="page:FiltersPage">
+             xmlns:models="clr-namespace:ScanbotSdkExample.Maui.Models"
+             xmlns:pages="clr-namespace:ScanbotSdkExample.Maui"
+             x:DataType="pages:FiltersPage">
     <ContentPage.Resources>
         <!-- Data Template Listing -->
         
         <!-- Primary Filter Template-->
-        <DataTemplate x:Key="PrimaryFilterTemplate" x:DataType="page:FilterItem">
+        <DataTemplate x:Key="PrimaryFilterTemplate" x:DataType="models:FilterItem">
             <StackLayout Padding="10" HeightRequest="50"
                          BackgroundColor="{Binding Source={x:Static color:Constants+Colors.ScanbotRed}}">
                 <Grid>
@@ -32,7 +33,7 @@
         </DataTemplate>
 
         <!-- Picker Type Filters-->
-        <DataTemplate x:Key="PickerItemTemplate" x:DataType="page:FilterItem">
+        <DataTemplate x:Key="PickerItemTemplate" x:DataType="models:FilterItem">
             <StackLayout Padding="19,9">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -52,7 +53,7 @@
         </DataTemplate>
 
         <!-- Legacy Filters-->
-        <DataTemplate x:Key="SubFilterTemplate" x:DataType="page:FilterItem">
+        <DataTemplate x:Key="SubFilterTemplate" x:DataType="models:FilterItem">
             <StackLayout Padding="19,9">
                 <Label Text="{Binding Caption }" />
                 <Frame HeightRequest="1" HorizontalOptions="Fill" BackgroundColor="DarkGray" />
@@ -60,7 +61,7 @@
         </DataTemplate>
 
         <!-- Slider Filter Item-->
-        <DataTemplate x:Key="SliderItemTemplate" x:DataType="page:FilterItem">
+        <DataTemplate x:Key="SliderItemTemplate" x:DataType="models:FilterItem">
             <StackLayout Padding="19,9">
                 <Label Text="{Binding Caption }" FontSize="14" />
                 <Grid>

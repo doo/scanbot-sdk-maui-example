@@ -1,4 +1,4 @@
-namespace ScanbotSdkExample.Maui.Pages;
+namespace ScanbotSdkExample.Maui.Results;
 
 public partial class DocumentScannerResultPage : ContentPage
 {

@@ -2,12 +2,12 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ScanbotSdkExample.Maui.ClassicDocumentScannerPage"
+             x:Class="ScanbotSdkExample.Maui.ClassicUI.Pages.ClassicDocumentScannerPage"
              xmlns:classicView="clr-namespace:ScanbotSDK.MAUI.Document.ClassicComponent;assembly=DocumentSDK.MAUI"
              xmlns:customButton="clr-namespace:ScanbotSdkExample.Maui.Controls;assembly=ScanbotSdkExample.Maui"
              xmlns:models="clr-namespace:ScanbotSdkExample.Maui.Models;assembly=ScanbotSdkExample.Maui"
-             xmlns:self="clr-namespace:ScanbotSdkExample.Maui"
-             x:DataType="self:ClassicDocumentScannerPage">
+             xmlns:local="clr-namespace:ScanbotSdkExample.Maui.ClassicUI.Pages"
+             x:DataType="local:ClassicDocumentScannerPage">
     <ContentPage.Resources>
         <Style x:Key="ScannerButonStyle" TargetType="Button">
             <Setter Property="CornerRadius">10</Setter>
