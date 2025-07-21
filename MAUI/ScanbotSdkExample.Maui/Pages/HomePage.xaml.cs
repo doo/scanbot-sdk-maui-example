@@ -1,8 +1,7 @@
-﻿using Microsoft.Maui.Graphics.Platform;
-using ScanbotSDK.MAUI;
-using ScanbotSDK.MAUI.Barcode;
-using ScanbotSDK.MAUI.Common;
+﻿using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Document;
 using ScanbotSdkExample.Maui.Models;
+using ScanbotSdkExample.Maui.ReadyToUseUI;
 using ScanbotSdkExample.Maui.Utils;
 
 namespace ScanbotSdkExample.Maui.Pages;
@@ -11,7 +10,7 @@ public partial class HomePage
 {
     private const string ViewLicenseInfo = "View License Info";
     private const string LicenseInvalidMessage = "The license is invalid or expired.";
-    
+
     /// <summary>
     /// Binding property configured with the Scanbot activity loader.
     /// </summary>
@@ -28,38 +27,39 @@ public partial class HomePage
         SdkFeatures =
         [
             new SdkFeature("DOCUMENT SCANNER"),
-            new SdkFeature("Single Document Scanning", SingleDocumentScanningClicked),
-            new SdkFeature("Single Finder Document Scanning", SingleFinderDocumentScanningClicked),
-            new SdkFeature("Multiple Document Scanning", MultipleDocumentScanningClicked),
-            new SdkFeature("Import Import Image", ImportButtonClicked),
-            
+            new SdkFeature("Single Document Scanning", DocumentScannerFeature.SingleDocumentScanningClicked),
+            new SdkFeature("Single Finder Document Scanning",
+                DocumentScannerFeature.SingleFinderDocumentScanningClicked),
+            new SdkFeature("Multiple Document Scanning", DocumentScannerFeature.MultipleDocumentScanningClicked),
+            new SdkFeature("Import Image", ImportButtonClicked),
+
             new SdkFeature("CLASSIC COMPONENT"),
-            new SdkFeature("Classic Document Scanner", ClassicDocumentScannerViewClicked),
+            new SdkFeature("Classic Document Scanner", DocumentScannerFeature.ClassicDocumentScannerViewClicked),
 
             new SdkFeature("DATA DETECTORS"),
-            
-            new SdkFeature("Check Scanner", CheckScannerClicked),
-            new SdkFeature("Credit Card Scanner", CreditCardScannerClicked),
-            new SdkFeature("European Health Insurance Scanner", EhicScannerClicked),
-            new SdkFeature("Document Data Scanner", DocumentDataScannerClicked),
-            new SdkFeature("Medical Certificate Scanner", MedicalCertificateScannerClicked),
-            new SdkFeature("Mrz Scanner", MrzScannerClicked),
-            new SdkFeature("Text Pattern Scanner", TextPatternScannerClicked),
-            new SdkFeature("Vin Scanner", VinScannerClicked),
+
+            new SdkFeature("Check Scanner", DataDetectorsFeature.CheckScannerClicked),
+            new SdkFeature("Credit Card Scanner", DataDetectorsFeature.CreditCardScannerClicked),
+            new SdkFeature("European Health Insurance Scanner", DataDetectorsFeature.EhicScannerClicked),
+            new SdkFeature("Document Data Scanner", DataDetectorsFeature.DocumentDataScannerClicked),
+            new SdkFeature("Medical Certificate Scanner", DataDetectorsFeature.MedicalCertificateScannerClicked),
+            new SdkFeature("Mrz Scanner", DataDetectorsFeature.MrzScannerClicked),
+            new SdkFeature("Text Pattern Scanner", DataDetectorsFeature.TextPatternScannerClicked),
+            new SdkFeature("Vin Scanner", DataDetectorsFeature.VinScannerClicked),
 
             new SdkFeature("DETECTION FROM IMAGE"),
-            new SdkFeature("Check Recognizer", CheckDetectorClicked),
-            new SdkFeature("Credit Card Recognizer", CreditCardDetectorClicked),
-            new SdkFeature("MRZ Recognizer", MrzDetectorClicked),
-            new SdkFeature("EHIC Recognizer", EhicDetectorClicked),
-            new SdkFeature("Document Data Extractor", DocumentDataExtractorClicked),
-            new SdkFeature("Medical Certificate Recognizer", MedicalCertificateDetectorClicked),
+            new SdkFeature("Check Recognizer", DetectOnImageFeature.CheckDetectorClicked),
+            new SdkFeature("Credit Card Recognizer", DetectOnImageFeature.CreditCardDetectorClicked),
+            new SdkFeature("MRZ Recognizer", DetectOnImageFeature.MrzDetectorClicked),
+            new SdkFeature("EHIC Recognizer", DetectOnImageFeature.EhicDetectorClicked),
+            new SdkFeature("Document Data Extractor", DetectOnImageFeature.DocumentDataExtractorClicked),
+            new SdkFeature("Medical Certificate Recognizer", DetectOnImageFeature.MedicalCertificateDetectorClicked),
 
             new SdkFeature("MISCELLANEOUS"),
             new SdkFeature(ViewLicenseInfo, ViewLicenseInfoClicked),
             new SdkFeature("Learn more about Scanbot SDK", LearnMoreClicked)
         ];
-        
+
         BindingContext = this;
         InitializeComponent();
     }
@@ -78,7 +78,7 @@ public partial class HomePage
 
         if (!ScanbotSDKMain.IsLicenseValid && feature.Title != ViewLicenseInfo)
         {
-            ViewUtils.Alert(this, "Oops!", LicenseInvalidMessage);
+            ViewUtils.Alert("Oops!", LicenseInvalidMessage);
             return;
         }
 
@@ -92,7 +92,7 @@ public partial class HomePage
     {
         var info = ScanbotSDKMain.LicenseInfo;
         var message = $"License status: {info.Status}\n";
-        if (info.IsValid) 
+        if (info.IsValid)
         {
             message += $"It is valid until {info.ExpirationDate?.ToLocalTime()}.";
         }
@@ -100,8 +100,8 @@ public partial class HomePage
         {
             message = LicenseInvalidMessage;
         }
-        
-        ViewUtils.Alert(this, "License info", message);
+
+        ViewUtils.Alert("License info", message);
         return Task.CompletedTask;
     }
 
@@ -110,24 +110,40 @@ public partial class HomePage
     // ------------------------------------
     private async Task LearnMoreClicked()
     {
-        await Browser.OpenAsync(new Uri("https://scanbot.io/developer/net-maui-barcode-scanner-sdk/"), BrowserLaunchMode.SystemPreferred);
+        await Browser.OpenAsync(new Uri("https://scanbot.io/developer/net-maui-barcode-scanner-sdk/"),
+            BrowserLaunchMode.SystemPreferred);
     }
 
-    /// <summary>
-    /// Picks image from the photos application.
-    /// </summary>
-    /// <returns></returns>
-    private async Task<PlatformImage> PickImageFromGallery()
+    private async Task ImportButtonClicked()
     {
         try
         {
-            return await ScanbotSDKMain.ImagePicker.PickImageAsync();
+            IsLoading = true;
+
+            var image = await ScanbotSDKMain.ImagePicker.PickImageAsync();
+            if (image is null) return;
+
+            var document = new ScannedDocument();
+
+            // Import the selected image as original image and create a Page object
+            var page = document.AddPage(image);
+
+            // Run document detection on it
+            var result = await ScanbotSDKMain.Rtu.CroppingScreen.LaunchAsync(
+                new CroppingConfiguration()
+                {
+                    DocumentUuid = document.Uuid.ToString(),
+                    PageUuid = page.Uuid.ToString()
+                });
+            await Navigation.PushAsync(new ScannedDocumentsPage(document));
         }
-        catch (TaskCanceledException)
+        catch (Exception ex)
         {
-            // Cancel button tapped on gallery page.
-            return null;
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
-    
 }

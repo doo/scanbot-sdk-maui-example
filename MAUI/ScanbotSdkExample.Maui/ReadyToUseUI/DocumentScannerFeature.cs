@@ -1,12 +1,13 @@
-﻿using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Common;
 using ScanbotSDK.MAUI.Document;
+using ScanbotSdkExample.Maui.Pages;
 
-namespace ScanbotSdkExample.Maui.Pages;
+namespace ScanbotSdkExample.Maui.ReadyToUseUI;
 
-public partial class HomePage
+public static class DocumentScannerFeature
 {
-    private async Task SingleDocumentScanningClicked()
+    public static async Task SingleDocumentScanningClicked()
     {
         var configuration = new DocumentScanningFlow();
 
@@ -47,11 +48,11 @@ public partial class HomePage
         var result = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
-            await Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
+            await Application.Current.MainPage.Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
         }
     }
 
-    private async Task SingleFinderDocumentScanningClicked()
+    public static async Task SingleFinderDocumentScanningClicked()
     {
         var configuration = new DocumentScanningFlow();
 
@@ -84,11 +85,11 @@ public partial class HomePage
         var result = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
-            await Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
+            await Application.Current.MainPage.Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
         }
     }
 
-    private async Task MultipleDocumentScanningClicked()
+    public static async Task MultipleDocumentScanningClicked()
     {
         var configuration = new DocumentScanningFlow();
         // Enable the multiple page behavior
@@ -142,45 +143,12 @@ public partial class HomePage
         var result = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
-            await Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
+            await Application.Current.MainPage.Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
         }
     }
 
-    private async Task ImportButtonClicked()
+    public static async Task ClassicDocumentScannerViewClicked()
     {
-        try
-        {
-            IsLoading = true;
-                
-            var image = await ScanbotSDKMain.ImagePicker.PickImageAsync();
-            if (image is null) return;
-            
-            var document = new ScannedDocument();
-
-            // Import the selected image as original image and create a Page object
-            var page = document.AddPage(image);
-
-            // Run document detection on it
-            var result = await ScanbotSDKMain.Rtu.CroppingScreen.LaunchAsync(
-                new CroppingConfiguration() 
-                {
-                    DocumentUuid = document.Uuid.ToString(),
-                    PageUuid = page.Uuid.ToString()
-                });
-            await Navigation.PushAsync(new ScannedDocumentsPage(document));
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
-
-    private async Task ClassicDocumentScannerViewClicked()
-    {
-        await Navigation.PushAsync(new ClassicDocumentScannerPage(), true);
+        await Application.Current.MainPage.Navigation.PushAsync(new ClassicDocumentScannerPage(), true);
     }
 }

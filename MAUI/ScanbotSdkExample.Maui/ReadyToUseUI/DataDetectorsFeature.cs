@@ -1,4 +1,4 @@
-﻿using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Common;
 using ScanbotSDK.MAUI.CreditCard;
 using ScanbotSDK.MAUI.Ehic;
@@ -10,13 +10,14 @@ using ScanbotSdkExample.Maui.Utils;
 using static ScanbotSDK.MAUI.ScanbotSDKMain;
 using VinScannerConfiguration = ScanbotSDK.MAUI.Vin.VinScannerConfiguration;
 
-namespace ScanbotSdkExample.Maui.Pages;
-public partial class HomePage
+namespace ScanbotSdkExample.Maui.ReadyToUseUI;
+
+public static class DataDetectorsFeature
 {
-    private async Task MrzScannerClicked()
+    public static async Task MrzScannerClicked()
     {
         var configuration = new MrzScannerScreenConfiguration();
-        
+
         // Set colors
         configuration.Palette.SbColorPrimary = Constants.Colors.ScanbotRed;
         configuration.Palette.SbColorOnPrimary = Colors.White;
@@ -40,11 +41,11 @@ public partial class HomePage
         if (result.Status == OperationResult.Ok)
         {
             var message = SdkUtils.ParseMrzResult(result.Result);
-            ViewUtils.Alert(this, "MRZ Result", message);
+            ViewUtils.Alert("MRZ Result", message);
         }
     }
 
-    private async Task EhicScannerClicked()
+    public static async Task EhicScannerClicked()
     {
         var configuration = new EhicScannerConfiguration
         {
@@ -56,15 +57,15 @@ public partial class HomePage
         if (result.Status == OperationResult.Ok)
         {
             var message = SdkUtils.ToAlertMessage(result.Result);
-            ViewUtils.Alert(this, "EHIC Result", message);
+            ViewUtils.Alert("EHIC Result", message);
         }
     }
 
-    private async Task DocumentDataScannerClicked()
+    public static async Task DocumentDataScannerClicked()
     {
         var configuration = new ScanbotSDK.MAUI.DocumentData.DocumentDataExtractorConfiguration
         {
-            AcceptedDocumentTypes = 
+            AcceptedDocumentTypes =
             [
                 DocumentDataRootType.DeIdCardFront,
                 DocumentDataRootType.DeIdCardBack,
@@ -77,16 +78,16 @@ public partial class HomePage
                 DocumentDataRootType.DeHealthInsuranceCardFront
             ]
         };
-            
+
         var result = await Rtu.DocumentDataExtractor.LaunchAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
             var message = SdkUtils.ToAlertMessage(result.Result);
-            ViewUtils.Alert(this, "Document Data Result", message);
+            ViewUtils.Alert("Document Data Result", message);
         }
     }
 
-    private async Task CheckScannerClicked()
+    public static async Task CheckScannerClicked()
     {
         var configuration = new ScanbotSDK.MAUI.Check.CheckScannerConfiguration
         {
@@ -107,14 +108,14 @@ public partial class HomePage
         if (result.Status == OperationResult.Ok)
         {
             var message = SdkUtils.ToAlertMessage(result.Result);
-            ViewUtils.Alert(this, "Check Result", message);
+            ViewUtils.Alert("Check Result", message);
         }
     }
 
-    private async Task TextPatternScannerClicked()
+    public static async Task TextPatternScannerClicked()
     {
         var configuration = new TextPatternScannerScreenConfiguration();
-        
+
         // Set colors
         configuration.Palette.SbColorPrimary = Constants.Colors.ScanbotRed;
         configuration.Palette.SbColorOnPrimary = Colors.White;
@@ -132,16 +133,16 @@ public partial class HomePage
         configuration.ActionBar.FlashButton.ActiveForegroundColor = Constants.Colors.ScanbotRed;
 
         configuration.ScannerConfiguration.MinimumNumberOfRequiredFramesWithEqualScanningResult = 4;
-        
+
         var result = await Rtu.TextPatternScanner.LaunchAsync(configuration);
 
         if (result.Status == OperationResult.Ok)
         {
-            ViewUtils.Alert(this, $"Text Pattern Result", result.Result.RawText);
+            ViewUtils.Alert("Text Pattern Result", result.Result.RawText);
         }
     }
 
-    private async Task VinScannerClicked()
+    public static async Task VinScannerClicked()
     {
         var configuration = new VinScannerConfiguration
         {
@@ -155,27 +156,27 @@ public partial class HomePage
 
         if (result.Status == OperationResult.Ok)
         {
-            ViewUtils.Alert(this, $"Vin Result", result.Result.TextResult.RawText);
+            ViewUtils.Alert("Vin Result", result.Result.TextResult.RawText);
         }
     }
-        
-    private async Task MedicalCertificateScannerClicked()
+
+    public static async Task MedicalCertificateScannerClicked()
     {
         var configuration = new MedicalCertificateScannerConfiguration();
         var result = await Rtu.MedicalCertificateScanner.LaunchAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
-            ViewUtils.Alert(this, $"Medical Certificate Result", result.Result.ToFormattedString());
+            ViewUtils.Alert("Medical Certificate Result", result.Result.ToFormattedString());
         }
     }
 
-    private async Task CreditCardScannerClicked()
+    public static async Task CreditCardScannerClicked()
     {
         var configuration = new CreditCardScannerScreenConfiguration();
         var result = await Rtu.CreditCard.LaunchAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
-            ViewUtils.Alert(this, $"Credit Card Result", SdkUtils.GenericDocumentToString(result.Result.CreditCard));
+            ViewUtils.Alert("Credit Card Result", SdkUtils.GenericDocumentToString(result.Result.CreditCard));
         }
     }
 }

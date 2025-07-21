@@ -176,7 +176,7 @@ public class ScannedDocumentsPage : ContentPage
         }
         catch (Exception ex)
         {
-            ViewUtils.Alert(this, "Error: ", $"An error occurred while saving the document: {ex.Message}");
+            ViewUtils.Alert( "Error: ", $"An error occurred while saving the document: {ex.Message}");
         }
     }
 
@@ -219,7 +219,7 @@ public class ScannedDocumentsPage : ContentPage
         var result = await CommonOperations.PerformOcrAsync(pages, configuration: ocrConfig);
         
         // You can access the results with: result.Pages
-        ViewUtils.Alert(this, "OCR", result.Text);
+        ViewUtils.Alert("OCR", result.Text);
     }
 
     private async Task GenerateSandwichPdfAsync()
@@ -301,7 +301,7 @@ public class ScannedDocumentsPage : ContentPage
         if (string.IsNullOrEmpty(localFilePath) || !File.Exists(localFilePath))
         {
             // Handle file-not-found scenario
-            ViewUtils.Alert(this, "Error", "Unable to find the file:" + localFilePath);
+            ViewUtils.Alert("Error", "Unable to find the file:" + localFilePath);
             return;
         }
 
