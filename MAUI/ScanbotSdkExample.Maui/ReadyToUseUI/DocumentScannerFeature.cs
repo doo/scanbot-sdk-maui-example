@@ -1,6 +1,7 @@
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Common;
 using ScanbotSDK.MAUI.Document;
+using ScanbotSdkExample.Maui.ClassicUI.MVVM.Views;
 using ScanbotSdkExample.Maui.ClassicUI.Pages;
 using ScanbotSdkExample.Maui.Results;
 
@@ -151,5 +152,10 @@ public static class DocumentScannerFeature
     public static async Task ClassicDocumentScannerViewClicked()
     {
         await Application.Current.MainPage.Navigation.PushAsync(new ClassicDocumentScannerPage(), true);
+    }
+
+    public static async Task ClassicDocumentScannerMVVMViewClicked()
+    {
+        await Application.Current.MainPage.Navigation.PushAsync(new ClassicDocumentScannerView(), true);
     }
 }

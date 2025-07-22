@@ -96,6 +96,7 @@
         </Compile>
     </ItemGroup>
     <ItemGroup>
+        <PackageReference Include="CommunityToolkit.Maui" Version="9.1.0" />
         <PackageReference Include="Microsoft.Maui.Essentials" Version="9.0.30" />
         <PackageReference Include="ScanbotSDK.MAUI" Version="7.0.0-rc.2" />
     </ItemGroup>

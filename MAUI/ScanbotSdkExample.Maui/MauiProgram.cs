@@ -1,7 +1,9 @@
-﻿using ScanbotSDK.MAUI;
+﻿using CommunityToolkit.Maui;
+using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Common;
 
 namespace ScanbotSdkExample.Maui;
+
 public static partial class MauiProgram
 {
     private const string LicenseKey = "";
@@ -11,6 +13,7 @@ public static partial class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -34,7 +37,7 @@ public static partial class MauiProgram
             // not be openable from external applications, since they will be
             // encrypted.
         });
-            
+
         return builder.Build();
     }
 

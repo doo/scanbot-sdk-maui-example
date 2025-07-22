@@ -4,7 +4,7 @@ public partial class DocumentScannerResultPage : ContentPage
 {
 	private ImageSource _imageSource;
 	
-	internal void NavigateData(ImageSource source)
+	internal void SetData(ImageSource source)
 	{
 		_imageSource = source;
 	}

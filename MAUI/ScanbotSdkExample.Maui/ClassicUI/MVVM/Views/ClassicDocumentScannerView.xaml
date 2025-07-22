@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:classicView="clr-namespace:ScanbotSDK.MAUI.Document.ClassicComponent;assembly=DocumentSDK.MAUI"
+             xmlns:customButton="clr-namespace:ScanbotSdkExample.Maui.Controls;assembly=ScanbotSdkExample.Maui"
+             xmlns:models="clr-namespace:ScanbotSdkExample.Maui.Models;assembly=ScanbotSdkExample.Maui"
+             xmlns:viewModels="clr-namespace:ScanbotSdkExample.Maui.ClassicUI.MVVM.ViewModels"
+             xmlns:converters="clr-namespace:ScanbotSdkExample.Maui.ClassicUI.MVVM.Converters"
+             x:Class="ScanbotSdkExample.Maui.ClassicUI.MVVM.Views.ClassicDocumentScannerView"
+             x:DataType="viewModels:ClassicDocumentScannerViewModel"
+             x:Name="_this">
+    <ContentPage.Resources>
+        <Style x:Key="ScannerButonStyle" TargetType="Button">
+            <Setter Property="CornerRadius">10</Setter>
+            <Setter Property="BackgroundColor">WhiteSmoke</Setter>
+            <Setter Property="TextColor">DarkSlateGrey</Setter>
+            <Setter Property="FontAttributes">Bold</Setter>
+        </Style>
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <Grid
+            x:Name="GridParent"
+            RowDefinitions="8*,2*">
+            <Grid>
+                <classicView:DocumentScannerView x:Name="DocumentScannerView"
+                                                 IgnoreOrientationMismatch="True"
+                                                 IsFreezeCamera="{Binding IsFreezeCamera}"
+                                                 AutoSnappingEnabled="{Binding IsAutoSnappingEnabled}"
+                                                 FlashEnabled="{Binding IsFlashEnabled}"
+                                                 FinderEnabled="{Binding IsFinderEnabled}"
+                                                 PolygonEnabled="{Binding IsPolygonEnabled}"
+                                                 IsVisible="{Binding IsCameraVisible}">
+                    <classicView:DocumentScannerView.Behaviors>
+                        <toolkit:EventToCommandBehavior
+                            EventName="OnSnappedDocumentImageResult"
+                            Command="{Binding SnappedDocumentImageResultCommand}"
+                            EventArgsConverter="{converters:SnappedDocumentImageEventArgsConverter}"/>
+                        <toolkit:EventToCommandBehavior
+                            EventName="OnUpdateDetectionStatus"
+                            Command="{Binding UpdateDetectionStatusCommand}"
+                            EventArgsConverter="{converters:DetectionStatusEventArgsConverter}"/>
+                    </classicView:DocumentScannerView.Behaviors>
+                </classicView:DocumentScannerView>
+                <Label Text="{x:Binding ScanningHintText}"
+                       IsVisible="{Binding IsScanningHintVisible}"
+                       BackgroundColor="{Binding ScanningHintBackgroundColor}"
+                       TextColor="White"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       Margin="20"
+                       Padding="10" />
+            </Grid>
+            <CollectionView
+                Grid.Row="1"
+                ItemsSource="{Binding ScannerButtons}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:ClassicCollectionItem">
+                        <customButton:ToggleButton
+                            Text="{Binding Title}"
+                            Style="{x:StaticResource Key=ScannerButonStyle}"
+                            IsSelected="{Binding Selected}"
+                            Command="{Binding BindingContext.SelectClassicCollectionItemCommand, Source={x:Reference _this}}"
+                            CommandParameter="{Binding .}"/>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout
+                        Span="3"
+                        Orientation="Vertical"
+                        HorizontalItemSpacing="5"
+                        VerticalItemSpacing="5" />
+                </CollectionView.ItemsLayout>
+            </CollectionView>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

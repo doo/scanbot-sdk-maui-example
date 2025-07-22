@@ -1,12 +1,13 @@
 using System.Diagnostics;
-using ScanbotSdkExample.Maui.Models;
-using ScanbotSdkExample.Maui.Results;
+using System.Windows.Input;
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Document.ClassicComponent;
+using ScanbotSdkExample.Maui.Models;
+using ScanbotSdkExample.Maui.Results;
 
-namespace ScanbotSdkExample.Maui.ClassicUI.Pages;
+namespace ScanbotSdkExample.Maui.ClassicUI.MVVM.ViewModels;
 
-public partial class ClassicDocumentScannerPage : ContentPage
+public class ClassicDocumentScannerViewModel : BaseViewModel
 {
 	private const string AutoSnap = "Autosnap",
 		Finder = "Finder",
@@ -17,49 +18,31 @@ public partial class ClassicDocumentScannerPage : ContentPage
 		Stop = "Stop",
 		Visibility = "Visibility";
 
-    public ClassicDocumentScannerPage()
-	{
-		InitializeComponent();
+    public ClassicDocumentScannerViewModel()
+    {
+        // CollectionView Buttons
+        ScannerButtons = new List<ClassicCollectionItem>
+        {
+            new(AutoSnap, () => IsAutoSnappingEnabled = !IsAutoSnappingEnabled),
+            new(Finder, () => IsFinderEnabled = !IsFinderEnabled),
+            new(Flash, () => IsFlashEnabled = !IsFlashEnabled),
+            new(Polygons, () => IsPolygonEnabled = !IsPolygonEnabled),
+            new(Visibility, ToggleVisibility),
+            new(Stop, null, true),
+        };
 
-		DocumentScannerView.OnSnappedDocumentImageResult += OnSnappedDocumentImageResult;
-		DocumentScannerView.OnUpdateDetectionStatus += UpdateDetectionHintFromStatus;
-		
-		// ==> Polygon Configuration: Uncomment below code for 
-		// DocumentScannerView.PolygonColor = Colors.Red;
-		// DocumentScannerView.PolygonColorOK = Colors.Yellow;
-		// DocumentScannerView.PolygonBackgroundColor = Colors.PaleVioletRed;
-		// DocumentScannerView.PolygonBackgroundColorOK = Colors.MediumPurple;
-		// DocumentScannerView.PolygonAutoSnapProgressColor = Colors.Black;
-		//
-		// DocumentScannerView.PolygonAutoSnapProgressEnabled = true;
-		// DocumentScannerView.PolygonCornerRadius = 20;
-		// DocumentScannerView.PolygonLineWidth = 5;
+        SnappedDocumentImageResultCommand = new Command<SnappedDocumentImageResultEventArgs>(OnSnappedDocumentImageResult);
+        UpdateDetectionStatusCommand = new Command<DetectionStatusEventArgs>(OnUpdateDetectionHintFromStatus);
+        SelectClassicCollectionItemCommand = new Command<ClassicCollectionItem>(OnSelectClassicCollectionItem);
+    }
 
-		// ==> For Finder Configuration: Uncomment below code for 
-		// DocumentScannerView.FinderLineColor = Colors.Yellow;
-		// DocumentScannerView.FinderAspectRatio = AspectRatio.A4DocumentPortraitAspectRatio;
-		// DocumentScannerView.FinderOverlayColor = Colors.Black.WithAlpha(0.6f);
-		// DocumentScannerView.FinderLineWidth = 10;
-		// DocumentScannerView.FinderMinimumPadding = 10;
-		// // iOS only
-		// DocumentScannerView.FinderCornerRadius = 20;
-		
-		// CollectionView Buttons
-		ScannerButtons = new List<ClassicCollectionItem>
-		{
-			new(AutoSnap, () => IsAutoSnappingEnabled = !IsAutoSnappingEnabled),
-			new(Finder, () => IsFinderEnabled = !IsFinderEnabled),
-			new(Flash, () => IsFlashEnabled = !IsFlashEnabled),
-			new(Polygons, () => IsPolygonEnabled = !IsPolygonEnabled),
-			new(Visibility, ToggleVisibility),
-			new(Stop, null, true),
-			new(Snap, DocumentScannerView.SnapDocumentImage),
-		};
-		
-		BindingContext = this;
-	}
+    public ICommand SnappedDocumentImageResultCommand { get; private set; }
 
-	private bool _isAutoSnappingEnabled;
+    public ICommand UpdateDetectionStatusCommand { get; private set; }
+
+    public ICommand SelectClassicCollectionItemCommand { get; private set; }
+
+    private bool _isAutoSnappingEnabled;
 
 	public bool IsAutoSnappingEnabled
 	{
@@ -119,7 +102,7 @@ public partial class ClassicDocumentScannerPage : ContentPage
 		}
 	}
 
-	private List<ClassicCollectionItem> _scannerButtons = new List<ClassicCollectionItem>();
+	private List<ClassicCollectionItem> _scannerButtons = [];
 
 	public List<ClassicCollectionItem> ScannerButtons
 	{
@@ -131,25 +114,73 @@ public partial class ClassicDocumentScannerPage : ContentPage
 		}
 	}
 
+	private string _scanningHintText;
+
+	public string ScanningHintText
+	{
+		get => _scanningHintText;
+		set
+		{
+			_scanningHintText = value;
+			OnPropertyChanged();
+		}
+	}
+
+	private bool _isScanningHintVisible;
+
+	public bool IsScanningHintVisible
+	{
+		get => _isScanningHintVisible;
+		set
+		{
+			_isScanningHintVisible = value;
+			OnPropertyChanged();
+		}
+	}
+
+	private Color _scanningHintBackgroundColor;
+
+	public Color ScanningHintBackgroundColor
+	{
+		get => _scanningHintBackgroundColor;
+		set
+		{
+			_scanningHintBackgroundColor = value;
+			OnPropertyChanged();
+		}
+	}
+
+	private bool _isFreezeCamera;
+
+	public bool IsFreezeCamera
+	{
+		get => _isFreezeCamera;
+		set
+		{
+			_isFreezeCamera = value;
+			OnPropertyChanged();
+		}
+	}
+
 	private void ToggleVisibility()
 	{
 		IsCameraVisible = !IsCameraVisible;
 
 		if (!IsCameraVisible)
 		{
-			ScanningHintLabel.IsVisible = false;
+			IsScanningHintVisible = false;
 		}
 	}
 
-	// Receives the result of Document Scanning. 
-	private async void OnSnappedDocumentImageResult(object sender, SnappedDocumentImageResultEventArgs eventArgs)
+	// Receives the result of Document Scanning.
+	private async void OnSnappedDocumentImageResult(SnappedDocumentImageResultEventArgs eventArgs)
 	{
 		var resultsPage = new DocumentScannerResultPage();
 		resultsPage.SetData(ImageSource.FromStream(() => eventArgs.DocumentImage.AsStream()));
-		await Navigation.PushAsync(resultsPage);
+		await Application.Current.MainPage.Navigation.PushAsync(resultsPage);
 	}
 
-	private void UpdateDetectionHintFromStatus(object sender, DetectionStatusEventArgs args)
+	private void OnUpdateDetectionHintFromStatus(DetectionStatusEventArgs args)
 	{
 		var status = args.Status;
 		Debug.WriteLine("Document Detection Status: " + status);
@@ -194,20 +225,17 @@ public partial class ClassicDocumentScannerPage : ContentPage
 				backgroundColor = Colors.Red;
 				break;
 			default:
-				ScanningHintLabel.IsVisible = false;
+				IsScanningHintVisible = false;
 				return;
 		}
 
-		ScanningHintLabel.Text = hint;
-		ScanningHintLabel.BackgroundColor = backgroundColor.WithAlpha(0.5f);
-		ScanningHintLabel.IsVisible = true;
+		ScanningHintText = hint;
+		ScanningHintBackgroundColor = backgroundColor.WithAlpha(0.5f);
+		IsScanningHintVisible = true;
 	}
-	
-	private void ScannerButtonOnClicked(object sender, EventArgs e)
-	{
-		var selectedItem = (sender as Button)?.BindingContext as ClassicCollectionItem;
-		if (selectedItem == null) return;
 
+	private void OnSelectClassicCollectionItem(ClassicCollectionItem selectedItem)
+	{
 		if (selectedItem.Title != Snap)
 		{
 			selectedItem.Selected = !selectedItem.Selected;
@@ -222,12 +250,12 @@ public partial class ClassicDocumentScannerPage : ContentPage
 		if (selectedItem.Selected)
 		{
 			selectedItem.Title = Stop;
-			DocumentScannerView.IsFreezeCamera = false;
+			IsFreezeCamera = false;
 		}
 		else
 		{
 			selectedItem.Title = Start;
-			DocumentScannerView.IsFreezeCamera = true;
+			IsFreezeCamera = true;
 		}
 	}
 }
