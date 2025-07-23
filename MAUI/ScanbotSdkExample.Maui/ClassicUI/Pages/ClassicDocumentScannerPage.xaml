@@ -40,7 +40,8 @@
             <CollectionView 
                 x:Name="CollectionViewButtons"
                 Grid.Row="1"
-                ItemsSource="{Binding ScannerButtons}">
+                ItemsSource="{Binding ScannerButtons}"
+                Margin="10">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:ClassicCollectionItem">
                         <customButton:ToggleButton

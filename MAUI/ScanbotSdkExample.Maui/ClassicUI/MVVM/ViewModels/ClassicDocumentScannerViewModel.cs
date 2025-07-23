@@ -9,53 +9,23 @@ namespace ScanbotSdkExample.Maui.ClassicUI.MVVM.ViewModels;
 
 public class ClassicDocumentScannerViewModel : BaseViewModel
 {
-	private const string AutoSnap = "Autosnap",
-		Finder = "Finder",
-		Flash = "Flash",
-		Polygons = "Polygon",
-		Snap = "Snap",
-		Start = "Start",
-		Stop = "Stop",
-		Visibility = "Visibility";
-
     public ClassicDocumentScannerViewModel()
     {
-        // CollectionView Buttons
-        ScannerButtons = new List<ClassicCollectionItem>
-        {
-            new(AutoSnap, () => IsAutoSnappingEnabled = !IsAutoSnappingEnabled),
-            new(Finder, () => IsFinderEnabled = !IsFinderEnabled),
-            new(Flash, () => IsFlashEnabled = !IsFlashEnabled),
-            new(Polygons, () => IsPolygonEnabled = !IsPolygonEnabled),
-            new(Visibility, ToggleVisibility),
-            new(Stop, null, true),
-            new(Snap, () => SnapDocumentImageCommand.Execute(null)),
-        };
-
         SnappedDocumentImageResultCommand = new Command<SnappedDocumentImageResultEventArgs>(OnSnappedDocumentImageResult);
         UpdateDetectionStatusCommand = new Command<DetectionStatusEventArgs>(OnUpdateDetectionHintFromStatus);
-        SelectClassicCollectionItemCommand = new Command<ClassicCollectionItem>(OnSelectClassicCollectionItem);
+        SwitchFlashEnabledCommand = new Command(() => IsFlashEnabled = !IsFlashEnabled);
+        SwitchPolygonEnabledCommand = new Command(() => IsPolygonEnabled = !IsPolygonEnabled);
     }
 
     public ICommand SnappedDocumentImageResultCommand { get; private set; }
 
     public ICommand UpdateDetectionStatusCommand { get; private set; }
 
-    public ICommand SelectClassicCollectionItemCommand { get; private set; }
+    public ICommand SwitchFlashEnabledCommand { get; private set; }
+
+    public ICommand SwitchPolygonEnabledCommand { get; private set; }
 
     public ICommand SnapDocumentImageCommand { get; set; }
-
-    private bool _isAutoSnappingEnabled;
-
-	public bool IsAutoSnappingEnabled
-	{
-		get => _isAutoSnappingEnabled;
-		set
-		{
-			_isAutoSnappingEnabled = value;
-			OnPropertyChanged();
-		}
-	}
 
 	private bool _isFlashEnabled;
 
@@ -77,42 +47,6 @@ public class ClassicDocumentScannerViewModel : BaseViewModel
 		set
 		{
 			_isPolygonEnabled = value;
-			OnPropertyChanged();
-		}
-	}
-
-	private bool _isFinderEnabled;
-
-	public bool IsFinderEnabled
-	{
-		get => _isFinderEnabled;
-		set
-		{
-			_isFinderEnabled = value;
-			OnPropertyChanged();
-		}
-	}
-
-	private bool _isCameraVisible = true;
-
-	public bool IsCameraVisible
-	{
-		get => _isCameraVisible;
-		set
-		{
-			_isCameraVisible = value;
-			OnPropertyChanged();
-		}
-	}
-
-	private List<ClassicCollectionItem> _scannerButtons = [];
-
-	public List<ClassicCollectionItem> ScannerButtons
-	{
-		get => _scannerButtons;
-		set
-		{
-			_scannerButtons = value;
 			OnPropertyChanged();
 		}
 	}
@@ -150,28 +84,6 @@ public class ClassicDocumentScannerViewModel : BaseViewModel
 		{
 			_scanningHintBackgroundColor = value;
 			OnPropertyChanged();
-		}
-	}
-
-	private bool _isFreezeCamera;
-
-	public bool IsFreezeCamera
-	{
-		get => _isFreezeCamera;
-		set
-		{
-			_isFreezeCamera = value;
-			OnPropertyChanged();
-		}
-	}
-
-	private void ToggleVisibility()
-	{
-		IsCameraVisible = !IsCameraVisible;
-
-		if (!IsCameraVisible)
-		{
-			IsScanningHintVisible = false;
 		}
 	}
 
@@ -235,30 +147,5 @@ public class ClassicDocumentScannerViewModel : BaseViewModel
 		ScanningHintText = hint;
 		ScanningHintBackgroundColor = backgroundColor.WithAlpha(0.5f);
 		IsScanningHintVisible = true;
-	}
-
-	private void OnSelectClassicCollectionItem(ClassicCollectionItem selectedItem)
-	{
-		if (selectedItem.Title != Snap)
-		{
-			selectedItem.Selected = !selectedItem.Selected;
-		}
-
-		selectedItem.ClickAction?.Invoke();
-
-		if (selectedItem.Title != Start && selectedItem.Title != Stop)
-			return;
-
-		// Start and Stop Toggle.
-		if (selectedItem.Selected)
-		{
-			selectedItem.Title = Stop;
-			IsFreezeCamera = false;
-		}
-		else
-		{
-			selectedItem.Title = Start;
-			IsFreezeCamera = true;
-		}
 	}
 }

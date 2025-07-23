@@ -222,12 +222,12 @@ public partial class ClassicDocumentScannerPage : ContentPage
 		if (selectedItem.Selected)
 		{
 			selectedItem.Title = Stop;
-			DocumentScannerView.IsFreezeCamera = false;
+			DocumentScannerView.IsCameraFrozen = false;
 		}
 		else
 		{
 			selectedItem.Title = Start;
-			DocumentScannerView.IsFreezeCamera = true;
+			DocumentScannerView.IsCameraFrozen = true;
 		}
 	}
 }
