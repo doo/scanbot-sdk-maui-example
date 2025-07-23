@@ -6,7 +6,11 @@ public partial class ClassicDocumentScannerView : ContentPage
 {
     public ClassicDocumentScannerView()
     {
-        BindingContext = new ClassicDocumentScannerViewModel();
+        var vm = new ClassicDocumentScannerViewModel
+        {
+            SnapDocumentImageCommand = new Command(() => DocumentScannerView.SnapDocumentImage())
+        };
+        BindingContext = vm;
         InitializeComponent();
     }
 }

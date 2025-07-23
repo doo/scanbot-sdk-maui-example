@@ -29,6 +29,7 @@ public class ClassicDocumentScannerViewModel : BaseViewModel
             new(Polygons, () => IsPolygonEnabled = !IsPolygonEnabled),
             new(Visibility, ToggleVisibility),
             new(Stop, null, true),
+            new(Snap, () => SnapDocumentImageCommand.Execute(null)),
         };
 
         SnappedDocumentImageResultCommand = new Command<SnappedDocumentImageResultEventArgs>(OnSnappedDocumentImageResult);
@@ -41,6 +42,8 @@ public class ClassicDocumentScannerViewModel : BaseViewModel
     public ICommand UpdateDetectionStatusCommand { get; private set; }
 
     public ICommand SelectClassicCollectionItemCommand { get; private set; }
+
+    public ICommand SnapDocumentImageCommand { get; set; }
 
     private bool _isAutoSnappingEnabled;
 
