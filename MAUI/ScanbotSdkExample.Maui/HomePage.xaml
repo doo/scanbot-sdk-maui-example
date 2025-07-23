@@ -8,7 +8,7 @@
              xmlns:models="clr-namespace:ScanbotSdkExample.Maui.Models"
              Title="Scanbot SDK MAUI">
     <Grid>
-        <ScrollView>
+        <ScrollView BackgroundColor="White">
             <StackLayout>
                 <CollectionView
                     x:Name="FeaturesCollectionView"
