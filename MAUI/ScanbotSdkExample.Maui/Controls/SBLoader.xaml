@@ -21,10 +21,10 @@
                 <RoundRectangle CornerRadius="20" />
             </Border.StrokeShape>
             <Label
-                x:Name="sbActivityIndicator"
+                x:Name="SbActivityIndicator"
                 VerticalOptions="Start"
                 HorizontalOptions="Fill"
-                TextColor="{Binding Source={x:Static color:Constants+Colors.ScanbotRed}}"
+                TextColor="{StaticResource ScanbotRed}"
                 HorizontalTextAlignment="Center"
                 VerticalTextAlignment="Center"
                 FontSize="50"

@@ -41,13 +41,13 @@ public partial class SBLoader : ContentView
                 index = 1;
             }
 
-            await MainThread.InvokeOnMainThreadAsync(() => sbActivityIndicator.Text = text);
+            await MainThread.InvokeOnMainThreadAsync(() => SbActivityIndicator.Text = text);
             await Task.Delay(200);
             text += LoaderText;
             index++;
 
         } while (IsBusy);
 
-        sbActivityIndicator.Text = string.Empty;
+        SbActivityIndicator.Text = string.Empty;
     }
 }

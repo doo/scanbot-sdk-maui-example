@@ -137,7 +137,7 @@ public class ScannedDocumentDetailPage : ContentPage
         });
             
         IsLoading = false;
-        ViewUtils.Alert("Document Quality", $"Detected quality is: {quality.Quality}");
+        Alert.Show("Document Quality", $"Detected quality is: {quality.Quality}");
     }
 
     private async void OnDeleteButtonTapped(object sender, EventArgs e)

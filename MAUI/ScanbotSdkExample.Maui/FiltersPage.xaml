@@ -4,7 +4,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ScanbotSdkExample.Maui.FiltersPage"
              xmlns:local="clr-namespace:ScanbotSdkExample.Maui"
-             xmlns:color="clr-namespace:ScanbotSDK.MAUI;assembly=ScanbotSDK.Shared"
              xmlns:models="clr-namespace:ScanbotSdkExample.Maui.Models"
              xmlns:pages="clr-namespace:ScanbotSdkExample.Maui"
              x:DataType="pages:FiltersPage">
@@ -13,8 +12,9 @@
         
         <!-- Primary Filter Template-->
         <DataTemplate x:Key="PrimaryFilterTemplate" x:DataType="models:FilterItem">
-            <StackLayout Padding="10" HeightRequest="50"
-                         BackgroundColor="{Binding Source={x:Static color:Constants+Colors.ScanbotRed}}">
+            <StackLayout 
+                Padding="10" HeightRequest="50"
+                BackgroundColor="{StaticResource ScanbotRed}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="9*" />
@@ -56,7 +56,7 @@
         <DataTemplate x:Key="SubFilterTemplate" x:DataType="models:FilterItem">
             <StackLayout Padding="19,9">
                 <Label Text="{Binding Caption }" />
-                <Frame HeightRequest="1" HorizontalOptions="Fill" BackgroundColor="DarkGray" />
+                <Border HeightRequest="1" HorizontalOptions="Fill" BackgroundColor="DarkGray" />
             </StackLayout>
         </DataTemplate>
 
