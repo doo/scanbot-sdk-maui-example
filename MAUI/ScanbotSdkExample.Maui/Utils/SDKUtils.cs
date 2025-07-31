@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Common;
-using ScanbotSDK.MAUI.MRZ;
+using ScanbotSDK.MAUI.Mrz;
 
 namespace ScanbotSdkExample.Maui.Utils;
 
@@ -11,7 +11,7 @@ public static class SdkUtils
     {
         if (!ScanbotSDKMain.IsLicenseValid)
         {
-            ViewUtils.Alert(context, "Oops!", "License expired or invalid");
+            Alert.Show("Oops!", "License expired or invalid");
         }
         return ScanbotSDKMain.IsLicenseValid;
     }

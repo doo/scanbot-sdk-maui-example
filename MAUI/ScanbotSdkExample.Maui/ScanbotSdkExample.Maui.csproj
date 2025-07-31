@@ -6,9 +6,8 @@
         <UseMaui>true</UseMaui>
         <SingleProject>true</SingleProject>
         <ImplicitUsings>enable</ImplicitUsings>
-        <AotAssemblies>False</AotAssemblies>
         <!-- Display name -->
-        <ApplicationTitle>MAUI RTU UI</ApplicationTitle>
+        <ApplicationTitle>ScanbotSDK</ApplicationTitle>
         <!-- App Identifier -->
         <ApplicationId>io.scanbot.example.sdk.maui</ApplicationId>
         <ApplicationIdGuid>e4ba4957-9c1e-4228-8037-7e92a44e5778</ApplicationIdGuid>
@@ -22,6 +21,7 @@
         <LangVersion>12.0</LangVersion>
         <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
         <PackageId>ScanbotSdkExample.Maui</PackageId>
+        <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
     </PropertyGroup>
     
     <!-- ===================== Application Resources =====================  -->
@@ -47,19 +47,25 @@
     </ItemGroup>
 
     <!-- ===================== Folders =====================  -->
-    <ItemGroup>
-        <Folder Include="SubViews\ParametricFilterViews\"/>
-    </ItemGroup>
 
     <!-- ===================== Xaml and Xaml.cs files =====================  -->
     <ItemGroup>
         <MauiXaml Update="Pages\DocumentFilters\FilteredImagePage.xaml">
             <SubType>Designer</SubType>
         </MauiXaml>
-        <MauiXaml Update="Pages\DocumentFilters\FiltersPage.xaml">
-            <SubType>Designer</SubType>
-        </MauiXaml>
         <MauiXaml Update="Pages\BarcodeResults\BarcodeResultPage.xaml">
+          <SubType>Designer</SubType>
+        </MauiXaml>
+        <MauiXaml Update="HomePage.xaml">
+          <SubType>Designer</SubType>
+        </MauiXaml>
+        <MauiXaml Update="FiltersPage.xaml">
+          <SubType>Designer</SubType>
+        </MauiXaml>
+        <MauiXaml Update="Results\DocumentScannerResultPage.xaml">
+          <SubType>Designer</SubType>
+        </MauiXaml>
+        <MauiXaml Update="ClassicUI\Pages\ClassicDocumentScannerPage.xaml">
           <SubType>Designer</SubType>
         </MauiXaml>
     </ItemGroup>
@@ -68,17 +74,31 @@
             <DependentUpon>FilteredImagePage.xaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
-        <Compile Update="Pages\DocumentFilters\FiltersPage.xaml.cs">
-            <DependentUpon>FiltersPage.xaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
         <Compile Update="Pages\BarcodeResults\BarcodeResultPage.xaml.cs">
           <DependentUpon>BarcodeResultPage.xaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
+        <Compile Update="HomePage.xaml.cs">
+          <DependentUpon>HomePage.xaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="FiltersPage.xaml.cs">
+          <DependentUpon>FiltersPage.xaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Results\DocumentScannerResultPage.xaml.cs">
+          <DependentUpon>DocumentScannerResultPage.xaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="ClassicUI\Pages\ClassicDocumentScannerPage.xaml.cs">
+          <DependentUpon>ClassicDocumentScannerPage.xaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.Maui.Essentials" Version="9.0.30" />
-        <PackageReference Include="ScanbotSDK.MAUI" Version="7.0.0-rc.2" />
+        <PackageReference Include="CommunityToolkit.Maui" Version="9.1.0" />
+        <PackageReference Include="Microsoft.Maui.Essentials" Version="9.0.51" />
+        <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.51" />
+        <PackageReference Include="ScanbotSDK.MAUI" Version="7.1.0-alpha.3" />
     </ItemGroup>
 </Project>

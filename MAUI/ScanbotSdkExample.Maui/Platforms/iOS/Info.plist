@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<string>MAUI RTU UI</string>
+	<string>ScanbotSDK</string>
 	<key>CFBundleIdentifier</key>
 	<string>io.scanbot.example.sdk.maui</string>
 	<key>CFBundleShortVersionString</key>
@@ -49,5 +49,7 @@
 	<string>Application would like to use photos app for importing images</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Application would like to use photos app for importing images</string>
+	<key>UIUserInterfaceStyle</key>
+	<string>Light</string>
 </dict>
 </plist>
