@@ -50,7 +50,7 @@ public static class DocumentScannerFeature
         var result = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
-            await Application.Current.MainPage.Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
+            await App.Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
         }
     }
 
@@ -87,7 +87,7 @@ public static class DocumentScannerFeature
         var result = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
-            await Application.Current.MainPage.Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
+            await App.Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
         }
     }
 
@@ -145,17 +145,17 @@ public static class DocumentScannerFeature
         var result = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
-            await Application.Current.MainPage.Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
+            await App.Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
         }
     }
 
     public static async Task ClassicDocumentScannerViewClicked()
     {
-        await Application.Current.MainPage.Navigation.PushAsync(new ClassicDocumentScannerPage(), true);
+        await App.Navigation.PushAsync(new ClassicDocumentScannerPage(), true);
     }
 
     public static async Task ClassicDocumentScannerMVVMViewClicked()
     {
-        await Application.Current.MainPage.Navigation.PushAsync(new ClassicDocumentScannerView(), true);
+        await App.Navigation.PushAsync(new ClassicDocumentScannerView(), true);
     }
 }

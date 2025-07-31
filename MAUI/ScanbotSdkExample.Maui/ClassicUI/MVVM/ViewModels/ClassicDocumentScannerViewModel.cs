@@ -92,7 +92,7 @@ public class ClassicDocumentScannerViewModel : BaseViewModel
 	{
 		var resultsPage = new DocumentScannerResultPage();
 		resultsPage.SetData(ImageSource.FromStream(() => eventArgs.DocumentImage.AsStream()));
-		await Application.Current.MainPage.Navigation.PushAsync(resultsPage);
+		await App.Navigation.PushAsync(resultsPage);
 	}
 
 	private void OnUpdateDetectionHintFromStatus(DetectionStatusEventArgs args)

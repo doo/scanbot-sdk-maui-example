@@ -1,9 +1,13 @@
-﻿using ScanbotSDK.MAUI;
+﻿using Microsoft.Maui.Graphics.Platform;
+using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Common;
 using ScanbotSDK.MAUI.Document;
+using ScanbotSDK.MAUI.Ocr;
 using ScanbotSdkExample.Maui.Models;
 using ScanbotSdkExample.Maui.Results;
 using ScanbotSdkExample.Maui.ReadyToUseUI;
 using ScanbotSdkExample.Maui.Utils;
+using ImageSource = Microsoft.Maui.Controls.ImageSource;
 
 namespace ScanbotSdkExample.Maui;
 
@@ -56,7 +60,12 @@ public partial class HomePage
             new SdkFeature("EHIC Recognizer", DetectOnImageFeature.EhicDetectorClicked),
             new SdkFeature("Document Data Extractor", DetectOnImageFeature.DocumentDataExtractorClicked),
             new SdkFeature("Medical Certificate Recognizer", DetectOnImageFeature.MedicalCertificateDetectorClicked),
-
+            
+            new SdkFeature("SDK OPERATIONS"),
+            new SdkFeature("Mock Camera", ConfigureMockCameraClicked),
+            new SdkFeature("PDF from Image", CreatePdfFromImageClicked),
+            new SdkFeature("OCR from Image", ExtractOcrFromImageClicked),
+            
             new SdkFeature("MISCELLANEOUS"),
             new SdkFeature(ViewLicenseInfo, ViewLicenseInfoClicked),
             new SdkFeature("Learn more about Scanbot SDK", LearnMoreClicked)
@@ -80,7 +89,7 @@ public partial class HomePage
 
         if (!ScanbotSDKMain.IsLicenseValid && feature.Title != ViewLicenseInfo)
         {
-            ViewUtils.Alert("Oops!", LicenseInvalidMessage);
+            Alert.Show("Oops!", LicenseInvalidMessage);
             return;
         }
 
@@ -103,7 +112,7 @@ public partial class HomePage
             message = LicenseInvalidMessage;
         }
 
-        ViewUtils.Alert("License info", message);
+        Alert.Show("License info", message);
         return Task.CompletedTask;
     }
 
@@ -122,7 +131,7 @@ public partial class HomePage
         {
             IsLoading = true;
 
-            var image = await ScanbotSDKMain.ImagePicker.PickImageAsync();
+            var image = await PickPlatformImageAsync();
             if (image is null) return;
 
             var document = new ScannedDocument();
@@ -147,5 +156,90 @@ public partial class HomePage
         {
             IsLoading = false;
         }
+    }
+    
+     /// <summary>
+    /// Picks image from the photos application.
+    /// </summary>
+    /// <returns></returns>
+    public static async Task<PlatformImage> PickPlatformImageAsync()
+    {
+        try
+        {
+            // Pick the photo
+            FileResult photo = await MediaPicker.Default.PickPhotoAsync();
+            if (photo != null)
+            {
+                // Optionally display or process the image
+                using var stream = await photo.OpenReadAsync();
+                
+                // It returns a common interface IIMage which is implemented in PlatformImage.
+                return (PlatformImage)PlatformImage.FromStream(stream, ImageFormat.Jpeg);
+            }
+        }
+        catch (Exception ex)
+        {
+            Alert.Show("Error", $"Unable to pick image: {ex.Message}");
+        }
+
+        return null;
+    }
+    
+    /// <summary>
+    /// Picks image from the photos application.
+    /// </summary>
+    /// <returns></returns>
+    public async Task<FileImageSource> PickFileImageAsync()
+    {
+        try
+        {
+            // Pick the photo
+            FileResult photo = await MediaPicker.Default.PickPhotoAsync();
+            if (photo != null)
+            {
+              return ImageSource.FromFile(photo.FullPath) as FileImageSource;
+            }
+        }
+        catch (Exception ex)
+        {
+            Alert.Show("Error", $"Unable to pick image: {ex.Message}");
+        }
+
+        return null;
+    }
+    
+    private async Task ExtractOcrFromImageClicked()
+    {
+        var image = await PickFileImageAsync();
+        if (image == null) return;
+
+
+        var result = await ScanbotSDKMain.CommonOperations.PerformOcrAsync([image], OcrConfig.ScanbotOcr);
+        Alert.Show(title: "Ocr Result", message: result.Text);
+    }
+    
+    private async Task CreatePdfFromImageClicked()
+    {
+        var image = await PickFileImageAsync();
+        if (image == null) return;
+
+
+        var result = await ScanbotSDKMain.CommonOperations.CreatePdfAsync([image], new PdfConfiguration());
+        if (result == null || !result.IsFile)
+            return;
+        
+        // Sharing the Pdf.
+        await SharingUtils.ShareFileAsync(result.LocalPath, "application/pdf");
+    }
+
+    private async Task ConfigureMockCameraClicked()
+    {
+        var image = await PickFileImageAsync();
+        if (image?.File == null)
+        {
+            Alert.Show("Error","Something went wrong while loading the image from photos app.");
+            return;
+        }
+        ScanbotSDKMain.CommonOperations.ConfigureMockCamera(new MockCameraConfiguration(image.File, image.File, "Scanbot SDK Mock Cam"));
     }
 }

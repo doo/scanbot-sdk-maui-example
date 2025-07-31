@@ -1,4 +1,3 @@
-using Microsoft.Maui.Graphics.Platform;
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.DocumentsModel;
 using ScanbotSdkExample.Maui.Results;
@@ -12,7 +11,7 @@ public static class DetectOnImageFeature
 {
     public static async Task MrzDetectorClicked()
     {
-        var image = await PickImageFromGallery();
+        var image = await HomePage.PickPlatformImageAsync();
         if (image is null) return;
 
         var configuration = new MrzScannerConfiguration
@@ -22,18 +21,17 @@ public static class DetectOnImageFeature
         };
 
         var result = await Detector.Mrz.DetectOnImageAsync(image, configuration: configuration);
-        if (result?.Document == null || result?.Success == false)
+        if (result?.Document == null || result.Success == false)
         {
-            ViewUtils.Alert("Error", "Could not detect the MRZ data.");
+            Alert.Show( "Error", "Could not detect the MRZ data.");
             return;
         }
-
-        ViewUtils.Alert("MRZ result", SdkUtils.GenericDocumentToString(result.Document));
+        Alert.Show( "MRZ result", SdkUtils.GenericDocumentToString(result.Document));
     }
 
     public static async Task EhicDetectorClicked()
     {
-        var image = await PickImageFromGallery();
+        var image = await HomePage.PickPlatformImageAsync();
 
         var configuration = new EuropeanHealthInsuranceCardRecognizerConfiguration
         {
@@ -42,36 +40,33 @@ public static class DetectOnImageFeature
         };
 
         var result = await Detector.Ehic.DetectOnImageAsync(image, configuration: configuration);
-        if (result == null ||
-            result.Status == EuropeanHealthInsuranceCardRecognitionResult.RecognitionStatus.FailedDetection)
-        {
-            ViewUtils.Alert("Error", "Could not detect the Ehic data.");
+        if (result == null || result.Status == EuropeanHealthInsuranceCardRecognitionResult.RecognitionStatus.FailedDetection)
+        { 
+            Alert.Show( "Error", "Could not detect the Ehic data.");
             return;
         }
-
+        
         var message = SdkUtils.ToAlertMessage(result);
-        ViewUtils.Alert("EHIC Scanner result", message);
+        Alert.Show( "EHIC Scanner result", message);
     }
 
     public static async Task DocumentDataExtractorClicked()
     {
-        var image = await PickImageFromGallery();
+        var image = await HomePage.PickPlatformImageAsync();
         if (image is null) return;
-
+        
         var configuration = new DocumentDataExtractorConfiguration
         {
-            Configurations =
+            Configurations = 
             [
                 new DocumentDataExtractorCommonConfiguration
                 {
-                    AcceptedDocumentTypes =
+                    AcceptedDocumentTypes = 
                     [
                         DocumentsModelRootType.MRZ.DocumentType.Name,
                         DocumentsModelRootType.DeIdCardBack.DocumentType.Name,
                         DocumentsModelRootType.DeIdCardFront.DocumentType.Name,
                         DocumentsModelRootType.DePassport.DocumentType.Name,
-                        DocumentsModelRootType.DeDriverLicenseBack.DocumentType.Name,
-                        DocumentsModelRootType.DeDriverLicenseFront.DocumentType.Name,
                         DocumentsModelRootType.DeResidencePermitBack.DocumentType.Name,
                         DocumentsModelRootType.DeResidencePermitFront.DocumentType.Name,
                         DocumentsModelRootType.EuropeanHealthInsuranceCard.DocumentType.Name,
@@ -83,19 +78,19 @@ public static class DetectOnImageFeature
         var result = await Detector.DocumentData.DetectOnImageAsync(image, configuration);
         if (result?.Document == null || result.Status != DocumentDataExtractionStatus.Success)
         {
-            ViewUtils.Alert("Error", "Could not extract the Document data.");
+            Alert.Show( "Error", "Could not extract the Document data.");
             return;
         }
 
         var message = SdkUtils.GenericDocumentToString(result.Document);
-        ViewUtils.Alert("Document Data Result", message);
+        Alert.Show( "Document Data Result", message);
     }
 
     public static async Task CheckDetectorClicked()
     {
-        var image = await PickImageFromGallery();
+        var image = await HomePage.PickPlatformImageAsync();
         if (image is null) return;
-
+        
         var result = await Detector.Check.DetectOnImageAsync(image, new CheckScannerConfiguration
         {
             AcceptedCheckStandards =
@@ -114,96 +109,78 @@ public static class DetectOnImageFeature
 
         if (result?.Check == null || result.Status != CheckMagneticInkStripScanningStatus.Success)
         {
-            ViewUtils.Alert("Error", "Could not detect the Check data.");
+            Alert.Show( "Error", "Could not detect the Check data.");
             return;
         }
-
+        
         if (result.CroppedImage == null)
         {
-            ViewUtils.Alert("Check Result", SdkUtils.GenericDocumentToString(result.Check));
+            Alert.Show( "Check Result", SdkUtils.GenericDocumentToString(result.Check));
             return;
         }
 
         // Executes when the ExtractCroppedImage is set to true.
-        ViewUtils.Alert("Check Result", SdkUtils.ToAlertMessage(result), () =>
+        Alert.Show( "Check Result", SdkUtils.ToAlertMessage(result), () =>
         {
             var resultPage = new DetectOnImageResultPage();
             var source = ImageSource.FromStream(() => result.CroppedImage.ToPlatformImage().AsStream());
             resultPage.NavigateData(source);
-            Application.Current.MainPage.Navigation.PushAsync(resultPage);
+            App.Navigation.PushAsync(resultPage);
         });
     }
 
     public static async Task MedicalCertificateDetectorClicked()
     {
-        var image = await PickImageFromGallery();
+        var image = await HomePage.PickPlatformImageAsync();
         if (image is null) return;
-
+        
         var configuration = new MedicalCertificateScanningParameters
         {
             ExtractCroppedImage = true
             // Configure other parameters as needed.
         };
-
+        
         var result = await Detector.MedicalCertificate.DetectOnImageAsync(image, configuration);
-        if (result?.DocumentDetectionResult == null ||
-            result.DocumentDetectionResult.Status != DocumentDetectionStatus.Ok || !result.ScanningSuccessful)
+        if (result?.DocumentDetectionResult == null || result.DocumentDetectionResult.Status != DocumentDetectionStatus.Ok || !result.ScanningSuccessful)
         {
-            ViewUtils.Alert("Error", "Could not detect the Medical Certificate data.");
+            Alert.Show( "Error", "Could not detect the Medical Certificate data.");
             return;
         }
 
         if (result.CroppedImage == null)
         {
-            ViewUtils.Alert("Medical Certificate Result", result.ToFormattedString());
+            Alert.Show( "Medical Certificate Result", result.ToFormattedString());
             return;
         }
-
+        
         // Executes when the ExtractCroppedImage is set to true.
-        ViewUtils.Alert("Medical Certificate Result", result.ToFormattedString(), () =>
+        Alert.Show( "Medical Certificate Result", result.ToFormattedString(), () =>
         {
             var resultPage = new DetectOnImageResultPage();
             var source = ImageSource.FromStream(() => result.CroppedImage.ToPlatformImage().AsStream());
             resultPage.NavigateData(source);
-            Application.Current.MainPage.Navigation.PushAsync(resultPage);
+            App.Navigation.PushAsync(resultPage);
+
         });
     }
 
     public static async Task CreditCardDetectorClicked()
     {
-        var image = await PickImageFromGallery();
+        var image = await HomePage.PickPlatformImageAsync();
         if (image is null) return;
-
+        
         var configuration = new CreditCardScannerConfiguration
         {
             // Configure other parameters as needed.
             RequireCardholderName = true
         };
-
+        
         var result = await Detector.CreditCard.DetectOnImageAsync(image, configuration: configuration);
         if (result?.CreditCard == null || result.ScanningStatus != CreditCardScanningStatus.Success)
         {
-            ViewUtils.Alert("Error", "Could not detect the Credit card data.");
+            Alert.Show( "Error", "Could not detect the Credit card data.");
             return;
         }
-
-        ViewUtils.Alert("Credit Card result", SdkUtils.GenericDocumentToString(result.CreditCard));
-    }
-
-    /// <summary>
-    /// Picks image from the photos application.
-    /// </summary>
-    /// <returns></returns>
-    private static async Task<PlatformImage> PickImageFromGallery()
-    {
-        try
-        {
-            return await ScanbotSDKMain.ImagePicker.PickImageAsync();
-        }
-        catch (TaskCanceledException)
-        {
-            // Cancel button tapped on gallery page.
-            return null;
-        }
+        Alert.Show( "Credit Card result", SdkUtils.GenericDocumentToString(result.CreditCard));
     }
 }
