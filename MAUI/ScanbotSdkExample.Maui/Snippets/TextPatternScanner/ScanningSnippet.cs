@@ -1,6 +1,6 @@
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Common;
-using ScanbotSDK.MAUI.textpattern;
+using ScanbotSDK.MAUI.TextPattern;
 
 namespace ScanbotSdkExample.Maui.Snippets.TextPatternScanner;
 

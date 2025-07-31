@@ -1,6 +1,6 @@
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.DocumentsModel;
-using ScanbotSDK.MAUI.MRZ;
+using ScanbotSDK.MAUI.Mrz;
 
 namespace ScanbotSdkExample.Maui.Snippets.MrzScanner;
 

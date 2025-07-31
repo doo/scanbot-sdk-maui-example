@@ -3,11 +3,11 @@ using ScanbotSDK.MAUI.Check;
 using ScanbotSDK.MAUI.Common;
 using ScanbotSDK.MAUI.CreditCard;
 using ScanbotSDK.MAUI.Ehic;
-using ScanbotSDK.MAUI.documentdataextractor;
+using ScanbotSDK.MAUI.DocumentDataExtractor;
 using ScanbotSDK.MAUI.MedicalCertificate;
-using ScanbotSDK.MAUI.MRZ;
-using ScanbotSDK.MAUI.textpattern;
-using ScanbotSDK.MAUI.vin;
+using ScanbotSDK.MAUI.Mrz;
+using ScanbotSDK.MAUI.TextPattern;
+using ScanbotSDK.MAUI.Vin;
 using ScanbotSdkExample.Maui.Utils;
 using static ScanbotSDK.MAUI.ScanbotSDKMain;
 

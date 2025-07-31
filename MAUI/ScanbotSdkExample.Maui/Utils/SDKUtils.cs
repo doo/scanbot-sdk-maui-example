@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Common;
-using ScanbotSDK.MAUI.MRZ;
+using ScanbotSDK.MAUI.Mrz;
 
 namespace ScanbotSdkExample.Maui.Utils;
 
