@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Windows.Input;
 using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Core.Document;
 using ScanbotSDK.MAUI.Document.ClassicComponent;
 using ScanbotSdkExample.Maui.Models;
 using ScanbotSdkExample.Maui.Results;

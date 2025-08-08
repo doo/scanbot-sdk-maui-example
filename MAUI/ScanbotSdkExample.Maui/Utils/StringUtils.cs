@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Core.MedicalCertificate;
 
 namespace ScanbotSdkExample.Maui.Utils;
 public static class StringUtils

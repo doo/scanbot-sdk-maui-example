@@ -1,9 +1,14 @@
-using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Core.Check;
+using ScanbotSDK.MAUI.Core.CreditCard;
+using ScanbotSDK.MAUI.Core.Document;
+using ScanbotSDK.MAUI.Core.DocumentDataExtractor;
+using ScanbotSDK.MAUI.Core.Ehic;
+using ScanbotSDK.MAUI.Core.MedicalCertificate;
+using ScanbotSDK.MAUI.Core.Mrz;
 using ScanbotSDK.MAUI.DocumentsModel;
 using ScanbotSdkExample.Maui.Results;
 using ScanbotSdkExample.Maui.Utils;
 using static ScanbotSDK.MAUI.ScanbotSDKMain;
-using CheckScannerConfiguration = ScanbotSDK.MAUI.CheckScannerConfiguration;
 
 namespace ScanbotSdkExample.Maui.ReadyToUseUI;
 
@@ -75,7 +80,7 @@ public static class DetectOnImageFeature
                 }
             ]
         };
-        var result = await Detector.DocumentData.DetectOnImageAsync(image, configuration);
+        var result = await Detector.DocumentDataExtractor.DetectOnImageAsync(image, configuration);
         if (result?.Document == null || result.Status != DocumentDataExtractionStatus.Success)
         {
             Alert.Show( "Error", "Could not extract the Document data.");

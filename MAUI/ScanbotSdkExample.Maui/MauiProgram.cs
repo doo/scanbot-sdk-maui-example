@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui;
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Common;
+using ScanbotSDK.MAUI.Core.Document;
 
 namespace ScanbotSdkExample.Maui;
 

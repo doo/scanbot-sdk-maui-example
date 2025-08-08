@@ -131,21 +131,15 @@ public partial class HomePage
         {
             IsLoading = true;
 
-            var image = await PickPlatformImageAsync();
-            if (image is null) return;
+            var platformImage = await PickPlatformImageAsync();
+            if (platformImage is null) return;
 
             var document = new ScannedDocument();
 
             // Import the selected image as original image and create a Page object
-            var page = document.AddPage(image);
-
-            // Run document detection on it
-            var result = await ScanbotSDKMain.Rtu.CroppingScreen.LaunchAsync(
-                new CroppingConfiguration()
-                {
-                    DocumentUuid = document.Uuid.ToString(),
-                    PageUuid = page.Uuid.ToString()
-                });
+            // parameter [detectDocument = true] runs document detection on it
+            document.AddPage(image: platformImage, detectDocument:true);
+            
             await Navigation.PushAsync(new ScannedDocumentsPage(document));
         }
         catch (Exception ex)
@@ -171,7 +165,7 @@ public partial class HomePage
             if (photo != null)
             {
                 // Optionally display or process the image
-                using var stream = await photo.OpenReadAsync();
+                await using var stream = await photo.OpenReadAsync();
                 
                 // It returns a common interface IIMage which is implemented in PlatformImage.
                 return (PlatformImage)PlatformImage.FromStream(stream, ImageFormat.Jpeg);
