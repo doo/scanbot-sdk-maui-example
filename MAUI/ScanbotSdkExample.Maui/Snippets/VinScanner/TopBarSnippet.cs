@@ -1,16 +1,15 @@
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Common;
-using ScanbotSDK.MAUI.CreditCard;
-using ScanbotSDK.MAUI.CreditCardDocumentModel;
+using ScanbotSDK.MAUI.Vin;
 
-namespace ScanbotSdkExample.Maui.Snippets.CreditCardScanner;
+namespace ScanbotSdkExample.Maui.Snippets.VinScanner;
 
-public class UserGuidanceSnippet
+public class TopBarSnippet
 {
     public static async Task LaunchAsync()
     {
         // Create the default configuration object.
-        var configuration = new CreditCardScannerScreenConfiguration();
+        var configuration = new VinScannerScreenConfiguration();
         
         // Set the top bar mode.
         configuration.TopBar.Mode = TopBarMode.Gradient;
@@ -26,18 +25,14 @@ public class UserGuidanceSnippet
         configuration.TopBar.CancelButton.Foreground.Color = new ColorValue("#FFFFFF");
         
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSDKMain.Rtu.CreditCard.LaunchAsync(configuration);
+        var scannedOutput = await ScanbotSDKMain.Rtu.VinScanner.LaunchAsync(configuration);
         if (scannedOutput.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful
             return;
         }
 
-        // Wrap the resulted generic document to the strongly typed credit card.
-        var creditCard = new CreditCard(scannedOutput.Result.CreditCard);
-        
-        // Retrieve the values.
-        // e.g
-        Console.WriteLine($"Card number: {creditCard.CardNumber.Value.Text}, Cardholder Name: {creditCard.CardholderName?.Value?.Text}");
+        // Print the scanned text results
+        Console.WriteLine("Scanned Vin Scanner: "+ scannedOutput.Result.TextResult?.RawText);
     } 
 }

@@ -40,15 +40,15 @@ public class ActionBarSnippet
         actionBar.FlipCameraButton.ForegroundColor = new ColorValue("#FFFFFF");
 
         // Present the view controller modally.
-        var result = await ScanbotSDKMain.Rtu.CheckScanner.LaunchAsync(configuration);
-        if (result.Status != OperationResult.Ok)
+        var scannedOutput = await ScanbotSDKMain.Rtu.CheckScanner.LaunchAsync(configuration);
+        if (scannedOutput.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful
             return;
         }
 
         // Wrap the resulted generic document to the strongly typed check.
-        var check = new USACheck(result.Result.Check);
+        var check = new USACheck(scannedOutput.Result.Check);
         
         // Retrieve the values.
         // e.g

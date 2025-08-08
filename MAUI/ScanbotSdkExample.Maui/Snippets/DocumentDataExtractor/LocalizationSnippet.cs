@@ -1,15 +1,14 @@
 using ScanbotSDK.MAUI;
-using ScanbotSDK.MAUI.Check;
-using ScanbotSDK.MAUI.CheckDocumentModel;
+using ScanbotSDK.MAUI.DocumentDataExtractor;
 
-namespace ScanbotSdkExample.Maui.Snippets.CheckScanner;
+namespace ScanbotSdkExample.Maui.Snippets.DocumentDataExtractor;
 
 public class LocalizationSnippet
 {
     public static async Task LaunchAsync()
     {
         // Create the default configuration object.
-        var configuration = new CheckScannerScreenConfiguration();
+        var configuration = new DocumentDataExtractorScreenConfiguration();
         // Retrieve the instance of the localization from the configuration object.
         var localization = configuration.Localization;
 
@@ -18,20 +17,17 @@ public class LocalizationSnippet
         localization.CameraPermissionCloseButton = "Localized cameraPermissionCloseButton";
         
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSDKMain.Rtu.CheckScanner.LaunchAsync(configuration);
+        var scannedOutput = await ScanbotSDKMain.Rtu.DocumentDataExtractor.LaunchAsync(configuration);
         if (scannedOutput.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful
             return;
         }
-
-        // Wrap the resulted generic document to the strongly typed check.
-        var check = new USACheck(scannedOutput.Result.Check);
         
-        // Retrieve the values.
-        // e.g
-        Console.WriteLine($"Account number: {check.AccountNumber.Value.Text}");
-        Console.WriteLine($"Transit Number: {check.TransitNumber.Value.Text}");
-        Console.WriteLine($"AuxiliaryOnUs: {check.AuxiliaryOnUs?.Value?.Text}");
+        // Iterate through all the document fields
+        foreach (var field in scannedOutput.Result.Document.Fields)
+        {
+            Console.WriteLine($"{field.Type.Name}: {field.Value.Text}");
+        }
     } 
 }

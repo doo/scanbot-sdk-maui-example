@@ -53,15 +53,15 @@ public class IntroductionSnippet
         configuration.IntroScreen.DoneButton.Background.FillColor = new ColorValue("#C8193C");
 
         // Present the view controller modally.
-        var result = await ScanbotSDKMain.Rtu.CreditCard.LaunchAsync(configuration);
-        if (result.Status != OperationResult.Ok)
+        var scannedOutput = await ScanbotSDKMain.Rtu.CreditCard.LaunchAsync(configuration);
+        if (scannedOutput.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful
             return;
         }
 
         // Wrap the resulted generic document to the strongly typed credit card.
-        var creditCard = new CreditCard(result.Result.CreditCard);
+        var creditCard = new CreditCard(scannedOutput.Result.CreditCard);
         
         // Retrieve the values.
         // e.g

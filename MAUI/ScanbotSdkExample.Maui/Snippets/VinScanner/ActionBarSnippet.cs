@@ -1,16 +1,15 @@
 using ScanbotSDK.MAUI;
-using ScanbotSDK.MAUI.DocumentsModel;
-using ScanbotSDK.MAUI.Mrz;
+using ScanbotSDK.MAUI.Vin;
 
-namespace ScanbotSdkExample.Maui.Snippets.MrzScanner;
+namespace ScanbotSdkExample.Maui.Snippets.VinScanner;
 
 public class ActionBarSnippet
 {
     public static async Task LaunchAsync()
     {
         // Create the default configuration object.
-        var configuration = new MrzScannerScreenConfiguration();
-
+        var configuration = new VinScannerScreenConfiguration();
+        
         // Retrieve the instance of the action bar from the configuration object.
         var actionBar = configuration.ActionBar;
 
@@ -40,18 +39,14 @@ public class ActionBarSnippet
         actionBar.FlipCameraButton.ForegroundColor = new ColorValue("#FFFFFF");
 
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSDKMain.Rtu.MrzScanner.LaunchAsync(configuration);
+        var scannedOutput = await ScanbotSDKMain.Rtu.VinScanner.LaunchAsync(configuration);
         if (scannedOutput.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful
             return;
         }
 
-        // Wrap the resulted generic document to the strongly typed Mrz class.
-        var mrz = new MRZ(scannedOutput.Result.MrzDocument);
-
-        // Retrieve the values.
-        // e.g
-        Console.WriteLine($"Birth Date: {mrz.BirthDate.Value.Text}, Nationality: {mrz.Nationality.Value.Text}");
-    }
+        // Print the scanned text results
+        Console.WriteLine("Scanned Vin Scanner: "+ scannedOutput.Result.TextResult?.RawText);
+    } 
 }

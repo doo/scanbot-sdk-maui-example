@@ -50,8 +50,8 @@ public class IntroductionSnippet
         configuration.IntroScreen.DoneButton.Background.FillColor = new ColorValue("#C8193C");
 
         // Present the view controller modally.
-        var result = await ScanbotSDKMain.Rtu.TextPatternScanner.LaunchAsync(configuration);
-       if (result.Status != OperationResult.Ok)
+        var scannedOutput = await ScanbotSDKMain.Rtu.TextPatternScanner.LaunchAsync(configuration);
+       if (scannedOutput.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful
             return;
@@ -59,6 +59,6 @@ public class IntroductionSnippet
 
         // Retrieve the value.
         // e.g
-        Console.WriteLine($"Scanned Text: "+ result.Result.RawText);
+        Console.WriteLine($"Scanned Text: "+ scannedOutput.Result.RawText);
     }
 }

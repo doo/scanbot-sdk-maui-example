@@ -1,24 +1,19 @@
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Common;
-using ScanbotSDK.MAUI.Check;
-using ScanbotSDK.MAUI.CheckDocumentModel;
+using ScanbotSDK.MAUI.Vin;
 
-namespace ScanbotSdkExample.Maui.Snippets.CheckScanner;
+namespace ScanbotSdkExample.Maui.Snippets.VinScanner;
 
 public class ScanningSnippet
 {
     public static async Task LaunchAsync()
     {
         // Create the default configuration object.
-        var configuration = new CheckScannerScreenConfiguration();
+        var configuration = new VinScannerScreenConfiguration();
         
-        // Configure the timeout for the check scanner to wait for a check to be found.
-        // If no check is found within this time, the warning alert will be shown.
-        configuration.NoCheckFoundTimeout = 1000;
-        
-        // Configure the timeout for the scan process.
-        // If the scan process takes longer than this value, the warning alert will be shown.
-        configuration.AccumulationTimeout = 500;
+        // Configure the view finder.
+        // Set the desired aspect ratio.
+        configuration.ViewFinder.AspectRatio = new AspectRatio(width: 3.85, height: 1.0);
 
         // Configure the success overlay.
         configuration.SuccessOverlay.Message.Text = "Scanned Successfully!";
@@ -64,20 +59,14 @@ public class ScanningSnippet
         configuration.Vibration.Enabled = false;
         
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSDKMain.Rtu.CheckScanner.LaunchAsync(configuration);
+        var scannedOutput = await ScanbotSDKMain.Rtu.VinScanner.LaunchAsync(configuration);
         if (scannedOutput.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful
             return;
         }
 
-        // Wrap the resulted generic document to the strongly typed check.
-        var check = new USACheck(scannedOutput.Result.Check);
-        
-        // Retrieve the values.
-        // e.g
-        Console.WriteLine($"Account number: {check.AccountNumber.Value.Text}");
-        Console.WriteLine($"Transit Number: {check.TransitNumber.Value.Text}");
-        Console.WriteLine($"AuxiliaryOnUs: {check.AuxiliaryOnUs?.Value?.Text}");
+        // Print the scanned text results
+        Console.WriteLine("Scanned Vin Scanner: "+ scannedOutput.Result.TextResult?.RawText);
     } 
 }
