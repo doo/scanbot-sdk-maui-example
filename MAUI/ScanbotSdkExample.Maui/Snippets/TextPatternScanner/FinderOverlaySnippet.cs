@@ -1,28 +1,33 @@
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Common;
+using ScanbotSDK.MAUI.DocumentsModel;
+using ScanbotSDK.MAUI.Mrz;
 using ScanbotSDK.MAUI.TextPattern;
 
 namespace ScanbotSdkExample.Maui.Snippets.TextPatternScanner;
 
-public class TopBarSnippet
+public class FinderOverlaySnippet
 {
     public static async Task LaunchAsync()
     {
         // Create the default configuration object.
         var configuration = new TextPatternScannerScreenConfiguration();
 
-        // Set the top bar mode.
-        configuration.TopBar.Mode = TopBarMode.Gradient;
-
-        // Set the background color which will be used as a gradient.
-        configuration.TopBar.BackgroundColor = new ColorValue("#C8193C");
-
-        // Set the status bar mode.
-        configuration.TopBar.StatusBarMode = StatusBarMode.Light;
-
-        // Configure the cancel button.
-        configuration.TopBar.CancelButton.Text = "Cancel";
-        configuration.TopBar.CancelButton.Foreground.Color = new ColorValue("#FFFFFF");
+        // Configure the view finder.
+        // Set the style for the view finder.
+        // Choose between cornered or stroked style.
+        // For default stroked style.
+        configuration.ViewFinder.Style = new FinderStrokedStyle();
+        // For default cornered style.
+        configuration.ViewFinder.Style = new FinderCorneredStyle();
+        // You can also set each style's stroke width, stroke color or corner radius.
+        // e.g
+        configuration.ViewFinder.Style = new FinderStrokedStyle
+        {
+            StrokeColor = new ColorValue("#7A000000"),
+            CornerRadius = 3.0f,
+            StrokeWidth = 2.0f
+        };
 
         // Present the view controller modally.
         var scannedOutput = await ScanbotSDKMain.Rtu.TextPatternScanner.LaunchAsync(configuration);

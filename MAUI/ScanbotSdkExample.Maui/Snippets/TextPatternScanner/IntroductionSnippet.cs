@@ -23,7 +23,7 @@ public class IntroductionSnippet
         // If you want to have no image...
         configuration.IntroScreen.Image = new TextPatternIntroNoImage();
         // For a custom image...
-        configuration.IntroScreen.Image = new TextPatternIntroCustomImage { Uri ="PathToImage" };
+        configuration.IntroScreen.Image = new TextPatternIntroCustomImage { Uri = "PathToImage" };
         // Or you can also use one of our default images.
         // e.g the meter device image.
         configuration.IntroScreen.Image = new TextPatternIntroMeterDevice();
@@ -42,7 +42,8 @@ public class IntroductionSnippet
 
         // Configure the text.
         configuration.IntroScreen.Explanation.Color = new ColorValue("#000000");
-        configuration.IntroScreen.Explanation.Text = "To scan a single line of text, please hold your device so that the camera viewfinder clearly captures the text you want to scan. Please ensure the text is properly aligned. Once the scan is complete, the text will be automatically extracted.\n\nPress 'Start Scanning' to begin.";
+        configuration.IntroScreen.Explanation.Text =
+            "To scan a single line of text, please hold your device so that the camera viewfinder clearly captures the text you want to scan. Please ensure the text is properly aligned. Once the scan is complete, the text will be automatically extracted.\n\nPress 'Start Scanning' to begin.";
 
         // Configure the done button.
         // e.g the text or the background color.
@@ -51,7 +52,7 @@ public class IntroductionSnippet
 
         // Present the view controller modally.
         var scannedOutput = await ScanbotSDKMain.Rtu.TextPatternScanner.LaunchAsync(configuration);
-       if (scannedOutput.Status != OperationResult.Ok)
+        if (scannedOutput.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful
             return;
@@ -59,6 +60,6 @@ public class IntroductionSnippet
 
         // Retrieve the value.
         // e.g
-        Console.WriteLine($"Scanned Text: "+ scannedOutput.Result.RawText);
+        Console.WriteLine($"Scanned Text: " + scannedOutput.Result.RawText);
     }
 }
