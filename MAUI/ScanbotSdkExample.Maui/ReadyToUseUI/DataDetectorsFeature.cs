@@ -190,7 +190,7 @@ public static class DataDetectorsFeature
     public static async Task CreditCardScannerClicked()
     {
         var configuration = new CreditCardScannerScreenConfiguration();
-        var result = await Rtu.CreditCard.LaunchAsync(configuration);
+        var result = await Rtu.CreditCardScanner.LaunchAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
             Alert.Show( $"Credit Card Result", SdkUtils.GenericDocumentToString(result.Result.CreditCard));
