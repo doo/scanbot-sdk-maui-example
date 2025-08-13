@@ -8,7 +8,6 @@ public partial class MainViewController
     private void ScanMrz()
     {
         var configuration = new SBSDKUI2MRZScannerScreenConfiguration();
-        
         SBSDKUI2MRZScannerViewController.PresentOn(this, configuration, result =>
         {
             if (result?.MrzDocument == null)
@@ -33,53 +32,30 @@ public partial class MainViewController
 
     private void ExtractDocumentData()
     {
-        var configuration = SBSDKUIDocumentDataExtractorConfiguration.DefaultConfiguration;
-        configuration.TextConfiguration.CancelButtonTitle = "Done";
-        // Specify Document types if needed
-        // configuration.BehaviorConfiguration.DocumentType = SBSDKUIDocumentType.IdCardFrontBackDE;
-        var controller = SBSDKUIDocumentDataExtractorViewController.CreateWithConfigurationAndDelegate(configuration, null);
-
-        controller.DidFinishWithResults += (_, args) =>
+        var configuration = new SBSDKUI2DocumentDataExtractorScreenConfiguration();
+        configuration.TopBar.CancelButton.Text = "Done";
+        SBSDKUI2DocumentDataExtractorViewController.PresentOn(this, configuration, result =>
         {
-            if (args?.Results == null || args.Results.Length == 0)
-            {
+            if (result?.Document == null)
                 return;
-            }
-
-            // We only take the first document for simplicity
-            var firstDocument = args.Results.First();
-
-            ShowPopup(this, firstDocument.Document?.ToFormattedString());
-        };
-        PresentViewController(controller, false, null);
+            
+            // Display the results.
+            ShowPopup(this, result.Document?.ToFormattedString());
+        });
     }
 
     private void ScanCheck()
     {
-        var configuration = SBSDKUICheckScannerConfiguration.DefaultConfiguration;
-        configuration.TextConfiguration.CancelButtonTitle = "Done";
-        configuration.BehaviorConfiguration.AcceptedCheckStandards =
-        [
-            SBSDKCheckDocumentModelRootType.AusCheck,
-            SBSDKCheckDocumentModelRootType.FraCheck,
-            SBSDKCheckDocumentModelRootType.IndCheck,
-            SBSDKCheckDocumentModelRootType.KwtCheck,
-            SBSDKCheckDocumentModelRootType.UsaCheck,
-            SBSDKCheckDocumentModelRootType.UaeCheck,
-            SBSDKCheckDocumentModelRootType.CanCheck,
-            SBSDKCheckDocumentModelRootType.IsrCheck,
-        ];
-
-        var controller = SBSDKUICheckScannerViewController.CreateWithConfiguration(configuration, null);
-        controller.DidScanCheck += async (_, args) =>
+        var configuration = new SBSDKUI2CheckScannerScreenConfiguration();
+        configuration.TopBar.CancelButton.Text = "Done";
+        SBSDKUI2CheckScannerViewController.PresentOn(this, configuration, result =>
         {
-            await controller.DismissViewControllerAsync(true);
-            if (args?.Result == null || args.Result.Check == null)
+            if (result?.Check == null)
                 return;
            
-            ShowPopup(this, args.Result.Check?.ToFormattedString());
-        };
-        PresentViewController(controller, false, null);
+            // Display the results.
+            ShowPopup(this, result.Check?.ToFormattedString());
+        });
     }
 
     private void ScanTextPattern()
@@ -97,16 +73,15 @@ public partial class MainViewController
 
     private void ScanVin()
     {
-        var configuration = SBSDKUIVINScannerConfiguration.DefaultConfiguration;
-        configuration.TextConfiguration.CancelButtonTitle = "Done";
-        var scanner = SBSDKUIVINScannerViewController.CreateNew(configuration: configuration, @delegate: null);
-        scanner.DidFinishWithResult += (_, args) =>
+        var configuration = new SBSDKUI2VINScannerScreenConfiguration();
+        configuration.TopBar.CancelButton.Text = "Done";
+        SBSDKUI2VINScannerViewController.PresentOn(this, configuration, result =>
         {
-            var text = args?.Result?.TextResult?.RawText ?? string.Empty;
-            scanner.DismissViewController(true, () => Alert.Show(this, "Result Text:", text));
-        };
+            if (result?.TextResult?.RawText == null)
+                return;
 
-        PresentViewController(scanner, true, null);
+            Alert.Show(this, "Result Text:", result.TextResult.RawText);
+        });
     }
 
     private void ScanMedicalCertificate()

@@ -69,8 +69,7 @@ public partial class MainViewController
 
 		var config = new SBSDKCheckScannerConfiguration();
 		config.DocumentDetectionMode = SBSDKCheckDocumentDetectionMode.DetectDocument;
-		
-		var scanner = new SBSDKCheckScanner(config, SBSDKCheckDocumentModelRootType.AllDocumentTypes);
+		var scanner = new SBSDKCheckScanner(config);
 		
 		var result = scanner.ScanFromImage(image, false);
 		if (result?.Check == null)

@@ -1,30 +1,25 @@
 using Android.Content;
 using Android.Graphics;
-using IO.Scanbot.Sdk.Check;
 using IO.Scanbot.Sdk.Documentdata;
 using IO.Scanbot.Sdk.Ehicscanner;
 using IO.Scanbot.Sdk.UI.View.Base;
-using IO.Scanbot.Sdk.UI.View.Check;
 using IO.Scanbot.Sdk.MC;
+using IO.Scanbot.Sdk.Ui_v2.Check.Configuration;
 using IO.Scanbot.Sdk.Ui_v2.Creditcard;
 using IO.Scanbot.Sdk.Ui_v2.Creditcard.Configuration;
+using IO.Scanbot.Sdk.Ui_v2.Documentdata;
+using IO.Scanbot.Sdk.Ui_v2.Documentdataextractor.Configuration;
 using IO.Scanbot.Sdk.Ui_v2.Mrz;
 using IO.Scanbot.Sdk.Ui_v2.Mrz.Configuration;
 using IO.Scanbot.Sdk.Ui_v2.Textpattern;
 using IO.Scanbot.Sdk.Ui_v2.Textpattern.Configuration;
-using IO.Scanbot.Sdk.UI.View.Documentdata;
+using IO.Scanbot.Sdk.Ui_v2.Vin.Configuration;
 using IO.Scanbot.Sdk.UI.View.Hic;
 using IO.Scanbot.Sdk.UI.View.Hic.Configuration;
 using IO.Scanbot.Sdk.UI.View.MC;
 using IO.Scanbot.Sdk.UI.View.MC.Configuration;
-using IO.Scanbot.Sdk.UI.View.Vin;
-using IO.Scanbot.Sdk.Vin;
 using ScanbotSdkExample.Droid.Fragments;
 using ScanbotSdkExample.Droid.Utils;
-using CheckScannerConfiguration = IO.Scanbot.Sdk.UI.View.Check.Configuration.CheckScannerConfiguration;
-using DocumentDataExtractorConfiguration = IO.Scanbot.Sdk.UI.View.Documentdata.Configuration.DocumentDataExtractorConfiguration;
-using RootDocumentType = IO.Scanbot.Sdk.Check.Entity.RootDocumentType;
-using VinScannerConfiguration = IO.Scanbot.Sdk.UI.View.Vin.Configuration.VinScannerConfiguration;
 
 namespace ScanbotSdkExample.Droid;
 
@@ -41,7 +36,7 @@ public partial class MainActivity
         { ScanCheckRequestCode, HandleCheckResult },
         { ScanCreditCardRequestCode, HandleCreditCard },
     };
-
+    
     private void ScanMrz()
     {
         var configuration = new MrzScannerScreenConfiguration();
@@ -75,29 +70,8 @@ public partial class MainActivity
 
     private void ExtractDocumentData()
     {
-        var configuration = new DocumentDataExtractorConfiguration();
-        configuration.SetCancelButtonTitle("Done");
-
-        // Specify accepted types if needed
-        configuration.SetAcceptedDocumentTypes([
-            IO.Scanbot.Sdk.Documentdata.Entity.RootDocumentType.DeIdCardFront,
-            IO.Scanbot.Sdk.Documentdata.Entity.RootDocumentType.DeIdCardBack,
-            IO.Scanbot.Sdk.Documentdata.Entity.RootDocumentType.DePassport,
-        ]);
-
-        // Apply the parameters for fields
-        // Use constants from NormalizedFieldNames objects from the corresponding document type
-
-        // configuration.SetFieldsDisplayConfiguration
-        // (
-        //     new Dictionary<string, FieldProperties>()
-        //     {
-        //         { DeIdCardFront.NormalizedFieldNames.Photo,  new FieldProperties("My Id card photo", FieldProperties.DisplayState.AlwaysVisible) },
-        //         { DePassport.NormalizedFieldNames.Photo,  new FieldProperties("My passport photo", FieldProperties.DisplayState.AlwaysVisible) },
-        //         { MRZ.NormalizedFieldNames.CheckDigitGeneral,  new FieldProperties("Check digit general", FieldProperties.DisplayState.AlwaysVisible) },
-        //     }
-        // );
-
+        var configuration = new DocumentDataExtractorScreenConfiguration();
+      
         var intent = DocumentDataExtractorActivity.NewIntent(this, configuration);
         StartActivityForResult(intent, ExtractDocumentDataRequestCode);
     }
@@ -122,26 +96,15 @@ public partial class MainActivity
 
     private void ScanCheck()
     {
-        var config = new CheckScannerConfiguration();
-        config.SetCancelButtonTitle("Done");
-        config.SetAcceptedCheckStandards(
-        [
-            RootDocumentType.AUSCheck,
-            RootDocumentType.FRACheck,
-            RootDocumentType.INDCheck,
-            RootDocumentType.KWTCheck,
-            RootDocumentType.USACheck,
-            RootDocumentType.UAECheck,
-            RootDocumentType.ISRCheck,
-            RootDocumentType.CANCheck,
-        ]);
-        var intent = CheckScannerActivity.NewIntent(this, config);
+        var config = new CheckScannerScreenConfiguration();
+       
+        var intent = IO.Scanbot.Sdk.Ui_v2.Check.CheckScannerActivity.NewIntent(this, config);
         StartActivityForResult(intent, ScanCheckRequestCode);
     }
 
     private void HandleCheckResult(Intent data)
     {
-        var checkResult = (CheckScanningResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+        var checkResult = (CheckScannerUiResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
         if (checkResult?.Check?.Fields == null)
         {
             Alert.Show(this, "Error", "Unable to scan the provided input.");
@@ -172,16 +135,15 @@ public partial class MainActivity
 
     private void ScanVin()
     {
-        var configuration = new VinScannerConfiguration();
-        configuration.SetCancelButtonTitle("Done");
+        var configuration = new VinScannerScreenConfiguration();
 
-        var intent = VinScannerActivity.NewIntent(this, configuration);
+        var intent = IO.Scanbot.Sdk.Ui_v2.Vin.VinScannerActivity.NewIntent(this, configuration);
         StartActivityForResult(intent, ScanVinRequestCode);
     }
 
     private void HandleVinResult(Intent data)
     {
-        var result = (VinScannerResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+        var result = (VinScannerUiResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
 
         Alert.Toast(this, $"VIN Scanned: {result.TextResult.RawText}");
     }
