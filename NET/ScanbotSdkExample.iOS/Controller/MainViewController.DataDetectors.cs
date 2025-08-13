@@ -33,6 +33,7 @@ public partial class MainViewController
     private void ExtractDocumentData()
     {
         var configuration = new SBSDKUI2DocumentDataExtractorScreenConfiguration();
+        configuration.TopBar.CancelButton.Text = "Done";
         SBSDKUI2DocumentDataExtractorViewController.PresentOn(this, configuration, result =>
         {
             if (result?.Document == null)
@@ -46,6 +47,7 @@ public partial class MainViewController
     private void ScanCheck()
     {
         var configuration = new SBSDKUI2CheckScannerScreenConfiguration();
+        configuration.TopBar.CancelButton.Text = "Done";
         SBSDKUI2CheckScannerViewController.PresentOn(this, configuration, result =>
         {
             if (result?.Check == null)
@@ -72,6 +74,7 @@ public partial class MainViewController
     private void ScanVin()
     {
         var configuration = new SBSDKUI2VINScannerScreenConfiguration();
+        configuration.TopBar.CancelButton.Text = "Done";
         SBSDKUI2VINScannerViewController.PresentOn(this, configuration, result =>
         {
             if (result?.TextResult?.RawText == null)
