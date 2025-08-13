@@ -12,15 +12,15 @@ public class LaunchSnippet
         var configuration = new MrzScannerScreenConfiguration();
 
         // Present the view controller modally.
-        var result = await ScanbotSDKMain.Rtu.MrzScanner.LaunchAsync(configuration);
-        if (result.Status != OperationResult.Ok)
+        var scannedOutput = await ScanbotSDKMain.Rtu.MrzScanner.LaunchAsync(configuration);
+        if (scannedOutput.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful
             return;
         }
 
         // Wrap the resulted generic document to the strongly typed mrz class.
-        var mrz = new MRZ(result.Result.MrzDocument);
+        var mrz = new MRZ(scannedOutput.Result.MrzDocument);
 
         // Retrieve the values.
         // e.g

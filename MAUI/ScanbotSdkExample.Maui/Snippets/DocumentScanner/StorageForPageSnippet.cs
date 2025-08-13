@@ -14,7 +14,7 @@ public static class DocumentOperationSnippets
         // add images to the document.
         foreach (var image in images)
         {
-            scannedDocument.AddPage(image);
+            scannedDocument.AddPage(image, detectDocument:true);
         }
     }
 
@@ -23,7 +23,7 @@ public static class DocumentOperationSnippets
         var loadedDocument = new ScannedDocument(documentUuid);
     }
 
-    static void StoredDocumentUUIDs()
+    static void StoredDocumentUuiDs()
     {
         var documentUuids = ScannedDocument.StoredDocumentUuids;
     }

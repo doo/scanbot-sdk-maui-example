@@ -1,6 +1,7 @@
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Check;
 using ScanbotSDK.MAUI.Common;
+using ScanbotSDK.MAUI.Core.Mrz;
 using ScanbotSDK.MAUI.CreditCard;
 using ScanbotSDK.MAUI.Ehic;
 using ScanbotSDK.MAUI.DocumentDataExtractor;

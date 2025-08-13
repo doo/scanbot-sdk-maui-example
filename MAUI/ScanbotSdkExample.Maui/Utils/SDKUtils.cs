@@ -1,6 +1,9 @@
 ﻿using System.Text;
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Common;
+using ScanbotSDK.MAUI.Core.Check;
+using ScanbotSDK.MAUI.Core.DocumentDataExtractor;
+using ScanbotSDK.MAUI.Core.Ehic;
 using ScanbotSDK.MAUI.Mrz;
 
 namespace ScanbotSdkExample.Maui.Utils;
