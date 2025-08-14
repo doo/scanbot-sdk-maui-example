@@ -65,12 +65,6 @@ public class BottomActionBar : StackLayout
                 HeightRequest = HEIGHT,
                 HorizontalOptions = LayoutOptions.End
             });
-
-            Children.Add(DeleteAllButton = new BottomActionButton("DELETE ALL")
-            {
-                HeightRequest = HEIGHT,
-                HorizontalOptions = LayoutOptions.End
-            });
         }
     }
 

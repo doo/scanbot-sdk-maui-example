@@ -105,7 +105,6 @@ public class ScannedDocumentsPage : ContentPage
         bottomBar.AddTappedEvent(bottomBar.AddButton, OnAddButtonTapped);
         bottomBar.AddTappedEvent(bottomBar.SaveButton, OnSaveButtonTapped);
         bottomBar.AddTappedEvent(bottomBar.DeleteButton, OnDeleteButtonTapped);
-        bottomBar.AddTappedEvent(bottomBar.DeleteAllButton, OnDeleteAllButtonTapped);
     }
 
     protected override void OnAppearing()
@@ -122,24 +121,22 @@ public class ScannedDocumentsPage : ContentPage
 
     private async void OnAddButtonTapped(object sender, EventArgs e)
     {
-        if (!SdkUtils.CheckLicense(this)) { return; }
-
-        try
+        if (!SdkUtils.CheckLicense(this))
         {
-            using var loader = new PageLoader(this);
-            var result = await Rtu.DocumentScanner.LaunchAsync(new DocumentScanningFlow
-            {
-                DocumentUuid = _document.Uuid.ToString()
-            });
-            
-            _document = result.Result; 
+            return;
+        }
+
+        using var loader = new PageLoader(this);
+        var result = await Rtu.DocumentScanner.LaunchAsync(new DocumentScanningFlow
+        {
+            DocumentUuid = _document.Uuid.ToString()
+        });
+
+        if (result.Status == OperationResult.Ok)
+        {
+            _document = result.Result;
             _resultList.ItemsSource = _document.Pages;
             _pageGridView.PlatformSizeChanged();
-        }
-        // if the cancel button is clicked
-        catch (TaskCanceledException)
-        {
-
         }
     }
 
@@ -271,19 +268,6 @@ public class ScannedDocumentsPage : ContentPage
 
         // Sharing the Tiff file.
         await SharingUtils.ShareFileAsync(fileUri.LocalPath, "image/tiff");
-    }
-
-    private async void OnDeleteAllButtonTapped(object sender, EventArgs e)
-    {
-        var documentCount = ScannedDocument.StoredDocumentUuids.Length;
-        var message = "This will delete the current document that contains all the pages visible on the screen along with any previous documents found on the local storage.";
-        var result = await DisplayAlert("Attention!", message, "Confirm", "Cancel");
-        if (!result) return;
-        
-        using var loader = new PageLoader(this);
-        await ScannedDocument.DeleteAllDocumentsAsync();
-        await DisplayAlert("Alert", $"Deleted {documentCount} documents", "OK");
-        await Navigation.PopAsync(true);
     }
 
     private async void OnDeleteButtonTapped(object sender, EventArgs e)

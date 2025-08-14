@@ -146,7 +146,7 @@ public partial class ClassicDocumentScannerPage : ContentPage
 	private async void OnSnappedDocumentImageResult(object sender, SnappedDocumentImageResultEventArgs eventArgs)
 	{
 		var resultsPage = new DocumentScannerResultPage();
-		resultsPage.SetData(ImageSource.FromStream(() => eventArgs.DocumentImage.AsStream()));
+		resultsPage.SetData(ImageSource.FromStream(() => eventArgs.DocumentImage.AsStream(quality: 0.4f, format: ImageFormat.Jpeg)));
 		await Navigation.PushAsync(resultsPage);
 	}
 
