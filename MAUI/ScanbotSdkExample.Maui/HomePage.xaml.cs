@@ -37,6 +37,7 @@ public partial class HomePage
                 DocumentScannerFeature.SingleFinderDocumentScanningClicked),
             new SdkFeature("Multiple Document Scanning", DocumentScannerFeature.MultipleDocumentScanningClicked),
             new SdkFeature("Import Image", ImportButtonClicked),
+            new SdkFeature("Delete all documents", DeleteAllDocsFromStorageClicked),
 
             new SdkFeature("CLASSIC COMPONENT"),
             new SdkFeature("Classic Document Scanner", DocumentScannerFeature.ClassicDocumentScannerViewClicked),
@@ -235,5 +236,19 @@ public partial class HomePage
             return;
         }
         ScanbotSDKMain.CommonOperations.ConfigureMockCamera(new MockCameraConfiguration(image.File, image.File, "Scanbot SDK Mock Cam"));
+    }
+
+    private async Task DeleteAllDocsFromStorageClicked()
+    {
+        if (ScannedDocument.StoredDocumentUuids.Length == 0)
+            return;
+        
+        var documentCount = ScannedDocument.StoredDocumentUuids.Length;
+        var message = "This will delete all the documents found on the local storage.";
+        var result = await DisplayAlert("Attention!", message, "Confirm", "Cancel");
+        if (!result) return;
+        
+        await ScannedDocument.DeleteAllDocumentsAsync();
+        await DisplayAlert("Alert", $"Number of documents deleted: {documentCount}", "Ok");
     }
 }
