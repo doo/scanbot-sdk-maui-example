@@ -37,7 +37,8 @@ public static class DetectOnImageFeature
     public static async Task EhicDetectorClicked()
     {
         var image = await HomePage.PickPlatformImageAsync();
-
+        if (image is null) return;
+        
         var configuration = new EuropeanHealthInsuranceCardRecognizerConfiguration
         {
             MaxExpirationYear = 2100
