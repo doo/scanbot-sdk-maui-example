@@ -2,6 +2,7 @@
 using Android.Views;
 using Android.Content;
 using Android.Runtime;
+using IO.Scanbot.Sdk.UI.View.Base;
 using ScanbotSdkExample.Droid.Utils;
 using ScanbotSdkExample.Droid.Model;
 
@@ -158,5 +159,17 @@ public partial class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
         }
 
         return _scanbotSdk.LicenseInfo.IsValid;
+    }
+
+    /// <summary>
+    /// Common function that accepts intent and returns the result object of type T which is a Java.Lang.Object.
+    /// </summary>
+    /// <param name="intent">Intent object.</param>
+    /// <typeparam name="T">Result class</typeparam>
+    /// <returns>Result class object</returns>
+    private T GetParcelableExtra<T>(Intent intent) where T : Java.Lang.Object
+    {
+        var result = intent.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+        return result is T ? (T)result : null;
     }
 }
