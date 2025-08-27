@@ -12,7 +12,7 @@ namespace ScanbotSdkExample.Droid;
 
 public partial class MainActivity
 {
-    private Dictionary<int, Action<Intent>> documentScannerActions => new Dictionary<int, Action<Intent>>
+    private Dictionary<int, Action<Intent>> DocumentScannerActions => new Dictionary<int, Action<Intent>>
     {
         { ScanDocumentRequestCode, HandleDocumentScannerResult },
         { ImportImageRequestCode, HandleImageImport },

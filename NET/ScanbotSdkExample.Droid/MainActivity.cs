@@ -115,7 +115,7 @@ public partial class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
             return;
         }
 
-        if (documentScannerActions.TryGetValue(requestCode, out var documentScannerAction))
+        if (DocumentScannerActions.TryGetValue(requestCode, out var documentScannerAction))
         {
             documentScannerAction(data);
         }

@@ -63,9 +63,8 @@ public partial class MainActivity
     private void HandleEhicResult(Intent data)
     {
         var result = (EuropeanHealthInsuranceCardRecognitionResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
-        var fragment = HealthInsuranceCardFragment.CreateInstance(result);
+        var fragment = HealthInsuranceCardFragment.CreateInstance(result); 
         ShowFragment(fragment, HealthInsuranceCardFragment.Name);
-        fragment.Show(FragmentManager, HealthInsuranceCardFragment.Name);
     }
 
     private void ExtractDocumentData()
@@ -78,20 +77,17 @@ public partial class MainActivity
 
     private void HandleDocumentDataExtractorResult(Intent data)
     {
-        var outputArray = data.GetParcelableArrayListExtra(RtuConstants.ExtraKeyRtuResult);
-        
+        var result = (DocumentDataExtractorUiResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+
         // List of Generic documents
-        if (outputArray == null || outputArray.Count == 0)
+        if (result?.Document == null || (result.RecognitionStatus != DocumentDataExtractionStatus.Success &&
+                                         result.RecognitionStatus != DocumentDataExtractionStatus.IncompleteValidation))
         {
             Alert.Show(this, "Error", "Unable to scan the provided input.");
             return;
         }
-        
-        // For this example we only refer to the first document from the result.
-        if (outputArray[0] is DocumentDataExtractionResult result)
-        {
-            Alert.Show(this, "Document Data Result", result?.Document?.ToFormattedString());
-        }
+
+        Alert.Show(this, "Document Data Result", result.Document.ToFormattedString());
     }
 
     private void ScanCheck()
@@ -162,7 +158,7 @@ public partial class MainActivity
         var result = (MedicalCertificateScanningResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
 
         var fragment = MedicalCertificateResultDialogFragment.CreateInstance(result);
-        fragment.Show(FragmentManager, MedicalCertificateResultDialogFragment.Name);
+        ShowFragment(fragment, MedicalCertificateResultDialogFragment.Name);
     }
 
     private void ScanCreditCard()
