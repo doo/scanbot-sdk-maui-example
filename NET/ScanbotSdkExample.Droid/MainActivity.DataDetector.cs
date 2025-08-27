@@ -2,7 +2,6 @@ using Android.Content;
 using Android.Graphics;
 using IO.Scanbot.Sdk.Documentdata;
 using IO.Scanbot.Sdk.Ehicscanner;
-using IO.Scanbot.Sdk.UI.View.Base;
 using IO.Scanbot.Sdk.MC;
 using IO.Scanbot.Sdk.Ui_v2.Check.Configuration;
 using IO.Scanbot.Sdk.Ui_v2.Creditcard;
@@ -46,8 +45,8 @@ public partial class MainActivity
 
     private void HandleMrzScanResult(Intent data)
     {
-        var result = (MrzScannerUiResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
-        var fragment = MRZDialogFragment.CreateInstance(result.MrzDocument);
+        var result = GetParcelableExtra<MrzScannerUiResult>(data);
+        var fragment = MRZDialogFragment.CreateInstance(result?.MrzDocument);
         ShowFragment(fragment, MRZDialogFragment.Name);
     }
 
@@ -62,36 +61,32 @@ public partial class MainActivity
 
     private void HandleEhicResult(Intent data)
     {
-        var result = (EuropeanHealthInsuranceCardRecognitionResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
-        var fragment = HealthInsuranceCardFragment.CreateInstance(result);
+        var result =  GetParcelableExtra<EuropeanHealthInsuranceCardRecognitionResult>(data);
+        var fragment = HealthInsuranceCardFragment.CreateInstance(result); 
         ShowFragment(fragment, HealthInsuranceCardFragment.Name);
-        fragment.Show(FragmentManager, HealthInsuranceCardFragment.Name);
     }
 
     private void ExtractDocumentData()
     {
         var configuration = new DocumentDataExtractorScreenConfiguration();
-      
         var intent = DocumentDataExtractorActivity.NewIntent(this, configuration);
         StartActivityForResult(intent, ExtractDocumentDataRequestCode);
     }
 
     private void HandleDocumentDataExtractorResult(Intent data)
     {
-        var outputArray = data.GetParcelableArrayListExtra(RtuConstants.ExtraKeyRtuResult);
-        
+        var result = GetParcelableExtra<DocumentDataExtractorUiResult>(data);
+
         // List of Generic documents
-        if (outputArray == null || outputArray.Count == 0)
+        if (result?.Document == null || (result.RecognitionStatus != DocumentDataExtractionStatus.Success &&
+                                         result.RecognitionStatus != DocumentDataExtractionStatus.IncompleteValidation))
         {
             Alert.Show(this, "Error", "Unable to scan the provided input.");
             return;
         }
-        
+
         // For this example we only refer to the first document from the result.
-        if (outputArray[0] is DocumentDataExtractionResult result)
-        {
-            Alert.Show(this, "Document Data Result", result?.Document?.ToFormattedString());
-        }
+        Alert.Show(this, "Document Data Result", result.Document.ToFormattedString());
     }
 
     private void ScanCheck()
@@ -104,7 +99,7 @@ public partial class MainActivity
 
     private void HandleCheckResult(Intent data)
     {
-        var checkResult = (CheckScannerUiResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+        var checkResult = GetParcelableExtra<CheckScannerUiResult>(data);
         if (checkResult?.Check?.Fields == null)
         {
             Alert.Show(this, "Error", "Unable to scan the provided input.");
@@ -124,7 +119,7 @@ public partial class MainActivity
 
     private void HandleTextDataResult(Intent data)
     {
-        var results = (TextPatternScannerUiResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+        var results = GetParcelableExtra<TextPatternScannerUiResult>(data);
         if (string.IsNullOrEmpty(results?.RawText))
         {
             return;
@@ -143,7 +138,7 @@ public partial class MainActivity
 
     private void HandleVinResult(Intent data)
     {
-        var result = (VinScannerUiResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+        var result = GetParcelableExtra<VinScannerUiResult>(data);
 
         Alert.Toast(this, $"VIN Scanned: {result.TextResult.RawText}");
     }
@@ -159,10 +154,10 @@ public partial class MainActivity
 
     private void HandleMedicalCertificateResult(Intent data)
     {
-        var result = (MedicalCertificateScanningResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+        var result = GetParcelableExtra<MedicalCertificateScanningResult>(data);
 
         var fragment = MedicalCertificateResultDialogFragment.CreateInstance(result);
-        fragment.Show(FragmentManager, MedicalCertificateResultDialogFragment.Name);
+        ShowFragment(fragment, MedicalCertificateResultDialogFragment.Name);
     }
 
     private void ScanCreditCard()
@@ -176,7 +171,7 @@ public partial class MainActivity
 
     private void HandleCreditCard(Intent data)
     {
-        var resultCreditCard = (CreditCardScannerUiResult)data.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+        var resultCreditCard = GetParcelableExtra<CreditCardScannerUiResult>(data);
         if (resultCreditCard?.CreditCard?.Fields == null)
         {
             Alert.Show(this, "Error", "Unable to scan the provided input.");
