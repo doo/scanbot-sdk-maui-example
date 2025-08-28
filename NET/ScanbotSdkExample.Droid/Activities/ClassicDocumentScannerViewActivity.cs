@@ -38,11 +38,11 @@ namespace ScanbotSdkExample.Droid.Activities
             _scanbotSdk = new IO.Scanbot.Sdk.ScanbotSDK(this);
             _documentScannerView = FindViewById<DocumentScannerView>(ResourceConstant.Id.document_scanner_view)!;
             
-            var contourDetector = _scanbotSdk.CreateDocumentScanner();
+            var documentDetector = _scanbotSdk.CreateDocumentScanner();
             
             DocumentScannerViewWrapper.InitCamera(_documentScannerView);
             DocumentScannerViewWrapper.InitScanningBehavior(_documentScannerView,
-                                documentScanner: contourDetector,
+                                documentScanner: documentDetector,
                                 new DocumentScannerResultImplementation(ShowUserGuidance), this);
 
             SupportActionBar?.Hide();

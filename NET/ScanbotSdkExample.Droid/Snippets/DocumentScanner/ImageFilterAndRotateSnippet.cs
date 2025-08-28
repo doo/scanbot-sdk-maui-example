@@ -30,7 +30,7 @@ public class ImageFilterAndRotateSnippet : AppCompatActivity
 		// Pick image from gallery
 		var bitmap = await ImagePickerServiceActivity.PickImageAsync(this);
 
-		// Create a contour detector
+		// Create a document detector
 		var documentDetector = _scanbotSdk.CreateDocumentScanner();
 
 		// Run detection on the picked image
