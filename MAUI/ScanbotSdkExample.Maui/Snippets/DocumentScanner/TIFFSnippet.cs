@@ -9,13 +9,13 @@ public static class TiffSnippets
 {
     static void CreateTiffFromDocument(ScannedDocument scannedDocument)
     {
-        var config = new TiffGeneratorParameters();
-        var fileUri = scannedDocument.CreateTiffAsync(config);
+        var parameters = new TiffGeneratorParameters();
+        var outputFileUri = scannedDocument.CreateTiffAsync(parameters);
     }
 
     static async void CreateTiffFromImage(Uri[] imageFiles)
     {
-        var config = new TiffGeneratorParameters();
-        var fileUri = await CommonOperations.WriteTiffAsync(imageFiles.Select(f => new FileImageSource { File = f.LocalPath }), config);
+        var parameters = new TiffGeneratorParameters();
+        var outputFileUri = await CommonOperations.WriteTiffAsync(sourceImages: imageFiles.Select(f => new FileImageSource { File = f.LocalPath }), sourceImagesEncrypted: false, parameters: parameters);
     }
 }

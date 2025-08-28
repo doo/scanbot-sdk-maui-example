@@ -50,6 +50,6 @@ public class ScannedDocumentPageView : ContentView
         // Else accessible via page.Document
         // Document.Source = await Source.DecryptedDocumentPreview();
 
-        _pagePreview.Source = _currentPage.DocumentImagePreviewUri.ToImageSource();
+        _pagePreview.Source = ImageSource.FromStream(() => _currentPage.DocumentImagePreview.AsStream(ImageFormat.Jpeg, quality: 0.7f));
     }
 }
