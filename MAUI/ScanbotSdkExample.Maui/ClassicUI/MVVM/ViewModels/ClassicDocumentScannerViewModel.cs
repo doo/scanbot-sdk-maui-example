@@ -124,7 +124,7 @@ public class ClassicDocumentScannerViewModel : BaseViewModel
 				hint = "Unable to detect the document.";
 				backgroundColor = Colors.Red;
 				break;
-			case DocumentDetectionStatus.ErrorTooDark:
+			case DocumentDetectionStatus.OkButTooDark:
 				hint = "Unable to detect due to dark lighting conditions.";
 				backgroundColor = Colors.Red;
 				break;

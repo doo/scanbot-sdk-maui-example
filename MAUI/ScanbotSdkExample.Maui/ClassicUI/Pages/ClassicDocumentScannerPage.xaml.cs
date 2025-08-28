@@ -68,6 +68,10 @@ public partial class ClassicDocumentScannerPage : ContentPage
 		set
 		{
 			_isAutoSnappingEnabled = value;
+			if (!value)
+			{
+				ScanningHintLabel.IsVisible = false;
+			}
 			OnPropertyChanged();
 		}
 	}
@@ -178,7 +182,7 @@ public partial class ClassicDocumentScannerPage : ContentPage
 				hint = "Unable to detect the document.";
 				backgroundColor = Colors.Red;
 				break;
-			case DocumentDetectionStatus.ErrorTooDark:
+			case DocumentDetectionStatus.OkButTooDark:
 				hint = "Unable to detect due to dark lighting conditions.";
 				backgroundColor = Colors.Red;
 				break;
@@ -201,7 +205,7 @@ public partial class ClassicDocumentScannerPage : ContentPage
 
 		ScanningHintLabel.Text = hint;
 		ScanningHintLabel.BackgroundColor = backgroundColor.WithAlpha(0.5f);
-		ScanningHintLabel.IsVisible = true;
+		ScanningHintLabel.IsVisible = IsAutoSnappingEnabled;
 	}
 	
 	private void ScannerButtonOnClicked(object sender, EventArgs e)
