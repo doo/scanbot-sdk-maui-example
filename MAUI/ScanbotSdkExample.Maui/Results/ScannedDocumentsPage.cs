@@ -212,8 +212,8 @@ public class ScannedDocumentsPage : ContentPage
         // Using the default OCR option
         var ocrConfig = OcrConfig.ScanbotOcr;
 
-        var pages = _document.Pages.Select(p => new FileImageSource { File = p.OriginalImageUri.LocalPath });
-        var result = await CommonOperations.PerformOcrAsync(pages, configuration: ocrConfig);
+        var sourceImages = _document.Pages.Select(p => new FileImageSource { File = p.OriginalImageUri.LocalPath });
+        var result = await CommonOperations.PerformOcrAsync(sourceImages: sourceImages, sourceImagesEncrypted: App.IsEncryptionEnabled, configuration: ocrConfig);
         
         // You can access the results with: result.Pages
         Alert.Show("OCR", result.Text);
@@ -225,14 +225,15 @@ public class ScannedDocumentsPage : ContentPage
         // The default OCR engine is 'OcrConfig.ScanbotOCR' which is ML based. This mode doesn't expect the Langauges array.
         // If you wish to use the previous engine please use 'OcrConfig.Tesseract(...)'. The Languages array is mandatory in this mode.
         // Uncomment the below code to use the past legacy 'OcrConfig.Tesseract(...)' engine mode.
-        // var ocrConfig = OcrConfig.Tesseract(withLanguageString: new List<string>{ "en", "de" });
+        // var ocrConfig = OcrConfig.Tesseract(withLanguageString: [ "en", "de" ]);
 
         // Using the default OCR option
         var ocrConfig = OcrConfig.ScanbotOcr;
 
         var result = await CommonOperations.CreateSandwichPdfAsync(
-            _document.Pages.Select(p => new FileImageSource { File = p.OriginalImageUri.LocalPath }),
-            new PdfConfiguration
+            sourceImages: _document.Pages.Select(p => new FileImageSource { File = p.OriginalImageUri.LocalPath }),
+            sourceImagesEncrypted: App.IsEncryptionEnabled,
+            pdfConfig: new PdfConfiguration
             {
                 PageDirection = PageDirection.Auto,
                 PageSize = PageSize.A4,
@@ -248,7 +249,7 @@ public class ScannedDocumentsPage : ContentPage
                 JpegQuality = 80,
                 PageFit = PageFit.FitIn,
                 ResamplingMethod = ResamplingMethod.None
-            }, ocrConfig);
+            }, ocrConfig: ocrConfig);
 
         // Sharing the Pdf.
         await SharingUtils.ShareFileAsync(result.LocalPath, "application/pdf");

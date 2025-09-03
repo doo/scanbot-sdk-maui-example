@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Maui;
+﻿using System.Diagnostics.CodeAnalysis;
+using CommunityToolkit.Maui;
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Common;
 using ScanbotSDK.MAUI.Core.Document;
@@ -9,6 +10,7 @@ public static partial class MauiProgram
 {
     private const string LicenseKey = "";
 
+    [SuppressMessage("ReSharper", "ExpressionIsAlwaysNull")]
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
@@ -20,6 +22,17 @@ public static partial class MauiProgram
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
+        
+        // Note: You can enable encryption by setting the 'App.IsEncryptionEnabled' variable to 'true':
+        SBSDKEncryption encryption = null;
+        if (App.IsEncryptionEnabled)
+        {
+            encryption = new SBSDKEncryption
+            {
+                Password = "SomeSecretPa$$w0rdForFileEncryption",
+                Mode = StorageEncryptionMode.Aes256
+            };
+        }
 
         SBSDKInitializer.Initialize(builder, LicenseKey, new SBSDKConfiguration
         {
@@ -28,17 +41,12 @@ public static partial class MauiProgram
             StorageImageFormat = CameraImageFormat.Jpg,
             StorageImageQuality = 50,
             EngineMode = DocumentScannerEngineMode.Ml,
-            // You can enable encryption by uncommenting the following lines:
-            // Encryption = new SBSDKEncryption
-            // {
-            //     Password = "SomeSecretPa$$w0rdForFileEncryption",
-            //     Mode = StorageEncryptionMode.Aes256
-            // }
             // Note: all the images and files exported through the SDK will
-            // not be openable from external applications, since they will be
+            // not be openable from external applications, if they will be
             // encrypted.
+            Encryption = encryption
         });
-
+        
         return builder.Build();
     }
 

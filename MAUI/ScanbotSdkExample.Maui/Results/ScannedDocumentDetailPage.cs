@@ -83,7 +83,7 @@ public class ScannedDocumentDetailPage : ContentPage
     {
         base.OnAppearing();
 
-        _documentImage.Source = _selectedPage.DocumentImagePreviewUri.ToImageSource();
+        _documentImage.Source = ImageSource.FromStream(() => _selectedPage.DocumentImagePreview.AsStream(ImageFormat.Jpeg, 0.7f)); 
     }
 
     private async void OnCropButtonTapped(object sender, EventArgs e)
@@ -98,7 +98,7 @@ public class ScannedDocumentDetailPage : ContentPage
                     DocumentUuid = _selectedDocument.Uuid.ToString(),
                     PageUuid = _selectedPage.Uuid.ToString()
                 });
-            _documentImage.Source = _selectedPage.DocumentImagePreviewUri.ToImageSource();
+            _documentImage.Source = ImageSource.FromStream(() => _selectedPage.DocumentImagePreview.AsStream(ImageFormat.Jpeg, 0.7f));
         }
         catch (TaskCanceledException)
         {
@@ -120,7 +120,7 @@ public class ScannedDocumentDetailPage : ContentPage
         {
             _documentImage.Source = null;
             _selectedPage = await _selectedPage.ModifyPageAsync(filters: filters);
-            _documentImage.Source = _selectedPage.DocumentImagePreviewUri.ToImageSource();
+            _documentImage.Source =  ImageSource.FromStream(() => _selectedPage.DocumentImagePreview.AsStream(ImageFormat.Jpeg, 0.7f));
         });            
         await Navigation.PushAsync(filterPage);
         IsLoading = false;

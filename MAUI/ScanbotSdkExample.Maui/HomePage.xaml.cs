@@ -209,7 +209,7 @@ public partial class HomePage
         if (image == null) return;
 
 
-        var result = await ScanbotSDKMain.CommonOperations.PerformOcrAsync([image], OcrConfig.ScanbotOcr);
+        var result = await ScanbotSDKMain.CommonOperations.PerformOcrAsync(sourceImages:[image], sourceImagesEncrypted: false, configuration: OcrConfig.ScanbotOcr);
         Alert.Show(title: "Ocr Result", message: result.Text);
     }
     
@@ -219,7 +219,7 @@ public partial class HomePage
         if (image == null) return;
 
 
-        var result = await ScanbotSDKMain.CommonOperations.CreatePdfAsync([image], new PdfConfiguration());
+        var result = await ScanbotSDKMain.CommonOperations.CreatePdfAsync(sourceImages:[image], sourceImagesEncrypted: false, configuration: new PdfConfiguration());
         if (result == null || !result.IsFile)
             return;
         
