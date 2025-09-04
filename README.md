@@ -21,55 +21,70 @@ The SDK can be integrated into your app within minutes and comes with Ready-To-U
 
 ### Requirements
 
-[Microsoft Visual Studio](https://www.visualstudio.com/) Developing native, cross-platform .NET Multi-platform App UI (.NET MAUI) apps requires Visual Studio 2022 17.3 or greater, or Visual Studio 2022 for Mac 17.4 or greater.
+[Microsoft Visual Studio](https://www.visualstudio.com/) Developing native, cross-platform .NET Multi-platform App UI (.NET MAUI) apps requires .NET SDK and required workloads.
+For developing on a windows machine you can use Visual Studio. On a Mac, we recommend using JetBrains Rider, for an IDE experience or Visual Studio Code with the .NET MAUI extension.
 
-### Build Instructions
+### Build Instructions (For running via CLI on Mac terminal)
 
 Assuming you already have your development machine setup, the following commands will help you build and debug our projects:
 
 #### .NET
 
-##### iOS
-
-To build the iOS example project for both net7.0-ios and net8.0-ios, forcing packages to be restored and everything to be compiled from scratch:
-
-`dotnet build NET/ReadyToUseUI.iOS --force --no-incremental -r ios-arm64`
-
-To run the project on a real device, specify a target framework with `-f net8.0-ios` and the Run target via `-t:Run`, yielding the following:
-
-`dotnet build NET/ReadyToUseUI.iOS -r ios-arm64 -f net8.0-ios -t:Run --force --no-incremental`
-
-The Classic Component has its own project. Run it with:
-
-`dotnet build NET/ClassicComponent.iOS -r ios-arm64 -f net8.0-ios -t:Run --force --no-incremental`
-
 ##### Android
 
-To build the Android example project for both net7.0-android and net8.0-android, forcing packages to be restored and everything to be compiled from scratch:
+To build the Android example project for `net9.0-android`:
 
-`dotnet build NET/ReadyToUseUI.Droid --force --no-incremental`
+```bash
+dotnet build NET/ScanbotSdkExample.Droid/ScanbotSdkExample.Droid.csproj -f: net8.0-android -t:Run -p:AndroidDeviceId=<Your-Device-Id>
+```
 
-To run the project on a real device, specify a target framework with `-f net8.0-android` and the Run target via `-t:Run`, yielding the following:
+**Note:** To get all the Android Simulators and Devices Id you can run:
+``` bash
+adb devices
+```
 
-`dotnet build NET/ReadyToUseUI.Droid -f net8.0-android -t:Run --force --no-incremental`
+##### iOS
 
-The Classic Component has its own project. Run it with:
+To build the iOS example project for `net9.0-ios`:
 
-`dotnet build NET/ClassicComponent.Droid -f net8.0-android -t:Run --force --no-incremental`
+```bash
+dotnet build NET/ScanbotSdkExample.iOS/ScanbotSdkExample.iOS.csproj -t:Run -f:net9.0-ios -r:ios-arm64 -p:_DeviceName=:<Your-Device-UDID>
+```
+
+**Note:** To get all the iOS simulators and devices `UDID` you can run:
+```bash
+xcrun xctrace list devices
+```
 
 #### MAUI
 
-To build the MAUI example project for all supported target frameworks (net7.0-android, net7.0-ios, net8.0-android and net8.0-ios) and forcing packages to be restored and everything to be compiled from scratch, execute:
+To build the MAUI example project for target frameworks net9.0-android, net9.0-ios:
 
-`dotnet build MAUI/ReadyToUseUI.Maui --force --no-incremental`
+##### Android
 
-To run the project on a real iOS device, specify a target framework with `-f net8.0-ios` and the Run target via `-t:Run`, yielding the following:
+To build the Android example project for `net9.0-android`:
 
-`dotnet build MAUI/ReadyToUseUI.Maui -f net8.0-ios -t:Run --force --no-incremental`
+```bash
+dotnet build MAUI/ScanbotSdkExample.Maui/ScanbotSdkExample.Maui.csproj -f: net8.0-android -t:Run -p:AndroidDeviceId=<Your-Device-Id>
+```
 
-To run the project on a real Android device, specify a target framework with `-f net8.0-android` and the Run target via `-t:Run`, yielding the following:
+**Note:** To get all the Android Simulators and Devices Id you can run:
+``` bash
+adb devices
+```
 
-`dotnet build MAUI/ReadyToUseUI.Maui -f net8.0-android -t:Run --force --no-incremental`
+##### iOS
+
+To build the iOS example project for `net9.0-ios`:
+
+```bash
+dotnet build MAUI/ScanbotSdkExample.Maui/ScanbotSdkExample.Maui.csproj -t:Run -f:net9.0-ios -r:ios-arm64 -p:_DeviceName=:<Your-Device-UDID>
+```
+
+**Note:** To get all the iOS simulators and devices `UDID` you can run:
+```bash
+xcrun xctrace list devices
+```
 
 ## Overview of the Scanbot SDK
 
