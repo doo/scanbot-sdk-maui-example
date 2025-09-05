@@ -15,7 +15,7 @@ The Scanbot SDK is a set of high-level APIs that lets you integrate document sca
 
 The SDK can be integrated into your app within minutes and comes with Ready-To-Use UI components. These allow you to customize the scanner to your needs and ensure full functionality. 
 
-💡 For more details about the Scanbot Document Scanner SDK and Data Capture Modules, please check out our [documentation](https://docs.scanbot.io/document-scanner-sdk/maui/introduction/?utm_source=github.com&utm_medium=referral&utm_campaign=dev_sites).
+💡 For more details about the Scanbot Document Scanner SDK and Data Capture Modules, please check out our [documentation](https://docs.scanbot.io/maui/document-scanner-sdk/introduction/?utm_source=github.com&utm_medium=referral&utm_campaign=dev_sites).
 
 ## How to run this example app?
 
@@ -141,7 +141,7 @@ As a customer, you also get access to a dedicated support Slack or Microsoft Tea
 
 The Scanbot SDK examples will run one minute per session without a license key. After that, all functionalities and UI components will stop working.
 
-To try the Scanbot SDK for .NET MAUI without the one-minute limit, you can request a free, no-strings-attached [7-day trial license](https://scanbot.io/trial/?utm_source=github.com&utm_medium=referral&utm_campaign=dev_sites) for your project.
+To try the Scanbot SDK for .NET MAUI without the one-minute limit, you can request a free, no-strings-attached [7-day trial license](https://docs.scanbot.io/trial/?utm_source=github.com&utm_medium=referral&utm_campaign=dev_sites) for your project.
 
 Alternatively, check out our [demo apps](https://scanbot.io/demo-apps/?utm_source=github.com&utm_medium=referral&utm_campaign=dev_sites) to test the SDK.
 
