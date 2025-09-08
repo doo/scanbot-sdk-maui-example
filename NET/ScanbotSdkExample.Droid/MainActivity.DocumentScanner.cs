@@ -109,7 +109,7 @@ public partial class MainActivity
         var document = _scanbotSdk.DocumentApi.CreateDocument(defaultDocumentSizeLimit);
         document.AddPage(bitmap);
 
-        if (detectionResult != null)
+        if (detectionResult != null && detectionResult.Status != DocumentDetectionStatus.ErrorNothingDetected)
         {
             document.PageAtIndex(0).Polygon = detectionResult.PointsNormalized;
         }
