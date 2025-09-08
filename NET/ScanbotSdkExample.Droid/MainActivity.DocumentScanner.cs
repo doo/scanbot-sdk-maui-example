@@ -7,6 +7,7 @@ using ScanbotSdkExample.Droid.Activities;
 using ScanbotSdkExample.Droid.Utils;
 using ScanbotSdkExample.Droid.Model;
 using IO.Scanbot.Sdk.Common;
+using IO.Scanbot.Sdk.Document;
 
 namespace ScanbotSdkExample.Droid;
 
@@ -48,6 +49,7 @@ public partial class MainActivity
         var aspectRatio = new AspectRatio(21.0, 29.7);
 
         var configuration = new DocumentScanningFlow();
+        configuration.OutputSettings.PagesScanLimit = 1;
         configuration.Screens.Camera.ScannerParameters.AcceptedSizeScore = 75;
         configuration.Screens.Camera.ScannerParameters.AspectRatios = [ aspectRatio ];
         configuration.Screens.Camera.ViewFinder.Visible = true;
@@ -65,7 +67,7 @@ public partial class MainActivity
         }
 
         var configuration = new DocumentScanningFlow();
-        configuration.OutputSettings.PagesScanLimit = 1;
+        configuration.OutputSettings.PagesScanLimit = 0; // allow multiple document scanning
         configuration.Screens.Camera.BottomBar.ShutterButton.InnerColor = new ScanbotColor(Android.Graphics.Color.Red);
 
         var intent = DocumentScannerActivity.NewIntent(this, configuration);
