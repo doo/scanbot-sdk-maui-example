@@ -19,7 +19,6 @@
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21</SupportedOSPlatformVersion>
         <WarningsAsErrors>NU1603</WarningsAsErrors>
         <LangVersion>12.0</LangVersion>
-        <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
         <PackageId>ScanbotSdkExample.Maui</PackageId>
         <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
     </PropertyGroup>
@@ -99,6 +98,6 @@
         <PackageReference Include="CommunityToolkit.Maui" Version="9.1.0" />
         <PackageReference Include="Microsoft.Maui.Essentials" Version="9.0.51" />
         <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.51" />
-        <PackageReference Include="ScanbotSDK.MAUI" Version="7.1.0-rc.3" />
+        <PackageReference Include="ScanbotSDK.MAUI" Version="7.1.0-rc.4" />
     </ItemGroup>
 </Project>
