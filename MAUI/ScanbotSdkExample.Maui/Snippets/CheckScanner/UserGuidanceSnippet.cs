@@ -11,19 +11,32 @@ public class UserGuidanceSnippet
     {
         // Create the default configuration object.
         var configuration = new CheckScannerScreenConfiguration();
+
+        // Top user guidance
+        // Retrieve the instance of the top user guidance from the configuration object.
+        var topUserGuidance = configuration.TopUserGuidance;
         
-        // Set the top bar mode.
-        configuration.TopBar.Mode = TopBarMode.Gradient;
+        // Show the user guidance.
+        topUserGuidance.Visible = true;
+        
+        // Configure the title.
+        topUserGuidance.Title.Text = "Scan your Check";
+        topUserGuidance.Title.Color = new ColorValue("#FFFFFF");
+        
+        // Configure the background.
+        topUserGuidance.Background.FillColor = new ColorValue("#7A000000");
 
-        // Set the background color which will be used as a gradient.
-        configuration.TopBar.BackgroundColor = new ColorValue("#C8193C");
-
-        // Set the status bar mode.
-        configuration.TopBar.StatusBarMode = StatusBarMode.Light;
-
-        // Configure the cancel button.
-        configuration.TopBar.CancelButton.Text = "Cancel";
-        configuration.TopBar.CancelButton.Foreground.Color = new ColorValue("#FFFFFF");
+        // Scan status user guidance
+        // Retrieve the instance of the user guidance from the configuration object.
+        var scanStatusUserGuidance = configuration.ScanStatusUserGuidance;
+        scanStatusUserGuidance.Visibility = true;
+        
+        // Configure the title.
+        scanStatusUserGuidance.Title.Text = "Scan check";
+        scanStatusUserGuidance.Title.Color = new ColorValue("#FFFFFF");
+        
+        // Configure the background.
+        scanStatusUserGuidance.Background.FillColor = new ColorValue("#7A000000");
         
         // Present the view controller modally.
         var scannedOutput = await ScanbotSDKMain.Rtu.CheckScanner.LaunchAsync(configuration);
