@@ -1,4 +1,5 @@
-﻿using ScanbotSDK.MAUI.Document;
+﻿using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Document;
 using ScanbotSdkExample.Maui.Controls;
 using ScanbotSdkExample.Maui.Controls.ActionBar;
 using ScanbotSdkExample.Maui.Utils;
@@ -90,22 +91,17 @@ public class ScannedDocumentDetailPage : ContentPage
     {
         if (!SdkUtils.CheckLicense(this)) { return; }
 
-        try
+        var croppingOutput = await Rtu.CroppingScreen.LaunchAsync(new CroppingConfiguration
         {
-            var result = await Rtu.CroppingScreen.LaunchAsync(
-                new CroppingConfiguration
-                {
-                    DocumentUuid = _selectedDocument.Uuid.ToString(),
-                    PageUuid = _selectedPage.Uuid.ToString()
-                });
+            DocumentUuid = _selectedDocument.Uuid.ToString(),
+            PageUuid = _selectedPage.Uuid.ToString()
+        });
+        
+        if (croppingOutput.Status == OperationResult.Ok)
+        {
             _documentImage.Source = ImageSource.FromStream(() => _selectedPage.DocumentImagePreview.AsStream(ImageFormat.Jpeg, 0.7f));
         }
-        catch (TaskCanceledException)
-        {
-            // When the cropping UI is cancelled.
-        }
     }
-
 
     private async void OnFilterButtonTapped(object sender, EventArgs e)
     {
