@@ -34,7 +34,7 @@ public class IntroductionSnippet : AppCompatActivity
         intro.BackgroundColor = new ScanbotColor("#FFFFFF");
         
         // Title
-        intro.Title.Text = "How to scan an text";
+        intro.Title.Text = "How to scan text";
         
         // Image options
         intro.Image = new TextPatternIntroNoImage();

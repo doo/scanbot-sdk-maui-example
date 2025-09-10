@@ -39,7 +39,7 @@ public class UserGuidanceSnippet : AppCompatActivity
         topUserGuidance.Visible = true;
         
         // Configure the title.
-        topUserGuidance.Title.Text = "Scan your Identity Document";
+        topUserGuidance.Title.Text = "Scan your Check";
         topUserGuidance.Title.Color = new ScanbotColor("#FFFFFF");
         
         // Configure the background.
@@ -51,7 +51,7 @@ public class UserGuidanceSnippet : AppCompatActivity
         scanStatusUserGuidance.Visibility = true;
         
         // Configure the title.
-        scanStatusUserGuidance.Title.Text = "Scan the Check";
+        scanStatusUserGuidance.Title.Text = "Scan check";
         scanStatusUserGuidance.Title.Color = new ScanbotColor("#FFFFFF");
         
         // Configure the background.

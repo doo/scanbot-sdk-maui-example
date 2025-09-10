@@ -22,7 +22,7 @@ class UserGuidanceSnippet : UIViewController
         // Top user guidance
         var topUserGuidance = configuration.TopUserGuidance;
         topUserGuidance.Visible = true;
-        topUserGuidance.Title.Text = "Scan your Identity Document";
+        topUserGuidance.Title.Text = "Scan your Check";
         topUserGuidance.Title.Color = new SBSDKUI2Color("#FFFFFF");
         topUserGuidance.Background.FillColor = new SBSDKUI2Color("#7A000000");
 

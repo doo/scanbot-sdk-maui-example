@@ -35,7 +35,7 @@ class UserGuidanceSnippet : UIViewController
         // Show the user guidance.
         scanStatusUserGuidance.Visibility = true;
         // Configure the title.
-        scanStatusUserGuidance.Title.Text = "Scan document";
+        scanStatusUserGuidance.Title.Text = "How to scan an ID document";
         scanStatusUserGuidance.Title.Color = new SBSDKUI2Color(colorString: "#FFFFFF");
         // Configure the background.
         scanStatusUserGuidance.Background.FillColor = new SBSDKUI2Color(colorString: "#7A000000");
