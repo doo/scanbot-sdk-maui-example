@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:orientation="vertical">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:text="@string/main_activity_title"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#ffffff"
+            android:textSize="25dp"
+            android:textStyle="normal"
+            android:gravity="center"/>
+        
+        <!-- License Indicator -->
+        <TextView
+            android:id="@+id/licenseIndicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:fontFamily="sans-serif"
+            android:textColor="#ffffff"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:textStyle="normal"/>
+
+        <!-- Document Scanners -->
+        <LinearLayout
+            android:id="@+id/document_scanner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@android:color/white"
+                android:gravity="center_vertical"
+                android:layout_gravity="left"
+                android:padding="16dp"
+                android:text="@string/document_scanner_title"
+                android:background="@color/scanbotRed"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <!-- Data Detectors -->
+        <LinearLayout
+            android:id="@+id/data_detectors"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@android:color/white"
+                android:gravity="center_vertical"
+                android:layout_gravity="left"
+                android:padding="16dp"
+                android:text="@string/data_detectors_title"
+                android:background="@color/scanbotRed"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <!-- Data Detection On Image -->
+        <LinearLayout
+                android:id="@+id/data_detection_on_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@android:color/white"
+                    android:gravity="center_vertical"
+                    android:layout_gravity="left"
+                    android:padding="16dp"
+                    android:text="@string/data_detectors_on_image_title"
+                    android:background="@color/scanbotRed"
+                    android:textStyle="bold"/>
+        </LinearLayout>
+
+        <!-- Miscellaneous -->
+        <LinearLayout
+                android:id="@+id/miscellaneous_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@android:color/white"
+                    android:gravity="center_vertical"
+                    android:layout_gravity="left"
+                    android:padding="16dp"
+                    android:text="@string/miscellaneous_title"
+                    android:background="@color/scanbotRed"
+                    android:textStyle="bold"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

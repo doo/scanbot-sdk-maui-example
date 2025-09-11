@@ -12,3 +12,4 @@ set -e
 
 # For visual studio project cache
   rm -rf ./.vs
+  rm -rf ./.idea
