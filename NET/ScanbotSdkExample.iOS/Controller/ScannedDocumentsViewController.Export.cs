@@ -57,17 +57,18 @@ public partial class ScannedDocumentsViewController
 
         try
         {
-            var ocrEngine = new SBSDKOCREngine(ocrConfiguration);
-            ocrEngine.RecognizeFromScannedDocument(scannedDocument, completion: (ocrResult, error) =>
-            {
-                if (error != null)
-                {
-                    Alert.Show(this, "Perform OCR", error.LocalizedDescription);
-                    return;
-                }
-
-                Alert.Show(this, "Perform OCR", ocrResult.RecognizedText);
-            });
+            var ocrEngine = SBSDKOCREngine.CreateAndReturnError(out var initError);
+            // todo: Check native SDKs -- How to handle Document object for OCRs
+            // ocrEngine.RunWithImage().RecognizeFromScannedDocument(scannedDocument, completion: (ocrResult, error) =>
+            // {
+            //     if (error != null)
+            //     {
+            //         Alert.Show(this, "Perform OCR", error.LocalizedDescription);
+            //         return;
+            //     }
+            //
+            //     Alert.Show(this, "Perform OCR", ocrResult.RecognizedText);
+            // });
         }
         catch (Exception exception)
         {
@@ -99,7 +100,7 @@ public partial class ScannedDocumentsViewController
                                 keywords: "PDF, ScanbotSDK");
 
              // Renders the document into a searchable PDF at the specified file url
-             var generator = new SBSDKPDFGenerator(configuration: configuration, ocrConfiguration: null, ScanbotUI.DefaultImageStoreEncrypter);
+             var generator = new SBSDKPDFGenerator(configuration: configuration, ocrConfiguration: null, ScanbotSDKGlobal.DefaultImageStoreEncrypter?.StorageCrypting);
              
              // Start the rendering operation and store the SBSDKProgress to watch the progress or cancel the operation.
              generator.GenerateFromScannedDocument(document, output: outputPdfUrl, 
@@ -155,7 +156,7 @@ public partial class ScannedDocumentsViewController
                 keywords: "PDF, ScanbotSDK");
 
             // Renders the document into a searchable PDF at the specified file url
-            var generator = new SBSDKPDFGenerator(configuration: configuration, ocrConfiguration: ocrConfiguration, ScanbotUI.DefaultImageStoreEncrypter);
+            var generator = new SBSDKPDFGenerator(configuration: configuration, ocrConfiguration: ocrConfiguration, ScanbotSDKGlobal.DefaultImageStoreEncrypter?.StorageCrypting);
  
             // Start the rendering operation and store the SBSDKProgress to watch the progress or cancel the operation.
             generator.GenerateFromScannedDocument(document, output: outputPdfUrl, 

@@ -167,12 +167,13 @@ public partial class MainViewController: IClassicDocumentScannerViewResult
     private async void CreateDocFromImage()
     {
         var image = await ImagePicker.Instance.PickImageAsync();
+        var imageRef = SBSDKImageRef.FromUIImageWithImage(image, new SBSDKRawImageLoadOptions());
 
         // Create an instance of a detector
-        var detector = new SBSDKDocumentScanner();
+        var detector = new SBSDKDocumentScanner(new SBSDKDocumentScannerConfiguration(), out var errorInit);
 
         // Run detection on the image
-        var result = detector.ScanFromImage(image, false);
+        var result = detector.RunWithImage(imageRef, out var error);
 
         if (result == null)
         {
@@ -183,7 +184,7 @@ public partial class MainViewController: IClassicDocumentScannerViewResult
         var document = new SBSDKScannedDocument();
 
         // Add page to the document using the image and the detected polygon on the image (if any)
-        document.AddPageWith(image, result.Polygon ?? new SBSDKPolygon(), []);
+        document.AddPageWith(imageRef, result.Polygon ?? new SBSDKPolygon(), []);
 
         Console.WriteLine("Attempted document detection on imported page: " + result.Status);
         OpenImageListController(document.Uuid);

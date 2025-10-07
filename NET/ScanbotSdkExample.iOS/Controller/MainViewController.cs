@@ -36,8 +36,6 @@ namespace ScanbotSdkExample.iOS.Controller
                 new ListItem("Scan Check", ScanCheck),
                 new ListItem("Scan CreditCard", ScanCreditCard),
                 new ListItem("Extract Document Data", ExtractDocumentData),
-                new ListItem("Scan EU Health Insurance Card", ScanEhic),
-                new ListItem("Scan Medical Certificate", ScanMedicalCertificate),
                 new ListItem("Scan MRZ", ScanMrz),
                 new ListItem("Text Data Recognizer", ScanTextPattern),
                 new ListItem("VIN Recognizer", ScanVin),
@@ -48,7 +46,6 @@ namespace ScanbotSdkExample.iOS.Controller
                 new ListItem("Detect Check From Image", RecognizeCheck),
                 new ListItem("Detect Credit Card From Image", RecognizeCreditCard),
                 new ListItem("Extract Document Data From Image", RecognizeDocumentData),
-                new ListItem("Detect EHIC From Image", RecognizeEhic),
                 new ListItem("Detect Medical Certificate From Image", RecognizeMedicalCertificate),
                 new ListItem("Detect MRZ From Image", RecognizeMrz),
             ];

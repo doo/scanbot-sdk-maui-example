@@ -24,12 +24,15 @@ public class TiffSnippet
 
 	void CreateTiff(UIImage[] images)
 	{
+		// Convert array of UIImage to SBSDKImageRef.
+		var imageRefs = images.Select(item => SBSDKImageRef.FromUIImageWithImage(item, new SBSDKRawImageLoadOptions())).ToArray();
+		
 		// Specify the file URL where the TIFF will be saved to. Nil makes no sense here.
 		var outputTiffUrl = new NSUrl("outputTiffUrl");
 
 		// In case you want to encrypt your TIFF file, create encrypter using a password and an encryption mode.
 		var encrypter = new SBSDKAESEncrypter(password: "password_example#42",
-							mode: SBSDKAESEncrypterMode.SBSDKAESEncrypterModeAES256);
+							mode: SBSDKAESEncrypterMode.SBSDKAESEncrypterModeAES256, true);
 
 		// The `SBSDKTIFFImageWriter` has parameters where you can define various options,
 		// e.g. compression algorithm or whether the document should be binarized.
@@ -41,7 +44,7 @@ public class TiffSnippet
 
 		// Asynchronously writes a TIFF file with scanned images into the defined URL.
 		// The completion handler passes a file URL where the file was to be saved, or nil if the operation did not succeed.
-		tiffImageWriter.GenerateFromImagesToFileURL(images, outputTiffUrl, 
+		tiffImageWriter.GenerateFromImagesToFileURL(imageRefs, outputTiffUrl, 
 								completion: (url) =>
 					            {
 						            // Handle the Url.
