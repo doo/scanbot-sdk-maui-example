@@ -5,13 +5,16 @@ namespace ScanbotSdkExample.iOS.Snippets.DocumentScanner;
 public class StorageForPageSnippet
 {
     void CreateScannedDocument(List<UIImage> images)
-    {
+    {		
+        // Convert array of UIImage to SBSDKImageRef.
+        var imageRefs = images.Select(item => SBSDKImageRef.FromUIImageWithImage(item, new SBSDKRawImageLoadOptions()));
+
         // Create a new document with the specified maximum image size.
         // Setting the limit to 0, effectively disables the size limit.
         var scannedDocument = new SBSDKScannedDocument();
 
         // add images to the document.
-        foreach (var image in images)
+        foreach (var image in imageRefs)
         {
             scannedDocument.AddPageWith(image, new SBSDKPolygon(), new SBSDKParametricFilter[] { });
         }

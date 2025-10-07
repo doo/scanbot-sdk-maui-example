@@ -16,20 +16,7 @@ public partial class MainViewController
             ShowPopup(this, result.MrzDocument.ToFormattedString());
         });
     }
-
-    private void ScanEhic()
-    {
-        var configuration = SBSDKUIHealthInsuranceCardRecognizerConfiguration.DefaultConfiguration;
-        configuration.TextConfiguration.CancelButtonTitle = "Done";
-        var controller = SBSDKUIHealthInsuranceCardRecognizerViewController.CreateWithConfiguration(configuration, null);
-        controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
-        controller.DidDetectCard += (_, args) =>
-        {
-            controller.DismissViewController(true, () => ShowPopup(this, args.Card.Fields.ToFormattedString()));
-        };
-        PresentViewController(controller, false, null);
-    }
-
+    
     private void ExtractDocumentData()
     {
         var configuration = new SBSDKUI2DocumentDataExtractorScreenConfiguration();
@@ -82,22 +69,6 @@ public partial class MainViewController
 
             Alert.Show(this, "Result Text:", result.TextResult.RawText);
         });
-    }
-
-    private void ScanMedicalCertificate()
-    {
-        var configuration = SBSDKUIMedicalCertificateScannerConfiguration.DefaultConfiguration;
-        configuration.TextConfiguration.CancelButtonTitle = "Done";
-        var scanner = SBSDKUIMedicalCertificateScannerViewController.CreateWithConfiguration(configuration, null);
-        scanner.DidFinishWithResult += (_, args) =>
-        {
-            scanner.IsRecognitionEnabled = false;
-            scanner.DismissViewController(true, () =>
-            {
-                ShowPopupWithAttributedText(this, args.Result?.ToFormattedAttributeString());
-            });
-        };
-        PresentViewController(scanner, true, null);
     }
 
     private void ScanCreditCard()

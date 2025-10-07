@@ -13,7 +13,7 @@ public partial class ScannedDocumentsViewController : UIViewController
 
     internal void NavigateData(string documentId)
     {
-        _scannedDocument = new SBSDKScannedDocument(documentId);
+        _scannedDocument = SBSDKScannedDocument.LoadDocumentWithDocumentUuid(documentId, out var error);
     }
 
     public override void ViewDidLoad()
@@ -56,10 +56,10 @@ public partial class ScannedDocumentsViewController : UIViewController
         }
 
         // Initialize document quality analyzer
-        var documentAnalyzer = new SBSDKDocumentQualityAnalyzer();
+        var documentAnalyzer = new SBSDKDocumentQualityAnalyzer(new SBSDKDocumentQualityAnalyzerConfiguration(), out var initializationError);
 
         // Get the document quality analysis result by passing the image to the analyzer
-        var documentQuality = documentAnalyzer.AnalyzeOnImage(documentPageImage);
+        var documentQuality = documentAnalyzer.RunWithImage(documentPageImage, out var scanningError);
         Alert.Show(this, "Document Quality", Map(documentQuality?.Quality));
     }
 

@@ -41,7 +41,7 @@ namespace ScanbotSdkExample.iOS.Controller
             View = _contentView;
 
             _contentView.SetPickerModel(_filters);
-            _contentView.ImageView.Image = _scannedDocument.Pages.First().DocumentImage;
+            _contentView.ImageView.Image = _scannedDocument.Pages.First().DocumentImage?.ToUIImageAndReturnError(out var error);
 
             Title = "Choose filter";
 
@@ -58,7 +58,7 @@ namespace ScanbotSdkExample.iOS.Controller
                 page.Filters = [ _selectedParametricFilter ];
             }
             
-            _contentView.ImageView.Image = _scannedDocument.Pages.First().DocumentImage;
+            _contentView.ImageView.Image = _scannedDocument.Pages.First().DocumentImage?.ToUIImageAndReturnError(out var error);
         }
 
         private void FilterChosen(object sender, EventArgs e)

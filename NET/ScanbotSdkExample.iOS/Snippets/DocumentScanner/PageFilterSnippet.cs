@@ -15,7 +15,8 @@ public class PageFilterSnippet : UIViewController
 	private void ApplyFilterAndRotateScannedPage()
 	{
 		// Retrieve the scanned document
-		var document = new SBSDKScannedDocument(documentUuid: "SOME_SAVED_UUID");
+		var document = new SBSDKScannedDocument();
+		SBSDKScannedDocument.LoadDocumentWithDocumentUuid(documentUuid: "SOME_SAVED_UUID", out var error);
         
 		// Retrieve the selected document page.
 		SBSDKScannedPage page = document.PageAt(0);
