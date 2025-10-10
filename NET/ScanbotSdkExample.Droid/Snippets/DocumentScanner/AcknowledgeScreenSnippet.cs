@@ -1,4 +1,5 @@
 using AndroidX.AppCompat.App;
+using IO.Scanbot.Sdk.Documentqualityanalyzer;
 using IO.Scanbot.Sdk.Process;
 using IO.Scanbot.Sdk.Ui_v2.Common;
 using IO.Scanbot.Sdk.Ui_v2.Document;

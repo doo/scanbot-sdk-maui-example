@@ -3,6 +3,8 @@ using Android.Text;
 using Android.Text.Style;
 using Android.Views;
 using IO.Scanbot.Sdk.MC;
+using IO.Scanbot.Sdk.Medicalcertificate;
+using ScanbotSDK.Droid.Helpers;
 using ScanbotSdkExample.Droid.Views;
 using R = _Microsoft.Android.Resource.Designer.ResourceConstant;
 
@@ -38,8 +40,8 @@ namespace ScanbotSdkExample.Droid.Fragments
             }
             
             textView.TextFormatted = ParseData(_result);
-
-            var bitmap = _result.CroppedImage?.ToBitmap();
+            
+            var bitmap = _result.CroppedImage?.ToBitmap().Get<Bitmap>();
             if (bitmap != null)
             {
                 view.FindViewById<ImageView>(R.Id.front_snap_result)!.SetImageBitmap(bitmap);
