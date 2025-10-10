@@ -52,23 +52,23 @@ public partial class ScannedDocumentsViewController
         if (recognitionMode == SBSDKOCREngineMode.Tesseract)
         {
             var installedLanguages = SBSDKOCRLanguagesManager.InstalledLanguages;
+            
             ocrConfiguration = SBSDKOCREngineConfiguration.TesseractWith(installedLanguages);
         }
 
         try
         {
-            var ocrEngine = SBSDKOCREngine.CreateAndReturnError(out var initError);
-            // todo: Check native SDKs -- How to handle Document object for OCRs
-            // ocrEngine.RunWithImage().RecognizeFromScannedDocument(scannedDocument, completion: (ocrResult, error) =>
-            // {
-            //     if (error != null)
-            //     {
-            //         Alert.Show(this, "Perform OCR", error.LocalizedDescription);
-            //         return;
-            //     }
-            //
-            //     Alert.Show(this, "Perform OCR", ocrResult.RecognizedText);
-            // });
+            var manager = new SBSDKOCREngineManager(ocrConfiguration);
+            manager.RecognizeFromScannedDocument(scannedDocument, completion: (ocrResult, error) =>
+            {
+                if (error != null)
+                {
+                    Alert.Show(this, "Perform OCR", error.LocalizedDescription);
+                    return;
+                }
+            
+                Alert.Show(this, "Perform OCR", ocrResult.RecognizedText);
+            });
         }
         catch (Exception exception)
         {
