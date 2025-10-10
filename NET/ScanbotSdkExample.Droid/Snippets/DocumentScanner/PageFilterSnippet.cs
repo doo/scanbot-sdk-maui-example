@@ -1,9 +1,6 @@
-using Android.Graphics;
-using Android.OS;
 using AndroidX.AppCompat.App;
-using IO.Scanbot.Sdk.Core;
-using IO.Scanbot.Sdk.Core.Processor;
-using IO.Scanbot.Sdk.Imagefilters;
+using IO.Scanbot.Sdk.Image;
+using IO.Scanbot.Sdk.Imageprocessing;
 
 namespace ScanbotSdkExample.Droid.Snippets;
 

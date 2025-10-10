@@ -1,6 +1,6 @@
 using Android.Content;
 using AndroidX.AppCompat.App;
-using IO.Scanbot.Sdk.Imagefilters;
+using IO.Scanbot.Sdk.Imageprocessing;
 using IO.Scanbot.Sdk.Ui_v2.Document;
 using IO.Scanbot.Sdk.Ui_v2.Document.Configuration;
 

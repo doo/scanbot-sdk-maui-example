@@ -2,7 +2,7 @@ namespace ScanbotSdkExample.Droid.Utils;
 
 public static class StringUtils
 {
-    internal static string ToFormattedString(this IO.Scanbot.Sdk.Genericdocument.Entity.GenericDocument document)
+    internal static string ToFormattedString(this IO.Scanbot.Sdk.Genericdocument.GenericDocument document)
     {
         if (document?.Fields == null || document.Fields.Count == 0)
             return string.Empty;

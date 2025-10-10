@@ -8,6 +8,10 @@ using ScanbotSdkExample.Droid.Utils;
 using ScanbotSdkExample.Droid.Model;
 using IO.Scanbot.Sdk.Common;
 using IO.Scanbot.Sdk.Document;
+using IO.Scanbot.Sdk.Documentscanner;
+using IO.Scanbot.Sdk.Geometry;
+using IO.Scanbot.Sdk.Image;
+using ScanbotSDK.Droid.Helpers;
 
 namespace ScanbotSdkExample.Droid;
 
@@ -104,16 +108,16 @@ public partial class MainActivity
 
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
 
-        var scanner = _scanbotSdk.CreateDocumentScanner();
-        var detectionResult = scanner.ScanFromBitmap(bitmap);
+        var scanner = _scanbotSdk.CreateDocumentScanner(new DocumentScannerConfiguration()).Get<IDocumentScanner>();
+        var result = scanner.Scan(ImageRef.FromBitmap(bitmap, new BasicImageLoadOptions())).Get<DocumentScanningResult>();
 
         var defaultDocumentSizeLimit = 0;
         var document = _scanbotSdk.DocumentApi.CreateDocument(defaultDocumentSizeLimit);
         document.AddPage(bitmap);
 
-        if (detectionResult != null && detectionResult.Status != DocumentDetectionStatus.ErrorNothingDetected)
+        if (result?.DetectionResult != null && result.DetectionResult.Status != DocumentDetectionStatus.ErrorNothingDetected)
         {
-            document.PageAtIndex(0).Polygon = detectionResult.PointsNormalized;
+            document.PageAtIndex(0).Polygon = result.DetectionResult.PointsNormalized;
         }
 
         _progress.Visibility = ViewStates.Gone;

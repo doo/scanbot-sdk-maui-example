@@ -9,13 +9,15 @@
         <ApplicationVersion>1</ApplicationVersion>
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
         <ApplicationTitle>NET Droid</ApplicationTitle>
-        <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
         <RootNamespace>ScanbotSdkExample.Droid</RootNamespace>
         <WarningsAsErrors>NU1603</WarningsAsErrors>
         <PackageId>ScanbotSdkExample.Droid</PackageId>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Scanbot.Xamarin.ImagePicker" Version="0.0.3-beta.1" />
-        <PackageReference Include="ScanbotSDK.NET" Version="7.1.0" />
+        <!-- <PackageReference Include="ScanbotSDK.NET" Version="7.1.0" /> -->
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\scanbot-sdk-maui\DocumentSDK\DocumentSDK.NET.Droid\DocumentSDK.NET.Droid.csproj" />
     </ItemGroup>
 </Project>

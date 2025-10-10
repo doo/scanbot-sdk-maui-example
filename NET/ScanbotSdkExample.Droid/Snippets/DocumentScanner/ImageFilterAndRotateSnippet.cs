@@ -1,10 +1,11 @@
 using Android.Graphics;
 using AndroidX.AppCompat.App;
-using IO.Scanbot.Sdk.Core;
+using IO.Scanbot.Sdk.Documentscanner;
+using IO.Scanbot.Sdk.Image;
+using IO.Scanbot.Sdk.Imageprocessing;
 using IO.Scanbot.Sdk.Process;
-using IO.Scanbot.Sdk.Document;
-using IO.Scanbot.Sdk.Imagefilters;
 using ScanbotSdkExample.Droid.Utils;
+using ScanbotSDK.Droid.Helpers;
 
 namespace ScanbotSdkExample.Droid.Snippets;
 
@@ -29,15 +30,17 @@ public class ImageFilterAndRotateSnippet : AppCompatActivity
 	{
 		// Pick image from gallery
 		var bitmap = await ImagePickerServiceActivity.PickImageAsync(this);
+		
+		var imageRef = ImageRef.FromBitmap(bitmap, new BasicImageLoadOptions());
 
 		// Create a document detector
-		var documentDetector = _scanbotSdk.CreateDocumentScanner();
+		var documentDetector = _scanbotSdk.CreateDocumentScanner(new DocumentScannerConfiguration()).Get<IDocumentScanner>();
 
 		// Run detection on the picked image
-		var detectionResult = documentDetector.ScanFromBitmap(bitmap);
+		var result = documentDetector?.Scan(imageRef).Get<DocumentScanningResult>();
 
 		// Validate the result status and retrieve the detected polygon.
-		if (detectionResult == null || detectionResult.Status != DocumentDetectionStatus.Ok)
+		if (result?.DetectionResult == null || result.DetectionResult.Status != DocumentDetectionStatus.Ok)
 		{
 			return bitmap;
 		}
@@ -50,7 +53,7 @@ public class ImageFilterAndRotateSnippet : AppCompatActivity
 		imageProcessor.Rotate(ImageRotation.Clockwise90);
 
 		// You can crop the image using the polygon if you want.
-		imageProcessor.Crop(detectionResult.PointsNormalized);
+		imageProcessor.Crop(result?.DetectionResult.PointsNormalized);
 
 		// Resize the image.
 		imageProcessor.Resize(700);
@@ -61,6 +64,6 @@ public class ImageFilterAndRotateSnippet : AppCompatActivity
 		imageProcessor.ApplyFilter(brightnessFilter);
 
 		// Result Image
-		return imageProcessor.ProcessedBitmap();
+		return imageProcessor.ProcessedBitmap().Get<Bitmap>();
 	}
 }

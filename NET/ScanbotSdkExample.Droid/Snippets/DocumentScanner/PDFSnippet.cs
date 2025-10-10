@@ -1,8 +1,8 @@
-using Android.Content;
-using Android.Graphics;
 using AndroidX.AppCompat.App;
-using IO.Scanbot.Pdf.Model;
 using IO.Scanbot.Sdk.Docprocessing;
+using IO.Scanbot.Sdk.Imageprocessing;
+using IO.Scanbot.Sdk.Pdfgeneration;
+using ScanbotSDK.Droid.Helpers;
 
 namespace ScanbotSdkExample.Droid.Snippets;
 
@@ -41,11 +41,13 @@ public class PdfSnippet : AppCompatActivity
 							pageFit:PageFit.None, 
 							dpi:200, 
 							jpegQuality:100, 
-							ResamplingMethod.None);
+							ResamplingMethod.None,
+							ParametricFilter.ScanbotBinarizationFilter());
 
 		// Render the images to a PDF file.
-		var isPdfRendered = _scanbotSdk.CreatePdfGenerator().GenerateFromDocument(document, pdfConfig);
-		if (isPdfRendered && document?.PdfUri != null)
+		// todo: Testing required
+		var isPdfRendered = _scanbotSdk.CreatePdfGenerator().GenerateFromDocument(document, pdfConfig).GetValue<bool>();
+		 if (isPdfRendered && document?.PdfUri != null)
 		{
 			// Do something with the PDF file
 		}
@@ -68,13 +70,17 @@ public class PdfSnippet : AppCompatActivity
 							pageFit:PageFit.None, 
 							dpi:200, 
 							jpegQuality:100, 
-							ResamplingMethod.None);
+							ResamplingMethod.None,
+							ParametricFilter.ScanbotBinarizationFilter());
 
 		// Notify the renderer that the images are encrypted with global sdk-encryption settings
 		var encryptionEnabled = false;
 
 		// Render the images to a PDF file.
-		var pdfFile = _scanbotSdk.CreatePdfGenerator().GenerateFromUris(inputUris.ToArray(), encryptionEnabled, pdfConfig);
+		var resultWrapper = _scanbotSdk.CreatePdfGenerator().GenerateFromUris(inputUris.ToArray(), encryptionEnabled, pdfConfig);
+		// todo: Testing required
+		var pdfFile = resultWrapper.Get<Java.IO.File>();
+		
 		if (pdfFile != null && pdfFile.Exists())
 		{
 			// Do something with the PDF file

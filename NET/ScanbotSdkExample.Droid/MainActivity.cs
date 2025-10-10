@@ -18,7 +18,6 @@ public partial class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
     private const int ScanDataRequestCode = 4003;
     private const int ScanVinRequestCode = 4004;
     private const int ScanCreditCardRequestCode = 4005;
-    private const int ScanEhicRequestCode = 4006;
     private const int ScanMedicalCertificateRequestCode = 4007;
     private const int ScanCheckRequestCode = 4008;
     private const int  DetectMrzFromImageCode = 6001;
@@ -58,7 +57,6 @@ public partial class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
             new ListItemButton(this, "Scan Check", ScanCheck),
             new ListItemButton(this, "Scan Credit Card", ScanCreditCard),
             new ListItemButton(this, "Extract Document Data", ExtractDocumentData),
-            new ListItemButton(this, "Scan EU Health Insurance Card", ScanEhic),
             new ListItemButton(this, "Scan Medical Certificate", ScanMedicalCertificate),
             new ListItemButton(this, "Scan MRZ", ScanMrz),
             new ListItemButton(this, "Scan Text Pattern", ScanTextPattern),
@@ -67,12 +65,12 @@ public partial class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
 
         var detectionOnImage = (LinearLayout)container.FindViewById(ResourceConstant.Id.data_detection_on_image)!;
         detectionOnImage.AddChildren(_buttons, [
-            new ListItemButton(this, "Detect Check on Image", () => LaunchImagePicker(DetectCheckFromImageCode)),
-            new ListItemButton(this, "Detect Credit Card on Image", () => LaunchImagePicker(DetectCreditCardFromImageCode)),
+            new ListItemButton(this, "Scan Check on Image", () => LaunchImagePicker(DetectCheckFromImageCode)),
+            new ListItemButton(this, "Scan Credit Card on Image", () => LaunchImagePicker(DetectCreditCardFromImageCode)),
             new ListItemButton(this, "Extract Document Data from Image", () => LaunchImagePicker(ExtractDocumentDataFromImageCode)),
-            new ListItemButton(this, "Detect EU Health Insurance Card on Image", () => LaunchImagePicker(DetectEhicFromImageCode)),
-            new ListItemButton(this, "Detect Medical Certificate on Image", () => LaunchImagePicker(DetectMedicalCertificateFromImageCode)),
-            new ListItemButton(this, "Detect MRZ on Image", () => LaunchImagePicker(DetectMrzFromImageCode))
+            new ListItemButton(this, "Scan EU Health Insurance Card on Image", () => LaunchImagePicker(DetectEhicFromImageCode)),
+            new ListItemButton(this, "Scan Medical Certificate on Image", () => LaunchImagePicker(DetectMedicalCertificateFromImageCode)),
+            new ListItemButton(this, "Scan MRZ on Image", () => LaunchImagePicker(DetectMrzFromImageCode))
         ]);
             
         var miscellaneousLayout = (LinearLayout)container.FindViewById(ResourceConstant.Id.miscellaneous_layout)!;
