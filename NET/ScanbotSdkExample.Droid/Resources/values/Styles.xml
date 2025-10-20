@@ -76,4 +76,7 @@
         <item name="android:background">@color/sheetColor</item>
     </style>
 
+    <style name="CustomAppTheme" parent="AppTheme">
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
+    </style>
 </resources>
