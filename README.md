@@ -65,7 +65,7 @@ To build the MAUI example project for target frameworks net9.0-android, net9.0-i
 To build the Android example project for `net9.0-android`:
 
 ```bash
-dotnet build MAUI/ScanbotSdkExample.Maui/ScanbotSdkExample.Maui.csproj -f: net8.0-android -t:Run -p:AndroidDeviceId=<Your-Device-Id>
+dotnet build MAUI/ScanbotSdkExample.Maui/ScanbotSdkExample.Maui.csproj -f: net9.0-android -t:Run -p:AndroidDeviceId=<Your-Device-Id>
 ```
 
 **Note:** To get all the Android Simulators and Devices Id you can run:
