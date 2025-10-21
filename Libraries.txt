@@ -1,4 +1,4 @@
-Open Source libraries used in the Scanbot SDK for .NET and MAUI version 7.1.0:
+Open Source libraries used in the Scanbot SDK for .NET and MAUI version 7.1.1:
 
 ------------------------------------------------------------------------------
 .NET for Android (formerly Xamarin.Android) bindings for Square.OkHttp3: 
@@ -80,7 +80,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ------------------------------------------------------------------------------
 
-Open Source libraries used in the Scanbot SDK for Android version 7.1.1
+Open Source libraries used in the Scanbot SDK for Android version 7.1.2
 
 CWAC-Camera
 
@@ -3359,7 +3359,7 @@ Version 1.1.0
 
 ------------------------------------------------------------------------------
 
-Open Source libraries used in ScanbotSDK for iOS version 7.1.2:
+Open Source libraries used in ScanbotSDK for iOS version 7.1.3:
 
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
