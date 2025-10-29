@@ -80,6 +80,6 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Scanbot.Xamarin.ImagePicker" Version="0.0.3-beta.1" />
-        <PackageReference Include="ScanbotSDK.NET" Version="7.1.1-rc.1" />
+        <PackageReference Include="ScanbotSDK.NET" Version="7.1.1-rc.2" />
     </ItemGroup>
 </Project>
