@@ -12,7 +12,7 @@ public class ClassicDocumentScannerViewController : UIViewController
     private UIView _bottomButtonsContainer, _scanningContainerView;
     private UIButton _flashButton, _autoSnapButton;
     private SBSDKDocumentScannerViewController _documentScannerViewController;
-    private bool _autoSnappingEnabled = true;
+    private bool _autoSnappingEnabled = false;
 
     internal IClassicDocumentScannerViewResult ResultDelegate;
 
@@ -61,6 +61,57 @@ public class ClassicDocumentScannerViewController : UIViewController
 
         // Set the updated configurations
         _documentScannerViewController.SetConfiguration(defaultConfigurations);
+
+        SetCustomShutterButton();
+    }
+
+    private void SetCustomShutterButton()
+    {
+        // Create the frame.
+        var padding = 150;
+        var buttonSize = 100;
+        var x = View.Center.X - (buttonSize / 2);
+        var y = View.Frame.Height - (buttonSize + padding);
+        var frame = new CGRect(x, y, buttonSize, buttonSize);
+        
+        
+        // NOTE: Update as per your requirement. If you do not wish to use the Scanbot shutter button.
+        var useScanbotShutterButton = true;
+        UIButton shutterButton = null;
+        
+        if (useScanbotShutterButton)
+        {
+            var customSnapButton = new SBSDKShutterButton(frame);
+
+            customSnapButton.TouchUpInside += (s, e) => { _documentScannerViewController.CaptureDocumentImage(); };
+
+            customSnapButton.ButtonScannedBackgroundColor = UIColor.Red;
+            customSnapButton.ButtonScannedColor = UIColor.Orange;
+            shutterButton = customSnapButton;
+        }
+        else
+        {
+            shutterButton = new UIButton(frame);
+
+            shutterButton.TouchUpInside += (s, e) => { _documentScannerViewController.CaptureDocumentImage(); };
+
+            shutterButton.SetTitle("Capture", UIControlState.Normal);
+            shutterButton.BackgroundColor = UIColor.Orange;
+            shutterButton.SetTitleColor(UIColor.White, UIControlState.Normal);
+        }
+        
+        _documentScannerViewController.HideSnapButton = false;
+        View!.AddSubview(shutterButton);
+    }
+
+    public override void ViewDidAppear(bool animated)
+    {
+        base.ViewDidAppear(animated);
+        var customSnapButton = new SBSDKShutterButton(new CGRect(200, 200, 100, 100));
+        customSnapButton.TranslatesAutoresizingMaskIntoConstraints = false;
+        customSnapButton.BackgroundColor = UIColor.Yellow;
+        _documentScannerViewController.HideSnapButton = false;
+        _documentScannerViewController.CustomSnapButton = customSnapButton;
     }
 
     public override void ViewWillAppear(bool animated)
