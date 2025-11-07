@@ -95,7 +95,7 @@ public class ClassicDocumentScannerViewController : UIViewController
             // Auto-Snap button (on the left)
             _autoSnapButton.LeadingAnchor.ConstraintEqualTo(bottomBarView.LeadingAnchor, 12),
             _autoSnapButton.CenterYAnchor.ConstraintEqualTo(bottomBarView.CenterYAnchor),
-            _autoSnapButton.HeightAnchor.ConstraintEqualTo(40),
+            _autoSnapButton.HeightAnchor.ConstraintEqualTo(50),
             
             // Shutter button (on the center)
             _shutterButton.CenterXAnchor.ConstraintEqualTo(bottomBarView.CenterXAnchor),
@@ -106,7 +106,7 @@ public class ClassicDocumentScannerViewController : UIViewController
             // Flash button (on the right)
             _flashButton.CenterYAnchor.ConstraintEqualTo(bottomBarView.CenterYAnchor),
             _flashButton.TrailingAnchor.ConstraintEqualTo(bottomBarView.TrailingAnchor, -12),
-            _flashButton.HeightAnchor.ConstraintEqualTo(40),
+            _flashButton.HeightAnchor.ConstraintEqualTo(50),
         ]);
 
         return bottomBarView;
@@ -160,45 +160,6 @@ public class ClassicDocumentScannerViewController : UIViewController
         // hide the default snapping button
         _documentScannerViewController.HideSnapButton = true;
     }
-    
-    public override void ViewWillAppear(bool animated)
-    {
-        base.ViewWillAppear(animated);
-    
-        SetAutoSnapEnabled(_autoSnappingEnabled);
-        SetupDefaultShutterButtonColors();
-    }
-
-    public override bool ShouldAutorotate()
-    {
-        return true;
-    }
-
-    public override UIInterfaceOrientationMask GetSupportedInterfaceOrientations()
-    {
-        return UIInterfaceOrientationMask.AllButUpsideDown;
-    }
-
-    public override UIStatusBarStyle PreferredStatusBarStyle()
-    {
-        // White statusbar
-        return UIStatusBarStyle.LightContent;
-    }
-
-    private void SetupDefaultShutterButtonColors()
-    {
-        var shutterButton = _documentScannerViewController.SnapButton;
-        shutterButton.ButtonSearchingColor = UIColor.Red;
-        shutterButton.ButtonScannedColor = UIColor.Green;
-    }
-    
-    private void SetAutoSnapEnabled(bool enabled)
-    {
-        _autoSnapButton.Selected = enabled;
-        _documentScannerViewController.AutoSnappingMode = enabled ? SBSDKAutoSnappingMode.Enabled : SBSDKAutoSnappingMode.Disabled;
-        _documentScannerViewController.SuppressDetectionStatusLabel = !enabled;
-        _documentScannerViewController.SnapButton.ScannerStatus = enabled ? SBSDKScannerStatus.Scanning : SBSDKScannerStatus.Idle;
-    }
 
     private void DidDetectDocument(object sender, SnapDocumentImageOnImageWithResultEventArgs args)
     {
@@ -217,5 +178,13 @@ public class ClassicDocumentScannerViewController : UIViewController
         
         // set the result to navigate to the document listing page.
         ResultDelegate?.DidCompleteDocumentScanning(document);
+    }
+    
+    private void SetAutoSnapEnabled(bool enabled)
+    {
+        _autoSnapButton.Selected = enabled;
+        _documentScannerViewController.AutoSnappingMode = enabled ? SBSDKAutoSnappingMode.Enabled : SBSDKAutoSnappingMode.Disabled;
+        _documentScannerViewController.SuppressDetectionStatusLabel = !enabled;
+        _documentScannerViewController.SnapButton.ScannerStatus = enabled ? SBSDKScannerStatus.Scanning : SBSDKScannerStatus.Idle;
     }
 }
