@@ -11,6 +11,7 @@ public class ClassicDocumentScannerViewController : UIViewController
 {
     private UIView _bottomButtonsContainer, _scanningContainerView;
     private UIButton _flashButton, _autoSnapButton;
+    private SBSDKShutterButton _shutterButton;
     private SBSDKDocumentScannerViewController _documentScannerViewController;
     private bool _autoSnappingEnabled = false;
 
@@ -20,18 +21,112 @@ public class ClassicDocumentScannerViewController : UIViewController
     {
         base.ViewDidLoad();
 
-        var screenSize = UIScreen.MainScreen.Bounds.Size;
+        Title = "Document Classic UI";
 
         // Create a view as container for bottom buttons:
-        var buttonsContainerHeight = 120;
-        _bottomButtonsContainer = new UIView(new CGRect(0, screenSize.Height - buttonsContainerHeight, screenSize.Width, buttonsContainerHeight));
-        _bottomButtonsContainer.BackgroundColor = UIColor.Blue;
-        View!.AddSubview(_bottomButtonsContainer);
+        _bottomButtonsContainer = InitBottomBarView();
 
         // Create a view as container to embed the Scanbot SDK SBSDKDocumentScannerViewController:
-        _scanningContainerView = new UIView(new CGRect(0, 0, screenSize.Width, screenSize.Height - buttonsContainerHeight));
-        View.AddSubview(_scanningContainerView);
+        _scanningContainerView = new UIView
+        {
+            BackgroundColor = UIColor.Red,
+            TranslatesAutoresizingMaskIntoConstraints = false
+        };
+        
+        View.AddSubviews(_scanningContainerView, _bottomButtonsContainer);
+        View.TranslatesAutoresizingMaskIntoConstraints = true;
+        
+        var bottomBarHeight = View.Frame.Size.Height * 0.15f;
+        bottomBarHeight = bottomBarHeight > 100 ? 100 : bottomBarHeight;
+        
+        NSLayoutConstraint.ActivateConstraints([
+            _scanningContainerView.TopAnchor.ConstraintEqualTo(View.SafeAreaLayoutGuide.TopAnchor),
+            _scanningContainerView.LeadingAnchor.ConstraintEqualTo(View.SafeAreaLayoutGuide.LeadingAnchor),
+            _scanningContainerView.TrailingAnchor.ConstraintEqualTo(View.SafeAreaLayoutGuide.TrailingAnchor),
+            _scanningContainerView.BottomAnchor.ConstraintEqualTo(_bottomButtonsContainer.TopAnchor),
+            
+            _bottomButtonsContainer.LeadingAnchor.ConstraintEqualTo(View.SafeAreaLayoutGuide.LeadingAnchor),
+            _bottomButtonsContainer.TrailingAnchor.ConstraintEqualTo(View.SafeAreaLayoutGuide.TrailingAnchor),
+            _bottomButtonsContainer.BottomAnchor.ConstraintEqualTo(View.SafeAreaLayoutGuide.BottomAnchor),
+            _bottomButtonsContainer.HeightAnchor.ConstraintEqualTo(bottomBarHeight),
+        ]);
 
+        InitDocumentScannerViewController();
+    }
+
+    private UIView InitBottomBarView()
+    {
+        var bottomBarView = new UIView();
+        bottomBarView.TranslatesAutoresizingMaskIntoConstraints = false;
+        
+        // Auto Snap button, To enable auto snapping
+        _autoSnapButton = GetBottomButton("AutoSnap");
+        _autoSnapButton.AddTarget(delegate
+        {
+            _autoSnappingEnabled = !_autoSnappingEnabled;
+            SetAutoSnapEnabled(_autoSnappingEnabled);
+        }, UIControlEvent.TouchUpInside);
+        
+        // Flash button
+        _flashButton = GetBottomButton("Flash");
+        _flashButton.AddTarget(delegate
+        {
+            _documentScannerViewController.IsFlashLightEnabled = !_documentScannerViewController.IsFlashLightEnabled;
+            _flashButton.Selected = _documentScannerViewController.IsFlashLightEnabled;
+        }, UIControlEvent.TouchUpInside);
+        
+        // Shutter Button
+       _shutterButton = new SBSDKShutterButton
+        {
+            TranslatesAutoresizingMaskIntoConstraints = false
+        };
+
+        _shutterButton.AddTarget(delegate
+        {
+            // Captures the document Image. The Delegate method is invoked immediately after the document is captured.
+            _documentScannerViewController.CaptureDocumentImage();
+        }, UIControlEvent.TouchUpInside);
+        
+        
+        bottomBarView.AddSubviews(_autoSnapButton, _shutterButton, _flashButton);
+        
+        NSLayoutConstraint.ActivateConstraints([
+            
+            // Auto-Snap button (on the left)
+            _autoSnapButton.LeadingAnchor.ConstraintEqualTo(bottomBarView.LeadingAnchor, 12),
+            _autoSnapButton.CenterYAnchor.ConstraintEqualTo(bottomBarView.CenterYAnchor),
+            _autoSnapButton.HeightAnchor.ConstraintEqualTo(40),
+            
+            // Shutter button (on the center)
+            _shutterButton.CenterXAnchor.ConstraintEqualTo(bottomBarView.CenterXAnchor),
+            _shutterButton.CenterYAnchor.ConstraintEqualTo(bottomBarView.CenterYAnchor),
+            _shutterButton.WidthAnchor.ConstraintEqualTo(90),
+            _shutterButton.HeightAnchor.ConstraintEqualTo(90),
+
+            // Flash button (on the right)
+            _flashButton.CenterYAnchor.ConstraintEqualTo(bottomBarView.CenterYAnchor),
+            _flashButton.TrailingAnchor.ConstraintEqualTo(bottomBarView.TrailingAnchor, -12),
+            _flashButton.HeightAnchor.ConstraintEqualTo(40),
+        ]);
+
+        return bottomBarView;
+    }
+
+    private UIButton GetBottomButton(string buttonText)
+    {
+        var button = new UIButton
+        {
+            TranslatesAutoresizingMaskIntoConstraints = false
+        };
+        button.SetTitle($"{buttonText} ON", UIControlState.Selected);
+        button.SetTitle($"{buttonText} OFF", UIControlState.Normal);
+        button.TitleLabel.Font = UIFont.SystemFontOfSize(14f);
+        return button;
+    }
+
+    private void InitDocumentScannerViewController()
+    {
+        // Initialize and attach the DocumentScannerViewController to a View.
         _documentScannerViewController = new SBSDKDocumentScannerViewController();
         this.AttachViewControllerInView(_documentScannerViewController, _scanningContainerView);
         _documentScannerViewController.DidSnapDocumentImage += DidDetectDocument;
@@ -61,66 +156,16 @@ public class ClassicDocumentScannerViewController : UIViewController
 
         // Set the updated configurations
         _documentScannerViewController.SetConfiguration(defaultConfigurations);
-
-        SetCustomShutterButton();
+        
+        // hide the default snapping button
+        _documentScannerViewController.HideSnapButton = true;
     }
-
-    private void SetCustomShutterButton()
-    {
-        // Create the frame.
-        var padding = 150;
-        var buttonSize = 100;
-        var x = View.Center.X - (buttonSize / 2);
-        var y = View.Frame.Height - (buttonSize + padding);
-        var frame = new CGRect(x, y, buttonSize, buttonSize);
-        
-        
-        // NOTE: Update as per your requirement. If you do not wish to use the Scanbot shutter button.
-        var useScanbotShutterButton = true;
-        UIButton shutterButton = null;
-        
-        if (useScanbotShutterButton)
-        {
-            var customSnapButton = new SBSDKShutterButton(frame);
-
-            customSnapButton.TouchUpInside += (s, e) => { _documentScannerViewController.CaptureDocumentImage(); };
-
-            customSnapButton.ButtonScannedBackgroundColor = UIColor.Red;
-            customSnapButton.ButtonScannedColor = UIColor.Orange;
-            shutterButton = customSnapButton;
-        }
-        else
-        {
-            shutterButton = new UIButton(frame);
-
-            shutterButton.TouchUpInside += (s, e) => { _documentScannerViewController.CaptureDocumentImage(); };
-
-            shutterButton.SetTitle("Capture", UIControlState.Normal);
-            shutterButton.BackgroundColor = UIColor.Orange;
-            shutterButton.SetTitleColor(UIColor.White, UIControlState.Normal);
-        }
-        
-        _documentScannerViewController.HideSnapButton = false;
-        View!.AddSubview(shutterButton);
-    }
-
-    public override void ViewDidAppear(bool animated)
-    {
-        base.ViewDidAppear(animated);
-        var customSnapButton = new SBSDKShutterButton(new CGRect(200, 200, 100, 100));
-        customSnapButton.TranslatesAutoresizingMaskIntoConstraints = false;
-        customSnapButton.BackgroundColor = UIColor.Yellow;
-        _documentScannerViewController.HideSnapButton = false;
-        _documentScannerViewController.CustomSnapButton = customSnapButton;
-    }
-
+    
     public override void ViewWillAppear(bool animated)
     {
         base.ViewWillAppear(animated);
-
-        AddAutosnapToggleButton();
+    
         SetAutoSnapEnabled(_autoSnappingEnabled);
-        AddFlashToggleButton();
         SetupDefaultShutterButtonColors();
     }
 
@@ -146,41 +191,7 @@ public class ClassicDocumentScannerViewController : UIViewController
         shutterButton.ButtonSearchingColor = UIColor.Red;
         shutterButton.ButtonScannedColor = UIColor.Green;
     }
-
-    private void AddAutosnapToggleButton()
-    {
-        _autoSnapButton = new UIButton(new CGRect(40, _bottomButtonsContainer.Frame.Height - 80, 40, 40));
-        _autoSnapButton.AddTarget(delegate
-        {
-            _autoSnappingEnabled = !_autoSnappingEnabled;
-            SetAutoSnapEnabled(_autoSnappingEnabled);
-        }, UIControlEvent.TouchUpInside);
-
-        _autoSnapButton.SetImage(UIImage.FromBundle("ui_autosnap_off"), UIControlState.Normal);
-        _autoSnapButton.SetImage(UIImage.FromBundle("ui_autosnap_on"), UIControlState.Selected);
-
-        _bottomButtonsContainer.AddSubview(_autoSnapButton);
-        _bottomButtonsContainer.BringSubviewToFront(_autoSnapButton);
-    }
-
-    private void AddFlashToggleButton()
-    {
-        _flashButton = new UIButton(new CGRect(_bottomButtonsContainer.Frame.Width - 80, _bottomButtonsContainer.Frame.Height - 80, 40, 40));
-        _flashButton.AddTarget(delegate
-        {
-            _documentScannerViewController.IsFlashLightEnabled = !_documentScannerViewController.IsFlashLightEnabled;
-            _flashButton.Selected = _documentScannerViewController.IsFlashLightEnabled;
-        }, UIControlEvent.TouchUpInside);
-
-        _flashButton.SetImage(UIImage.FromBundle("ui_flash_off"), UIControlState.Normal);
-        _flashButton.SetImage(UIImage.FromBundle("ui_flash_on"), UIControlState.Selected);
-
-        _flashButton.Selected = _documentScannerViewController.IsFlashLightEnabled;
-
-        _bottomButtonsContainer.AddSubview(_flashButton);
-        _bottomButtonsContainer.BringSubviewToFront(_flashButton);
-    }
-
+    
     private void SetAutoSnapEnabled(bool enabled)
     {
         _autoSnapButton.Selected = enabled;
@@ -195,7 +206,6 @@ public class ClassicDocumentScannerViewController : UIViewController
             return;
         
         NavigationController?.PopViewController(true);
-        
         
         // Creating a SBSDKScannedDocument object from the captured original image.
         
