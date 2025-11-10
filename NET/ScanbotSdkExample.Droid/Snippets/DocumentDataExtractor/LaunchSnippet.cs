@@ -1,7 +1,8 @@
 using Android.Content;
 using AndroidX.AppCompat.App;
+using IO.Scanbot.Sdk.Ui_v2.Common.Activity;
 using IO.Scanbot.Sdk.Ui_v2.Documentdata;
-using IO.Scanbot.Sdk.Ui_v2.Documentdataextractor.Configuration;
+using IO.Scanbot.Sdk.Ui_v2.Documentdata.Configuration;
 using IO.Scanbot.Sdk.UI.View.Base;
 
 namespace ScanbotSdkExample.Droid.Snippets.DocumentDataExtractor;
@@ -35,7 +36,7 @@ public class LaunchSnippet : AppCompatActivity
 	public override void StartActivityForResult(Intent intent, int requestCode, Bundle options)
 	{
 		base.StartActivityForResult(intent, requestCode, options);
-		var resultEntity = (DocumentDataExtractorUiResult)intent.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+		var resultEntity = (DocumentDataExtractorUiResult)intent.GetParcelableExtra(ActivityConstants.ExtraKeyRtuResult);
 		if (resultEntity?.Document == null)
 		{
 			return;

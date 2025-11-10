@@ -1,6 +1,7 @@
 using Android.Content;
 using AndroidX.AppCompat.App;
 using IO.Scanbot.Sdk.Ui_v2.Common;
+using IO.Scanbot.Sdk.Ui_v2.Common.Activity;
 using IO.Scanbot.Sdk.Ui_v2.Textpattern;
 using IO.Scanbot.Sdk.Ui_v2.Textpattern.Configuration;
 using IO.Scanbot.Sdk.UI.View.Base;
@@ -56,7 +57,7 @@ public class ActionBarSnippet : AppCompatActivity
     public override void StartActivityForResult(Intent intent, int requestCode, Bundle options)
     {
         base.StartActivityForResult(intent, requestCode, options);
-        var resultEntity = (TextPatternScannerUiResult)intent.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+        var resultEntity = (TextPatternScannerUiResult)intent.GetParcelableExtra(ActivityConstants.ExtraKeyRtuResult);
         if (resultEntity?.RawText == null)
         {
             return;

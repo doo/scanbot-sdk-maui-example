@@ -1,19 +1,15 @@
 using Android.Content;
-using Android.Graphics;
 using IO.Scanbot.Sdk.Documentdata;
-using IO.Scanbot.Sdk.Medicalcertificate;
 using IO.Scanbot.Sdk.Ui_v2.Check.Configuration;
 using IO.Scanbot.Sdk.Ui_v2.Creditcard;
 using IO.Scanbot.Sdk.Ui_v2.Creditcard.Configuration;
 using IO.Scanbot.Sdk.Ui_v2.Documentdata;
-using IO.Scanbot.Sdk.Ui_v2.Documentdataextractor.Configuration;
+using IO.Scanbot.Sdk.Ui_v2.Documentdata.Configuration;
 using IO.Scanbot.Sdk.Ui_v2.Mrz;
 using IO.Scanbot.Sdk.Ui_v2.Mrz.Configuration;
 using IO.Scanbot.Sdk.Ui_v2.Textpattern;
 using IO.Scanbot.Sdk.Ui_v2.Textpattern.Configuration;
 using IO.Scanbot.Sdk.Ui_v2.Vin.Configuration;
-using IO.Scanbot.Sdk.UI.View.MC;
-using IO.Scanbot.Sdk.UI.View.MC.Configuration;
 using ScanbotSdkExample.Droid.Fragments;
 using ScanbotSdkExample.Droid.Utils;
 
@@ -27,7 +23,6 @@ public partial class MainActivity
         { ExtractDocumentDataRequestCode, HandleDocumentDataExtractorResult },
         { ScanVinRequestCode, HandleVinResult },
         { ScanDataRequestCode, HandleTextDataResult },
-        { ScanMedicalCertificateRequestCode, HandleMedicalCertificateResult },
         { ScanCheckRequestCode, HandleCheckResult },
         { ScanCreditCardRequestCode, HandleCreditCard },
     };
@@ -121,23 +116,6 @@ public partial class MainActivity
         var result = GetParcelableExtra<VinScannerUiResult>(data);
 
         Alert.Toast(this, $"VIN Scanned: {result.TextResult.RawText}");
-    }
-
-    private void ScanMedicalCertificate()
-    {
-        var configuration = new MedicalCertificateScannerConfiguration();
-        configuration.SetTopBarBackgroundColor(Color.Black);
-
-        var intent = MedicalCertificateScannerActivity.NewIntent(this, configuration);
-        StartActivityForResult(intent, ScanMedicalCertificateRequestCode);
-    }
-
-    private void HandleMedicalCertificateResult(Intent data)
-    {
-        var result = GetParcelableExtra<MedicalCertificateScanningResult>(data);
-
-        var fragment = MedicalCertificateResultDialogFragment.CreateInstance(result);
-        ShowFragment(fragment, MedicalCertificateResultDialogFragment.Name);
     }
 
     private void ScanCreditCard()

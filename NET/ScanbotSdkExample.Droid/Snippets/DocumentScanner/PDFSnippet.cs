@@ -46,7 +46,7 @@ public class PdfSnippet : AppCompatActivity
 
 		// Render the images to a PDF file.
 		// todo: Testing required
-		var isPdfRendered = _scanbotSdk.CreatePdfGenerator().GenerateFromDocument(document, pdfConfig).GetValue<bool>();
+		var isPdfRendered = _scanbotSdk.CreatePdfGenerator(null).Generate(document, pdfConfig).GetValue<bool>();
 		 if (isPdfRendered && document?.PdfUri != null)
 		{
 			// Do something with the PDF file
@@ -77,7 +77,7 @@ public class PdfSnippet : AppCompatActivity
 		var encryptionEnabled = false;
 
 		// Render the images to a PDF file.
-		var resultWrapper = _scanbotSdk.CreatePdfGenerator().GenerateFromUris(inputUris.ToArray(), encryptionEnabled, pdfConfig);
+		var resultWrapper = _scanbotSdk.CreatePdfGenerator(null).Generate(inputUris.ToArray(), encryptionEnabled, pdfConfig);
 		// todo: Testing required
 		var pdfFile = resultWrapper.Get<Java.IO.File>();
 		
