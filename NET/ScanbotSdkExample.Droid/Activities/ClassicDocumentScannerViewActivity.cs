@@ -10,6 +10,7 @@ using IO.Scanbot.Sdk.Document;
 using IO.Scanbot.Sdk.Document.UI;
 using IO.Scanbot.Sdk.Documentscanner;
 using IO.Scanbot.Sdk.Image;
+using IO.Scanbot.Sdk.Ui_v2.Common.Activity;
 using IO.Scanbot.Sdk.UI.Camera;
 using ScanbotSDK.Droid.Helpers;
 
@@ -206,7 +207,7 @@ namespace ScanbotSdkExample.Droid.Activities
             }
             
             Bundle extras = new Bundle();
-            extras.PutString(IO.Scanbot.Sdk.Ui_v2.Common.Activity.ActivityConstants.ExtraKeyRtuResult, document.Uuid);
+            extras.PutString(ActivityConstants.ExtraKeyRtuResult, document.Uuid);
             Intent intent = new Intent();
             intent.PutExtras(extras);
             SetResult(Result.Ok, intent);

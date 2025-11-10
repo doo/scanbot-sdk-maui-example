@@ -2,6 +2,7 @@
 using Android.Views;
 using Android.Content;
 using Android.Runtime;
+using IO.Scanbot.Sdk.Ui_v2.Common.Activity;
 using IO.Scanbot.Sdk.UI.View.Base;
 using ScanbotSdkExample.Droid.Utils;
 using ScanbotSdkExample.Droid.Model;
@@ -57,7 +58,6 @@ public partial class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
             new ListItemButton(this, "Scan Check", ScanCheck),
             new ListItemButton(this, "Scan Credit Card", ScanCreditCard),
             new ListItemButton(this, "Extract Document Data", ExtractDocumentData),
-            new ListItemButton(this, "Scan Medical Certificate", ScanMedicalCertificate),
             new ListItemButton(this, "Scan MRZ", ScanMrz),
             new ListItemButton(this, "Scan Text Pattern", ScanTextPattern),
             new ListItemButton(this, "Scan VIN", ScanVin),
@@ -167,7 +167,7 @@ public partial class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
     /// <returns>Result class object</returns>
     private T GetParcelableExtra<T>(Intent intent) where T : Java.Lang.Object
     {
-        var result = intent.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+        var result = intent.GetParcelableExtra(ActivityConstants.ExtraKeyRtuResult);
         return result is T ? (T)result : null;
     }
 }

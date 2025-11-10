@@ -2,7 +2,6 @@ using Android.Content;
 using AndroidX.Core.Content;
 using IO.Scanbot.Sdk.Imageprocessing;
 using IO.Scanbot.Sdk.Ocr;
-using IO.Scanbot.Sdk.Ocr.Process;
 using IO.Scanbot.Sdk.Pdfgeneration;
 using IO.Scanbot.Sdk.Tiffgeneration;
 using IO.Scanbot.Sdk.Util.Thread;
@@ -97,7 +96,7 @@ public partial class PagePreviewActivity
 						null); // ParametricFilter.ScanbotBinarizationFilter()
 		
 		// todo: Testing required
-		var isSuccess = _scanbotSdk.CreatePdfGenerator().GenerateFromDocument(_document, new Java.IO.File(output.Path), pdfConfig: pdfConfig).GetValue<bool>();
+		var isSuccess = _scanbotSdk.CreatePdfGenerator(null).Generate(_document, new Java.IO.File(output.Path), pdfConfig: pdfConfig).GetValue<bool>();
 		return output;
 	}
 
@@ -139,7 +138,7 @@ public partial class PagePreviewActivity
 							binarizationFilter: null);
 
 		// todo: Testing required
-		var pdfGenerated = _scanbotSdk.CreatePdfGenerator().GenerateWithOcrFromDocument(_document, pdfConfig, ocrConfig).GetValue<bool>();
+		var pdfGenerated = _scanbotSdk.CreatePdfGenerator(ocrConfig).Generate(_document, pdfConfig).GetValue<bool>();
 		if (pdfGenerated)
 		{
 			if (string.IsNullOrEmpty(_document.PdfUri?.Path))

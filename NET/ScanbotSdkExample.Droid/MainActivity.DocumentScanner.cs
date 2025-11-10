@@ -11,6 +11,7 @@ using IO.Scanbot.Sdk.Document;
 using IO.Scanbot.Sdk.Documentscanner;
 using IO.Scanbot.Sdk.Geometry;
 using IO.Scanbot.Sdk.Image;
+using IO.Scanbot.Sdk.Ui_v2.Common.Activity;
 using ScanbotSDK.Droid.Helpers;
 
 namespace ScanbotSdkExample.Droid;
@@ -80,7 +81,7 @@ public partial class MainActivity
 
     private void HandleDocumentScannerResult(Intent data)
     {
-        var documentId = data?.GetStringExtra(IO.Scanbot.Sdk.Ui_v2.Common.Activity.ActivityConstants.ExtraKeyRtuResult);
+        var documentId = data?.GetStringExtra(ActivityConstants.ExtraKeyRtuResult);
 
         if (documentId == null) return;
         

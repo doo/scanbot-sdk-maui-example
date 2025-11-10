@@ -1,5 +1,6 @@
 using Android.Content;
 using AndroidX.AppCompat.App;
+using IO.Scanbot.Sdk.Ui_v2.Common.Activity;
 using IO.Scanbot.Sdk.Ui_v2.Vin;
 using IO.Scanbot.Sdk.Ui_v2.Vin.Configuration;
 using IO.Scanbot.Sdk.UI.View.Base;
@@ -35,7 +36,7 @@ public class LaunchSnippet : AppCompatActivity
 	public override void StartActivityForResult(Intent intent, int requestCode, Bundle options)
 	{
 		base.StartActivityForResult(intent, requestCode, options);
-		var resultEntity = (VinScannerUiResult)intent.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+		var resultEntity = (VinScannerUiResult)intent.GetParcelableExtra(ActivityConstants.ExtraKeyRtuResult);
 		if (resultEntity?.TextResult == null)
 		{
 			return;

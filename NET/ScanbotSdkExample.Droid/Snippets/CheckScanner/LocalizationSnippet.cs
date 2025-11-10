@@ -3,6 +3,7 @@ using AndroidX.AppCompat.App;
 using IO.Scanbot.Sdk.Check.Entity;
 using IO.Scanbot.Sdk.Ui_v2.Check;
 using IO.Scanbot.Sdk.Ui_v2.Check.Configuration;
+using IO.Scanbot.Sdk.Ui_v2.Common.Activity;
 using IO.Scanbot.Sdk.UI.View.Base;
 
 namespace ScanbotSdkExample.Droid.Snippets.CheckScanner;
@@ -44,7 +45,7 @@ public class LocalizationSnippet : AppCompatActivity
     public override void StartActivityForResult(Intent intent, int requestCode, Bundle options)
     {
         base.StartActivityForResult(intent, requestCode, options);
-        var resultEntity = (CheckScannerUiResult)intent.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+        var resultEntity = (CheckScannerUiResult)intent.GetParcelableExtra(ActivityConstants.ExtraKeyRtuResult);
         if (resultEntity?.Check == null)
         {
             return;
