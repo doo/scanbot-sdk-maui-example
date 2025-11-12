@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using ScanbotSDK.iOS;
 
 namespace ScanbotSdkExample.iOS.Controller;
@@ -150,7 +151,7 @@ public class ClassicDocumentScannerViewController : UIViewController
         // Default is 80.0. Warning: Lower values result in low resolution document images.
         defaultConfigurations.Parameters.AcceptedSizeScore = 80;
 
-        // Sensitivity factor for automatic capturing. Must be in the range [0.0...1.0]. Invalid values are threated as 1.0. 
+        // Sensitivity factor for automatic capturing. Must be in the range [0.0...1.0]. Invalid values are treated as 1.0.
         // Defaults to 0.66 (1 sec).s A value of 1.0 triggers automatic capturing immediately, a value of 0.0 delays the automatic by 3 seconds.
         _documentScannerViewController.AutoSnappingSensitivity = 0.7f;
 
@@ -159,6 +160,64 @@ public class ClassicDocumentScannerViewController : UIViewController
         
         // hide the default snapping button
         _documentScannerViewController.HideSnapButton = true;
+        
+      SetAutoSnapEnabled(true);
+
+      _documentScannerViewController.ConfigureScanningStatusLabel += ConfigureUserGuidanceLabel;
+
+    }
+
+    private void ConfigureUserGuidanceLabel(object sender, ConfigureScanningStatusLabelForScanningResultEventArgs e)
+    {
+        var status = e.Result.Status;
+        Debug.WriteLine("Document Detection Status: " + status);
+        var hint = string.Empty;
+        var backgroundColor = UIColor.Clear;
+        switch (status)
+        {
+            case SBSDKDocumentDetectionStatus.Ok:
+                hint = "The document is Ok";
+                backgroundColor = UIColor.Green;
+                break;
+            case SBSDKDocumentDetectionStatus.OkButTooSmall:
+                hint = "Please move the camera closer to the document.";
+                backgroundColor = UIColor.Yellow;
+                break;
+            case SBSDKDocumentDetectionStatus.OkButBadAngles:
+                hint = "Please hold the camera in parallel over the document.";
+                backgroundColor = UIColor.Yellow;
+                break;
+            case SBSDKDocumentDetectionStatus.OkButBadAspectRatio:
+                hint = "The document size is too long.";
+                backgroundColor = UIColor.Yellow;
+                break;
+            case SBSDKDocumentDetectionStatus.ErrorNothingDetected:
+                hint = "Unable to detect the document.";
+                backgroundColor = UIColor.Red;
+                break;
+            case SBSDKDocumentDetectionStatus.OkButTooDark:
+                hint = "Unable to detect due to dark lighting conditions.";
+                backgroundColor = UIColor.Red;
+                break;
+            case SBSDKDocumentDetectionStatus.ErrorTooNoisy:
+                hint = "Unable to detect document due to too much noise in the preview.";
+                backgroundColor = UIColor.Red;
+                break;
+            case SBSDKDocumentDetectionStatus.NotAcquired:
+                hint = "Unable to acquire the document.";
+                backgroundColor = UIColor.Red;
+                break;
+            case SBSDKDocumentDetectionStatus.OkButOrientationMismatch:
+                hint = "Unable to acquire the document.";
+                backgroundColor = UIColor.Red;
+                break;
+            default:
+                e.Label.Hidden = true;
+                return;
+        }
+
+        e.Label.Text = hint;
+        e.Label.BackgroundColor = backgroundColor.ColorWithAlpha(0.5f);
     }
 
     private void DidDetectDocument(object sender, SnapDocumentImageOnImageWithResultEventArgs args)
@@ -182,9 +241,30 @@ public class ClassicDocumentScannerViewController : UIViewController
     
     private void SetAutoSnapEnabled(bool enabled)
     {
+        // Set the button selection
         _autoSnapButton.Selected = enabled;
+
+        // Set the AutoSnapping behaviour
         _documentScannerViewController.AutoSnappingMode = enabled ? SBSDKAutoSnappingMode.Enabled : SBSDKAutoSnappingMode.Disabled;
+        
+        // Suppress the User guidance label when you have to show custom implementation.
         _documentScannerViewController.SuppressDetectionStatusLabel = !enabled;
         _documentScannerViewController.SnapButton.ScannerStatus = enabled ? SBSDKScannerStatus.Scanning : SBSDKScannerStatus.Idle;
+        
+        // Suppress the default Polygon layer when you have to customize the polygon.
+        _documentScannerViewController.SuppressPolygonLayer = !enabled;
+
+        // Get the AutoSnapProgressPolygonConfiguration to customize and reset it.
+        var autoSnapConfig = _documentScannerViewController.AutoSnapProgressPolygonConfiguration;
+        autoSnapConfig.Enabled = enabled;
+        autoSnapConfig.StrokeColor = UIColor.DarkGray;
+        _documentScannerViewController.AutoSnapProgressPolygonConfiguration = autoSnapConfig;
+        
+        
+        // Enables when the document is not accepted(may be the camera is too far or the document is too small) to be scanned. (Auto snapping doesn't start)
+        // _documentScannerViewController.PolygonConfigurationRejected.StrokeColor = UIColor.Gray;
+        
+        // Enables when the document is accepted to be scanned. (Auto snapping kicks in here)
+        // _documentScannerViewController.PolygonConfigurationAccepted.StrokeColor = UIColor.Yellow;
     }
 }
