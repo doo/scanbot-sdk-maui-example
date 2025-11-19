@@ -1,11 +1,13 @@
 using Android.Content;
+using Android.Graphics;
 using IO.Scanbot.Sdk.Check;
 using IO.Scanbot.Sdk.Creditcard;
-using IO.Scanbot.Sdk.Document;
-using ScanbotSdkExample.Droid.Model;
 using IO.Scanbot.Sdk.Documentdata;
-using IO.Scanbot.Sdk.Ehicscanner;
-using IO.Scanbot.Sdk.MC;
+using IO.Scanbot.Sdk.Image;
+using IO.Scanbot.Sdk.Medicalcertificate;
+using IO.Scanbot.Sdk.Mrz;
+using ScanbotSDK.Droid.Helpers;
+using ScanbotSdkExample.Droid.Model;
 using ScanbotSdkExample.Droid.Fragments;
 using ScanbotSdkExample.Droid.Utils;
 using ScanbotSdkExample.Droid.Views;
@@ -16,12 +18,11 @@ public partial class MainActivity
 {
     private Dictionary<int, Action<Intent>> DetectOnImageActions => new Dictionary<int, Action<Intent>>
     {
-        { DetectMrzFromImageCode, RecognizeMrzFromImage },
-        { DetectEhicFromImageCode, RecognizeEhicFromImage },
-        { DetectCheckFromImageCode, RecognizeCheckFromImage },
-        { DetectMedicalCertificateFromImageCode, RecognizeMedicalCertificateFromImage },
+        { DetectMrzFromImageCode, ScanMrzFromImage },
+        { DetectCheckFromImageCode, ScanCheckFromImage },
+        { DetectMedicalCertificateFromImageCode, ScanMedicalCertificateFromImage },
         { ExtractDocumentDataFromImageCode, ExtractDocumentDataFromImage },
-        { DetectCreditCardFromImageCode, RecognizeCreditCardFromImage },
+        { DetectCreditCardFromImageCode, ScanCreditCardFromImage },
     };
 
     private void LaunchImagePicker(int activityRequestCode)
@@ -36,11 +37,11 @@ public partial class MainActivity
         StartActivityForResult(chooser, activityRequestCode);
     }
 
-    private void RecognizeMrzFromImage(Intent data)
+    private void ScanMrzFromImage(Intent data)
     {
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
-        var recognizer = _scanbotSdk.CreateMrzScanner();
-        var result = recognizer.ScanFromBitmap(bitmap, 0);
+        var recognizer = _scanbotSdk.CreateMrzScanner(new MrzScannerConfiguration()).Get<IMrzScanner>();
+        var result = recognizer?.Run(ImageRef.FromBitmap(bitmap, new BasicImageLoadOptions())).Get<MrzScannerResult>();
 
         if (result?.Document == null || !result.Success)
         {
@@ -52,11 +53,11 @@ public partial class MainActivity
         ShowFragment(fragment, MRZDialogFragment.Name);
     }
 
-    private void RecognizeCheckFromImage(Intent data)
+    private void ScanCheckFromImage(Intent data)
     {
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
-        var recognizer = _scanbotSdk.CreateCheckScanner();
-        var result = recognizer.ScanFromBitmap(bitmap, 0);
+        var recognizer = _scanbotSdk.CreateCheckScanner(new CheckScannerConfiguration()).Get<ICheckScanner>();
+        var result = recognizer?.Run(ImageRef.FromBitmap(bitmap, new BasicImageLoadOptions())).Get<CheckScanningResult>();
         
         if (result?.Check == null)
         {
@@ -68,10 +69,10 @@ public partial class MainActivity
         Alert.Show(this, "Result", description);
     }
     
-    private void RecognizeMedicalCertificateFromImage(Intent data)
+    private void ScanMedicalCertificateFromImage(Intent data)
     {
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
-        var recognizer = _scanbotSdk.CreateMedicalCertificateScanner();
+        var recognizer = _scanbotSdk.CreateMedicalCertificateScanner().Get<IMedicalCertificateScanner>();;
         
         var parameters = new MedicalCertificateScanningParameters(
             shouldCropDocument: true,
@@ -80,9 +81,7 @@ public partial class MainActivity
             extractCroppedImage: true,
             preprocessInput: true);
         
-        var result = recognizer.ScanFromBitmap(image: bitmap,
-            orientation: 0,
-            parameters: parameters);
+        var result = recognizer?.Run(image: ImageRef.FromBitmap(bitmap, new BasicImageLoadOptions()), parameters: parameters).Get<MedicalCertificateScanningResult>();
 
         if (result == null || !result.ScanningSuccessful)
         {
@@ -94,27 +93,11 @@ public partial class MainActivity
         ShowFragment(fragment, MedicalCertificateResultDialogFragment.Name);
     }
 
-    private void RecognizeEhicFromImage(Intent data)
-    {
-        var bitmap = ImageUtils.ProcessGalleryResult(this, data);
-        var recognizer = _scanbotSdk.CreateHealthInsuranceCardScanner();
-        var result = recognizer.RecognizeBitmap(bitmap, 0);
-
-        if (result == null)
-        {
-            Alert.Show(this, "Error", "Unable to detect the EHIC.");
-            return;
-        }
-
-        var fragment = HealthInsuranceCardFragment.CreateInstance(result);
-        ShowFragment(fragment, HealthInsuranceCardFragment.Name);
-    }
-
     private void ExtractDocumentDataFromImage(Intent data)
     {
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
-        var recognizer = _scanbotSdk.CreateDocumentDataExtractor();
-        var result = recognizer.ExtractFromBitmap(bitmap,  0, DocumentDataExtractionMode.SingleShot);
+        var recognizer = _scanbotSdk.CreateDocumentDataExtractor(new DocumentDataExtractorConfiguration()).Get<IDocumentDataExtractor>();
+        var result = recognizer.Run(ImageRef.FromBitmap(bitmap, new BasicImageLoadOptions())).Get<DocumentDataExtractionResult>();
         
         if (result?.Document == null) 
         {
@@ -126,11 +109,11 @@ public partial class MainActivity
         Alert.Show(this, "Result", description);
     }
     
-    private void RecognizeCreditCardFromImage(Intent data)
+    private void ScanCreditCardFromImage(Intent data)
     {
         var bitmap = ImageUtils.ProcessGalleryResult(this, data);
-        var recognizer = _scanbotSdk.CreateCreditCardScanner();
-        var result = recognizer.ScanFromBitmap(bitmap, 0);
+        var recognizer = _scanbotSdk.CreateCreditCardScanner(new CreditCardScannerConfiguration()).Get<ICreditCardScanner>();
+        var result = recognizer?.Run(ImageRef.FromBitmap(bitmap,new BasicImageLoadOptions())).Get<CreditCardScanningResult>();
     
         if (result?.CreditCard == null) 
         {

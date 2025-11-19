@@ -1,6 +1,7 @@
 using Android.Content;
 using AndroidX.AppCompat.App;
 using IO.Scanbot.Sdk.Documentdata.Entity;
+using IO.Scanbot.Sdk.Ui_v2.Common.Activity;
 using IO.Scanbot.Sdk.Ui_v2.Mrz;
 using IO.Scanbot.Sdk.Ui_v2.Mrz.Configuration;
 using IO.Scanbot.Sdk.UI.View.Base;
@@ -44,7 +45,7 @@ public class LocalizationSnippet : AppCompatActivity
     public override void StartActivityForResult(Intent intent, int requestCode, Bundle options)
     {
         base.StartActivityForResult(intent, requestCode, options);
-        var resultEntity = (MrzScannerUiResult)intent.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+        var resultEntity = (MrzScannerUiResult)intent.GetParcelableExtra(ActivityConstants.ExtraKeyRtuResult);
         if (resultEntity?.MrzDocument == null)
         {
             return;

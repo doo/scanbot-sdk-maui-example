@@ -47,7 +47,7 @@ namespace ScanbotSdkExample.iOS.View.Collection
 
         public void Update(SBSDKScannedPage page)
         {
-            ImageView.Image = page.DocumentImage;
+            ImageView.Image = page.DocumentImage?.ToUIImageAndReturnError(out var error);
             Page = page;
         }
     }

@@ -1,22 +1,15 @@
 using Android.Content;
-using Android.Graphics;
 using IO.Scanbot.Sdk.Documentdata;
-using IO.Scanbot.Sdk.Ehicscanner;
-using IO.Scanbot.Sdk.MC;
 using IO.Scanbot.Sdk.Ui_v2.Check.Configuration;
 using IO.Scanbot.Sdk.Ui_v2.Creditcard;
 using IO.Scanbot.Sdk.Ui_v2.Creditcard.Configuration;
 using IO.Scanbot.Sdk.Ui_v2.Documentdata;
-using IO.Scanbot.Sdk.Ui_v2.Documentdataextractor.Configuration;
+using IO.Scanbot.Sdk.Ui_v2.Documentdata.Configuration;
 using IO.Scanbot.Sdk.Ui_v2.Mrz;
 using IO.Scanbot.Sdk.Ui_v2.Mrz.Configuration;
 using IO.Scanbot.Sdk.Ui_v2.Textpattern;
 using IO.Scanbot.Sdk.Ui_v2.Textpattern.Configuration;
 using IO.Scanbot.Sdk.Ui_v2.Vin.Configuration;
-using IO.Scanbot.Sdk.UI.View.Hic;
-using IO.Scanbot.Sdk.UI.View.Hic.Configuration;
-using IO.Scanbot.Sdk.UI.View.MC;
-using IO.Scanbot.Sdk.UI.View.MC.Configuration;
 using ScanbotSdkExample.Droid.Fragments;
 using ScanbotSdkExample.Droid.Utils;
 
@@ -28,10 +21,8 @@ public partial class MainActivity
     {
         { ScanMrzRequestCode, HandleMrzScanResult },
         { ExtractDocumentDataRequestCode, HandleDocumentDataExtractorResult },
-        { ScanEhicRequestCode, HandleEhicResult },
         { ScanVinRequestCode, HandleVinResult },
         { ScanDataRequestCode, HandleTextDataResult },
-        { ScanMedicalCertificateRequestCode, HandleMedicalCertificateResult },
         { ScanCheckRequestCode, HandleCheckResult },
         { ScanCreditCardRequestCode, HandleCreditCard },
     };
@@ -50,22 +41,6 @@ public partial class MainActivity
         ShowFragment(fragment, MRZDialogFragment.Name);
     }
 
-    private void ScanEhic()
-    {
-        var configuration = new HealthInsuranceCardScannerConfiguration();
-        configuration.SetCancelButtonTitle("Done");
-
-        var intent = HealthInsuranceCardScannerActivity.NewIntent(this, configuration);
-        StartActivityForResult(intent, ScanEhicRequestCode);
-    }
-
-    private void HandleEhicResult(Intent data)
-    {
-        var result =  GetParcelableExtra<EuropeanHealthInsuranceCardRecognitionResult>(data);
-        var fragment = HealthInsuranceCardFragment.CreateInstance(result); 
-        ShowFragment(fragment, HealthInsuranceCardFragment.Name);
-    }
-
     private void ExtractDocumentData()
     {
         var configuration = new DocumentDataExtractorScreenConfiguration();
@@ -78,8 +53,8 @@ public partial class MainActivity
         var result = GetParcelableExtra<DocumentDataExtractorUiResult>(data);
 
         // List of Generic documents
-        if (result?.Document == null || (result.RecognitionStatus != DocumentDataExtractionStatus.Success &&
-                                         result.RecognitionStatus != DocumentDataExtractionStatus.IncompleteValidation))
+        if (result?.Document == null || (result.RecognitionStatus != DocumentDataExtractionStatus.Ok &&
+                                         result.RecognitionStatus != DocumentDataExtractionStatus.OkButInvalidDocument))
         {
             Alert.Show(this, "Error", "Unable to scan the provided input.");
             return;
@@ -141,23 +116,6 @@ public partial class MainActivity
         var result = GetParcelableExtra<VinScannerUiResult>(data);
 
         Alert.Toast(this, $"VIN Scanned: {result.TextResult.RawText}");
-    }
-
-    private void ScanMedicalCertificate()
-    {
-        var configuration = new MedicalCertificateScannerConfiguration();
-        configuration.SetTopBarBackgroundColor(Color.Black);
-
-        var intent = MedicalCertificateScannerActivity.NewIntent(this, configuration);
-        StartActivityForResult(intent, ScanMedicalCertificateRequestCode);
-    }
-
-    private void HandleMedicalCertificateResult(Intent data)
-    {
-        var result = GetParcelableExtra<MedicalCertificateScanningResult>(data);
-
-        var fragment = MedicalCertificateResultDialogFragment.CreateInstance(result);
-        ShowFragment(fragment, MedicalCertificateResultDialogFragment.Name);
     }
 
     private void ScanCreditCard()

@@ -8,11 +8,15 @@ using IO.Scanbot.Sdk;
 using IO.Scanbot.Sdk.Camera;
 using IO.Scanbot.Sdk.Document;
 using IO.Scanbot.Sdk.Document.UI;
+using IO.Scanbot.Sdk.Documentscanner;
+using IO.Scanbot.Sdk.Image;
+using IO.Scanbot.Sdk.Ui_v2.Common.Activity;
 using IO.Scanbot.Sdk.UI.Camera;
+using ScanbotSDK.Droid.Helpers;
 
 namespace ScanbotSdkExample.Droid.Activities
 {
-    [Activity(Theme = "@style/Theme.AppCompat")]
+    [Activity]
     public class ClassicDocumentScannerViewActivity : AppCompatActivity,  IDocumentScannerViewCallback
     {   
         private bool _flashEnabled;
@@ -21,6 +25,7 @@ namespace ScanbotSdkExample.Droid.Activities
         private long _lastUserGuidanceHintTs;
 
         private DocumentScannerView _documentScannerView;
+        private IDocumentScanner _documentScanner;
         private TextView _userGuidanceTextView;
         private ProgressBar _imageProcessingProgress;
         private ShutterButton _shutterButton;
@@ -37,12 +42,11 @@ namespace ScanbotSdkExample.Droid.Activities
             
             _scanbotSdk = new IO.Scanbot.Sdk.ScanbotSDK(this);
             _documentScannerView = FindViewById<DocumentScannerView>(ResourceConstant.Id.document_scanner_view)!;
-            
-            var documentDetector = _scanbotSdk.CreateDocumentScanner();
+            _documentScanner = _scanbotSdk.CreateDocumentScanner(new DocumentScannerConfiguration()).Get<IDocumentScanner>();
             
             DocumentScannerViewWrapper.InitCamera(_documentScannerView);
             DocumentScannerViewWrapper.InitScanningBehavior(_documentScannerView,
-                                documentScanner: documentDetector,
+                                documentScanner: _documentScanner,
                                 new DocumentScannerResultImplementation(ShowUserGuidance), this);
 
             SupportActionBar?.Hide();
@@ -168,7 +172,7 @@ namespace ScanbotSdkExample.Droid.Activities
             _documentScannerView.ViewController.ContinuousFocus();
         }
 
-        public void OnPictureTaken(byte[] image, CaptureInfo captureInfo)
+        public void OnPictureTaken(ImageRef image, CaptureInfo captureInfo)
         {
             // Here we get the full image from the camera and further apply document detection on it.
             // This is just a demo showing detected image as downscaled preview image.
@@ -179,24 +183,8 @@ namespace ScanbotSdkExample.Droid.Activities
                 _imageProcessingProgress.Visibility = ViewStates.Visible;
                 _userGuidanceTextView.Visibility = ViewStates.Gone;
             });
-
-            // decode bytes as Bitmap
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.InSampleSize = 1;
-            
-            var originalBitmap = BitmapFactory.DecodeByteArray(image, 0, image.Length, options);
-            if (originalBitmap == null)
-                return;
-
-            // rotate original image if required:
-            if (captureInfo.ImageOrientation > 0)
-            {
-                Matrix matrix = new Matrix();
-                matrix.SetRotate(captureInfo.ImageOrientation, originalBitmap.Width / 2f, originalBitmap.Height / 2f);
-                originalBitmap = Bitmap.CreateBitmap(originalBitmap, 0, 0, originalBitmap.Width, originalBitmap.Height, matrix, false);
-            }
-
-            DetectDocumentOnImage(originalBitmap);
+                
+            DetectDocumentOnImage(image);
             Finish();
         }
 
@@ -204,23 +192,22 @@ namespace ScanbotSdkExample.Droid.Activities
         /// Detects the document on the bitmap image and adds it to the document storage.
         /// The document can be further access with the Document Uuid.
         /// </summary>
-        /// <param name="originalBitmap">Full image captured by the Camera</param>
-        private void DetectDocumentOnImage(Bitmap originalBitmap)
+        /// <param name="imageRef">Full image captured by the Camera</param>
+        private void DetectDocumentOnImage(ImageRef imageRef)
         {
-            var scanner = _scanbotSdk.CreateDocumentScanner();
-            var detectionResult = scanner.ScanFromBitmap(originalBitmap);
+            var detectionResult = _documentScanner?.Scan(imageRef).Get<DocumentScanningResult>();
 
             var defaultDocumentSizeLimit = 0;
             var document = _scanbotSdk.DocumentApi.CreateDocument(defaultDocumentSizeLimit);
-            document.AddPage(originalBitmap);
+            document.AddPage(imageRef);
 
-            if (detectionResult != null)
+            if (detectionResult?.DetectionResult != null)
             {
-                document.PageAtIndex(0).Polygon = detectionResult.PointsNormalized;
+                document.PageAtIndex(0).Polygon = detectionResult.DetectionResult.PointsNormalized;
             }
             
             Bundle extras = new Bundle();
-            extras.PutString(IO.Scanbot.Sdk.Ui_v2.Common.Activity.ActivityConstants.ExtraKeyRtuResult, document.Uuid);
+            extras.PutString(ActivityConstants.ExtraKeyRtuResult, document.Uuid);
             Intent intent = new Intent();
             intent.PutExtras(extras);
             SetResult(Result.Ok, intent);
@@ -234,7 +221,7 @@ namespace ScanbotSdkExample.Droid.Activities
             _documentScannerView.PolygonConfiguration.SetPolygonViewVisible(enabled);
             _documentScannerView.PolygonConfiguration.SetPolygonAutoSnapProgressEnabled(enabled);
             
-            _autoSnappingToggleButton.Text = ("Automatic " + (enabled ? "ON" : "OFF"));
+            _autoSnappingToggleButton.Text = "Automatic " + (enabled ? "ON" : "OFF");
             if (enabled)
             {
                 _shutterButton.ShowAutoButton();

@@ -7,7 +7,6 @@ public class PdfSnippet
 {
     void CreatePdfFromDocument(SBSDKScannedDocument scannedDocument)
     {
-
         // Specify the file URL where the TIFF will be saved to. Nil makes no sense here.
         var outputPdfUrl = new NSUrl("outputPdfUrl");
 
@@ -18,7 +17,7 @@ public class PdfSnippet
         var options = new SBSDKPDFConfiguration();
 
         // Create the Pdf renderer and pass the Pdf options to it.
-        var renderer = new SBSDKPDFGenerator(options, ocrConfiguration: ocrConfiguration, encrypter: ScanbotUI.DefaultImageStoreEncrypter);
+        var renderer = new SBSDKPDFGenerator(options, ocrConfiguration: ocrConfiguration, encrypter: ScanbotSDKGlobal.DefaultImageStoreEncrypter?.StorageCrypting);
         try
         {
             //If output URL is `null`the default Pdf location of the scanned document will be used.
@@ -36,6 +35,9 @@ public class PdfSnippet
 
     void CreatePdfFromImage(UIImage image)
     {
+        // Convert UIImage to SBSDKImageRef.
+        var imageRef = SBSDKImageRef.FromUIImageWithImage(image, new SBSDKRawImageLoadOptions());
+        
         // Specify the file URL where the Pdf will be saved to. Nil makes no sense here.
         var outputPdfUrl = new NSUrl("outputPdfUrl");
 
@@ -44,14 +46,14 @@ public class PdfSnippet
         var tmp = NSUrl.FromFilename(string.Format("{0}/{1}", url.Scheme == "file" ? url.Path : url.AbsoluteString,
                             Guid.NewGuid()));
         var location = new SBSDKStorageLocation(tmp);
-        var imageStorage = new SBSDKIndexedImageStorage(storageLocation: location);
+        var imageStorage = new SBSDKIndexedImageStorage(storageLocation: location, ScanbotSDKGlobal.DefaultImageStoreEncrypter?.StorageCrypting);
 
         // Add the image to the image storage
-        imageStorage.AddImage(image);
+        imageStorage.AddImage(imageRef);
 
         // In case you want to encrypt your Pdf file, create encrypter using a password and an encryption mode.
         var encrypter = new SBSDKAESEncrypter(password: "password_example#42",
-                            mode: SBSDKAESEncrypterMode.SBSDKAESEncrypterModeAES256);
+                            mode: SBSDKAESEncrypterMode.SBSDKAESEncrypterModeAES256, true);
 
         // Create the default Pdf rendering options.
         var configuration = new SBSDKPDFConfiguration();

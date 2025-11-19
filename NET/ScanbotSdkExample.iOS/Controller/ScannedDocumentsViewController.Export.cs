@@ -52,20 +52,21 @@ public partial class ScannedDocumentsViewController
         if (recognitionMode == SBSDKOCREngineMode.Tesseract)
         {
             var installedLanguages = SBSDKOCRLanguagesManager.InstalledLanguages;
+            
             ocrConfiguration = SBSDKOCREngineConfiguration.TesseractWith(installedLanguages);
         }
 
         try
         {
-            var ocrEngine = new SBSDKOCREngine(ocrConfiguration);
-            ocrEngine.RecognizeFromScannedDocument(scannedDocument, completion: (ocrResult, error) =>
+            var manager = new SBSDKOCREngineManager(ocrConfiguration);
+            manager.RecognizeFromScannedDocument(scannedDocument, completion: (ocrResult, error) =>
             {
                 if (error != null)
                 {
                     Alert.Show(this, "Perform OCR", error.LocalizedDescription);
                     return;
                 }
-
+            
                 Alert.Show(this, "Perform OCR", ocrResult.RecognizedText);
             });
         }
@@ -99,7 +100,7 @@ public partial class ScannedDocumentsViewController
                                 keywords: "PDF, ScanbotSDK");
 
              // Renders the document into a searchable PDF at the specified file url
-             var generator = new SBSDKPDFGenerator(configuration: configuration, ocrConfiguration: null, ScanbotUI.DefaultImageStoreEncrypter);
+             var generator = new SBSDKPDFGenerator(configuration: configuration, ocrConfiguration: null, ScanbotSDKGlobal.DefaultImageStoreEncrypter?.StorageCrypting);
              
              // Start the rendering operation and store the SBSDKProgress to watch the progress or cancel the operation.
              generator.GenerateFromScannedDocument(document, output: outputPdfUrl, 
@@ -155,7 +156,7 @@ public partial class ScannedDocumentsViewController
                 keywords: "PDF, ScanbotSDK");
 
             // Renders the document into a searchable PDF at the specified file url
-            var generator = new SBSDKPDFGenerator(configuration: configuration, ocrConfiguration: ocrConfiguration, ScanbotUI.DefaultImageStoreEncrypter);
+            var generator = new SBSDKPDFGenerator(configuration: configuration, ocrConfiguration: ocrConfiguration, ScanbotSDKGlobal.DefaultImageStoreEncrypter?.StorageCrypting);
  
             // Start the rendering operation and store the SBSDKProgress to watch the progress or cancel the operation.
             generator.GenerateFromScannedDocument(document, output: outputPdfUrl, 

@@ -34,8 +34,8 @@ public class ClassicDocumentScannerViewController : UIViewController
 
         _documentScannerViewController = new SBSDKDocumentScannerViewController();
         this.AttachViewControllerInView(_documentScannerViewController, _scanningContainerView);
-        _documentScannerViewController.DidSnapDocumentImage += DidDetectDocument;
-
+        _documentScannerViewController.DidSnapDocumentImageOnImageWithResult += DidDetectDocument;
+        
         // =================================================================
         // Please see the API docs of our native Scanbot SDK for iOS, since all those methods and properties
         // are also available as Scanbot .NET bindings.

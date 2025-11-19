@@ -9,7 +9,6 @@
         <ApplicationVersion>1</ApplicationVersion>
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
         <ApplicationTitle>NET Droid</ApplicationTitle>
-        <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
         <RootNamespace>ScanbotSdkExample.Droid</RootNamespace>
         <WarningsAsErrors>NU1603</WarningsAsErrors>
         <PackageId>ScanbotSdkExample.Droid</PackageId>

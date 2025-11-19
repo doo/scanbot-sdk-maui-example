@@ -26,23 +26,26 @@ public class ImageFilterAndRotateSnippet: UIViewController, IUIImagePickerContro
 
 	private UIImage ApplyFiltersAndRotate(UIImage image)
 	{
+		// Convert UIImage to SBSDKImageRef.
+		var imageRef = SBSDKImageRef.FromUIImageWithImage(image, new SBSDKRawImageLoadOptions());
+
 		// Create an instance of `SBSDKImageProcessor` passing the input image to the initializer.
-		var processor = new SBSDKImageProcessor(image);
+		var processor = new SBSDKImageProcessor();
         
 		// Perform operations like rotating, resizing and applying filters to the image.
 		// Rotate the image.
-		processor.ApplyRotation(SBSDKImageRotation.Clockwise90);
+		imageRef = processor.RotateWithImage(imageRef, SBSDKImageRotation.Clockwise90, out var errorRotation);
         
 		// Resize the image.
-		processor.ApplyResize(size: 700);
+		imageRef = processor.ResizeWithImage(imageRef, 700, out var errorResize);
 		
 		// Create the instances of the filters you want to apply.
 		var filter1 = new SBSDKScanbotBinarizationFilter(outputMode: SBSDKOutputMode.Antialiased);
 		var filter2 = new SBSDKBrightnessFilter(brightness: 0.4);
         
 		// Set the filters
-		processor.ApplyFilters([filter1, filter2]);
+		imageRef = processor.ApplyFiltersWithImage(imageRef, [filter1, filter2], out var errorFilters);
 
-		return processor.ProcessedImage;
+		return imageRef?.ToUIImageAndReturnError(out var error);
 	}
 }

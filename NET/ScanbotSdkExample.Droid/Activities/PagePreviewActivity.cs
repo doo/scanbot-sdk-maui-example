@@ -8,12 +8,16 @@ using ScanbotSdkExample.Droid.Fragments;
 using ScanbotSdkExample.Droid.Listeners;
 using ScanbotSdkExample.Droid.Utils;
 using IO.Scanbot.Sdk.Docprocessing;
-using IO.Scanbot.Sdk.Imagefilters;
+using IO.Scanbot.Sdk.Documentqualityanalyzer;
+using IO.Scanbot.Sdk.Image;
+using IO.Scanbot.Sdk.Imageprocessing;
 using IO.Scanbot.Sdk.Ui_v2.Common;
 using IO.Scanbot.Sdk.Ui_v2.Document;
 using IO.Scanbot.Sdk.Ui_v2.Document.Configuration;
+using ScanbotSDK.Droid.Helpers;
 using ScanbotSdkExample.Droid.Model;
 using R = _Microsoft.Android.Resource.Designer.ResourceConstant;
+using Result = Android.App.Result;
 
 namespace ScanbotSdkExample.Droid.Activities;
 [Activity]
@@ -110,9 +114,12 @@ public partial class PagePreviewActivity : AppCompatActivity, IFiltersListener
             if (bitmap == null)
                 return;
 
-            var qualityAnalyzer = _scanbotSdk.CreateDocumentQualityAnalyzer();
-            var documentQualityResult = qualityAnalyzer.AnalyzeOnBitmap(bitmap, 0);
-            Alert.Show(this, "Document Quality", documentQualityResult.Quality.Name());
+            var configuration = new DocumentQualityAnalyzerConfiguration();
+            
+            var qualityAnalyzer = _scanbotSdk.CreateDocumentQualityAnalyzer(configuration).Get<IDocumentQualityAnalyzer>();
+            var genericResult = qualityAnalyzer?.Run(ImageRef.FromBitmap(bitmap, new BasicImageLoadOptions()));
+                var documentQualityResult = genericResult.Get<DocumentQualityAnalyzerResult>();
+            Alert.Show(this, "Document Quality", documentQualityResult?.Quality?.Name());
         };
 
         _filter = (TextView)FindViewById(R.Id.action_filter)!;
@@ -194,7 +201,7 @@ public partial class PagePreviewActivity : AppCompatActivity, IFiltersListener
     {
         foreach (var page in _document.Pages)
         {
-            page.Apply(page.Rotation, page.Polygon, new[] { selectedFilter });
+            page.Apply(page.Rotation, page.Polygon, [ selectedFilter ]);
         }
         _adapter.Refresh(_document);                                          
     }
