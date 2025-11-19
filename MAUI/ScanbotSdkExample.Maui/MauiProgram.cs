@@ -2,7 +2,7 @@
 using CommunityToolkit.Maui;
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Common;
-using ScanbotSDK.MAUI.Core.Document;
+using ScanbotSDK.MAUI.Core.DocumentScanner;
 
 namespace ScanbotSdkExample.Maui;
 
@@ -34,7 +34,7 @@ public static partial class MauiProgram
             };
         }
 
-        SBSDKInitializer.Initialize(builder, LicenseKey, new SBSDKConfiguration
+        ScanbotSdkMain.Initialize(builder, LicenseKey, new ScanbotSdkConfiguration
         {
             EnableLogging = true,
             StorageBaseDirectory = StorageBaseDirectoryForExampleApp(),

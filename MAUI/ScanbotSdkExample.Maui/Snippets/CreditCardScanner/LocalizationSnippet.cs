@@ -18,7 +18,7 @@ public class LocalizationSnippet
         localization.CameraPermissionCloseButton = "Localized cameraPermissionCloseButton";
         
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSDKMain.Rtu.CreditCardScanner.LaunchAsync(configuration);
+        var scannedOutput = await ScanbotSdkMain.CreditCardScanner.LaunchAsync(configuration);
         if (scannedOutput.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful

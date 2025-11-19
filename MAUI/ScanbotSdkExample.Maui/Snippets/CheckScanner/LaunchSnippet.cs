@@ -12,7 +12,7 @@ public class LaunchSnippet
         var configuration = new CheckScannerScreenConfiguration();
 
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSDKMain.Rtu.CheckScanner.LaunchAsync(configuration);
+        var scannedOutput = await ScanbotSdkMain.CheckScanner.LaunchAsync(configuration);
         if (scannedOutput.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful

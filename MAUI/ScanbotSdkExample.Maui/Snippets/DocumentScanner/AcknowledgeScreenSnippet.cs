@@ -1,4 +1,5 @@
 using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Core.DocumentQualityAnalyzer;
 using ScanbotSDK.MAUI.Document;
 
 namespace ScanbotSdkExample.Maui.Snippets.DocumentScanner;
@@ -37,7 +38,7 @@ public class AcknowledgeScreenSnippet
         configuration.Screens.Camera.Acknowledgement.BadImageHint.Visible = true;
         
         // Launch the scanner
-        var response = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
+        var response = await ScanbotSdkMain.DocumentScanner.StartScannerAsync(configuration);
         if (response.Status != OperationResult.Ok)
         {
             // Indicates that the cancel button was tapped.
@@ -45,6 +46,6 @@ public class AcknowledgeScreenSnippet
         }
         
         // Handle the document.
-        var scannerDocument = response.Result;
+        var scannedDocument = response.Result;
     }
 }

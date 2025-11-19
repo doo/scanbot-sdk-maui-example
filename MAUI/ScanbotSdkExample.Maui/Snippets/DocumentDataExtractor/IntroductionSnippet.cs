@@ -1,5 +1,5 @@
 using ScanbotSDK.MAUI;
-using ScanbotSDK.MAUI.DocumentDataExtractor;
+using ScanbotSDK.MAUI.DocumentData;
 
 namespace ScanbotSdkExample.Maui.Snippets.DocumentDataExtractor;
 
@@ -46,7 +46,7 @@ public class IntroductionSnippet
         configuration.IntroScreen.DoneButton.Background.FillColor = new ColorValue("#C8193C");
 
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSDKMain.Rtu.DocumentDataExtractor.LaunchAsync(configuration);
+        var scannedOutput = await ScanbotSdkMain.DocumentDataExtractor.LaunchAsync(configuration);
         if (scannedOutput.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful

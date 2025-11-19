@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Core.ImageProcessing;
 using ScanbotSdkExample.Maui.Models;
 
 namespace ScanbotSdkExample.Maui;

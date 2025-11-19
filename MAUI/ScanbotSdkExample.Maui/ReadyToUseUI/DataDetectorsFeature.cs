@@ -3,14 +3,11 @@ using ScanbotSDK.MAUI.Check;
 using ScanbotSDK.MAUI.Common;
 using ScanbotSDK.MAUI.Core.Mrz;
 using ScanbotSDK.MAUI.CreditCard;
-using ScanbotSDK.MAUI.Ehic;
-using ScanbotSDK.MAUI.DocumentDataExtractor;
-using ScanbotSDK.MAUI.MedicalCertificate;
+using ScanbotSDK.MAUI.DocumentData;
 using ScanbotSDK.MAUI.Mrz;
 using ScanbotSDK.MAUI.TextPattern;
 using ScanbotSDK.MAUI.Vin;
 using ScanbotSdkExample.Maui.Utils;
-using static ScanbotSDK.MAUI.ScanbotSDKMain;
 
 namespace ScanbotSdkExample.Maui.ReadyToUseUI;
 
@@ -39,27 +36,11 @@ public static class DataDetectorsFeature
         // Configure the scanner
         configuration.ScannerConfiguration.IncompleteResultHandling = MrzIncompleteResultHandling.Accept;
 
-        var result = await Rtu.MrzScanner.LaunchAsync(configuration);
+        var result = await ScanbotSdkMain.MrzScanner.LaunchAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
             var message = SdkUtils.ParseMrzResult(result.Result);
             Alert.Show( "MRZ Result", message);
-        }
-    }
-
-    public static async Task EhicScannerClicked()
-    {
-        var configuration = new EhicScannerConfiguration
-        {
-            CancelButtonTitle = "Done",
-            TopBarButtonsColor = Colors.Green
-        };
-
-        var result = await Rtu.EhicScanner.LaunchAsync(configuration);
-        if (result.Status == OperationResult.Ok)
-        {
-            var message = SdkUtils.ToAlertMessage(result.Result);
-            Alert.Show( "EHIC Result", message);
         }
     }
 
@@ -83,7 +64,7 @@ public static class DataDetectorsFeature
         configuration.ActionBar.FlipCameraButton.Visible = false;
         configuration.ActionBar.FlashButton.ActiveForegroundColor = Constants.Colors.ScanbotRed;
         
-        var result = await Rtu.DocumentDataExtractor.LaunchAsync(configuration);
+        var result = await ScanbotSdkMain.DocumentDataExtractor.LaunchAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
             var message = SdkUtils.GenericDocumentToString(result.Result.Document);
@@ -111,7 +92,7 @@ public static class DataDetectorsFeature
         configuration.ActionBar.FlipCameraButton.Visible = false;
         configuration.ActionBar.FlashButton.ActiveForegroundColor = Constants.Colors.ScanbotRed;
 
-        var result = await Rtu.CheckScanner.LaunchAsync(configuration);
+        var result = await ScanbotSdkMain.CheckScanner.LaunchAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
             var message = SdkUtils.GenericDocumentToString(result.Result.Check);
@@ -141,7 +122,7 @@ public static class DataDetectorsFeature
 
         configuration.ScannerConfiguration.MinimumNumberOfRequiredFramesWithEqualScanningResult = 4;
         
-        var result = await Rtu.TextPatternScanner.LaunchAsync(configuration);
+        var result = await ScanbotSdkMain.TextPatternScanner.LaunchAsync(configuration);
 
         if (result.Status == OperationResult.Ok)
         {
@@ -169,28 +150,18 @@ public static class DataDetectorsFeature
         configuration.ActionBar.FlipCameraButton.Visible = false;
         configuration.ActionBar.FlashButton.ActiveForegroundColor = Constants.Colors.ScanbotRed;
 
-        var result = await Rtu.VinScanner.LaunchAsync(configuration);
+        var result = await ScanbotSdkMain.VinScanner.LaunchAsync(configuration);
 
         if (result.Status == OperationResult.Ok)
         {
             Alert.Show( $"Vin Result", result.Result.TextResult.RawText);
         }
     }
-        
-    public static async Task MedicalCertificateScannerClicked()
-    {
-        var configuration = new MedicalCertificateScannerConfiguration();
-        var result = await Rtu.MedicalCertificateScanner.LaunchAsync(configuration);
-        if (result.Status == OperationResult.Ok)
-        {
-            Alert.Show( $"Medical Certificate Result", result.Result.ToFormattedString());
-        }
-    }
-
+    
     public static async Task CreditCardScannerClicked()
     {
         var configuration = new CreditCardScannerScreenConfiguration();
-        var result = await Rtu.CreditCardScanner.LaunchAsync(configuration);
+        var result = await ScanbotSdkMain.CreditCardScanner.LaunchAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
             Alert.Show( $"Credit Card Result", SdkUtils.GenericDocumentToString(result.Result.CreditCard));

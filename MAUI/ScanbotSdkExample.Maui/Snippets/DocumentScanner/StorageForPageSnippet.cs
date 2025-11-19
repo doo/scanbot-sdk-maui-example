@@ -1,36 +1,37 @@
 using ScanbotSDK.MAUI.Document;
-using Microsoft.Maui.Graphics.Platform;
+using ScanbotSDK.MAUI;
 
 namespace ScanbotSdkExample.Maui.Snippets.DocumentScanner;
 
 public static class DocumentOperationSnippets
 {
-    static void CreateScannedDocument(PlatformImage[] images)
+    static void CreateScannedDocument(ImageRef[] images)
     {
+        var configuration = new CreateDocumentConfiguration
+        {
+            // detects the document when adding the page.
+            // saves detected document is considered as an individual page(IPage) of the IScannedDocument object.
+            DocumentDetection = true
+        };
+        
         // Create a new document with the specified maximum image size.
         // Setting the limit to 0, effectively disables the size limit.
-        var scannedDocument = new ScannedDocument(documentImageSizeLimit: 0);
-
-        // add images to the document.
-        foreach (var image in images)
-        {
-            scannedDocument.AddPage(image, detectDocument:true);
-        }
+        var scannedDocument = ScanbotSdkMain.DocumentScanner.CreateDocumentFromImagesAsync(images, configuration);
     }
 
     static void LoadDocument(Guid documentUuid)
     {
-        var loadedDocument = new ScannedDocument(documentUuid);
+        var loadedDocument = ScanbotSdkMain.DocumentScanner.LoadDocument(documentUuid);
     }
 
     static void StoredDocumentUuiDs()
     {
-        var documentUuids = ScannedDocument.StoredDocumentUuids;
+        var documentUuids = ScanbotSdkMain.DocumentScanner.StoredDocumentUuids;
     }
 
     static void ReorderDocumentPages(Guid documentUuid)
     {
-        var document = new ScannedDocument(documentUuid);
+        var document = ScanbotSdkMain.DocumentScanner.LoadDocument(documentUuid);
 
         var sourceIndex = document.PageCount - 1;
 
@@ -43,18 +44,19 @@ public static class DocumentOperationSnippets
 
     static async Task RemoveAllPagesFromDocument(Guid documentUuid)
     {
-        var document = new ScannedDocument(documentUuid);
+        var document = ScanbotSdkMain.DocumentScanner.LoadDocument(documentUuid);
         await document.RemoveAllPagesAsync();
     }
 
     static async Task DeleteDocument(Guid documentUuid)
     {
-        await ScannedDocument.DeleteAsync(documentUuid);
-        // or await new ScannedDocument(documentUuid).DeleteAsync();
+        await ScanbotSdkMain.DocumentScanner.DeleteDocumentAsync(documentUuid);
+        // or
+        // await ScanbotSdkMain.DocumentScanner.LoadDocument(documentUuid).DeleteDocumentAsync();
     }
 
     static async Task DeleteAllDocuments()
     {
-        await ScannedDocument.DeleteAllDocumentsAsync();
+        await ScanbotSdkMain.DocumentScanner.DeleteAllDocumentsAsync();
     }
 }
