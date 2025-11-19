@@ -4,10 +4,10 @@ namespace ScanbotSdkExample.Maui.Controls;
 
 public class ScannedDocumentPageView : ContentView
 {
-    private ScannedDocument.Page _currentPage;
+    private IScannedDocument.IPage _currentPage;
 
     private readonly Image _pagePreview;
-    internal Action<ScannedDocument.Page> PageItemTapped;
+    internal Action<IScannedDocument.IPage> PageItemTapped;
 
     public ScannedDocumentPageView()
     {
@@ -45,11 +45,12 @@ public class ScannedDocumentPageView : ContentView
         {
             return;
         }
-        _currentPage = (ScannedDocument.Page)BindingContext;
+        _currentPage = (IScannedDocument.IPage)BindingContext;
         // If encryption is enabled, load the decrypted document.
         // Else accessible via page.Document
+        // todo: Check the decryption
         // Document.Source = await Source.DecryptedDocumentPreview();
 
-        _pagePreview.Source = ImageSource.FromStream(() => _currentPage.DocumentImagePreview.AsStream(ImageFormat.Jpeg, quality: 0.7f));
+        _pagePreview.Source = _currentPage.DocumentImagePreview.ToImageSource();
     }
 }

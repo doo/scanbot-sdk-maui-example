@@ -1,5 +1,6 @@
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Common;
+using ScanbotSDK.MAUI.Core.Geometry;
 using ScanbotSDK.MAUI.Vin;
 
 namespace ScanbotSdkExample.Maui.Snippets.VinScanner;
@@ -59,7 +60,7 @@ public class ScanningSnippet
         configuration.Vibration.Enabled = false;
         
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSDKMain.Rtu.VinScanner.LaunchAsync(configuration);
+        var scannedOutput = await ScanbotSdkMain.VinScanner.LaunchAsync(configuration);
         if (scannedOutput.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful

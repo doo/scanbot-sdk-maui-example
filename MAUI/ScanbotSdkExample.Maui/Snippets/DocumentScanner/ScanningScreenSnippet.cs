@@ -92,7 +92,7 @@ public static class ScanningScreenSnippet
         cameraScreenConfig.CaptureFeedback.SnapFeedbackMode = new PageSnapFunnelAnimation();
 
         // Launch the scanner
-        var response = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
+        var response = await ScanbotSdkMain.DocumentScanner.StartScannerAsync(configuration);
         if (response.Status != OperationResult.Ok)
         {
             // Indicates that the cancel button was tapped.
@@ -100,6 +100,6 @@ public static class ScanningScreenSnippet
         }
         
         // Handle the document.
-        var scannerDocument = response.Result;
+        var scannedDocument = response.Result;
     }
 }

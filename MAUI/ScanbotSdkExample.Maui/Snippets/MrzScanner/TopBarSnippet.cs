@@ -26,7 +26,7 @@ public class TopBarSnippet
         configuration.TopBar.CancelButton.Foreground.Color = new ColorValue("#FFFFFF");
         
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSDKMain.Rtu.MrzScanner.LaunchAsync(configuration);
+        var scannedOutput = await ScanbotSdkMain.MrzScanner.LaunchAsync(configuration);
         if (scannedOutput.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful

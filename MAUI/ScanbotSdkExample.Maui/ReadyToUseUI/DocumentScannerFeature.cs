@@ -1,5 +1,6 @@
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Common;
+using ScanbotSDK.MAUI.Core.Geometry;
 using ScanbotSDK.MAUI.Document;
 using ScanbotSdkExample.Maui.ClassicUI.MVVM.Views;
 using ScanbotSdkExample.Maui.ClassicUI.Pages;
@@ -47,7 +48,7 @@ public static class DocumentScannerFeature
         configuration.Screens.Camera.UserGuidance.StatesTitles.TooSmall = "Document too small";
         configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
 
-        var result = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
+        var result = await ScanbotSdkMain.DocumentScanner.StartScannerAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
             await App.Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
@@ -84,7 +85,7 @@ public static class DocumentScannerFeature
         configuration.Screens.Camera.UserGuidance.StatesTitles.TooSmall = "Document too small";
         configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
 
-        var result = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
+        var result = await ScanbotSdkMain.DocumentScanner.StartScannerAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
             await App.Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
@@ -142,7 +143,7 @@ public static class DocumentScannerFeature
         configuration.Screens.Cropping.BottomBar.RotateButton.Visible = true;
         configuration.Screens.Cropping.BottomBar.DetectButton.Visible = true;
 
-        var result = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
+        var result = await ScanbotSdkMain.DocumentScanner.StartScannerAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
             await App.Navigation.PushAsync(new ScannedDocumentsPage(result.Result));

@@ -1,9 +1,8 @@
 ﻿using System.Text;
 using ScanbotSDK.MAUI;
-using ScanbotSDK.MAUI.Common;
 using ScanbotSDK.MAUI.Core.Check;
-using ScanbotSDK.MAUI.Core.DocumentDataExtractor;
-using ScanbotSDK.MAUI.Core.Ehic;
+using ScanbotSDK.MAUI.Core.DocumentData;
+using ScanbotSDK.MAUI.Core.GenericDocument;
 using ScanbotSDK.MAUI.Mrz;
 
 namespace ScanbotSdkExample.Maui.Utils;
@@ -12,11 +11,11 @@ public static class SdkUtils
 {
     public static bool CheckLicense(Microsoft.Maui.Controls.Page context)
     {
-        if (!ScanbotSDKMain.IsLicenseValid)
+        if (!ScanbotSdkMain.IsLicenseValid)
         {
             Alert.Show("Oops!", "License expired or invalid");
         }
-        return ScanbotSDKMain.IsLicenseValid;
+        return ScanbotSdkMain.IsLicenseValid;
     }
 
     public static string ParseMrzResult(MrzScannerUiResult result)
@@ -26,17 +25,6 @@ public static class SdkUtils
         foreach (var field in result.MrzDocument.Fields)
         {
             builder.AppendLine($"{field.Type.Name}: {field.Value.Text} ({field.Value.Confidence:F2})");
-        }
-        return builder.ToString();
-    }
-
-    public static string ToAlertMessage(EuropeanHealthInsuranceCardRecognitionResult result)
-    {
-        var builder = new StringBuilder();
-        builder.AppendLine($"DocumentType: European Health insurance card");
-        foreach (var field in result.Fields)
-        {
-            builder.AppendLine($"{field.Type}: {field.Value} ({field.Confidence:F2})");
         }
         return builder.ToString();
     }

@@ -1,5 +1,5 @@
 using ScanbotSDK.MAUI;
-using ScanbotSDK.MAUI.DocumentDataExtractor;
+using ScanbotSDK.MAUI.DocumentData;
 
 namespace ScanbotSdkExample.Maui.Snippets.DocumentDataExtractor;
 
@@ -32,7 +32,7 @@ public class PaletteSnippet
         palette.SbColorSurfaceHigh = new ColorValue( "#7A000000");
 
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSDKMain.Rtu.DocumentDataExtractor.LaunchAsync(configuration);
+        var scannedOutput = await ScanbotSdkMain.DocumentDataExtractor.LaunchAsync(configuration);
         if (scannedOutput.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful

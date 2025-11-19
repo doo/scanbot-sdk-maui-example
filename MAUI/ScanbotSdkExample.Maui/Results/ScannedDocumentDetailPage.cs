@@ -1,10 +1,9 @@
 ﻿using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Core.DocumentQualityAnalyzer;
 using ScanbotSDK.MAUI.Document;
 using ScanbotSdkExample.Maui.Controls;
 using ScanbotSdkExample.Maui.Controls.ActionBar;
 using ScanbotSdkExample.Maui.Utils;
-using static ScanbotSDK.MAUI.ScanbotSDKMain;
-using DocumentQualityAnalyzerConfiguration = ScanbotSDK.MAUI.DocumentQualityAnalyzerConfiguration;
 
 namespace ScanbotSdkExample.Maui.Results;
 
@@ -13,8 +12,8 @@ public class ScannedDocumentDetailPage : ContentPage
     private readonly Image _documentImage;
     private readonly SBLoader _loader;
 
-    private readonly ScannedDocument _selectedDocument;
-    private ScannedDocument.Page _selectedPage;
+    private readonly IScannedDocument _selectedDocument;
+    private IScannedDocument.IPage _selectedPage;
         
     private bool _isLoading;
     public bool IsLoading
@@ -28,7 +27,7 @@ public class ScannedDocumentDetailPage : ContentPage
         }
     }
         
-    public ScannedDocumentDetailPage(ScannedDocument selectedDocument, ScannedDocument.Page selectedPage)
+    public ScannedDocumentDetailPage(IScannedDocument selectedDocument, IScannedDocument.IPage selectedPage)
     {
         _selectedDocument = selectedDocument;
         _selectedPage = selectedPage;
@@ -84,14 +83,14 @@ public class ScannedDocumentDetailPage : ContentPage
     {
         base.OnAppearing();
 
-        _documentImage.Source = ImageSource.FromStream(() => _selectedPage.DocumentImagePreview.AsStream(ImageFormat.Jpeg, 0.7f)); 
+        _documentImage.Source = _selectedPage.DocumentImagePreview.ToImageSource(); 
     }
 
     private async void OnCropButtonTapped(object sender, EventArgs e)
     {
         if (!SdkUtils.CheckLicense(this)) { return; }
 
-        var croppingOutput = await Rtu.CroppingScreen.LaunchAsync(new CroppingConfiguration
+        var croppingOutput = await ScanbotSdkMain.DocumentScanner.StartCroppingScreenAsync(new CroppingConfiguration
         {
             DocumentUuid = _selectedDocument.Uuid.ToString(),
             PageUuid = _selectedPage.Uuid.ToString()
@@ -99,7 +98,7 @@ public class ScannedDocumentDetailPage : ContentPage
         
         if (croppingOutput.Status == OperationResult.Ok)
         {
-            _documentImage.Source = ImageSource.FromStream(() => _selectedPage.DocumentImagePreview.AsStream(ImageFormat.Jpeg, 0.7f));
+            _documentImage.Source = _selectedPage.DocumentImagePreview.ToImageSource();
         }
     }
 
@@ -116,8 +115,9 @@ public class ScannedDocumentDetailPage : ContentPage
         {
             _documentImage.Source = null;
             _selectedPage = await _selectedPage.ModifyPageAsync(filters: filters);
-            _documentImage.Source =  ImageSource.FromStream(() => _selectedPage.DocumentImagePreview.AsStream(ImageFormat.Jpeg, 0.7f));
-        });            
+            _documentImage.Source =  _selectedPage.DocumentImagePreview.ToImageSource();
+        });
+        
         await Navigation.PushAsync(filterPage);
         IsLoading = false;
     }
@@ -126,7 +126,7 @@ public class ScannedDocumentDetailPage : ContentPage
     {
         if (!SdkUtils.CheckLicense(this)) { return; }
         IsLoading = true;
-        var quality = await CommonOperations.DetectDocumentQualityAsync(_selectedPage.DocumentImage, new DocumentQualityAnalyzerConfiguration
+        var quality = await ScanbotSdkMain.DocumentScanner.AnalyzeQualityOnImageAsync(_selectedPage.DocumentImage, new DocumentQualityAnalyzerConfiguration
         {
             MaxImageSize = 2500,
             MinEstimatedNumberOfSymbolsForDocument = 20

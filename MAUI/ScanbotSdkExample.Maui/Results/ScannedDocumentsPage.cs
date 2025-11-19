@@ -1,10 +1,12 @@
 ﻿using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Core.ImageProcessing;
+using ScanbotSDK.MAUI.Core.PdfGeneration;
+using ScanbotSDK.MAUI.Core.TiffGeneration;
 using ScanbotSDK.MAUI.Document;
 using ScanbotSDK.MAUI.Ocr;
 using ScanbotSdkExample.Maui.Controls;
 using ScanbotSdkExample.Maui.Controls.ActionBar;
 using ScanbotSdkExample.Maui.Utils;
-using static ScanbotSDK.MAUI.ScanbotSDKMain;
 
 namespace ScanbotSdkExample.Maui.Results;
 public class ScannedDocumentsPage : ContentPage
@@ -14,7 +16,7 @@ public class ScannedDocumentsPage : ContentPage
     private readonly CollectionView _resultList;
     private readonly SBLoader _loader;
 
-    private ScannedDocument _document;
+    private IScannedDocument _document;
 
     private bool _isLoading;
     public bool IsLoading
@@ -43,7 +45,7 @@ public class ScannedDocumentsPage : ContentPage
         }
     }
 
-    public ScannedDocumentsPage(ScannedDocument document)
+    public ScannedDocumentsPage(IScannedDocument document)
     {
         _document = document;
         Title = "Document";
@@ -113,7 +115,7 @@ public class ScannedDocumentsPage : ContentPage
         _resultList.ItemsSource = _document.Pages;
     }
 
-    private void OnSelectDocumentPage(ScannedDocument.Page selectedPage)
+    private void OnSelectDocumentPage(IScannedDocument.IPage selectedPage)
     {
         if (selectedPage == null) return;
         Navigation.PushAsync(new ScannedDocumentDetailPage(_document, selectedPage));
@@ -127,7 +129,7 @@ public class ScannedDocumentsPage : ContentPage
         }
 
         using var loader = new PageLoader(this);
-        var result = await Rtu.DocumentScanner.LaunchAsync(new DocumentScanningFlow
+        var result = await ScanbotSdkMain.DocumentScanner.StartScannerAsync(new DocumentScanningFlow
         {
             DocumentUuid = _document.Uuid.ToString()
         });
@@ -204,33 +206,33 @@ public class ScannedDocumentsPage : ContentPage
     private async Task PerformOcrAsync()
     {
         // NOTE:
-        // The default OCR engine is 'OcrConfig.ScanbotOCR' which is ML based. This mode doesn't expect the Langauges array.
-        // If you wish to use the previous engine please use 'OcrConfig.Tesseract(...)'. The Languages array is mandatory in this mode.
-        // Uncomment the below code to use the past legacy 'OcrConfig.Tesseract(...)' engine mode.
-        // var ocrConfig = OcrConfig.Tesseract(withLanguageString: new List<string>{ "en", "de" });
+        // The default OCR engine is 'OcrEngine.ScanbotOCR' which is ML based. This mode doesn't expect the Languages array.
+        // If you wish to use the previous engine please use 'OcrEngine.Tesseract(...)'. The Languages array is mandatory in this mode.
+        // Uncomment the below code to use the past legacy 'OcrEngine.Tesseract(...)' engine mode.
+        // var ocrEngine = OcrEngine.Tesseract(withLanguageString: [ "en", "de" ]);
 
         // Using the default OCR option
-        var ocrConfig = OcrConfig.ScanbotOcr;
+        var ocrEngine = OcrEngine.ScanbotOcr;
 
         var sourceImages = _document.Pages.Select(p => new FileImageSource { File = p.OriginalImageUri.LocalPath });
-        var result = await CommonOperations.PerformOcrAsync(sourceImages: sourceImages, sourceImagesEncrypted: App.IsEncryptionEnabled, configuration: ocrConfig);
+        var result = await ScanbotSdkMain.ImageProcessor.PerformOcrAsync(sourceImages: sourceImages, sourceImagesEncrypted: App.IsEncryptionEnabled, ocrEngine: ocrEngine);
         
         // You can access the results with: result.Pages
-        Alert.Show("OCR", result.Text);
+        Alert.Show("OCR", result.RecognizedText);
     }
 
     private async Task GenerateSandwichPdfAsync()
     {
         // NOTE:
-        // The default OCR engine is 'OcrConfig.ScanbotOCR' which is ML based. This mode doesn't expect the Langauges array.
-        // If you wish to use the previous engine please use 'OcrConfig.Tesseract(...)'. The Languages array is mandatory in this mode.
-        // Uncomment the below code to use the past legacy 'OcrConfig.Tesseract(...)' engine mode.
-        // var ocrConfig = OcrConfig.Tesseract(withLanguageString: [ "en", "de" ]);
+        // The default OCR engine is 'OcrEngine.ScanbotOCR' which is ML based. This mode doesn't expect the Languages array.
+        // If you wish to use the previous engine please use 'OcrEngine.Tesseract(...)'. The Languages array is mandatory in this mode.
+        // Uncomment the below code to use the past legacy 'OcrEngine.Tesseract(...)' engine mode.
+        // var ocrEngine = OcrEngine.Tesseract(withLanguageString: [ "en", "de" ]);
 
         // Using the default OCR option
-        var ocrConfig = OcrConfig.ScanbotOcr;
+        var ocrEngine = OcrEngine.ScanbotOcr;
 
-        var result = await CommonOperations.CreateSandwichPdfAsync(
+        var result = await ScanbotSdkMain.ImageProcessor.CreateSandwichPdfAsync(
             sourceImages: _document.Pages.Select(p => new FileImageSource { File = p.OriginalImageUri.LocalPath }),
             sourceImagesEncrypted: App.IsEncryptionEnabled,
             pdfConfig: new PdfConfiguration
@@ -249,7 +251,7 @@ public class ScannedDocumentsPage : ContentPage
                 JpegQuality = 80,
                 PageFit = PageFit.FitIn,
                 ResamplingMethod = ResamplingMethod.None
-            }, ocrConfig: ocrConfig);
+            }, ocrEngine: ocrEngine);
 
         // Sharing the Pdf.
         await SharingUtils.ShareFileAsync(result.LocalPath, "application/pdf");
@@ -277,7 +279,7 @@ public class ScannedDocumentsPage : ContentPage
         var result = await DisplayAlert("Attention!", message, "Confirm", "Cancel");
         if (!result) return;
         using var loader = new PageLoader(this);
-        await _document.DeleteAsync();
+        await _document.DeleteDocumentAsync();
         await Navigation.PopAsync(true);
     }
 }

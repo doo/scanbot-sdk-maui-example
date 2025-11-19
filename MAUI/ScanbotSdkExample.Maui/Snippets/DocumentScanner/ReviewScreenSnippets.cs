@@ -55,7 +55,7 @@ public static class ReviewScreenSnippet
         configuration.Screens.Cropping = croppingScreenConfiguration;
 
         // Launch the scanner
-        var response = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
+        var response = await ScanbotSdkMain.DocumentScanner.StartScannerAsync(configuration);
         if (response.Status != OperationResult.Ok)
         {
             // Indicates that the cancel button was tapped.
@@ -63,6 +63,6 @@ public static class ReviewScreenSnippet
         }
         
         // Handle the document.
-        var scannerDocument = response.Result;
+        var scannedDocument = response.Result;
     }
 }

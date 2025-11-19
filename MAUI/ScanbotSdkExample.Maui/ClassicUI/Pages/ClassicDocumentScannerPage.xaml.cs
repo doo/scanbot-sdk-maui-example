@@ -1,8 +1,7 @@
 using System.Diagnostics;
 using ScanbotSdkExample.Maui.Models;
 using ScanbotSdkExample.Maui.Results;
-using ScanbotSDK.MAUI;
-using ScanbotSDK.MAUI.Core.Document;
+using ScanbotSDK.MAUI.Core.DocumentScanner;
 using ScanbotSDK.MAUI.Document.ClassicComponent;
 
 namespace ScanbotSdkExample.Maui.ClassicUI.Pages;
@@ -150,7 +149,7 @@ public partial class ClassicDocumentScannerPage : ContentPage
 	private async void OnSnappedDocumentImageResult(object sender, SnappedDocumentImageResultEventArgs eventArgs)
 	{
 		var resultsPage = new DocumentScannerResultPage();
-		resultsPage.SetData(Microsoft.Maui.Controls.ImageSource.FromStream(() => eventArgs.DocumentImage.AsStream(quality: 0.4f, format: ImageFormat.Jpeg)));
+		resultsPage.SetData(eventArgs.DocumentImage.ToImageSource());
 		await Navigation.PushAsync(resultsPage);
 	}
 
