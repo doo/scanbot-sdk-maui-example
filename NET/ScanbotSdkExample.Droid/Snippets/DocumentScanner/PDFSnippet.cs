@@ -16,7 +16,7 @@ public class PdfSnippet : AppCompatActivity
 
 		// Returns the singleton instance of the Sdk.
 		_scanbotSdk = new IO.Scanbot.Sdk.ScanbotSDK(this);
-		var document = _scanbotSdk.DocumentApi.LoadDocument("Your_Document_Id");
+		var document = _scanbotSdk.DocumentApi.LoadDocument("Your_Document_Id").Get<Document>();;
 		
 		if (_scanbotSdk.LicenseInfo.IsValid)
 		{

@@ -7,6 +7,7 @@ using ScanbotSdkExample.Droid.Activities;
 using ScanbotSdkExample.Droid.Utils;
 using ScanbotSdkExample.Droid.Model;
 using IO.Scanbot.Sdk.Common;
+using IO.Scanbot.Sdk.Docprocessing;
 using IO.Scanbot.Sdk.Document;
 using IO.Scanbot.Sdk.Documentscanner;
 using IO.Scanbot.Sdk.Geometry;
@@ -113,7 +114,7 @@ public partial class MainActivity
         var result = scanner.Scan(ImageRef.FromBitmap(bitmap, new BasicImageLoadOptions())).Get<DocumentScanningResult>();
 
         var defaultDocumentSizeLimit = 0;
-        var document = _scanbotSdk.DocumentApi.CreateDocument(defaultDocumentSizeLimit);
+        var document = _scanbotSdk.DocumentApi.CreateDocument(defaultDocumentSizeLimit)?.Get<Document>();
         document.AddPage(bitmap);
 
         if (result?.DetectionResult != null && result.DetectionResult.Status != DocumentDetectionStatus.ErrorNothingDetected)

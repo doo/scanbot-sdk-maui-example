@@ -1,6 +1,8 @@
 using AndroidX.AppCompat.App;
+using IO.Scanbot.Sdk.Docprocessing;
 using IO.Scanbot.Sdk.Image;
 using IO.Scanbot.Sdk.Imageprocessing;
+using ScanbotSDK.Droid.Helpers;
 
 namespace ScanbotSdkExample.Droid.Snippets;
 
@@ -23,7 +25,7 @@ public class PageFilterSnippet : AppCompatActivity
 
 	private void StartFiltering()
 	{
-		var document = _scanbotSdk.DocumentApi.LoadDocument("Your_save_doc_Id");
+		var document = _scanbotSdk.DocumentApi.LoadDocument("Your_save_doc_Id").Get<Document>();
 
 		var binarizationFilter = new ScanbotBinarizationFilter(OutputMode.Antialiased);
 		var brightnessFilter = new BrightnessFilter(0.4);

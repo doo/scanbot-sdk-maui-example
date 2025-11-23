@@ -4,8 +4,8 @@ using Android.Graphics;
 using Android.Views;
 using AndroidX.AppCompat.App;
 using AndroidX.Core.View;
-using IO.Scanbot.Sdk;
 using IO.Scanbot.Sdk.Camera;
+using IO.Scanbot.Sdk.Docprocessing;
 using IO.Scanbot.Sdk.Document;
 using IO.Scanbot.Sdk.Document.UI;
 using IO.Scanbot.Sdk.Documentscanner;
@@ -17,8 +17,8 @@ using ScanbotSDK.Droid.Helpers;
 namespace ScanbotSdkExample.Droid.Activities
 {
     [Activity]
-    public class ClassicDocumentScannerViewActivity : AppCompatActivity,  IDocumentScannerViewCallback
-    {   
+    public class ClassicDocumentScannerViewActivity : AppCompatActivity, IDocumentScannerViewCallback
+    {
         private bool _flashEnabled;
         private bool _autoSnappingEnabled = true;
         private const bool IgnoreBadAspectRatio = true;
@@ -37,25 +37,26 @@ namespace ScanbotSdkExample.Droid.Activities
         {
             SupportRequestWindowFeature(WindowCompat.FeatureActionBarOverlay);
             base.OnCreate(savedInstanceState);
-            
+
             SetContentView(ResourceConstant.Layout.document_scanner_view_activity);
-            
+
             _scanbotSdk = new IO.Scanbot.Sdk.ScanbotSDK(this);
             _documentScannerView = FindViewById<DocumentScannerView>(ResourceConstant.Id.document_scanner_view)!;
             _documentScanner = _scanbotSdk.CreateDocumentScanner(new DocumentScannerConfiguration()).Get<IDocumentScanner>();
-            
-            DocumentScannerViewWrapper.InitCamera(_documentScannerView);
-            DocumentScannerViewWrapper.InitScanningBehavior(_documentScannerView,
-                                documentScanner: _documentScanner,
-                                new DocumentScannerResultImplementation(ShowUserGuidance), this);
+
+            _documentScannerView.InitCamera();
+            _documentScannerView.InitScanningBehavior(
+                documentScanner: _documentScanner,
+                scannerViewCallback: this,
+                handler: HandleDocumentScannerFrame);
 
             SupportActionBar?.Hide();
 
             // Uncomment to disable AutoFocus by manually touching the camera view:
             // _documentScannerView.CameraConfiguration.SetAutoFocusOnTouch(false);
-            
+
             _documentScannerView.CameraConfiguration.SetCameraPreviewMode(CameraPreviewMode.FitIn);
-          
+
             // custom color to the polygon view
             _documentScannerView.PolygonConfiguration.SetPolygonStrokeColor(Color.Red);
             _documentScannerView.PolygonConfiguration.SetPolygonStrokeColorOK(Color.Green);
@@ -63,8 +64,14 @@ namespace ScanbotSdkExample.Droid.Activities
 
             // set automatic snapping enabled.
             _documentScannerView.ViewController.AutoSnappingEnabled = _autoSnappingEnabled;
-            
+
             SetUpUiElements();
+        }
+
+        private bool HandleDocumentScannerFrame(DocumentScannerFrameHandler.DetectedFrame frameresult, FrameHandler.Frame frame)
+        {
+            Console.WriteLine("GotChaa");
+            return false;
         }
 
         private void SetUpUiElements()
@@ -72,36 +79,33 @@ namespace ScanbotSdkExample.Droid.Activities
             _userGuidanceTextView = FindViewById<TextView>(ResourceConstant.Id.user_guidance_text_view)!;
             _imageProcessingProgress = FindViewById<ProgressBar>(ResourceConstant.Id.image_processing_progress)!;
             _shutterButton = FindViewById<ShutterButton>(ResourceConstant.Id.shutter_button)!;
-            
-            _shutterButton.Click += delegate
-            {
-               _documentScannerView.ViewController.TakePicture(false);
-            };
-            
+
+            _shutterButton.Click += delegate { _documentScannerView.ViewController.TakePicture(false); };
+
             _shutterButton.Visibility = ViewStates.Visible;
 
-            FindViewById(ResourceConstant.Id.flash_button)!.Click += delegate 
+            FindViewById(ResourceConstant.Id.flash_button)!.Click += delegate
             {
-              _documentScannerView.ViewController.UseFlash(!_flashEnabled);
-              _flashEnabled = !_flashEnabled;
+                _documentScannerView.ViewController.UseFlash(!_flashEnabled);
+                _flashEnabled = !_flashEnabled;
             };
 
             _autoSnappingToggleButton = FindViewById<Button>(ResourceConstant.Id.auto_snapping_toggle_button)!;
-            _autoSnappingToggleButton.Click += delegate 
+            _autoSnappingToggleButton.Click += delegate
             {
-              _autoSnappingEnabled = !_autoSnappingEnabled;
-              SetAutoSnapEnabled(_autoSnappingEnabled);
+                _autoSnappingEnabled = !_autoSnappingEnabled;
+                SetAutoSnapEnabled(_autoSnappingEnabled);
             };
 
-            _shutterButton.Post(() =>
-            {
-               SetAutoSnapEnabled(_autoSnappingEnabled);
-            });
+            _shutterButton.Post(() => { SetAutoSnapEnabled(_autoSnappingEnabled); });
         }
 
-        private bool ShowUserGuidance(DocumentScannerFrameHandler.DetectedFrame frame, SdkLicenseError error)
+        private bool ShowUserGuidance(DocumentScannerFrameHandler.DetectedFrame frame, object error)
         {
-            if (!_autoSnappingEnabled || frame == null) { return false; }
+            if (!_autoSnappingEnabled || frame == null)
+            {
+                return false;
+            }
 
             if (Java.Lang.JavaSystem.CurrentTimeMillis() - _lastUserGuidanceHintTs < 400)
             {
@@ -183,7 +187,7 @@ namespace ScanbotSdkExample.Droid.Activities
                 _imageProcessingProgress.Visibility = ViewStates.Visible;
                 _userGuidanceTextView.Visibility = ViewStates.Gone;
             });
-                
+
             DetectDocumentOnImage(image);
             Finish();
         }
@@ -198,14 +202,14 @@ namespace ScanbotSdkExample.Droid.Activities
             var detectionResult = _documentScanner?.Scan(imageRef).Get<DocumentScanningResult>();
 
             var defaultDocumentSizeLimit = 0;
-            var document = _scanbotSdk.DocumentApi.CreateDocument(defaultDocumentSizeLimit);
+            var document = _scanbotSdk.DocumentApi.CreateDocument(defaultDocumentSizeLimit)?.Get<Document>();
             document.AddPage(imageRef);
 
             if (detectionResult?.DetectionResult != null)
             {
                 document.PageAtIndex(0).Polygon = detectionResult.DetectionResult.PointsNormalized;
             }
-            
+
             Bundle extras = new Bundle();
             extras.PutString(ActivityConstants.ExtraKeyRtuResult, document.Uuid);
             Intent intent = new Intent();
@@ -217,10 +221,10 @@ namespace ScanbotSdkExample.Droid.Activities
         {
             _documentScannerView.ViewController.AutoSnappingEnabled = enabled;
             _documentScannerView.ViewController.FrameProcessingEnabled = enabled;
-            
+
             _documentScannerView.PolygonConfiguration.SetPolygonViewVisible(enabled);
             _documentScannerView.PolygonConfiguration.SetPolygonAutoSnapProgressEnabled(enabled);
-            
+
             _autoSnappingToggleButton.Text = "Automatic " + (enabled ? "ON" : "OFF");
             if (enabled)
             {
@@ -234,11 +238,4 @@ namespace ScanbotSdkExample.Droid.Activities
             }
         }
     }
-}
-
-internal class DocumentScannerResultImplementation(DocumentScannerResultImplementation.DocumentScannerHandleResult handleResult) : DocumentScannerResultHandlerWrapper
-{
-   internal delegate bool DocumentScannerHandleResult(DocumentScannerFrameHandler.DetectedFrame frame, SdkLicenseError error);
-
-   public override bool HandleResult(DocumentScannerFrameHandler.DetectedFrame result, SdkLicenseError error) => handleResult?.Invoke(result, error) ?? false;
 }

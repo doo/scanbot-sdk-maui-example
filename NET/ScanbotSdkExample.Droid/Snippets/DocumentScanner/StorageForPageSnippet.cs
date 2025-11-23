@@ -1,5 +1,6 @@
 using Android.Graphics;
 using IO.Scanbot.Sdk.Docprocessing;
+using ScanbotSDK.Droid.Helpers;
 using ScanbotSdk = IO.Scanbot.Sdk.ScanbotSDK;
 
 namespace ScanbotSdkExample.Droid.Snippets;
@@ -10,7 +11,7 @@ public class StorageForPageSnippet
 	{
 		// Create a new document with the specified maximum image size.
 		// Setting the limit to 0, effectively disables the size limit.
-		var scannedDocument = sdk.DocumentApi.CreateDocument(documentImageSizeLimit: 2048);
+		var scannedDocument = sdk.DocumentApi.CreateDocument(documentImageSizeLimit: 2048).Get<Document>();;
 
 		// add images to the document.
 		foreach (var image in images)
@@ -23,7 +24,7 @@ public class StorageForPageSnippet
 	{
 		// Create the scanned document using convenience initializer `init?(document:documentImageSizeLimit:)`
 		// `Document` doesn't support `documentImageSizeLimit`, but you can add it to unify size of the documents.
-		var scannedDocument = sdk.DocumentApi.CreateDocument(documentImageSizeLimit: 2048);
+		var scannedDocument = sdk.DocumentApi.CreateDocument(documentImageSizeLimit: 2048).Get<Document>();;
 		scannedDocument.AddPage(uri);
 		// Return newly created scanned document
 		return scannedDocument;

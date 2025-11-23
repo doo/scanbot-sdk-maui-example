@@ -53,7 +53,7 @@ public partial class PagePreviewActivity : AppCompatActivity, IFiltersListener
         _scanbotSdk = new IO.Scanbot.Sdk.ScanbotSDK(this);
         SetContentView(R.Layout.activity_page_preview);
         var documentId = Intent?.GetStringExtra("documentId");
-        _document = _scanbotSdk.DocumentApi.LoadDocument(documentId);
+        _document = _scanbotSdk.DocumentApi.LoadDocument(documentId).Get<Document>();;
         SetupToolbar();
 
         _filterFragment = new FilterListFragment();
@@ -86,7 +86,8 @@ public partial class PagePreviewActivity : AppCompatActivity, IFiltersListener
         _crop.Text = Texts.Crop;
         _crop.Click += delegate
         {
-            var pageId = _scanbotSdk.DocumentApi.LoadDocument(documentId)?.PageAtIndex(0)?.Uuid;
+            var document = _scanbotSdk.DocumentApi.LoadDocument(documentId)?.Get<Document>();
+                var pageId = document.PageAtIndex(0)?.Uuid;
             var configurations = CroppingActivityConfiguration.Init(documentId, pageId);
                 
             configurations.Appearance.TopBarBackgroundColor = new ScanbotColor(Color.Red);
@@ -110,7 +111,9 @@ public partial class PagePreviewActivity : AppCompatActivity, IFiltersListener
         _quality.Text = Texts.CheckDocumentQuality;
         _quality.Click += delegate
         {
-            var bitmap = _scanbotSdk.DocumentApi.LoadDocument(documentId)?.PageAtIndex(0)?.DocumentImage;
+            var document = _scanbotSdk.DocumentApi.LoadDocument(documentId)?.Get<Document>();
+            var bitmap = document.PageAtIndex(0)?.DocumentImage;
+                
             if (bitmap == null)
                 return;
 
@@ -155,7 +158,7 @@ public partial class PagePreviewActivity : AppCompatActivity, IFiltersListener
     {
         base.OnActivityResult(requestCode, resultCode, data);
             
-        _document = _scanbotSdk.DocumentApi.LoadDocument(_document.Uuid); // refresh from memory
+        _document = _scanbotSdk.DocumentApi.LoadDocument(_document.Uuid).Get<Document>(); // refresh from memory
         _adapter.Refresh(_document);
         UpdateVisibility();
     }
