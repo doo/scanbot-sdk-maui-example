@@ -8,7 +8,7 @@ public partial class MainViewController
     private void ScanMrz()
     {
         var configuration = new SBSDKUI2MRZScannerScreenConfiguration();
-        SBSDKUI2MRZScannerViewController.PresentOn(this, configuration, result =>
+        SBSDKUI2MRZScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
             if (result?.MrzDocument == null)
                 return;
@@ -21,7 +21,7 @@ public partial class MainViewController
     {
         var configuration = new SBSDKUI2DocumentDataExtractorScreenConfiguration();
         configuration.TopBar.CancelButton.Text = "Done";
-        SBSDKUI2DocumentDataExtractorViewController.PresentOn(this, configuration, result =>
+        SBSDKUI2DocumentDataExtractorViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
             if (result?.Document == null)
                 return;
@@ -35,7 +35,7 @@ public partial class MainViewController
     {
         var configuration = new SBSDKUI2CheckScannerScreenConfiguration();
         configuration.TopBar.CancelButton.Text = "Done";
-        SBSDKUI2CheckScannerViewController.PresentOn(this, configuration, result =>
+        SBSDKUI2CheckScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
             if (result?.Check == null)
                 return;
@@ -49,7 +49,7 @@ public partial class MainViewController
     {
         var configuration = new SBSDKUI2TextPatternScannerScreenConfiguration();
         configuration.TopBar.CancelButton.Text = "Done";
-        SBSDKUI2TextPatternScannerViewController.PresentOn(this, configuration, result =>
+        SBSDKUI2TextPatternScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
             if (!string.IsNullOrEmpty(result?.RawText))
             {
@@ -62,7 +62,7 @@ public partial class MainViewController
     {
         var configuration = new SBSDKUI2VINScannerScreenConfiguration();
         configuration.TopBar.CancelButton.Text = "Done";
-        SBSDKUI2VINScannerViewController.PresentOn(this, configuration, result =>
+        SBSDKUI2VINScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
             if (result?.TextResult?.RawText == null)
                 return;
@@ -76,7 +76,7 @@ public partial class MainViewController
         var configuration = new SBSDKUI2CreditCardScannerScreenConfiguration();
         configuration.TopBar.CancelButton.Text = "Done";
 
-        SBSDKUI2CreditCardScannerViewController.PresentOn(this, configuration, (result) =>
+        SBSDKUI2CreditCardScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
             if (result?.CreditCard == null)
                 return;

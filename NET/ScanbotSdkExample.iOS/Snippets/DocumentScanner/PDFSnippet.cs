@@ -17,7 +17,7 @@ public class PdfSnippet
         var options = new SBSDKPDFConfiguration();
 
         // Create the Pdf renderer and pass the Pdf options to it.
-        var renderer = new SBSDKPDFGenerator(options, ocrConfiguration: ocrConfiguration, encrypter: ScanbotSDKGlobal.DefaultImageStoreEncrypter?.StorageCrypting);
+        var renderer = new SBSDKPDFGenerator(options, ocrConfiguration: ocrConfiguration, useEncryptionIfAvailable: AppDelegate.IsEncryptionEnabled, error: out _);
         try
         {
             //If output URL is `null`the default Pdf location of the scanned document will be used.
@@ -46,7 +46,7 @@ public class PdfSnippet
         var tmp = NSUrl.FromFilename(string.Format("{0}/{1}", url.Scheme == "file" ? url.Path : url.AbsoluteString,
                             Guid.NewGuid()));
         var location = new SBSDKStorageLocation(tmp);
-        var imageStorage = new SBSDKIndexedImageStorage(storageLocation: location, ScanbotSDKGlobal.DefaultImageStoreEncrypter?.StorageCrypting);
+        var imageStorage = new SBSDKIndexedImageStorage(storageLocation: location, cryptingProvider: ScanbotSDKGlobal.DefaultCryptingProvider);
 
         // Add the image to the image storage
         imageStorage.AddImage(imageRef);
@@ -62,7 +62,7 @@ public class PdfSnippet
         configuration.JpegQuality = 100;
 
         // Create the Pdf renderer and pass the Pdf options to it.
-        var renderer = new SBSDKPDFGenerator(configuration: configuration, ocrConfiguration: null, encrypter: encrypter);
+        var renderer = new SBSDKPDFGenerator(configuration: configuration, ocrConfiguration: null, useEncryptionIfAvailable: AppDelegate.IsEncryptionEnabled, error: out _);
         try
         {
             // Synchronously renders the images from the image storage into a Pdf file with the given page size, and saves the Pdf to the specified URL.

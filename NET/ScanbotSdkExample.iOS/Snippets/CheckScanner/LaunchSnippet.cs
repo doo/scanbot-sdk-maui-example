@@ -18,7 +18,7 @@ class LaunchSnippet: UIViewController {
         var configuration = new SBSDKUI2CheckScannerScreenConfiguration();
 
         // Present the view controller modally.
-        SBSDKUI2CheckScannerViewController.PresentOn(this, configuration, (result) =>
+        SBSDKUI2CheckScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
             if (result == null)
             {

@@ -10,6 +10,11 @@ namespace ScanbotSdkExample.iOS
         public UINavigationController Controller { get; private set; }
 
         public override UIWindow Window { get; set; }
+        
+        /// <summary>
+        /// Set the flag to true for enabling encryption.
+        /// </summary>
+        public const bool IsEncryptionEnabled = false;
 
         private const int ImageQuality = 80;
 
@@ -60,11 +65,17 @@ namespace ScanbotSdkExample.iOS
             ScanbotSDKGlobal.SetLoggingEnabled(true);
             SBSDKDocumentPageFileStorage.DefaultStorage = new SBSDKDocumentPageFileStorage(SBSDKImageFileFormat.Jpeg, ImageQuality, new SBSDKStorageLocation(NSUrl.FromFilename(PageStoragePathForExample())));
 
-            // Uncomment the below to test our encyption functionality.
-            // ScanbotUI.DefaultImageStoreEncrypter = new SBSDKAESEncrypter("S0m3W3irDL0ngPa$$w0rdino!!!!", SBSDKAESEncrypterMode.SBSDKAESEncrypterModeAES128);
-            // Note: all the images and files exported through the SDK will
-            // not be openable from external applications, since they will be
-            // encrypted.
+            if (IsEncryptionEnabled)
+            {
+                ScanbotSDKGlobal.DefaultCryptingProvider = new SBSDKCryptingProvider(() =>
+                {
+                    return new SBSDKAESEncrypter("S0m3W3irDL0ngPa$$w0rdino!!!!", SBSDKAESEncrypterMode.SBSDKAESEncrypterModeAES128, perFileEncryption: true);
+                });
+                
+                // Note: all the images and files exported through the SDK will
+                // not be openable from external applications, since they will be
+                // encrypted.
+            }
 
             if (!string.IsNullOrEmpty(LicenseKey))
             {

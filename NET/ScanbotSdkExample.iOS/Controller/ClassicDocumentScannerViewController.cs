@@ -34,7 +34,7 @@ public class ClassicDocumentScannerViewController : UIViewController
 
         _documentScannerViewController = new SBSDKDocumentScannerViewController();
         this.AttachViewControllerInView(_documentScannerViewController, _scanningContainerView);
-        _documentScannerViewController.DidSnapDocumentImageOnImageWithResult += DidDetectDocument;
+        _documentScannerViewController.DidSnapDocumentImage += DidDetectDocument;
         
         // =================================================================
         // Please see the API docs of our native Scanbot SDK for iOS, since all those methods and properties
@@ -149,10 +149,10 @@ public class ClassicDocumentScannerViewController : UIViewController
         // Creating a SBSDKScannedDocument object from the captured original image.
         
         // Create an instance of a document
-        var document = new SBSDKScannedDocument();
+        var document = new SBSDKScannedDocument(documentImageSizeLimit:0, out _);
         
         // Add page to the document using the image and the detected polygon on the image (if any)
-        document.AddPageWith(args.OriginalImage, args.Result?.Polygon ?? new SBSDKPolygon(), []);
+        document.AddPageWith(args.OriginalImage, args.Result?.Polygon ?? new SBSDKPolygon(), [], out _);
         
         // set the result to navigate to the document listing page.
         ResultDelegate?.DidCompleteDocumentScanning(document);

@@ -1,3 +1,4 @@
+using FileProvider;
 using ScanbotSdkExample.iOS.Models;
 using Scanbot.ImagePicker.iOS;
 using ScanbotSDK.iOS;
@@ -49,7 +50,7 @@ public partial class MainViewController: IClassicDocumentScannerViewResult
         configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
 
         // Launch the scanner.
-        controller = SBSDKUI2DocumentScannerController.PresentOn(this, configuration, scannedDocument => DidCompleteDocumentScanning(controller, scannedDocument));
+        controller = SBSDKUI2DocumentScannerController.PresentOn(this, configuration, error: out _, (controller, document, error) => { DidCompleteDocumentScanning(controller, document); });
     }
 
     private void MultipleDocumentScanning()
@@ -108,7 +109,7 @@ public partial class MainViewController: IClassicDocumentScannerViewResult
         configuration.Screens.Cropping.BottomBar.DetectButton.Visible = true;
         
         // Launch the scanner.
-        controller = SBSDKUI2DocumentScannerController.PresentOn(this, configuration, scannedDocument => DidCompleteDocumentScanning(controller, scannedDocument));
+        controller = SBSDKUI2DocumentScannerController.PresentOn(this, configuration, error: out _, (controller, document, error) => { DidCompleteDocumentScanning(controller, document); });
     }
 
     private void SingleFinderDocumentScanning()
@@ -145,7 +146,7 @@ public partial class MainViewController: IClassicDocumentScannerViewResult
         configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
        
         // Launch the scanner.
-        controller = SBSDKUI2DocumentScannerController.PresentOn(this, configuration, scannedDocument => DidCompleteDocumentScanning(controller, scannedDocument));
+        controller = SBSDKUI2DocumentScannerController.PresentOn(this, configuration, error: out _, (controller, document, error) => { DidCompleteDocumentScanning(controller, document); });
     }
 
     private void DidCompleteDocumentScanning(SBSDKUI2DocumentScannerController controller, SBSDKScannedDocument scannedDocument)
@@ -181,10 +182,10 @@ public partial class MainViewController: IClassicDocumentScannerViewResult
         }
 
         // Create an instance of a document
-        var document = new SBSDKScannedDocument();
+        var document = new SBSDKScannedDocument(documentImageSizeLimit: 0, out _);
 
         // Add page to the document using the image and the detected polygon on the image (if any)
-        document.AddPageWith(imageRef, result.Polygon ?? new SBSDKPolygon(), []);
+        document.AddPageWith(image: imageRef, polygon: result.Polygon ?? new SBSDKPolygon(), filters: [], out _);
 
         Console.WriteLine("Attempted document detection on imported page: " + result.Status);
         OpenImageListController(document.Uuid);

@@ -15,11 +15,11 @@ public class TiffSnippet
 		var parameters = new SBSDKTIFFGeneratorParameters();
 
 		// Create the tiff image writer using created parameters.
-		var writer = new SBSDKTIFFGenerator(parameters: parameters);
+		var writer = new SBSDKTIFFGenerator(parameters: parameters, useEncryptionIfAvailable: AppDelegate.IsEncryptionEnabled, error: out _);
 
 		// Synchronously converts the scanned document to a multipage-TIFF file and writes it to the specified URL.
 		//If output URL is `nil`the default TIFF location of the scanned document will be used.
-		writer.GenerateFromScannedDocumentToFile(scannedDocument, outputTiffUrl);
+		writer.GenerateFromScannedDocumentToFile(scannedDocument: scannedDocument, fileURL: outputTiffUrl, error: out _);
 	}
 
 	void CreateTiff(UIImage[] images)
@@ -40,12 +40,12 @@ public class TiffSnippet
 		var parameters = new SBSDKTIFFGeneratorParameters();
 
 		// Create the tiff image writer using created parameters and the encrypter.
-		var tiffImageWriter = new SBSDKTIFFGenerator(parameters: parameters, encrypter: encrypter);
+		var tiffImageWriter = new SBSDKTIFFGenerator(parameters: parameters, useEncryptionIfAvailable: AppDelegate.IsEncryptionEnabled, error: out _);
 
 		// Asynchronously writes a TIFF file with scanned images into the defined URL.
 		// The completion handler passes a file URL where the file was to be saved, or nil if the operation did not succeed.
 		tiffImageWriter.GenerateFromImagesToFileURL(imageRefs, outputTiffUrl, 
-								completion: (url) =>
+								completion: (url, error) =>
 					            {
 						            // Handle the Url.
 					            });

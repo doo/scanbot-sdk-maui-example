@@ -27,8 +27,7 @@ public class LocalizationSnippet : UIViewController
 		localization.CameraUserGuidanceTooDark = "camera.userGuidance.tooDark";
 
 		// Present the recognizer view controller modal on this view controller.
-		SBSDKUI2DocumentScannerController.PresentOn(this, configuration,
-			(document) =>
+		SBSDKUI2DocumentScannerController.PresentOn(this, configuration, error: out _, (controller, document, error) =>
 		    {
 			    // Completion handler to process the result.
 			    if (document != null)

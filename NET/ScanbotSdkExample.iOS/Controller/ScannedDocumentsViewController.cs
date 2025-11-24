@@ -49,7 +49,7 @@ public partial class ScannedDocumentsViewController : UIViewController
     private void OnAnalyzeDocumentClicked(object sender, EventArgs e)
     {
         // Get the cropped image
-        var documentPageImage = _scannedDocument.PageAt(0)?.DocumentImage;
+        var documentPageImage = _scannedDocument.PageAt(0, out _)?.DocumentImage;
         if (documentPageImage == null)
         {
             return;
@@ -74,10 +74,10 @@ public partial class ScannedDocumentsViewController : UIViewController
         // e.g. customize a UI element's text
         configuration.Localization.CroppingTopBarCancelButtonTitle = "Cancel";
 
-        SBSDKUI2CroppingViewController.PresentOn(this, configuration, completion: CroppingFinished);
+        SBSDKUI2CroppingViewController.PresentOn(this, configuration, completion: CroppingFinished, error: out _);
     }
 
-    private void CroppingFinished(SBSDKUI2CroppingResult result)
+    private void CroppingFinished(SBSDKUI2CroppingViewController controller, SBSDKUI2CroppingResult result, NSError error)
     {
         LoadPages();
     }

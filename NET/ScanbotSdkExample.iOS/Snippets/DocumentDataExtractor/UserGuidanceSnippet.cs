@@ -41,7 +41,7 @@ class UserGuidanceSnippet : UIViewController
         scanStatusUserGuidance.Background.FillColor = new SBSDKUI2Color(colorString: "#7A000000");
             
         // Present the view controller modally.
-        SBSDKUI2DocumentDataExtractorViewController.PresentOn(this, configuration, (result) =>
+        SBSDKUI2DocumentDataExtractorViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
             if (result?.Document == null)
             {

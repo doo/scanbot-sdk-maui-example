@@ -47,8 +47,7 @@ public class SinglePageWithFinderSnippet : UIViewController
 		configuration.Screens.Review.Enabled = false;
 
 		// Present the recognizer view controller modal on this view controller.
-		SBSDKUI2DocumentScannerController.PresentOn(this, configuration,
-            (document) =>
+		SBSDKUI2DocumentScannerController.PresentOn(viewController: this, configuration: configuration, completion: (controller, document, error) =>
             {
                 // Completion handler to process the result.
                 if (document != null)
@@ -59,6 +58,6 @@ public class SinglePageWithFinderSnippet : UIViewController
                 {
                     // Indicates that the cancel button was tapped.
                 }
-            });
+            }, error: out _);
     }
 }

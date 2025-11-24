@@ -100,7 +100,7 @@ public partial class ScannedDocumentsViewController
                                 keywords: "PDF, ScanbotSDK");
 
              // Renders the document into a searchable PDF at the specified file url
-             var generator = new SBSDKPDFGenerator(configuration: configuration, ocrConfiguration: null, ScanbotSDKGlobal.DefaultImageStoreEncrypter?.StorageCrypting);
+             var generator = new SBSDKPDFGenerator(configuration: configuration, ocrConfiguration: null, useEncryptionIfAvailable: AppDelegate.IsEncryptionEnabled, error: out _);
              
              // Start the rendering operation and store the SBSDKProgress to watch the progress or cancel the operation.
              generator.GenerateFromScannedDocument(document, output: outputPdfUrl, 
@@ -156,7 +156,7 @@ public partial class ScannedDocumentsViewController
                 keywords: "PDF, ScanbotSDK");
 
             // Renders the document into a searchable PDF at the specified file url
-            var generator = new SBSDKPDFGenerator(configuration: configuration, ocrConfiguration: ocrConfiguration, ScanbotSDKGlobal.DefaultImageStoreEncrypter?.StorageCrypting);
+            var generator = new SBSDKPDFGenerator(configuration: configuration, ocrConfiguration: ocrConfiguration, useEncryptionIfAvailable: AppDelegate.IsEncryptionEnabled, error: out _);
  
             // Start the rendering operation and store the SBSDKProgress to watch the progress or cancel the operation.
             generator.GenerateFromScannedDocument(document, output: outputPdfUrl, 
@@ -185,8 +185,8 @@ public partial class ScannedDocumentsViewController
         options.Dpi = 300;
 
         var outputTiffUrl = new NSUrl(outputUrl.AbsoluteString + Guid.NewGuid() + ".tiff");
-        var tiffWriter = new SBSDKTIFFGenerator(parameters: options);
-        var success = tiffWriter.GenerateFromScannedDocumentToFile(scannedDocument, outputTiffUrl);
+        var tiffWriter = new SBSDKTIFFGenerator(parameters: options, useEncryptionIfAvailable: AppDelegate.IsEncryptionEnabled, error: out _);
+        var success = tiffWriter.GenerateFromScannedDocumentToFile(scannedDocument, outputTiffUrl, out _);
         if (success)
         {
             var title = "Write TIFF";

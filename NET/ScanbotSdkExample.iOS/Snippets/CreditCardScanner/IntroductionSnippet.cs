@@ -56,7 +56,7 @@ class IntroductionSnippet : UIViewController
         configuration.IntroScreen.DoneButton.Background.FillColor = new SBSDKUI2Color("#C8193C");
 
         // Present the view controller modally.
-        SBSDKUI2CreditCardScannerViewController.PresentOn(this, configuration, (result) =>
+        SBSDKUI2CreditCardScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
             if (result == null)
             {

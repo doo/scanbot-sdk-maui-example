@@ -18,7 +18,7 @@ class LaunchSnippet: UIViewController {
         var configuration = new SBSDKUI2DocumentDataExtractorScreenConfiguration();
 
         // Present the view controller modally.
-        SBSDKUI2DocumentDataExtractorViewController.PresentOn(this, configuration, (result) =>
+        SBSDKUI2DocumentDataExtractorViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
             if (result?.Document == null)
             {

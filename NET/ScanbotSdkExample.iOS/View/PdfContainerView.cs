@@ -29,9 +29,9 @@ namespace ScanbotSdkExample.iOS.View
                 var data = NSData.FromFile(uri.Path);
                 // If data is encrypted, SBSDK.Encrypter will be evaluated.
                 // In that case, use it to decrypt the data
-                if (ScanbotSDKGlobal.DefaultImageStoreEncrypter != null)
+                if (ScanbotSDKGlobal.DefaultCryptingProvider != null)
                 {
-                    data = ScanbotSDKGlobal.DefaultImageStoreEncrypter.StorageCrypting.DecryptData(data, "", out NSError error);
+                    data = ScanbotSDKGlobal.DefaultCryptingProvider.StorageCrypting.DecryptData(data, "", out NSError _);
                 }
 
                 if (data != null)

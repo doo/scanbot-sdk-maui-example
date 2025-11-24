@@ -47,7 +47,7 @@ class ScanningSnippet : UIViewController
         configuration.Vibration.Enabled = false;
 
         // Present the view controller modally.
-        SBSDKUI2MRZScannerViewController.PresentOn(this, configuration, result =>
+        SBSDKUI2MRZScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
             if (result == null)
             {

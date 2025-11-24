@@ -31,7 +31,7 @@ class FinderOverlaySnippet : UIViewController
         configuration.ViewFinder.Style = new SBSDKUI2FinderStrokedStyle(new SBSDKUI2Color("#7A000000"), 3.0f, 2.0f);
 
         // Present the view controller modally.
-        SBSDKUI2VINScannerViewController.PresentOn(this, configuration, (result) =>
+        SBSDKUI2VINScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
             if (result == null)
             {

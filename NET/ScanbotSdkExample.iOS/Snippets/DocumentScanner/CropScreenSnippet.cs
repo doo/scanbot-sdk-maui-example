@@ -31,8 +31,7 @@ public class CropScreenSnippet : UIViewController
         configuration.Localization.CroppingTopBarCancelButtonTitle = "Cancel";
 
         // Present the recognizer view controller modal on this view controller.
-        SBSDKUI2DocumentScannerController.PresentOn(this, configuration,
-            (document) =>
+        SBSDKUI2DocumentScannerController.PresentOn(this, configuration, error: out _, (controller, document, error) =>
             {
                 // Completion handler to process the result.
                 if (document != null)

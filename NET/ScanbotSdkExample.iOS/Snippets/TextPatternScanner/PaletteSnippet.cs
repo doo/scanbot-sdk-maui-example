@@ -40,7 +40,7 @@ class PaletteSnippet : UIViewController
         palette.SbColorModalOverlay = new SBSDKUI2Color(colorString: "#A3000000");
 
         // Present the view controller modally.
-        SBSDKUI2TextPatternScannerViewController.PresentOn(this, configuration, result =>
+        SBSDKUI2TextPatternScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
             if (result != null)
             {

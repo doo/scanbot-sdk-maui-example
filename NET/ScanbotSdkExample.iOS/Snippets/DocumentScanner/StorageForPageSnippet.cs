@@ -11,12 +11,12 @@ public class StorageForPageSnippet
 
         // Create a new document with the specified maximum image size.
         // Setting the limit to 0, effectively disables the size limit.
-        var scannedDocument = new SBSDKScannedDocument();
+        var scannedDocument = new SBSDKScannedDocument(documentImageSizeLimit: 0, out _);
 
         // add images to the document.
-        foreach (var image in imageRefs)
+        foreach (var imageRef in imageRefs)
         {
-            scannedDocument.AddPageWith(image, new SBSDKPolygon(), new SBSDKParametricFilter[] { });
+            scannedDocument.AddPageWith(image: imageRef, polygon:new SBSDKPolygon(), filters: new SBSDKParametricFilter[] {}, out _);
         }
     }
 
@@ -24,7 +24,7 @@ public class StorageForPageSnippet
     {
         // Create the scanned document using convenience initializer `init?(document:documentImageSizeLimit:)`
         // `SBSDKDocument` doesn't support `documentImageSizeLimit`, but you can add it to unify size of the documents.
-        var scannedDocument = new SBSDKScannedDocument(document: document, documentImageSizeLimit: 2048);
+        var scannedDocument = new SBSDKScannedDocument(document: document, documentImageSizeLimit: 2048, out _);
 
         // Return newly created scanned document
         return scannedDocument;
@@ -52,19 +52,18 @@ public class StorageForPageSnippet
         var destinationIndex = 0;
 
         // Reorder images in the scanned document.
-        scannedDocument.MovePageAtTo(sourceIndex, destinationIndex);
+        scannedDocument.MovePageAtTo(sourceIndex, destinationIndex, out _);
     }
 
     void RemoveAllPagesFromScannedDocument(SBSDKScannedDocument scannedDocument)
     {
         // Call the `removeAllPages(onError:)` to remove all pages from the document, but keep the document itself.
-        scannedDocument.RemoveAllPagesOnError(
-                            (page, error) =>
-                            {
-                                // Handle error.
-                                SBSDKLog.LogError("Failed to remove page" + page.Uuid +
-                                                  " with error: " + error.LocalizedDescription);
-                            });
+        scannedDocument.RemoveAllPagesAndReturnError(out var nsError);
+        if (nsError != null)
+        {
+            // Handle error.
+            SBSDKLog.LogError($"Failed to remove pages from document{scannedDocument.Uuid} with error: {nsError.LocalizedDescription}");
+        }
     }
 
     void RemovePdfFromScannedDocument(SBSDKScannedDocument scannedDocument)

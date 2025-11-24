@@ -47,7 +47,7 @@ class ActionBarSnippet : UIViewController
         actionBar.FlipCameraButton.ForegroundColor = new SBSDKUI2Color("#FFFFFF");
 
         // Present the view controller modally.
-        SBSDKUI2TextPatternScannerViewController.PresentOn(this, configuration, result =>
+        SBSDKUI2TextPatternScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
             if (result != null)
             {
