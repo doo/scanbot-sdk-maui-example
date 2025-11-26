@@ -5,7 +5,7 @@ namespace ScanbotSdkExample.Maui.Snippets.TextPatternScanner;
 
 public class PaletteSnippet
 {
-    public static async Task LaunchAsync()
+    public static async Task StartScannerAsync()
     {
         // Create the default configuration object.
         var configuration = new TextPatternScannerScreenConfiguration();
@@ -32,7 +32,7 @@ public class PaletteSnippet
         palette.SbColorSurfaceHigh = new ColorValue("#7A000000");
 
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSdkMain.TextPatternScanner.LaunchAsync(configuration);
+        var scannedOutput = await ScanbotSDKMain.TextPattern.StartScannerAsync(configuration);
         if (scannedOutput.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful

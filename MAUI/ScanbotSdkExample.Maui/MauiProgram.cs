@@ -34,7 +34,7 @@ public static partial class MauiProgram
             };
         }
 
-        ScanbotSdkMain.Initialize(builder, LicenseKey, new ScanbotSdkConfiguration
+        ScanbotSDKMain.Initialize(builder, LicenseKey, new ScanbotSdkConfiguration
         {
             EnableLogging = true,
             StorageBaseDirectory = StorageBaseDirectoryForExampleApp(),

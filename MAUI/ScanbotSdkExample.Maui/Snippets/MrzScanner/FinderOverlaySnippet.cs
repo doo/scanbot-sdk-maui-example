@@ -7,7 +7,7 @@ namespace ScanbotSdkExample.Maui.Snippets.MrzScanner;
 
 public class FinderOverlaySnippet
 {
-    public static async Task LaunchAsync()
+    public static async Task StartScannerAsync()
     {
         // Create the default configuration object.
         var configuration = new MrzScannerScreenConfiguration();
@@ -53,7 +53,7 @@ public class FinderOverlaySnippet
         };
 
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSdkMain.MrzScanner.LaunchAsync(configuration);
+        var scannedOutput = await ScanbotSDKMain.Mrz.StartScannerAsync(configuration);
         if (scannedOutput.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful

@@ -16,22 +16,22 @@ public static class DocumentOperationSnippets
         
         // Create a new document with the specified maximum image size.
         // Setting the limit to 0, effectively disables the size limit.
-        var scannedDocument = ScanbotSdkMain.DocumentScanner.CreateDocumentFromImagesAsync(images, configuration);
+        var scannedDocument = ScanbotSDKMain.Document.CreateDocumentFromImagesAsync(images, configuration);
     }
 
     static void LoadDocument(Guid documentUuid)
     {
-        var loadedDocument = ScanbotSdkMain.DocumentScanner.LoadDocument(documentUuid);
+        var loadedDocument = ScanbotSDKMain.Document.LoadDocument(documentUuid);
     }
 
     static void StoredDocumentUuiDs()
     {
-        var documentUuids = ScanbotSdkMain.DocumentScanner.StoredDocumentUuids;
+        var documentUuids = ScanbotSDKMain.Document.StoredDocumentUuids;
     }
 
     static void ReorderDocumentPages(Guid documentUuid)
     {
-        var document = ScanbotSdkMain.DocumentScanner.LoadDocument(documentUuid);
+        var document = ScanbotSDKMain.Document.LoadDocument(documentUuid);
 
         var sourceIndex = document.PageCount - 1;
 
@@ -44,19 +44,19 @@ public static class DocumentOperationSnippets
 
     static async Task RemoveAllPagesFromDocument(Guid documentUuid)
     {
-        var document = ScanbotSdkMain.DocumentScanner.LoadDocument(documentUuid);
+        var document = ScanbotSDKMain.Document.LoadDocument(documentUuid);
         await document.RemoveAllPagesAsync();
     }
 
     static async Task DeleteDocument(Guid documentUuid)
     {
-        await ScanbotSdkMain.DocumentScanner.DeleteDocumentAsync(documentUuid);
+        await ScanbotSDKMain.Document.DeleteDocumentAsync(documentUuid);
         // or
-        // await ScanbotSdkMain.DocumentScanner.LoadDocument(documentUuid).DeleteDocumentAsync();
+        // await ScanbotSDKMain.Document.LoadDocument(documentUuid).DeleteDocumentAsync();
     }
 
     static async Task DeleteAllDocuments()
     {
-        await ScanbotSdkMain.DocumentScanner.DeleteAllDocumentsAsync();
+        await ScanbotSDKMain.Document.DeleteAllDocumentsAsync();
     }
 }

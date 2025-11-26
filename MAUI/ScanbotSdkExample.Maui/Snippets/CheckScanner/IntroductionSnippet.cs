@@ -6,7 +6,7 @@ namespace ScanbotSdkExample.Maui.Snippets.CheckScanner;
 
 public class IntroductionSnippet
 {
-    public static async Task LaunchAsync()
+    public static async Task StartScannerAsync()
     {
         // Create the default configuration object.
         var configuration = new CheckScannerScreenConfiguration();
@@ -53,7 +53,7 @@ public class IntroductionSnippet
         configuration.IntroScreen.DoneButton.Background.FillColor = new ColorValue("#C8193C");
 
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSdkMain.CheckScanner.LaunchAsync(configuration);
+        var scannedOutput = await ScanbotSDKMain.Check.StartScannerAsync(configuration);
         if (scannedOutput.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful

@@ -5,7 +5,7 @@ namespace ScanbotSdkExample.Maui.Snippets.DocumentDataExtractor;
 
 public class IntroductionSnippet
 {
-    public static async Task LaunchAsync()
+    public static async Task StartScannerAsync()
     {
         // Create the default configuration object.
         var configuration = new DocumentDataExtractorScreenConfiguration();
@@ -46,7 +46,7 @@ public class IntroductionSnippet
         configuration.IntroScreen.DoneButton.Background.FillColor = new ColorValue("#C8193C");
 
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSdkMain.DocumentDataExtractor.LaunchAsync(configuration);
+        var scannedOutput = await ScanbotSDKMain.DocumentDataExtractor.StartScannerAsync(configuration);
         if (scannedOutput.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful

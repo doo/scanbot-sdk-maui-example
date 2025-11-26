@@ -6,7 +6,7 @@ namespace ScanbotSdkExample.Maui.Snippets.TextPatternScanner;
 
 public class ScanningSnippet
 {
-    public static async Task LaunchAsync()
+    public static async Task StartScannerAsync()
     {
         // Create the default configuration object.
         var configuration = new TextPatternScannerScreenConfiguration();
@@ -41,7 +41,7 @@ public class ScanningSnippet
         configuration.Vibration.Enabled = false;
 
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSdkMain.TextPatternScanner.LaunchAsync(configuration);
+        var scannedOutput = await ScanbotSDKMain.TextPattern.StartScannerAsync(configuration);
         if (scannedOutput.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful

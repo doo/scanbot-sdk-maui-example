@@ -7,7 +7,7 @@ namespace ScanbotSdkExample.Maui.Snippets.CreditCardScanner;
 
 public class FinderOverlaySnippet
 {
-    public static async Task LaunchAsync()
+    public static async Task StartScannerAsync()
     {
         // Create the default configuration object.
         var configuration = new CreditCardScannerScreenConfiguration();
@@ -32,7 +32,7 @@ public class FinderOverlaySnippet
         };
 
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSdkMain.CreditCardScanner.LaunchAsync(configuration);
+        var scannedOutput = await ScanbotSDKMain.CreditCard.StartScannerAsync(configuration);
         if (scannedOutput.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful

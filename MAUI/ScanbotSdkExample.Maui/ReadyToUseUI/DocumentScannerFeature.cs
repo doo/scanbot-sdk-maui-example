@@ -48,7 +48,7 @@ public static class DocumentScannerFeature
         configuration.Screens.Camera.UserGuidance.StatesTitles.TooSmall = "Document too small";
         configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
 
-        var result = await ScanbotSdkMain.DocumentScanner.StartScannerAsync(configuration);
+        var result = await ScanbotSDKMain.Document.StartScannerAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
             await App.Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
@@ -85,7 +85,7 @@ public static class DocumentScannerFeature
         configuration.Screens.Camera.UserGuidance.StatesTitles.TooSmall = "Document too small";
         configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
 
-        var result = await ScanbotSdkMain.DocumentScanner.StartScannerAsync(configuration);
+        var result = await ScanbotSDKMain.Document.StartScannerAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
             await App.Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
@@ -143,7 +143,7 @@ public static class DocumentScannerFeature
         configuration.Screens.Cropping.BottomBar.RotateButton.Visible = true;
         configuration.Screens.Cropping.BottomBar.DetectButton.Visible = true;
 
-        var result = await ScanbotSdkMain.DocumentScanner.StartScannerAsync(configuration);
+        var result = await ScanbotSDKMain.Document.StartScannerAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
             await App.Navigation.PushAsync(new ScannedDocumentsPage(result.Result));

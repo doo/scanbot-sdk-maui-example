@@ -6,7 +6,7 @@ namespace ScanbotSdkExample.Maui.Snippets.VinScanner;
 
 public class TopBarSnippet
 {
-    public static async Task LaunchAsync()
+    public static async Task StartScannerAsync()
     {
         // Create the default configuration object.
         var configuration = new VinScannerScreenConfiguration();
@@ -25,7 +25,7 @@ public class TopBarSnippet
         configuration.TopBar.CancelButton.Foreground.Color = new ColorValue("#FFFFFF");
         
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSdkMain.VinScanner.LaunchAsync(configuration);
+        var scannedOutput = await ScanbotSDKMain.Vin.StartScannerAsync(configuration);
         if (scannedOutput.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful

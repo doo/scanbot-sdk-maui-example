@@ -5,12 +5,12 @@ namespace ScanbotSdkExample.Maui.Snippets.VinScanner;
 
 public class LaunchSnippet
 {
-    public static async Task LaunchAsync()
+    public static async Task StartScannerAsync()
     {
         var configuration = new VinScannerScreenConfiguration();
 
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSdkMain.VinScanner.LaunchAsync(configuration);
+        var scannedOutput = await ScanbotSDKMain.Vin.StartScannerAsync(configuration);
         if (scannedOutput.Status != OperationResult.Ok)
         {
             // Indicates that cancel was tapped or the result was unsuccessful

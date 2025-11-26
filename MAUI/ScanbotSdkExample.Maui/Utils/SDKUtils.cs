@@ -11,11 +11,11 @@ public static class SdkUtils
 {
     public static bool CheckLicense(Microsoft.Maui.Controls.Page context)
     {
-        if (!ScanbotSdkMain.IsLicenseValid)
+        if (!ScanbotSDKMain.IsLicenseValid)
         {
             Alert.Show("Oops!", "License expired or invalid");
         }
-        return ScanbotSdkMain.IsLicenseValid;
+        return ScanbotSDKMain.IsLicenseValid;
     }
 
     public static string ParseMrzResult(MrzScannerUiResult result)

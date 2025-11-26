@@ -6,7 +6,7 @@ namespace ScanbotSdkExample.Maui.Snippets.DocumentScanner;
 
 public class AutomaticFilteringSnippet
 {
-    private static async Task LaunchAsync()
+    private static async Task StartScannerAsync()
     {
         // Create the default configuration object.
         var configuration = new DocumentScanningFlow();
@@ -18,7 +18,7 @@ public class AutomaticFilteringSnippet
         configuration.Appearance.TopBarBackgroundColor = new ColorValue("#C8193C");
 
         // Launch the scanner
-        var response = await ScanbotSdkMain.DocumentScanner.StartScannerAsync(configuration);
+        var response = await ScanbotSDKMain.Document.StartScannerAsync(configuration);
         if (response.Status != OperationResult.Ok)
         {
             // Indicates that the cancel button was tapped.

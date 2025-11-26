@@ -24,7 +24,7 @@ public static class DetectOnImageFeature
             // Configure other parameters as needed.
         };
 
-        var result = await ScanbotSdkMain.MrzScanner.ScanFromImageAsync(image, configuration: configuration);
+        var result = await ScanbotSDKMain.Mrz.ScanFromImageAsync(image, configuration: configuration);
         if (result?.Document == null || result.Success == false)
         {
             Alert.Show( "Error", "Could not detect the MRZ data.");
@@ -58,7 +58,7 @@ public static class DetectOnImageFeature
                 }
             ]
         };
-        var result = await ScanbotSdkMain.DocumentDataExtractor.ScanFromImageAsync(image, configuration);
+        var result = await ScanbotSDKMain.DocumentDataExtractor.ScanFromImageAsync(image, configuration);
         if (result?.Document == null || result.Status != DocumentDataExtractionStatus.Ok)
         {
             Alert.Show( "Error", "Could not extract the Document data.");
@@ -74,7 +74,7 @@ public static class DetectOnImageFeature
         var image = await HomePage.PickImageAsync();
         if (image is null) return;
         
-        var result = await ScanbotSdkMain.CheckScanner.ScanFromImageAsync(image, new CheckScannerConfiguration
+        var result = await ScanbotSDKMain.Check.ScanFromImageAsync(image, new CheckScannerConfiguration
         {
             AcceptedCheckStandards =
             [
@@ -123,7 +123,7 @@ public static class DetectOnImageFeature
             // Configure other parameters as needed.
         };
         
-        var result = await ScanbotSdkMain.MedicalCertificateScanner.ScanFromImageAsync(image, configuration);
+        var result = await ScanbotSDKMain.MedicalCertificate.ScanFromImageAsync(image, configuration);
         if (result?.DocumentDetectionResult == null || result.DocumentDetectionResult.Status != DocumentDetectionStatus.Ok || !result.ScanningSuccessful)
         {
             Alert.Show( "Error", "Could not detect the Medical Certificate data.");
@@ -158,7 +158,7 @@ public static class DetectOnImageFeature
             RequireCardholderName = true
         };
         
-        var result = await ScanbotSdkMain.CreditCardScanner.ScanFromImageAsync(image, configuration: configuration);
+        var result = await ScanbotSDKMain.CreditCard.ScanFromImageAsync(image, configuration: configuration);
         if (result?.CreditCard == null || result.ScanningStatus != CreditCardScanningStatus.Success)
         {
             Alert.Show( "Error", "Could not detect the Credit card data.");

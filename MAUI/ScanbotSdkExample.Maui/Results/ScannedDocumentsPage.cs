@@ -129,7 +129,7 @@ public class ScannedDocumentsPage : ContentPage
         }
 
         using var loader = new PageLoader(this);
-        var result = await ScanbotSdkMain.DocumentScanner.StartScannerAsync(new DocumentScanningFlow
+        var result = await ScanbotSDKMain.Document.StartScannerAsync(new DocumentScanningFlow
         {
             DocumentUuid = _document.Uuid.ToString()
         });
@@ -206,16 +206,16 @@ public class ScannedDocumentsPage : ContentPage
     private async Task PerformOcrAsync()
     {
         // NOTE:
-        // The default OCR engine is 'OcrEngine.ScanbotOCR' which is ML based. This mode doesn't expect the Languages array.
-        // If you wish to use the previous engine please use 'OcrEngine.Tesseract(...)'. The Languages array is mandatory in this mode.
-        // Uncomment the below code to use the past legacy 'OcrEngine.Tesseract(...)' engine mode.
-        // var ocrEngine = OcrEngine.Tesseract(withLanguageString: [ "en", "de" ]);
+        // The default OCR engine is 'OcrConfiguration.ScanbotOCR' which is ML based. This mode doesn't expect the Languages array.
+        // If you wish to use the previous engine please use 'OcrConfiguration.Tesseract(...)'. The Languages array is mandatory in this mode.
+        // Uncomment the below code to use the past legacy 'OcrConfiguration.Tesseract(...)' engine mode.
+        // var ocrEngine = OcrConfiguration.Tesseract(withLanguageString: [ "en", "de" ]);
 
         // Using the default OCR option
-        var ocrEngine = OcrEngine.ScanbotOcr;
+        var ocrEngine = OcrConfiguration.ScanbotOcr;
 
         var sourceImages = _document.Pages.Select(p => new FileImageSource { File = p.OriginalImageUri.LocalPath });
-        var result = await ScanbotSdkMain.ImageProcessor.PerformOcrAsync(sourceImages: sourceImages, sourceImagesEncrypted: App.IsEncryptionEnabled, ocrEngine: ocrEngine);
+        var result = await ScanbotSDKMain.ScanbotOcrEngine.RecognizeOnImagesAsync(images: sourceImages, configuration: ocrEngine);
         
         // You can access the results with: result.Pages
         Alert.Show("OCR", result.RecognizedText);
@@ -230,12 +230,11 @@ public class ScannedDocumentsPage : ContentPage
         // var ocrEngine = OcrEngine.Tesseract(withLanguageString: [ "en", "de" ]);
 
         // Using the default OCR option
-        var ocrEngine = OcrEngine.ScanbotOcr;
+        var ocrEngine = OcrConfiguration.ScanbotOcr;
 
-        var result = await ScanbotSdkMain.ImageProcessor.CreateSandwichPdfAsync(
-            sourceImages: _document.Pages.Select(p => new FileImageSource { File = p.OriginalImageUri.LocalPath }),
-            sourceImagesEncrypted: App.IsEncryptionEnabled,
-            pdfConfig: new PdfConfiguration
+        var result = await ScanbotSDKMain.PdfGenerator.GenerateFromImagesAsync(
+            images: _document.Pages.Select(p => new FileImageSource { File = p.OriginalImageUri.LocalPath }),
+            configuration: new PdfConfiguration
             {
                 PageDirection = PageDirection.Auto,
                 PageSize = PageSize.A4,
@@ -251,7 +250,7 @@ public class ScannedDocumentsPage : ContentPage
                 JpegQuality = 80,
                 PageFit = PageFit.FitIn,
                 ResamplingMethod = ResamplingMethod.None
-            }, ocrEngine: ocrEngine);
+            }, ocrConfiguration: ocrEngine);
 
         // Sharing the Pdf.
         await SharingUtils.ShareFileAsync(result.LocalPath, "application/pdf");

@@ -6,7 +6,7 @@ namespace ScanbotSdkExample.Maui.Snippets.DocumentScanner;
 
 public static class IntroductionSnippet
 {
-    private static async Task LaunchAsync()
+    private static async Task StartScannerAsync()
     {
         // Create the default configuration object.
         var configuration = new DocumentScanningFlow();
@@ -63,7 +63,7 @@ public static class IntroductionSnippet
         configuration.Screens.Camera.Introduction = introductionConfiguration;
 
         // Launch the scanner
-        var response = await ScanbotSdkMain.DocumentScanner.StartScannerAsync(configuration);
+        var response = await ScanbotSDKMain.Document.StartScannerAsync(configuration);
         if (response.Status != OperationResult.Ok)
         {
             // Indicates that the cancel button was tapped.

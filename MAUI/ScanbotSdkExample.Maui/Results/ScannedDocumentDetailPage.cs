@@ -90,7 +90,7 @@ public class ScannedDocumentDetailPage : ContentPage
     {
         if (!SdkUtils.CheckLicense(this)) { return; }
 
-        var croppingOutput = await ScanbotSdkMain.DocumentScanner.StartCroppingScreenAsync(new CroppingConfiguration
+        var croppingOutput = await ScanbotSDKMain.Document.StartCroppingScreenAsync(new CroppingConfiguration
         {
             DocumentUuid = _selectedDocument.Uuid.ToString(),
             PageUuid = _selectedPage.Uuid.ToString()
@@ -126,7 +126,7 @@ public class ScannedDocumentDetailPage : ContentPage
     {
         if (!SdkUtils.CheckLicense(this)) { return; }
         IsLoading = true;
-        var quality = await ScanbotSdkMain.DocumentScanner.AnalyzeQualityOnImageAsync(_selectedPage.DocumentImage, new DocumentQualityAnalyzerConfiguration
+        var quality = await ScanbotSDKMain.Document.AnalyzeQualityOnImageAsync(_selectedPage.DocumentImage, new DocumentQualityAnalyzerConfiguration
         {
             MaxImageSize = 2500,
             MinEstimatedNumberOfSymbolsForDocument = 20

@@ -15,6 +15,6 @@ public static class PdfSnippets
     static async void CreatePdfFromImage(Uri[] imageFiles)
     {
         var config = new PdfConfiguration();
-        var outputFileUri = await ScanbotSdkMain.ImageProcessor.CreatePdfAsync(sourceImages: imageFiles.Select(f => new FileImageSource { File = f.LocalPath }), sourceImagesEncrypted: false, configuration: config);
+        var outputFileUri = await ScanbotSDKMain.PdfGenerator.GenerateFromImagesAsync(images: imageFiles.Select(f => new FileImageSource { File = f.LocalPath }), configuration: config);
     }
 }

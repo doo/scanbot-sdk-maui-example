@@ -87,7 +87,7 @@ public partial class HomePage
             return;
         }
 
-        if (!ScanbotSdkMain.IsLicenseValid && feature.Title != ViewLicenseInfo)
+        if (!ScanbotSDKMain.IsLicenseValid && feature.Title != ViewLicenseInfo)
         {
             Alert.Show("Oops!", LicenseInvalidMessage);
             return;
@@ -101,7 +101,7 @@ public partial class HomePage
     // ------------------------------------
     private Task ViewLicenseInfoClicked()
     {
-        var info = ScanbotSdkMain.LicenseInfo;
+        var info = ScanbotSDKMain.LicenseInfo;
         var message = $"License status: {info.Status}\n";
         if (info.IsValid)
         {
@@ -135,7 +135,7 @@ public partial class HomePage
             if (imageSource is null) return;
 
             // Creates a document from the given image as original image and create a Page object
-            var document = await ScanbotSdkMain.DocumentScanner.CreateDocumentFromImagesAsync([imageSource], new CreateDocumentConfiguration
+            var document = await ScanbotSDKMain.Document.CreateDocumentFromImagesAsync([imageSource], new CreateDocumentConfiguration
             {
                 // runs document detection on the given image.
                 DocumentDetection = true
@@ -182,7 +182,7 @@ public partial class HomePage
         if (image == null) return;
 
 
-        var result = await ScanbotSdkMain.ImageProcessor.PerformOcrAsync(sourceImages:[image], sourceImagesEncrypted: false, ocrEngine: OcrEngine.ScanbotOcr);
+        var result = await ScanbotSDKMain.ScanbotOcrEngine.RecognizeOnImagesAsync(images:[image], configuration: OcrConfiguration.ScanbotOcr);
         Alert.Show(title: "Ocr Result", message: result.RecognizedText);
     }
     
@@ -192,7 +192,7 @@ public partial class HomePage
         if (image == null) return;
 
 
-        var result = await ScanbotSdkMain.ImageProcessor.CreatePdfAsync(sourceImages:[image], sourceImagesEncrypted: false, configuration: new PdfConfiguration());
+        var result = await ScanbotSDKMain.PdfGenerator.GenerateFromImagesAsync(images:[image], configuration: new PdfConfiguration());
         if (result == null || !result.IsFile)
             return;
         
@@ -208,12 +208,12 @@ public partial class HomePage
             Alert.Show("Error","Something went wrong while loading the image from photos app.");
             return;
         }
-        ScanbotSdkMain.MockCamera.ConfigureMockCamera(new MockCameraConfiguration(image.File, image.File, "Scanbot SDK Mock Cam"));
+        ScanbotSDKMain.MockCamera(new MockCameraConfiguration(image.File, image.File, "Scanbot SDK Mock Cam"));
     }
 
     private async Task DeleteAllDocsFromStorageClicked()
     {
-        var documentCount = ScanbotSdkMain.DocumentScanner.StoredDocumentUuids.Length;
+        var documentCount = ScanbotSDKMain.Document.StoredDocumentUuids.Length;
         if (documentCount == 0)
             return;
         
@@ -221,7 +221,7 @@ public partial class HomePage
         var result = await DisplayAlert("Attention!", message, "Confirm", "Cancel");
         if (!result) return;
         
-        await ScanbotSdkMain.DocumentScanner.DeleteAllDocumentsAsync();
+        await ScanbotSDKMain.Document.DeleteAllDocumentsAsync();
         await DisplayAlert("Alert", $"Number of documents deleted: {documentCount}", "Ok");
     }
 }

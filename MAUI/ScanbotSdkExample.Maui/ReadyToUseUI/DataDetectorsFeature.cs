@@ -36,7 +36,7 @@ public static class DataDetectorsFeature
         // Configure the scanner
         configuration.ScannerConfiguration.IncompleteResultHandling = MrzIncompleteResultHandling.Accept;
 
-        var result = await ScanbotSdkMain.MrzScanner.LaunchAsync(configuration);
+        var result = await ScanbotSDKMain.Mrz.StartScannerAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
             var message = SdkUtils.ParseMrzResult(result.Result);
@@ -64,7 +64,7 @@ public static class DataDetectorsFeature
         configuration.ActionBar.FlipCameraButton.Visible = false;
         configuration.ActionBar.FlashButton.ActiveForegroundColor = Constants.Colors.ScanbotRed;
         
-        var result = await ScanbotSdkMain.DocumentDataExtractor.LaunchAsync(configuration);
+        var result = await ScanbotSDKMain.DocumentDataExtractor.StartScannerAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
             var message = SdkUtils.GenericDocumentToString(result.Result.Document);
@@ -92,7 +92,7 @@ public static class DataDetectorsFeature
         configuration.ActionBar.FlipCameraButton.Visible = false;
         configuration.ActionBar.FlashButton.ActiveForegroundColor = Constants.Colors.ScanbotRed;
 
-        var result = await ScanbotSdkMain.CheckScanner.LaunchAsync(configuration);
+        var result = await ScanbotSDKMain.Check.StartScannerAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
             var message = SdkUtils.GenericDocumentToString(result.Result.Check);
@@ -122,7 +122,7 @@ public static class DataDetectorsFeature
 
         configuration.ScannerConfiguration.MinimumNumberOfRequiredFramesWithEqualScanningResult = 4;
         
-        var result = await ScanbotSdkMain.TextPatternScanner.LaunchAsync(configuration);
+        var result = await ScanbotSDKMain.TextPattern.StartScannerAsync(configuration);
 
         if (result.Status == OperationResult.Ok)
         {
@@ -150,7 +150,7 @@ public static class DataDetectorsFeature
         configuration.ActionBar.FlipCameraButton.Visible = false;
         configuration.ActionBar.FlashButton.ActiveForegroundColor = Constants.Colors.ScanbotRed;
 
-        var result = await ScanbotSdkMain.VinScanner.LaunchAsync(configuration);
+        var result = await ScanbotSDKMain.Vin.StartScannerAsync(configuration);
 
         if (result.Status == OperationResult.Ok)
         {
@@ -161,7 +161,7 @@ public static class DataDetectorsFeature
     public static async Task CreditCardScannerClicked()
     {
         var configuration = new CreditCardScannerScreenConfiguration();
-        var result = await ScanbotSdkMain.CreditCardScanner.LaunchAsync(configuration);
+        var result = await ScanbotSDKMain.CreditCard.StartScannerAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
             Alert.Show( $"Credit Card Result", SdkUtils.GenericDocumentToString(result.Result.CreditCard));

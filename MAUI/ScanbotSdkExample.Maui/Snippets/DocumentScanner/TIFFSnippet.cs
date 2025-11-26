@@ -15,6 +15,6 @@ public static class TiffSnippets
     static async void CreateTiffFromImage(Uri[] imageFiles)
     {
         var parameters = new TiffGeneratorParameters();
-        var outputFileUri = await ScanbotSdkMain.ImageProcessor.WriteTiffAsync(sourceImages: imageFiles.Select(f => new FileImageSource { File = f.LocalPath }), sourceImagesEncrypted: false, parameters: parameters);
+        var outputFileUri = await ScanbotSDKMain.TiffGenerator.GenerateFromImagesAsync(images: imageFiles.Select(f => new FileImageSource { File = f.LocalPath }), parameters: parameters);
     }
 }

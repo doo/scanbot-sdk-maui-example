@@ -6,10 +6,10 @@ namespace ScanbotSdkExample.Maui.Snippets.DocumentScanner;
 
 public static class FilterAndRotateOnDocumentPage
 {
-    private static async Task LaunchAsync(Guid documentUuid)
+    private static async Task StartScannerAsync(Guid documentUuid)
     {
         // Retrieve the scanned document (replace Guid.Empty with a real value)
-        var document = ScanbotSdkMain.DocumentScanner.LoadDocument(documentUuid: documentUuid);
+        var document = ScanbotSDKMain.Document.LoadDocument(documentUuid: documentUuid);
 
         // Retrieve the selected document page.
         var page = document.Pages.First();
@@ -26,10 +26,10 @@ public static class FilterAndRotateOnDocumentPage
     private static ImageRef FilterAndRotateOnImage(ImageRef imageRef)
     {
         // rotate image
-        imageRef = ScanbotSdkMain.ImageProcessor.Rotate(imageRef, ImageRotation.Clockwise90);
+        imageRef = ScanbotSDKMain.ImageProcessor.Rotate(imageRef, ImageRotation.Clockwise90);
         
         // apply filters
-        imageRef = ScanbotSdkMain.ImageProcessor.ApplyFilters(imageRef, [
+        imageRef = ScanbotSDKMain.ImageProcessor.ApplyFilters(imageRef, [
             ParametricFilter.ScanbotBinarization(OutputMode.Antialiased),
             ParametricFilter.Brightness(0.4)
         ]);
