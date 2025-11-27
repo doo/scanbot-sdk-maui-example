@@ -8,8 +8,14 @@ public interface IClassicDocumentScannerViewResult
     void DidCompleteDocumentScanning(SBSDKScannedDocument scannedDocument);
 }
 
-public class ClassicDocumentScannerViewController : UIViewController
+internal class ScanningStatus(UIColor color, string message)
 {
+    public UIColor Color { get; set; } = color;
+    public string Message { get; set; } = message;
+}
+
+public class ClassicDocumentScannerViewController : UIViewController
+{   
     private UIView _bottomButtonsContainer, _scanningContainerView;
     private UIButton _flashButton, _autoSnapButton;
     private SBSDKShutterButton _shutterButton;
@@ -164,60 +170,42 @@ public class ClassicDocumentScannerViewController : UIViewController
       SetAutoSnapEnabled(true);
 
       _documentScannerViewController.ConfigureScanningStatusLabel += ConfigureUserGuidanceLabel;
-
+      _documentScannerViewController.PolygonConfigurationFor += TestPolygonConfiguration;
     }
 
+    private SBSDKDocumentScannerPolygonConfiguration TestPolygonConfiguration(SBSDKDocumentScannerViewController controller, SBSDKDocumentDetectionStatus status)
+    {
+        var scanningInfo = StatusDictionary[status];
+
+        controller.AutoSnapProgressPolygonConfiguration.StrokeColor = scanningInfo.Color;
+        return controller.AutoSnapProgressPolygonConfiguration;
+    } 
+    
+    internal Dictionary<SBSDKDocumentDetectionStatus, ScanningStatus> StatusDictionary = new Dictionary<SBSDKDocumentDetectionStatus, ScanningStatus>
+    {
+        { SBSDKDocumentDetectionStatus.Ok,                  new ScanningStatus( UIColor.Black, "The document is Ok") },
+        { SBSDKDocumentDetectionStatus.OkButTooSmall,        new ScanningStatus( UIColor.White, "Please move the camera closer to the document.") },
+        { SBSDKDocumentDetectionStatus.OkButBadAngles,       new ScanningStatus( UIColor.White, "Please hold the camera in parallel over the document.") },
+        { SBSDKDocumentDetectionStatus.OkButBadAspectRatio,  new ScanningStatus( UIColor.White, "The document size is too long.") },
+
+        { SBSDKDocumentDetectionStatus.ErrorNothingDetected, new ScanningStatus( UIColor.Purple, "Unable to detect the document.") },
+        { SBSDKDocumentDetectionStatus.OkButTooDark,         new ScanningStatus( UIColor.Purple, "Unable to detect due to dark lighting conditions.") },
+        { SBSDKDocumentDetectionStatus.ErrorTooNoisy,        new ScanningStatus( UIColor.Purple, "Unable to detect document due to too much noise in the preview.") },
+        { SBSDKDocumentDetectionStatus.NotAcquired,          new ScanningStatus( UIColor.Purple, "Unable to acquire the document.") },
+        { SBSDKDocumentDetectionStatus.OkButOrientationMismatch,new ScanningStatus( UIColor.Purple, "Please check the orientation of the document.") },
+    };
+    
     private void ConfigureUserGuidanceLabel(object sender, ConfigureScanningStatusLabelForScanningResultEventArgs e)
     {
-        var status = e.Result.Status;
-        Debug.WriteLine("Document Detection Status: " + status);
-        var hint = string.Empty;
-        var backgroundColor = UIColor.Clear;
-        switch (status)
+        if (e?.Result == null)
         {
-            case SBSDKDocumentDetectionStatus.Ok:
-                hint = "The document is Ok";
-                backgroundColor = UIColor.Green;
-                break;
-            case SBSDKDocumentDetectionStatus.OkButTooSmall:
-                hint = "Please move the camera closer to the document.";
-                backgroundColor = UIColor.Yellow;
-                break;
-            case SBSDKDocumentDetectionStatus.OkButBadAngles:
-                hint = "Please hold the camera in parallel over the document.";
-                backgroundColor = UIColor.Yellow;
-                break;
-            case SBSDKDocumentDetectionStatus.OkButBadAspectRatio:
-                hint = "The document size is too long.";
-                backgroundColor = UIColor.Yellow;
-                break;
-            case SBSDKDocumentDetectionStatus.ErrorNothingDetected:
-                hint = "Unable to detect the document.";
-                backgroundColor = UIColor.Red;
-                break;
-            case SBSDKDocumentDetectionStatus.OkButTooDark:
-                hint = "Unable to detect due to dark lighting conditions.";
-                backgroundColor = UIColor.Red;
-                break;
-            case SBSDKDocumentDetectionStatus.ErrorTooNoisy:
-                hint = "Unable to detect document due to too much noise in the preview.";
-                backgroundColor = UIColor.Red;
-                break;
-            case SBSDKDocumentDetectionStatus.NotAcquired:
-                hint = "Unable to acquire the document.";
-                backgroundColor = UIColor.Red;
-                break;
-            case SBSDKDocumentDetectionStatus.OkButOrientationMismatch:
-                hint = "Unable to acquire the document.";
-                backgroundColor = UIColor.Red;
-                break;
-            default:
-                e.Label.Hidden = true;
-                return;
+            return;
         }
-
-        e.Label.Text = hint;
-        e.Label.BackgroundColor = backgroundColor.ColorWithAlpha(0.5f);
+        Debug.WriteLine("Document Detection Status: " + e.Result.Status);
+        
+        var scanningInfo = StatusDictionary[e.Result.Status];
+        e.Label.Text = scanningInfo.Message;
+        e.Label.BackgroundColor = scanningInfo.Color.ColorWithAlpha(0.5f);
     }
 
     private void DidDetectDocument(object sender, SnapDocumentImageOnImageWithResultEventArgs args)
