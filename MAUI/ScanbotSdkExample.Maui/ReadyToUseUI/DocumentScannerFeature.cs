@@ -47,6 +47,11 @@ public static class DocumentScannerFeature
         configuration.Screens.Camera.UserGuidance.StatesTitles.TooSmall = "Document too small";
         configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
 
+        Task.Run(async () =>
+        {
+            await Task.Delay(3000);
+            await ScanbotSDKMain.Rtu.DocumentScanner.CloseAsync();
+        });
         var result = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
