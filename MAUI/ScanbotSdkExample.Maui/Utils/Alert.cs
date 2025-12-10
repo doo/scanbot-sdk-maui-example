@@ -1,11 +1,12 @@
 ﻿namespace ScanbotSdkExample.Maui.Utils;
+
 public static class Alert
 {
-    public static void Show(string title, string message)
+    public static async void Show(string title, string message)
     {
-        _ = MainThread.InvokeOnMainThreadAsync(async () =>
+        await MainThread.InvokeOnMainThreadAsync(async () =>
         {
-            await App.RootPage.DisplayAlert(title, message, "Close");
+            await App.Navigation.CurrentPage.DisplayAlertAsync(title, message, "Close");
         });
     }
         
@@ -13,7 +14,7 @@ public static class Alert
     {
         await MainThread.InvokeOnMainThreadAsync(async () =>
         {
-            var result =  await App.RootPage.DisplayAlert(title, message, "View Detected Image", "Close");
+            var result = await App.Navigation.CurrentPage.DisplayAlertAsync(title, message, "View Detected Image", "Close");
             if (result)
             {
                 completion?.Invoke();

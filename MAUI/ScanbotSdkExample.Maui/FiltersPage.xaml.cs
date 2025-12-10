@@ -95,7 +95,7 @@ public partial class FiltersPage
         // Clear filters
         if (filterItem.FilterTitle == FilterItemConstants.None && checkBox.IsChecked)
         {
-            var result = await DisplayAlert("Alert",
+            var result = await DisplayAlertAsync("Alert",
                 "Selecting None will clear all your previous selections, Please confirm.", "Continue",
                 "Cancel");
 
@@ -173,7 +173,7 @@ public partial class FiltersPage
         if (ValidateEmptyValues(selectedFilters))
         {
             // if filter is selected but the picker values are left empty.
-            await DisplayAlert("Alert", "Please insert the required values for the selected filters and try again.", "Ok");
+            await DisplayAlertAsync("Alert", "Please insert the required values for the selected filters and try again.", "Ok");
             return;
         }
 

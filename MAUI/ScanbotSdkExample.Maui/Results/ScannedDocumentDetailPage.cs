@@ -139,7 +139,7 @@ public class ScannedDocumentDetailPage : ContentPage
     private async void OnDeleteButtonTapped(object sender, EventArgs e)
     {
         var message = "Do you really want to delete this page?";
-        var result = await DisplayAlert("Attention!", message, "Yes", "No");
+        var result = await DisplayAlertAsync("Attention!", message, "Yes", "No");
         if (result)
         {
             await _selectedDocument.RemovePageAsync(_selectedPage);

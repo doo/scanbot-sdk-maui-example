@@ -274,7 +274,7 @@ public class ScannedDocumentsPage : ContentPage
     private async void OnDeleteButtonTapped(object sender, EventArgs e)
     {
         var message = "This will delete the current document that contains all the pages visible on the screen.";
-        var result = await DisplayAlert("Attention!", message, "Confirm", "Cancel");
+        var result = await DisplayAlertAsync("Attention!", message, "Confirm", "Cancel");
         if (!result) return;
         using var loader = new PageLoader(this);
         await _document.DeleteAsync();

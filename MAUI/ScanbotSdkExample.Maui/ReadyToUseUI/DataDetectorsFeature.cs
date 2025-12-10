@@ -38,11 +38,12 @@ public static class DataDetectorsFeature
 
         // Configure the scanner
         configuration.ScannerConfiguration.IncompleteResultHandling = MrzIncompleteResultHandling.Accept;
-        Task.Run(async () =>
+
+        HomePage.TestForceCloseScanner(async void () =>
         {
-            await Task.Delay(3000);
-            await ScanbotSDKMain.Rtu.MrzScanner.CloseAsync();
+            await ScanbotSDKMain.Rtu.MrzScanner.ForceCloseScannerAsync();
         });
+
         var result = await Rtu.MrzScanner.LaunchAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
@@ -58,11 +59,12 @@ public static class DataDetectorsFeature
             CancelButtonTitle = "Done",
             TopBarButtonsColor = Colors.Green
         };
-        Task.Run(async () =>
+
+        HomePage.TestForceCloseScanner(async void () =>
         {
-            await Task.Delay(3000);
-            await ScanbotSDKMain.Rtu.EhicScanner.CloseAsync();
+            await ScanbotSDKMain.Rtu.EhicScanner.ForceCloseScannerAsync();
         });
+        
         var result = await Rtu.EhicScanner.LaunchAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
@@ -90,11 +92,12 @@ public static class DataDetectorsFeature
         // Modify the action bar
         configuration.ActionBar.FlipCameraButton.Visible = false;
         configuration.ActionBar.FlashButton.ActiveForegroundColor = Constants.Colors.ScanbotRed;
-        Task.Run(async () =>
+
+        HomePage.TestForceCloseScanner(async void () =>
         {
-            await Task.Delay(3000);
-            await ScanbotSDKMain.Rtu.DocumentDataExtractor.CloseAsync();
+            await ScanbotSDKMain.Rtu.DocumentDataExtractor.ForceCloseScannerAsync();
         });
+        
         var result = await Rtu.DocumentDataExtractor.LaunchAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
@@ -122,11 +125,13 @@ public static class DataDetectorsFeature
         // Modify the action bar
         configuration.ActionBar.FlipCameraButton.Visible = false;
         configuration.ActionBar.FlashButton.ActiveForegroundColor = Constants.Colors.ScanbotRed;
-        Task.Run(async () =>
+
+        HomePage.TestForceCloseScanner(async void () =>
         {
-            await Task.Delay(3000);
-            await ScanbotSDKMain.Rtu.CheckScanner.CloseAsync();
+            await Task.Delay(App.ForceCloseInterval);
+            await ScanbotSDKMain.Rtu.CheckScanner.ForceCloseScannerAsync();
         });
+        
         var result = await Rtu.CheckScanner.LaunchAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
@@ -156,11 +161,12 @@ public static class DataDetectorsFeature
         configuration.ActionBar.FlashButton.ActiveForegroundColor = Constants.Colors.ScanbotRed;
 
         configuration.ScannerConfiguration.MinimumNumberOfRequiredFramesWithEqualScanningResult = 4;
-        Task.Run(async () =>
+
+        HomePage.TestForceCloseScanner(async void () =>
         {
-            await Task.Delay(3000);
-            await ScanbotSDKMain.Rtu.TextPatternScanner.CloseAsync();
+            await ScanbotSDKMain.Rtu.TextPatternScanner.ForceCloseScannerAsync();
         });
+        
         var result = await Rtu.TextPatternScanner.LaunchAsync(configuration);
 
         if (result.Status == OperationResult.Ok)
@@ -188,11 +194,12 @@ public static class DataDetectorsFeature
         // Modify the action bar
         configuration.ActionBar.FlipCameraButton.Visible = false;
         configuration.ActionBar.FlashButton.ActiveForegroundColor = Constants.Colors.ScanbotRed;
-        Task.Run(async () =>
+
+        HomePage.TestForceCloseScanner(async void () =>
         {
-            await Task.Delay(3000);
-            await ScanbotSDKMain.Rtu.VinScanner.CloseAsync();
+            await ScanbotSDKMain.Rtu.VinScanner.ForceCloseScannerAsync();
         });
+        
         var result = await Rtu.VinScanner.LaunchAsync(configuration);
 
         if (result.Status == OperationResult.Ok)
@@ -204,11 +211,13 @@ public static class DataDetectorsFeature
     public static async Task MedicalCertificateScannerClicked()
     {
         var configuration = new MedicalCertificateScannerConfiguration();
-        Task.Run(async () =>
+
+        HomePage.TestForceCloseScanner(async void () =>
         {
-            await Task.Delay(3000);
-            await ScanbotSDKMain.Rtu.MedicalCertificateScanner.CloseAsync();
+            await Task.Delay(App.ForceCloseInterval);
+            await ScanbotSDKMain.Rtu.MedicalCertificateScanner.ForceCloseScannerAsync();
         });
+
         var result = await Rtu.MedicalCertificateScanner.LaunchAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {
@@ -219,11 +228,12 @@ public static class DataDetectorsFeature
     public static async Task CreditCardScannerClicked()
     {
         var configuration = new CreditCardScannerScreenConfiguration();
-        Task.Run(async () =>
+
+        HomePage.TestForceCloseScanner(async void () =>
         {
-            await Task.Delay(3000);
-            await ScanbotSDKMain.Rtu.CreditCardScanner.CloseAsync();
+            await ScanbotSDKMain.Rtu.CreditCardScanner.ForceCloseScannerAsync();
         });
+
         var result = await Rtu.CreditCardScanner.LaunchAsync(configuration);
         if (result.Status == OperationResult.Ok)
         {

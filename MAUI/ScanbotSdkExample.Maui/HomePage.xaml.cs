@@ -157,7 +157,7 @@ public partial class HomePage
     /// Picks image from the photos application.
     /// </summary>
     /// <returns></returns>
-    public static async Task<PlatformImage> PickPlatformImageAsync()
+    internal static async Task<PlatformImage> PickPlatformImageAsync()
     {
         try
         {
@@ -179,30 +179,33 @@ public partial class HomePage
 
         return null;
     }
-    
+
     /// <summary>
     /// Picks image from the photos application.
     /// </summary>
     /// <returns></returns>
-    public async Task<FileImageSource> PickFileImageAsync()
+    internal async Task<FileImageSource> PickFileImageAsync()
     {
         try
         {
             // Pick the photo
-            FileResult photo = await MediaPicker.Default.PickPhotoAsync();
-            if (photo != null)
+            var photos = await MediaPicker.Default.PickPhotoAsync();
+            if (photos == null)
             {
-              return ImageSource.FromFile(photo.FullPath) as FileImageSource;
+                Alert.Show("Alert", $"No image was picked from the Photos application.");
+                return null;
             }
+            
+            return ImageSource.FromFile(photos.FullPath) as FileImageSource;
         }
         catch (Exception ex)
         {
-            Alert.Show("Error", $"Unable to pick image: {ex.Message}");
+            Alert.Show("Error", $"Unable to pick image from the Photos application. \nMessage: {ex.Message}");
         }
-
+        
         return null;
     }
-    
+
     private async Task ExtractOcrFromImageClicked()
     {
         var image = await PickFileImageAsync();
@@ -245,10 +248,26 @@ public partial class HomePage
         
         var documentCount = ScannedDocument.StoredDocumentUuids.Length;
         var message = "This will delete all the documents found on the local storage.";
-        var result = await DisplayAlert("Attention!", message, "Confirm", "Cancel");
+        var result = await DisplayAlertAsync("Attention!", message, "Confirm", "Cancel");
         if (!result) return;
         
         await ScannedDocument.DeleteAllDocumentsAsync();
-        await DisplayAlert("Alert", $"Number of documents deleted: {documentCount}", "Ok");
+        await DisplayAlertAsync("Alert", $"Number of documents deleted: {documentCount}", "Ok");
+    }
+
+    /// <summary>
+    /// Invokes the Force closing of scanner after the specified time span if the feature is enabled from App.xaml.cs file.
+    /// </summary>
+    /// <param name="action">Invokes the Scanner ForceClose after the given interval.</param>
+    internal static void TestForceCloseScanner(Action action)
+    {
+        if (App.TestForceCloseFeature)
+        {
+            Task.Run(async () =>
+            {
+                await Task.Delay(App.ForceCloseInterval);
+                action?.Invoke();
+            });
+        }
     }
 }

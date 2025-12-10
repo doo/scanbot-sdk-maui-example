@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <!-- ===================== Common Project Configs/Architecture =====================  -->
     <PropertyGroup>
-        <TargetFrameworks>net9.0-android;net9.0-ios</TargetFrameworks>
+        <TargetFrameworks>net10.0-android;net10.0-ios</TargetFrameworks>
         <OutputType>Exe</OutputType>
         <UseMaui>true</UseMaui>
         <SingleProject>true</SingleProject>
@@ -18,6 +18,7 @@
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">13.0</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21</SupportedOSPlatformVersion>
         <WarningsAsErrors>NU1603</WarningsAsErrors>
+        <NoWarn>CS0162;CS4014</NoWarn>
         <LangVersion>12.0</LangVersion>
         <PackageId>ScanbotSdkExample.Maui</PackageId>
         <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
@@ -95,9 +96,10 @@
         </Compile>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="CommunityToolkit.Maui" Version="9.1.0" />
-        <PackageReference Include="Microsoft.Maui.Essentials" Version="9.0.51" />
-        <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.51" />
-        <PackageReference Include="ScanbotSDK.MAUI" Version="7.1.2-alpha.1" />
+        <PackageReference Include="CommunityToolkit.Maui" Version="12.1.0" />
+        <PackageReference Include="Microsoft.Maui.Controls.Core" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Maui.Essentials" Version="9.0.*" />
+        <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.*" />
+        <PackageReference Include="ScanbotSDK.MAUI" Version="7.1.2-beta.2" />
     </ItemGroup>
 </Project>
