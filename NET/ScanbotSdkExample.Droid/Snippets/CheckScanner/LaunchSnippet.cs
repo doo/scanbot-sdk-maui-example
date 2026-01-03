@@ -37,7 +37,7 @@ public class LaunchSnippet : AppCompatActivity
 	public override void StartActivityForResult(Intent intent, int requestCode, Bundle options)
 	{
 		base.StartActivityForResult(intent, requestCode, options);
-		var resultEntity = (CheckScannerUiResult)intent.GetParcelableExtra(ActivityConstants.ExtraKeyRtuResult);
+		var resultEntity = (CheckScannerUiResult)intent?.GetParcelableExtra(ActivityConstants.ExtraKeyRtuResult);
 		if (resultEntity?.Check == null)
 		{
 			return;

@@ -60,7 +60,7 @@ public class PaletteSnippet : AppCompatActivity
     public override void StartActivityForResult(Intent intent, int requestCode, Bundle options)
     {
         base.StartActivityForResult(intent, requestCode, options);
-        var resultEntity = (TextPatternScannerUiResult)intent.GetParcelableExtra(ActivityConstants.ExtraKeyRtuResult);
+        var resultEntity = (TextPatternScannerUiResult)intent?.GetParcelableExtra(ActivityConstants.ExtraKeyRtuResult);
         if (resultEntity?.RawText == null)
         {
             return;

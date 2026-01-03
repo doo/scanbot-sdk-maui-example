@@ -12,6 +12,7 @@
         <RootNamespace>ScanbotSdkExample.Droid</RootNamespace>
         <WarningsAsErrors>NU1603</WarningsAsErrors>
         <PackageId>ScanbotSdkExample.Droid</PackageId>
+        <NoWarn>CA1422;CS0618;XAOBS001</NoWarn>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Scanbot.Xamarin.ImagePicker" Version="0.0.3-beta.1" />

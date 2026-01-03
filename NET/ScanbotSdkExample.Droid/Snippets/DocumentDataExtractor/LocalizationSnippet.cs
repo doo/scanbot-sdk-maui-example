@@ -44,7 +44,7 @@ public class LocalizationSnippet : AppCompatActivity
     public override void StartActivityForResult(Intent intent, int requestCode, Bundle options)
     {
         base.StartActivityForResult(intent, requestCode, options);
-        var resultEntity = (DocumentDataExtractorUiResult)intent.GetParcelableExtra(ActivityConstants.ExtraKeyRtuResult);
+        var resultEntity = (DocumentDataExtractorUiResult)intent?.GetParcelableExtra(ActivityConstants.ExtraKeyRtuResult);
         if (resultEntity?.Document == null)
         {
             return;

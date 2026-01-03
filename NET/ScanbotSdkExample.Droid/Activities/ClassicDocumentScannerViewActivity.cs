@@ -68,12 +68,6 @@ namespace ScanbotSdkExample.Droid.Activities
             SetUpUiElements();
         }
 
-        private bool HandleDocumentScannerFrame(DocumentScannerFrameHandler.DetectedFrame frameresult, FrameHandler.Frame frame)
-        {
-            Console.WriteLine("GotChaa");
-            return false;
-        }
-
         private void SetUpUiElements()
         {
             _userGuidanceTextView = FindViewById<TextView>(ResourceConstant.Id.user_guidance_text_view)!;
@@ -100,9 +94,16 @@ namespace ScanbotSdkExample.Droid.Activities
             _shutterButton.Post(() => { SetAutoSnapEnabled(_autoSnappingEnabled); });
         }
 
-        private bool ShowUserGuidance(DocumentScannerFrameHandler.DetectedFrame frame, object error)
+        /// <summary>
+        /// This function is invoked for every frame while scanning.
+        /// Below implementation helps in getting the User Guidance while scanning. 
+        /// </summary>
+        /// <param name="result"></param>
+        /// <param name="frame"></param>
+        /// <returns></returns>
+        private bool HandleDocumentScannerFrame(DocumentDetectionResult result, FrameHandler.Frame frame)
         {
-            if (!_autoSnappingEnabled || frame == null)
+            if (!_autoSnappingEnabled || result == null)
             {
                 return false;
             }
@@ -115,21 +116,20 @@ namespace ScanbotSdkExample.Droid.Activities
             var color = Color.Red;
             var guideText = "";
 
-            var result = frame.DetectionStatus;
-            if (result == DocumentDetectionStatus.Ok)
+            if (result.Status == DocumentDetectionStatus.Ok)
             {
                 guideText = "Don't move.\nCapturing...";
                 color = Color.Green;
             }
-            else if (result == DocumentDetectionStatus.OkButTooSmall)
+            else if (result.Status == DocumentDetectionStatus.OkButTooSmall)
             {
                 guideText = "Move closer";
             }
-            else if (result == DocumentDetectionStatus.OkButBadAngles)
+            else if (result.Status == DocumentDetectionStatus.OkButBadAngles)
             {
                 guideText = "Perspective";
             }
-            else if (result == DocumentDetectionStatus.OkButBadAspectRatio)
+            else if (result.Status == DocumentDetectionStatus.OkButBadAspectRatio)
             {
                 guideText = "Wrong aspect ratio.\n Rotate your device";
                 if (IgnoreBadAspectRatio)
@@ -138,15 +138,15 @@ namespace ScanbotSdkExample.Droid.Activities
                     color = Color.Green;
                 }
             }
-            else if (result == DocumentDetectionStatus.ErrorNothingDetected)
+            else if (result.Status == DocumentDetectionStatus.ErrorNothingDetected)
             {
                 guideText = "No Document";
             }
-            else if (result == DocumentDetectionStatus.ErrorTooNoisy)
+            else if (result.Status == DocumentDetectionStatus.ErrorTooNoisy)
             {
                 guideText = "Background too noisy";
             }
-            else if (result == DocumentDetectionStatus.ErrorTooDark)
+            else if (result.Status == DocumentDetectionStatus.ErrorTooDark)
             {
                 guideText = "Poor light";
             }

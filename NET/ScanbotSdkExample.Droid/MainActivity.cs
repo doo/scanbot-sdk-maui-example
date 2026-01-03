@@ -19,10 +19,8 @@ public partial class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
     private const int ScanDataRequestCode = 4003;
     private const int ScanVinRequestCode = 4004;
     private const int ScanCreditCardRequestCode = 4005;
-    private const int ScanMedicalCertificateRequestCode = 4007;
     private const int ScanCheckRequestCode = 4008;
     private const int  DetectMrzFromImageCode = 6001;
-    private const int DetectEhicFromImageCode = 6002;
     private const int DetectMedicalCertificateFromImageCode = 6003;
     private const int DetectCheckFromImageCode = 6004;
     private const int ExtractDocumentDataFromImageCode = 6005;
@@ -68,7 +66,6 @@ public partial class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
             new ListItemButton(this, "Scan Check on Image", () => LaunchImagePicker(DetectCheckFromImageCode)),
             new ListItemButton(this, "Scan Credit Card on Image", () => LaunchImagePicker(DetectCreditCardFromImageCode)),
             new ListItemButton(this, "Extract Document Data from Image", () => LaunchImagePicker(ExtractDocumentDataFromImageCode)),
-            new ListItemButton(this, "Scan EU Health Insurance Card on Image", () => LaunchImagePicker(DetectEhicFromImageCode)),
             new ListItemButton(this, "Scan Medical Certificate on Image", () => LaunchImagePicker(DetectMedicalCertificateFromImageCode)),
             new ListItemButton(this, "Scan MRZ on Image", () => LaunchImagePicker(DetectMrzFromImageCode))
         ]);
@@ -167,7 +164,7 @@ public partial class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
     /// <returns>Result class object</returns>
     private T GetParcelableExtra<T>(Intent intent) where T : Java.Lang.Object
     {
-        var result = intent.GetParcelableExtra(ActivityConstants.ExtraKeyRtuResult);
+        var result = intent?.GetParcelableExtra(ActivityConstants.ExtraKeyRtuResult);
         return result is T ? (T)result : null;
     }
 }

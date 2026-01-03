@@ -26,6 +26,7 @@ public class IntroductionSnippet : AppCompatActivity
             LaunchCreditCardScanner();
         }
     }
+    
     private void LaunchCreditCardScanner()
     {
         // Create the default configuration object.
@@ -71,11 +72,10 @@ public class IntroductionSnippet : AppCompatActivity
         StartActivityForResult(intent, ScanCreditCardRequestCode);
     }
 
-
     public override void StartActivityForResult(Intent intent, int requestCode, Bundle options)
     {
         base.StartActivityForResult(intent, requestCode, options);
-        var resultEntity = (CreditCardScannerUiResult)intent.GetParcelableExtra(ActivityConstants.ExtraKeyRtuResult);
+        var resultEntity = (CreditCardScannerUiResult)intent?.GetParcelableExtra(ActivityConstants.ExtraKeyRtuResult);
         if (resultEntity?.CreditCard == null)
         {
             return;

@@ -95,9 +95,16 @@ public partial class PagePreviewActivity
 						ResamplingMethod.None,
 						null); // ParametricFilter.ScanbotBinarizationFilter()
 		
-		// todo: Testing required
-		var isSuccess = _scanbotSdk.CreatePdfGenerator(null).Generate(_document, new Java.IO.File(output.Path), pdfConfig: pdfConfig).GetValue<bool>();
-		return output;
+		// todo: Check with the team -- On how to handle Success/Failure.
+		_scanbotSdk.CreatePdfGenerator(null).Generate(_document, new Java.IO.File(output.Path!), pdfConfig: pdfConfig);
+		
+		// Check if the file was generated.
+		if (File.Exists(output.Path))
+		{
+			return output;	
+		}
+
+		return null;
 	}
 
 	private AndroidUri CreateSandwichPdf()
@@ -137,17 +144,15 @@ public partial class PagePreviewActivity
 							ResamplingMethod.None,
 							binarizationFilter: null);
 
-		// todo: Testing required
-		var pdfGenerated = _scanbotSdk.CreatePdfGenerator(ocrConfig).Generate(_document, pdfConfig).GetValue<bool>();
-		if (pdfGenerated)
+		// todo: Check with the team -- On how to handle Success/Failure.
+		_scanbotSdk.CreatePdfGenerator(ocrConfig).Generate(_document, new Java.IO.File(output.Path!), pdfConfig);
+		
+		// Check if the file was generated.
+		if (File.Exists(output.Path))
 		{
-			if (string.IsNullOrEmpty(_document.PdfUri?.Path))
-				return output;
-			
-			File.Move(_document.PdfUri.Path, new Java.IO.File(output.Path!).AbsolutePath);
+			return output;	
 		}
-
-		return output;
+		return null;
 	}
 
 	private void PerformOcr()
@@ -194,7 +199,16 @@ public partial class PagePreviewActivity
 			dpi: 200,
 			userFields: Array.Empty<UserField>(),
 			ParametricFilter.ScanbotBinarizationFilter());
-		var isTiffGenerated = _scanbotSdk.CreateTiffGeneratorManager().GenerateFromDocument(_document, new Java.IO.File(output.Path), options).GetValue<bool>();
-		return output;
+		
+		// todo: Check with the team -- On how to handle Success/Failure.
+		_scanbotSdk.CreateTiffGeneratorManager().GenerateFromDocument(_document, new Java.IO.File(output.Path!), options);
+		
+		// Check if the file was generated.
+		if (File.Exists(output.Path))
+		{
+			return output;	
+		}
+		
+		return null;
 	}
 }
