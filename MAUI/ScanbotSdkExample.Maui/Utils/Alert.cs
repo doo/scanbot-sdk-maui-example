@@ -20,4 +20,12 @@ public static class Alert
             }
         });
     }
+    
+    public static async void Show(Exception ex)
+    {
+        _ = MainThread.InvokeOnMainThreadAsync(async () =>
+        {
+            await App.RootPage.DisplayAlert("Error", ex?.Message ?? "Something went wrong." , "Close");
+        });
+    }
 }

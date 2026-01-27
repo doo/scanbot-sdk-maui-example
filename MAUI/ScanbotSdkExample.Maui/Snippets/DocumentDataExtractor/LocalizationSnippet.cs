@@ -17,15 +17,15 @@ public class LocalizationSnippet
         localization.CameraPermissionCloseButton = "Localized cameraPermissionCloseButton";
         
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSDKMain.DocumentDataExtractor.StartScannerAsync(configuration);
-        if (scannedOutput.Status != OperationResult.Ok)
+        var result = await ScanbotSDKMain.DocumentDataExtractor.StartScannerAsync(configuration);
+        if (!result.IsSuccess)
         {
-            // Indicates that cancel was tapped or the result was unsuccessful
+            // Indicates failure in the operation. Please access the Exception object returned in `result.Error`
             return;
         }
         
         // Iterate through all the document fields
-        foreach (var field in scannedOutput.Result.Document.Fields)
+        foreach (var field in result.Value.Document.Fields)
         {
             Console.WriteLine($"{field.Type.Name}: {field.Value.Text}");
         }

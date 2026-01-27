@@ -1,5 +1,6 @@
 using ScanbotSDK.MAUI.Document;
 using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Image;
 
 namespace ScanbotSdkExample.Maui.Snippets.DocumentScanner;
 
@@ -31,21 +32,31 @@ public static class DocumentOperationSnippets
 
     static void ReorderDocumentPages(Guid documentUuid)
     {
-        var document = ScanbotSDKMain.Document.LoadDocument(documentUuid);
-
-        var sourceIndex = document.PageCount - 1;
+        var result = ScanbotSDKMain.Document.LoadDocument(documentUuid);
+        if (!result.IsSuccess)
+        {
+            // access the returned exception with `result.Error`
+            return;
+        }
+        
+        var sourceIndex = result.Value.PageCount - 1;
 
         // create destination index.
         var destinationIndex = 0;
 
         // Reorder images in the scanned document.
-        document.MovePage(sourceIndex, destinationIndex);
+        result.Value.MovePage(sourceIndex, destinationIndex);
     }
 
     static async Task RemoveAllPagesFromDocument(Guid documentUuid)
     {
-        var document = ScanbotSDKMain.Document.LoadDocument(documentUuid);
-        await document.RemoveAllPagesAsync();
+        var result = ScanbotSDKMain.Document.LoadDocument(documentUuid);
+        if (!result.IsSuccess)
+        {
+            // access the returned exception with `result.Error`
+            return;
+        }
+        await result.Value.RemoveAllPagesAsync();
     }
 
     static async Task DeleteDocument(Guid documentUuid)

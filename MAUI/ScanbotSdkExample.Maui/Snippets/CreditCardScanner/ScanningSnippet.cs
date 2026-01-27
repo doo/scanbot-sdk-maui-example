@@ -67,15 +67,15 @@ public class ScanningSnippet
         configuration.Vibration.Enabled = false;
         
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSDKMain.CreditCard.StartScannerAsync(configuration);
-        if (scannedOutput.Status != OperationResult.Ok)
+        var result = await ScanbotSDKMain.CreditCard.StartScannerAsync(configuration);
+        if (!result.IsSuccess)
         {
-            // Indicates that cancel was tapped or the result was unsuccessful
+            // Indicates failure in the operation. Please access the Exception object returned in `result.Error`
             return;
         }
 
         // Wrap the resulted generic document to the strongly typed credit card.
-        var creditCard = new CreditCard(scannedOutput.Result.CreditCard);
+        var creditCard = new CreditCard(result.Value.CreditCard);
         
         // Retrieve the values.
         // e.g

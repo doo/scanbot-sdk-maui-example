@@ -49,9 +49,9 @@ public static class DocumentScannerFeature
         configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
 
         var result = await ScanbotSDKMain.Document.StartScannerAsync(configuration);
-        if (result.Status == OperationResult.Ok)
+        if (result.IsSuccess)
         {
-            await App.Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
+            await App.Navigation.PushAsync(new ScannedDocumentsPage(result.Value));
         }
     }
 
@@ -86,9 +86,9 @@ public static class DocumentScannerFeature
         configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
 
         var result = await ScanbotSDKMain.Document.StartScannerAsync(configuration);
-        if (result.Status == OperationResult.Ok)
+        if (result.IsSuccess)
         {
-            await App.Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
+            await App.Navigation.PushAsync(new ScannedDocumentsPage(result.Value));
         }
     }
 
@@ -144,9 +144,9 @@ public static class DocumentScannerFeature
         configuration.Screens.Cropping.BottomBar.DetectButton.Visible = true;
 
         var result = await ScanbotSDKMain.Document.StartScannerAsync(configuration);
-        if (result.Status == OperationResult.Ok)
+        if (result.IsSuccess)
         {
-            await App.Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
+            await App.Navigation.PushAsync(new ScannedDocumentsPage(result.Value));
         }
     }
 

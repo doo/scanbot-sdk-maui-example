@@ -53,15 +53,15 @@ public class FinderOverlaySnippet
         };
 
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSDKMain.Mrz.StartScannerAsync(configuration);
-        if (scannedOutput.Status != OperationResult.Ok)
+        var result = await ScanbotSDKMain.Mrz.StartScannerAsync(configuration);
+        if (!result.IsSuccess)
         {
-            // Indicates that cancel was tapped or the result was unsuccessful
+            // Indicates failure in the operation. Please access the Exception object returned in `result.Error`
             return;
         }
 
         // Wrap the resulted generic document to the strongly typed mrz class.
-        var mrz = new MRZ(scannedOutput.Result.MrzDocument);
+        var mrz = new MRZ(result.Value.MrzDocument);
 
         // Retrieve the values.
         // e.g

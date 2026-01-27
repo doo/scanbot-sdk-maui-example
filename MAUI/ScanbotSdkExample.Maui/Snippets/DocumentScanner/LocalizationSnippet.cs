@@ -20,14 +20,14 @@ public static class LocalizationSnippet
         localization.CameraUserGuidanceTooDark = "camera.userGuidance.tooDark";
 
         // Launch the scanner
-        var response = await ScanbotSDKMain.Document.StartScannerAsync(configuration);
-        if (response.Status != OperationResult.Ok)
+        var result = await ScanbotSDKMain.Document.StartScannerAsync(configuration);
+        if (!result.IsSuccess)
         {
             // Indicates that the cancel button was tapped.
             return;
         }
         
         // Handle the document.
-        var scannedDocument = response.Result;
+        var scannedDocument = result.Value;
     }
 }

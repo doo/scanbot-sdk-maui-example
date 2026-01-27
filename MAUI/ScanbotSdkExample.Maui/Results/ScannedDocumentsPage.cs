@@ -134,9 +134,9 @@ public class ScannedDocumentsPage : ContentPage
             DocumentUuid = _document.Uuid.ToString()
         });
 
-        if (result.Status == OperationResult.Ok)
+        if (result.IsSuccess)
         {
-            _document = result.Result;
+            _document = result.Value;
             _resultList.ItemsSource = _document.Pages;
             _pageGridView.PlatformSizeChanged();
         }
@@ -181,7 +181,7 @@ public class ScannedDocumentsPage : ContentPage
 
     private async Task GeneratePdfAsync()
     {
-        var fileUri = await _document.CreatePdfAsync(new PdfConfiguration
+        var result = await _document.CreatePdfAsync(new PdfConfiguration
         {
             PageDirection = PageDirection.Auto,
             PageSize = PageSize.A4,
@@ -198,9 +198,15 @@ public class ScannedDocumentsPage : ContentPage
             PageFit = PageFit.FitIn,
             ResamplingMethod = ResamplingMethod.None
         });
+
+        if (!result.IsSuccess)
+        {
+            Alert.Show(result.Error);
+            return;
+        }
         
-        // Sharing the Pdf.
-        await SharingUtils.ShareFileAsync(fileUri.LocalPath, "application/pdf");
+        // success: sharing the Pdf.
+        await SharingUtils.ShareFileAsync(result.Value.LocalPath, "application/pdf");
     }
 
     private async Task PerformOcrAsync()
@@ -215,10 +221,15 @@ public class ScannedDocumentsPage : ContentPage
         var ocrEngine = OcrConfiguration.ScanbotOcr;
 
         var sourceImages = _document.Pages.Select(p => new FileImageSource { File = p.OriginalImageUri.LocalPath });
-        var result = await ScanbotSDKMain.ScanbotOcrEngine.RecognizeOnImagesAsync(images: sourceImages, configuration: ocrEngine);
+        var result = await ScanbotSDKMain.OcrEngine.RecognizeOnImagesAsync(images: sourceImages, configuration: ocrEngine);
+        if (!result.IsSuccess)
+        {
+            Alert.Show(result.Error);
+            return;
+        }
         
-        // You can access the results with: result.Pages
-        Alert.Show("OCR", result.RecognizedText);
+        // success: you can access the results with: result.Pages
+        Alert.Show("OCR", result.Value.RecognizedText);
     }
 
     private async Task GenerateSandwichPdfAsync()
@@ -234,7 +245,7 @@ public class ScannedDocumentsPage : ContentPage
 
         var result = await ScanbotSDKMain.PdfGenerator.GenerateFromImagesAsync(
             images: _document.Pages.Select(p => new FileImageSource { File = p.OriginalImageUri.LocalPath }),
-            configuration: new PdfConfiguration
+            pdfConfiguration: new PdfConfiguration
             {
                 PageDirection = PageDirection.Auto,
                 PageSize = PageSize.A4,
@@ -251,14 +262,20 @@ public class ScannedDocumentsPage : ContentPage
                 PageFit = PageFit.FitIn,
                 ResamplingMethod = ResamplingMethod.None
             }, ocrConfiguration: ocrEngine);
+        
+        if (!result.IsSuccess)
+        {
+            Alert.Show(result.Error);
+            return;
+        }
 
-        // Sharing the Pdf.
-        await SharingUtils.ShareFileAsync(result.LocalPath, "application/pdf");
+        // success: Sharing the Pdf.
+        await SharingUtils.ShareFileAsync(result.Value.LocalPath, "application/pdf");
     }
 
     private async Task GenerateTiffAsync()
     {
-        var fileUri = await _document.CreateTiffAsync(new TiffGeneratorParameters
+        var result = await _document.CreateTiffAsync(new TiffGeneratorParameters
             {
                 Compression = CompressionMode.CcittT6,
                 Dpi = 72,
@@ -269,16 +286,24 @@ public class ScannedDocumentsPage : ContentPage
         );
 
         // Sharing the Tiff file.
-        await SharingUtils.ShareFileAsync(fileUri.LocalPath, "image/tiff");
+        await SharingUtils.ShareFileAsync(result.Value.LocalPath, "image/tiff");
     }
 
     private async void OnDeleteButtonTapped(object sender, EventArgs e)
     {
         var message = "This will delete the current document that contains all the pages visible on the screen.";
-        var result = await DisplayAlert("Attention!", message, "Confirm", "Cancel");
-        if (!result) return;
+        var alertAccepted = await DisplayAlert("Attention!", message, "Confirm", "Cancel");
+        if (!alertAccepted) return;
+        
         using var loader = new PageLoader(this);
-        await _document.DeleteDocumentAsync();
+        
+        var result = await _document.DeleteDocumentAsync();
+        if (!result.IsSuccess)
+        {
+            Alert.Show(result.Error);
+            return;
+        }
+
         await Navigation.PopAsync(true);
     }
 }

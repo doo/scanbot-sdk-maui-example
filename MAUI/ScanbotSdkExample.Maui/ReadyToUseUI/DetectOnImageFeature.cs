@@ -1,4 +1,5 @@
 using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Common;
 using ScanbotSDK.MAUI.Core.Check;
 using ScanbotSDK.MAUI.Core.CreditCard;
 using ScanbotSDK.MAUI.Core.DocumentScanner;
@@ -25,12 +26,13 @@ public static class DetectOnImageFeature
         };
 
         var result = await ScanbotSDKMain.Mrz.ScanFromImageAsync(image, configuration: configuration);
-        if (result?.Document == null || result.Success == false)
+        if (!result.IsSuccess)
         {
-            Alert.Show( "Error", "Could not detect the MRZ data.");
+            Alert.Show(result.Error);
             return;
         }
-        Alert.Show( "MRZ result", SdkUtils.GenericDocumentToString(result.Document));
+        // success
+        Alert.Show("MRZ result", SdkUtils.GenericDocumentToString(result.Value.Document));
     }
 
     public static async Task DocumentDataExtractorClicked()
@@ -59,14 +61,13 @@ public static class DetectOnImageFeature
             ]
         };
         var result = await ScanbotSDKMain.DocumentDataExtractor.ScanFromImageAsync(image, configuration);
-        if (result?.Document == null || result.Status != DocumentDataExtractionStatus.Ok)
+        if (!result.IsSuccess)
         {
-            Alert.Show( "Error", "Could not extract the Document data.");
+            Alert.Show(result.Error);
             return;
         }
-
-        var message = SdkUtils.GenericDocumentToString(result.Document);
-        Alert.Show( "Document Data Result", message);
+        // success
+        Alert.Show("Document Data Result", SdkUtils.GenericDocumentToString(result.Value.Document));
     }
 
     public static async Task CheckDetectorClicked()
@@ -90,23 +91,23 @@ public static class DetectOnImageFeature
             DocumentDetectionMode = CheckDocumentDetectionMode.DetectAndCropDocument
         });
 
-        if (result?.Check == null || result.Status != CheckMagneticInkStripScanningStatus.Success)
+        if (!result.IsSuccess)
         {
-            Alert.Show( "Error", "Could not detect the Check data.");
+            Alert.Show(result.Error);
             return;
         }
         
-        if (result.CroppedImage == null)
+        if (result.Value.CroppedImage == null)
         {
-            Alert.Show( "Check Result", SdkUtils.GenericDocumentToString(result.Check));
+            Alert.Show( "Check Result", SdkUtils.GenericDocumentToString(result.Value.Check));
             return;
         }
 
         // Executes when the ExtractCroppedImage is set to true.
-        Alert.Show( "Check Result", SdkUtils.ToAlertMessage(result), () =>
+        Alert.Show( "Check Result", SdkUtils.ToAlertMessage(result.Value), () =>
         {
             var resultPage = new DetectOnImageResultPage();
-            var source = ImageSource.FromStream(() => result.CroppedImage.ToPlatformImage().AsStream());
+            var source = result.Value.CroppedImage.ToImageSource();
             resultPage.NavigateData(source);
             App.Navigation.PushAsync(resultPage);
         });
@@ -124,23 +125,23 @@ public static class DetectOnImageFeature
         };
         
         var result = await ScanbotSDKMain.MedicalCertificate.ScanFromImageAsync(image, configuration);
-        if (result?.DocumentDetectionResult == null || result.DocumentDetectionResult.Status != DocumentDetectionStatus.Ok || !result.ScanningSuccessful)
+        if (!result.IsSuccess)
         {
-            Alert.Show( "Error", "Could not detect the Medical Certificate data.");
+            Alert.Show(result.Error);
             return;
         }
 
-        if (result.CroppedImage == null)
+        if (result.Value.CroppedImage == null)
         {
-            Alert.Show( "Medical Certificate Result", result.ToFormattedString());
+            Alert.Show( "Medical Certificate Result", result.Value.ToFormattedString());
             return;
         }
         
         // Executes when the ExtractCroppedImage is set to true.
-        Alert.Show( "Medical Certificate Result", result.ToFormattedString(), () =>
+        Alert.Show( "Medical Certificate Result", result.Value.ToFormattedString(), () =>
         {
             var resultPage = new DetectOnImageResultPage();
-            var source = ImageSource.FromStream(() => result.CroppedImage.ToPlatformImage().AsStream());
+            var source = result.Value.CroppedImage.ToImageSource();
             resultPage.NavigateData(source);
             App.Navigation.PushAsync(resultPage);
 
@@ -159,11 +160,12 @@ public static class DetectOnImageFeature
         };
         
         var result = await ScanbotSDKMain.CreditCard.ScanFromImageAsync(image, configuration: configuration);
-        if (result?.CreditCard == null || result.ScanningStatus != CreditCardScanningStatus.Success)
+        if (!result.IsSuccess)
         {
-            Alert.Show( "Error", "Could not detect the Credit card data.");
+            Alert.Show(result.Error);
             return;
         }
-        Alert.Show( "Credit Card result", SdkUtils.GenericDocumentToString(result.CreditCard));
+        
+        Alert.Show( "Credit Card result", SdkUtils.GenericDocumentToString(result.Value.CreditCard));
     }
 }

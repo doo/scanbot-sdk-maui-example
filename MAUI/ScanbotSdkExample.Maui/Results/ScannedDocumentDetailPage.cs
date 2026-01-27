@@ -1,5 +1,6 @@
 ﻿using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Core.DocumentQualityAnalyzer;
+using ScanbotSDK.MAUI.Core.ImageProcessing;
 using ScanbotSDK.MAUI.Document;
 using ScanbotSdkExample.Maui.Controls;
 using ScanbotSdkExample.Maui.Controls.ActionBar;
@@ -90,13 +91,13 @@ public class ScannedDocumentDetailPage : ContentPage
     {
         if (!SdkUtils.CheckLicense(this)) { return; }
 
-        var croppingOutput = await ScanbotSDKMain.Document.StartCroppingScreenAsync(new CroppingConfiguration
+        var result = await ScanbotSDKMain.Document.StartCroppingScreenAsync(new CroppingConfiguration
         {
             DocumentUuid = _selectedDocument.Uuid.ToString(),
             PageUuid = _selectedPage.Uuid.ToString()
         });
         
-        if (croppingOutput.Status == OperationResult.Ok)
+        if (!result.IsSuccess)
         {
             _documentImage.Source = _selectedPage.DocumentImagePreview.ToImageSource();
         }
@@ -111,29 +112,43 @@ public class ScannedDocumentDetailPage : ContentPage
 
         IsLoading = true;
         var filterPage = new FiltersPage();
-        filterPage.NavigateData(async filters =>
-        {
-            _documentImage.Source = null;
-            _selectedPage = await _selectedPage.ModifyPageAsync(filters: filters);
-            _documentImage.Source =  _selectedPage.DocumentImagePreview.ToImageSource();
-        });
+        filterPage.NavigateData(ApplyFilterHandler);
         
         await Navigation.PushAsync(filterPage);
         IsLoading = false;
+    }
+
+    private async void ApplyFilterHandler(ParametricFilter[] filters)
+    {
+        _documentImage.Source = null;
+        var result = await _selectedPage.ModifyPageAsync(filters: filters);
+        if (!result.IsSuccess)
+        {
+            Alert.Show(result.Error);
+            return;
+        }
+
+        _selectedPage = result.Value;
+        _documentImage.Source = _selectedPage.DocumentImagePreview.ToImageSource();
     }
 
     private async void OnAnalyzeQualityTapped(object sender, EventArgs e)
     {
         if (!SdkUtils.CheckLicense(this)) { return; }
         IsLoading = true;
-        var quality = await ScanbotSDKMain.Document.AnalyzeQualityOnImageAsync(_selectedPage.DocumentImage, new DocumentQualityAnalyzerConfiguration
+        var result = await ScanbotSDKMain.Document.AnalyzeQualityOnImageAsync(_selectedPage.DocumentImage, new DocumentQualityAnalyzerConfiguration
         {
             MaxImageSize = 2500,
             MinEstimatedNumberOfSymbolsForDocument = 20
         });
-            
+        
         IsLoading = false;
-        Alert.Show("Document Quality", $"Detected quality is: {quality.Quality}");
+        if (!result.IsSuccess)
+        {
+            Alert.Show(result.Error);
+            return;
+        }
+        Alert.Show("Document Quality", $"Detected quality is: {result.Value.Quality}");
     }
 
     private async void OnDeleteButtonTapped(object sender, EventArgs e)

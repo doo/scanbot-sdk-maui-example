@@ -1,6 +1,7 @@
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Core.Image;
 using ScanbotSDK.MAUI.Core.ImageProcessing;
+using ScanbotSDK.MAUI.Image;
 
 namespace ScanbotSdkExample.Maui.Snippets.DocumentScanner;
 
@@ -9,10 +10,15 @@ public static class FilterAndRotateOnDocumentPage
     private static async Task StartScannerAsync(Guid documentUuid)
     {
         // Retrieve the scanned document (replace Guid.Empty with a real value)
-        var document = ScanbotSDKMain.Document.LoadDocument(documentUuid: documentUuid);
+        var result = ScanbotSDKMain.Document.LoadDocument(documentUuid: documentUuid);
+        if (!result.IsSuccess)
+        {
+            // access the returned exception with `result.Error`
+           return;
+        }
 
         // Retrieve the selected document page.
-        var page = document.Pages.First();
+        var page = result.Value.Pages.First();
 
         // Apply rotation and filters on the page
         var rotation = ImageRotation.Clockwise90;
@@ -26,14 +32,27 @@ public static class FilterAndRotateOnDocumentPage
     private static ImageRef FilterAndRotateOnImage(ImageRef imageRef)
     {
         // rotate image
-        imageRef = ScanbotSDKMain.ImageProcessor.Rotate(imageRef, ImageRotation.Clockwise90);
+        var result = ScanbotSDKMain.ImageProcessor.Rotate(imageRef, ImageRotation.Clockwise90);
+        if (!result.IsSuccess)
+        {
+            // access the returned exception with `result.Error`
+            return null;
+        }
+
+        imageRef = result.Value;
         
         // apply filters
-        imageRef = ScanbotSDKMain.ImageProcessor.ApplyFilters(imageRef, [
+        var filterResult = ScanbotSDKMain.ImageProcessor.ApplyFilters(imageRef, [
             ParametricFilter.ScanbotBinarization(OutputMode.Antialiased),
             ParametricFilter.Brightness(0.4)
         ]);
+
+        if (!filterResult.IsSuccess)
+        {
+            // access the returned exception with `result.Error`
+            return null;
+        }
         
-        return imageRef;
+        return result.Value;
     }
 }

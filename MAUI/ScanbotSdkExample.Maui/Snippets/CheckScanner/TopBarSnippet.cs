@@ -26,15 +26,15 @@ public class TopBarSnippet
         configuration.TopBar.CancelButton.Foreground.Color = new ColorValue("#FFFFFF");
         
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSDKMain.Check.StartScannerAsync(configuration);
-        if (scannedOutput.Status != OperationResult.Ok)
+        var result = await ScanbotSDKMain.Check.StartScannerAsync(configuration);
+        if (!result.IsSuccess)
         {
-            // Indicates that cancel was tapped or the result was unsuccessful
+            // Indicates failure in the operation. Please access the Exception object returned in `result.Error`
             return;
         }
 
         // Wrap the resulted generic document to the strongly typed check.
-        var check = new USACheck(scannedOutput.Result.Check);
+        var check = new USACheck(result.Value.Check);
         
         // Retrieve the values.
         // e.g

@@ -37,9 +37,9 @@ public static class DataDetectorsFeature
         configuration.ScannerConfiguration.IncompleteResultHandling = MrzIncompleteResultHandling.Accept;
 
         var result = await ScanbotSDKMain.Mrz.StartScannerAsync(configuration);
-        if (result.Status == OperationResult.Ok)
+        if (result.IsSuccess)
         {
-            var message = SdkUtils.ParseMrzResult(result.Result);
+            var message = SdkUtils.ParseMrzResult(result.Value);
             Alert.Show( "MRZ Result", message);
         }
     }
@@ -65,9 +65,9 @@ public static class DataDetectorsFeature
         configuration.ActionBar.FlashButton.ActiveForegroundColor = Constants.Colors.ScanbotRed;
         
         var result = await ScanbotSDKMain.DocumentDataExtractor.StartScannerAsync(configuration);
-        if (result.Status == OperationResult.Ok)
+        if (result.IsSuccess)
         {
-            var message = SdkUtils.GenericDocumentToString(result.Result.Document);
+            var message = SdkUtils.GenericDocumentToString(result.Value.Document);
             Alert.Show( "Document Data Result", message);
         }
     }
@@ -93,9 +93,9 @@ public static class DataDetectorsFeature
         configuration.ActionBar.FlashButton.ActiveForegroundColor = Constants.Colors.ScanbotRed;
 
         var result = await ScanbotSDKMain.Check.StartScannerAsync(configuration);
-        if (result.Status == OperationResult.Ok)
+        if (result.IsSuccess)
         {
-            var message = SdkUtils.GenericDocumentToString(result.Result.Check);
+            var message = SdkUtils.GenericDocumentToString(result.Value.Check);
             Alert.Show( "Check Result", message);
         }
     }
@@ -124,9 +124,9 @@ public static class DataDetectorsFeature
         
         var result = await ScanbotSDKMain.TextPattern.StartScannerAsync(configuration);
 
-        if (result.Status == OperationResult.Ok)
+        if (result.IsSuccess)
         {
-            Alert.Show( $"Text Pattern Result", result.Result.RawText);
+            Alert.Show( $"Text Pattern Result", result.Value.RawText);
         }
     }
 
@@ -152,9 +152,9 @@ public static class DataDetectorsFeature
 
         var result = await ScanbotSDKMain.Vin.StartScannerAsync(configuration);
 
-        if (result.Status == OperationResult.Ok)
+        if (result.IsSuccess)
         {
-            Alert.Show( $"Vin Result", result.Result.TextResult.RawText);
+            Alert.Show( $"Vin Result", result.Value.TextResult.RawText);
         }
     }
     
@@ -162,9 +162,9 @@ public static class DataDetectorsFeature
     {
         var configuration = new CreditCardScannerScreenConfiguration();
         var result = await ScanbotSDKMain.CreditCard.StartScannerAsync(configuration);
-        if (result.Status == OperationResult.Ok)
+        if (result.IsSuccess)
         {
-            Alert.Show( $"Credit Card Result", SdkUtils.GenericDocumentToString(result.Result.CreditCard));
+            Alert.Show( $"Credit Card Result", SdkUtils.GenericDocumentToString(result.Value.CreditCard));
         }
     }
 }
