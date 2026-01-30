@@ -94,13 +94,15 @@
           <SubType>Code</SubType>
         </Compile>
     </ItemGroup>
-    <ItemGroup>
+   <!-- When running with the .NET 9 target frameworks -->
+    <ItemGroup Condition="$(TargetFramework.Contains('net9'))">
         <PackageReference Include="CommunityToolkit.Maui" Version="9.1.0" />
-        <PackageReference Include="Microsoft.Maui.Essentials" Version="9.0.51" />
+        <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.51" />
         <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.51" />
-<!--        <PackageReference Include="ScanbotSDK.MAUI" Version="7.1.1" />-->
     </ItemGroup>
-    <ItemGroup>
-      <ProjectReference Include="..\..\..\scanbot-sdk-maui\DocumentSDK\DocumentSDK.MAUI\DocumentSDK.MAUI.csproj" />
+    <!-- When running with the .NET 10 target frameworks -->
+    <ItemGroup Condition="$(TargetFramework.Contains('net10'))">
+        <PackageReference Include="CommunityToolkit.Maui" Version="13.0.0" />
+        <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.*" />
     </ItemGroup>
 </Project>

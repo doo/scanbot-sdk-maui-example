@@ -1,8 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using CommunityToolkit.Maui;
 using ScanbotSDK.MAUI;
-using ScanbotSDK.MAUI.Common;
-using ScanbotSDK.MAUI.Core.DocumentScanner;
 using ScanbotSDK.MAUI.Core.Sdk;
 
 namespace ScanbotSdkExample.Maui;
