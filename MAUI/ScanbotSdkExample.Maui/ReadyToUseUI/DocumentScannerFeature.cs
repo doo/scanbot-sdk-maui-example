@@ -1,5 +1,6 @@
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Common;
+using ScanbotSDK.MAUI.Core.Geometry;
 using ScanbotSDK.MAUI.Document;
 using ScanbotSdkExample.Maui.ClassicUI.MVVM.Views;
 using ScanbotSdkExample.Maui.ClassicUI.Pages;
@@ -47,12 +48,10 @@ public static class DocumentScannerFeature
         configuration.Screens.Camera.UserGuidance.StatesTitles.TooSmall = "Document too small";
         configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
 
-        TestForceCloseDocumentScanner();
-
-        var result = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
-        if (result.Status == OperationResult.Ok)
+        var result = await ScanbotSDKMain.Document.StartScannerAsync(configuration);
+        if (result.IsSuccess)
         {
-            await App.Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
+            await App.Navigation.PushAsync(new ScannedDocumentsPage(result.Value));
         }
     }
 
@@ -86,10 +85,10 @@ public static class DocumentScannerFeature
         configuration.Screens.Camera.UserGuidance.StatesTitles.TooSmall = "Document too small";
         configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
 
-        var result = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
-        if (result.Status == OperationResult.Ok)
+        var result = await ScanbotSDKMain.Document.StartScannerAsync(configuration);
+        if (result.IsSuccess)
         {
-            await App.Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
+            await App.Navigation.PushAsync(new ScannedDocumentsPage(result.Value));
         }
     }
 
@@ -144,10 +143,10 @@ public static class DocumentScannerFeature
         configuration.Screens.Cropping.BottomBar.RotateButton.Visible = true;
         configuration.Screens.Cropping.BottomBar.DetectButton.Visible = true;
 
-        var result = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
-        if (result.Status == OperationResult.Ok)
+        var result = await ScanbotSDKMain.Document.StartScannerAsync(configuration);
+        if (result.IsSuccess)
         {
-            await App.Navigation.PushAsync(new ScannedDocumentsPage(result.Result));
+            await App.Navigation.PushAsync(new ScannedDocumentsPage(result.Value));
         }
     }
 
@@ -159,14 +158,5 @@ public static class DocumentScannerFeature
     public static async Task ClassicDocumentScannerMVVMViewClicked()
     {
         await App.Navigation.PushAsync(new ClassicDocumentScannerView(), true);
-    }
-
-
-    private static void TestForceCloseDocumentScanner()
-    {
-        HomePage.TestForceCloseScanner(async void () =>
-        {
-            await ScanbotSDKMain.Rtu.DocumentScanner.ForceCloseScannerAsync();
-        });
     }
 }

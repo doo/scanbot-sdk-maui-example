@@ -3,14 +3,11 @@ using ScanbotSDK.MAUI.Check;
 using ScanbotSDK.MAUI.Common;
 using ScanbotSDK.MAUI.Core.Mrz;
 using ScanbotSDK.MAUI.CreditCard;
-using ScanbotSDK.MAUI.Ehic;
-using ScanbotSDK.MAUI.DocumentDataExtractor;
-using ScanbotSDK.MAUI.MedicalCertificate;
+using ScanbotSDK.MAUI.DocumentData;
 using ScanbotSDK.MAUI.Mrz;
 using ScanbotSDK.MAUI.TextPattern;
 using ScanbotSDK.MAUI.Vin;
 using ScanbotSdkExample.Maui.Utils;
-using static ScanbotSDK.MAUI.ScanbotSDKMain;
 
 namespace ScanbotSdkExample.Maui.ReadyToUseUI;
 
@@ -39,37 +36,11 @@ public static class DataDetectorsFeature
         // Configure the scanner
         configuration.ScannerConfiguration.IncompleteResultHandling = MrzIncompleteResultHandling.Accept;
 
-        HomePage.TestForceCloseScanner(async void () =>
+        var result = await ScanbotSDKMain.Mrz.StartScannerAsync(configuration);
+        if (result.IsSuccess)
         {
-            await ScanbotSDKMain.Rtu.MrzScanner.ForceCloseScannerAsync();
-        });
-
-        var result = await Rtu.MrzScanner.LaunchAsync(configuration);
-        if (result.Status == OperationResult.Ok)
-        {
-            var message = SdkUtils.ParseMrzResult(result.Result);
-            Alert.Show( "MRZ Result", message);
-        }
-    }
-
-    public static async Task EhicScannerClicked()
-    {
-        var configuration = new EhicScannerConfiguration
-        {
-            CancelButtonTitle = "Done",
-            TopBarButtonsColor = Colors.Green
-        };
-
-        HomePage.TestForceCloseScanner(async void () =>
-        {
-            await ScanbotSDKMain.Rtu.EhicScanner.ForceCloseScannerAsync();
-        });
-        
-        var result = await Rtu.EhicScanner.LaunchAsync(configuration);
-        if (result.Status == OperationResult.Ok)
-        {
-            var message = SdkUtils.ToAlertMessage(result.Result);
-            Alert.Show( "EHIC Result", message);
+            var message = SdkUtils.ParseMrzResult(result.Value);
+            Alert.ShowAsync( "MRZ Result", message);
         }
     }
 
@@ -92,17 +63,12 @@ public static class DataDetectorsFeature
         // Modify the action bar
         configuration.ActionBar.FlipCameraButton.Visible = false;
         configuration.ActionBar.FlashButton.ActiveForegroundColor = Constants.Colors.ScanbotRed;
-
-        HomePage.TestForceCloseScanner(async void () =>
-        {
-            await ScanbotSDKMain.Rtu.DocumentDataExtractor.ForceCloseScannerAsync();
-        });
         
-        var result = await Rtu.DocumentDataExtractor.LaunchAsync(configuration);
-        if (result.Status == OperationResult.Ok)
+        var result = await ScanbotSDKMain.DocumentDataExtractor.StartScannerAsync(configuration);
+        if (result.IsSuccess)
         {
-            var message = SdkUtils.GenericDocumentToString(result.Result.Document);
-            Alert.Show( "Document Data Result", message);
+            var message = SdkUtils.GenericDocumentToString(result.Value.Document);
+            Alert.ShowAsync( "Document Data Result", message);
         }
     }
 
@@ -126,17 +92,11 @@ public static class DataDetectorsFeature
         configuration.ActionBar.FlipCameraButton.Visible = false;
         configuration.ActionBar.FlashButton.ActiveForegroundColor = Constants.Colors.ScanbotRed;
 
-        HomePage.TestForceCloseScanner(async void () =>
+        var result = await ScanbotSDKMain.Check.StartScannerAsync(configuration);
+        if (result.IsSuccess)
         {
-            await Task.Delay(App.ForceCloseInterval);
-            await ScanbotSDKMain.Rtu.CheckScanner.ForceCloseScannerAsync();
-        });
-        
-        var result = await Rtu.CheckScanner.LaunchAsync(configuration);
-        if (result.Status == OperationResult.Ok)
-        {
-            var message = SdkUtils.GenericDocumentToString(result.Result.Check);
-            Alert.Show( "Check Result", message);
+            var message = SdkUtils.GenericDocumentToString(result.Value.Check);
+            Alert.ShowAsync( "Check Result", message);
         }
     }
 
@@ -161,17 +121,12 @@ public static class DataDetectorsFeature
         configuration.ActionBar.FlashButton.ActiveForegroundColor = Constants.Colors.ScanbotRed;
 
         configuration.ScannerConfiguration.MinimumNumberOfRequiredFramesWithEqualScanningResult = 4;
-
-        HomePage.TestForceCloseScanner(async void () =>
-        {
-            await ScanbotSDKMain.Rtu.TextPatternScanner.ForceCloseScannerAsync();
-        });
         
-        var result = await Rtu.TextPatternScanner.LaunchAsync(configuration);
+        var result = await ScanbotSDKMain.TextPattern.StartScannerAsync(configuration);
 
-        if (result.Status == OperationResult.Ok)
+        if (result.IsSuccess)
         {
-            Alert.Show( $"Text Pattern Result", result.Result.RawText);
+            Alert.ShowAsync( $"Text Pattern Result", result.Value.RawText);
         }
     }
 
@@ -195,49 +150,21 @@ public static class DataDetectorsFeature
         configuration.ActionBar.FlipCameraButton.Visible = false;
         configuration.ActionBar.FlashButton.ActiveForegroundColor = Constants.Colors.ScanbotRed;
 
-        HomePage.TestForceCloseScanner(async void () =>
-        {
-            await ScanbotSDKMain.Rtu.VinScanner.ForceCloseScannerAsync();
-        });
-        
-        var result = await Rtu.VinScanner.LaunchAsync(configuration);
+        var result = await ScanbotSDKMain.Vin.StartScannerAsync(configuration);
 
-        if (result.Status == OperationResult.Ok)
+        if (result.IsSuccess)
         {
-            Alert.Show( $"Vin Result", result.Result.TextResult.RawText);
+            Alert.ShowAsync( $"Vin Result", result.Value.TextResult.RawText);
         }
     }
-        
-    public static async Task MedicalCertificateScannerClicked()
-    {
-        var configuration = new MedicalCertificateScannerConfiguration();
-
-        HomePage.TestForceCloseScanner(async void () =>
-        {
-            await Task.Delay(App.ForceCloseInterval);
-            await ScanbotSDKMain.Rtu.MedicalCertificateScanner.ForceCloseScannerAsync();
-        });
-
-        var result = await Rtu.MedicalCertificateScanner.LaunchAsync(configuration);
-        if (result.Status == OperationResult.Ok)
-        {
-            Alert.Show( $"Medical Certificate Result", result.Result.ToFormattedString());
-        }
-    }
-
+    
     public static async Task CreditCardScannerClicked()
     {
         var configuration = new CreditCardScannerScreenConfiguration();
-
-        HomePage.TestForceCloseScanner(async void () =>
+        var result = await ScanbotSDKMain.CreditCard.StartScannerAsync(configuration);
+        if (result.IsSuccess)
         {
-            await ScanbotSDKMain.Rtu.CreditCardScanner.ForceCloseScannerAsync();
-        });
-
-        var result = await Rtu.CreditCardScanner.LaunchAsync(configuration);
-        if (result.Status == OperationResult.Ok)
-        {
-            Alert.Show( $"Credit Card Result", SdkUtils.GenericDocumentToString(result.Result.CreditCard));
+            Alert.ShowAsync( $"Credit Card Result", SdkUtils.GenericDocumentToString(result.Value.CreditCard));
         }
     }
 }

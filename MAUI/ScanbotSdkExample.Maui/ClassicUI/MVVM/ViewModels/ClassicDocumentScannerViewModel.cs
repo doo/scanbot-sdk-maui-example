@@ -1,9 +1,7 @@
 using System.Diagnostics;
 using System.Windows.Input;
-using ScanbotSDK.MAUI;
-using ScanbotSDK.MAUI.Core.Document;
+using ScanbotSDK.MAUI.Core.DocumentScanner;
 using ScanbotSDK.MAUI.Document.ClassicComponent;
-using ScanbotSdkExample.Maui.Models;
 using ScanbotSdkExample.Maui.Results;
 
 namespace ScanbotSdkExample.Maui.ClassicUI.MVVM.ViewModels;
@@ -92,7 +90,7 @@ public class ClassicDocumentScannerViewModel : BaseViewModel
 	private async void OnSnappedDocumentImageResult(SnappedDocumentImageResultEventArgs eventArgs)
 	{
 		var resultsPage = new DocumentScannerResultPage();
-		resultsPage.SetData(ImageSource.FromStream(() => eventArgs.DocumentImage.AsStream()));
+		resultsPage.SetData(eventArgs.DocumentImage.ToImageSource());
 		await App.Navigation.PushAsync(resultsPage);
 	}
 

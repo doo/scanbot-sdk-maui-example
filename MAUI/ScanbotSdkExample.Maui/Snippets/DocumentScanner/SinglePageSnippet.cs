@@ -1,12 +1,13 @@
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Document;
 using ScanbotSDK.MAUI.Common;
+using ScanbotSDK.MAUI.Core.Geometry;
 
 namespace ScanbotSdkExample.Maui.Snippets.DocumentScanner;
 
 public static class SinglePageSnippet
 {
-    private static async Task LaunchAsync()
+    private static async Task StartScannerAsync()
     {
         // Create the default configuration object.
         var configuration = new DocumentScanningFlow();
@@ -26,7 +27,7 @@ public static class SinglePageSnippet
         configuration.Screens.Camera.ViewFinder.Style = style;
 
         // Set the desired aspect ratio of the view finder.
-        configuration.Screens.Camera.ViewFinder.AspectRatio = new AspectRatio { Width = 4.0, Height = 5.0 };
+        configuration.Screens.Camera.ViewFinder.AspectRatio = new AspectRatio(width:4.0,height:5.0);
 
         // Set the overlay color.
         configuration.Screens.Camera.ViewFinder.OverlayColor = new ColorValue("#26000000");
@@ -44,14 +45,14 @@ public static class SinglePageSnippet
         configuration.Screens.Review.Enabled = false;
 
         // Launch the scanner
-        var response = await ScanbotSDKMain.Rtu.DocumentScanner.LaunchAsync(configuration);
-        if (response.Status != OperationResult.Ok)
+        var result = await ScanbotSDKMain.Document.StartScannerAsync(configuration);
+        if (!result.IsSuccess)
         {
             // Indicates that the cancel button was tapped.
             return;
         }
         
         // Handle the document.
-        var scannerDocument = response.Result;
+        var scannedDocument = result.Value;
     }
 }
