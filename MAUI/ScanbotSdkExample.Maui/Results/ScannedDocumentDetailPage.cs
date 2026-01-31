@@ -124,7 +124,7 @@ public class ScannedDocumentDetailPage : ContentPage
         var result = await _selectedPage.ModifyPageAsync(filters: filters);
         if (!result.IsSuccess)
         {
-            Alert.Show(result.Error);
+            Alert.ShowAsync(result.Error);
             return;
         }
 
@@ -145,16 +145,16 @@ public class ScannedDocumentDetailPage : ContentPage
         IsLoading = false;
         if (!result.IsSuccess)
         {
-            Alert.Show(result.Error);
+            Alert.ShowAsync(result.Error);
             return;
         }
-        Alert.Show("Document Quality", $"Detected quality is: {result.Value.Quality}");
+        Alert.ShowAsync("Document Quality", $"Detected quality is: {result.Value.Quality}");
     }
 
     private async void OnDeleteButtonTapped(object sender, EventArgs e)
     {
         var message = "Do you really want to delete this page?";
-        var result = await DisplayAlert("Attention!", message, "Yes", "No");
+        var result = await Alert.ShowAsync("Attention!", message, "Yes", "No");
         if (result)
         {
             await _selectedDocument.RemovePageAsync(_selectedPage);

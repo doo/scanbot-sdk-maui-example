@@ -13,7 +13,7 @@ public static class SdkUtils
     {
         if (!ScanbotSDKMain.IsLicenseValid)
         {
-            Alert.Show("Oops!", "License expired or invalid");
+            Alert.ShowAsync("Oops!", "License expired or invalid");
         }
         return ScanbotSDKMain.IsLicenseValid;
     }

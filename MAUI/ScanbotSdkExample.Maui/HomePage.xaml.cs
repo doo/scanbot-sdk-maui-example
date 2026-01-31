@@ -89,7 +89,7 @@ public partial class HomePage
 
         if (!ScanbotSDKMain.IsLicenseValid && feature.Title != ViewLicenseInfo)
         {
-            Alert.Show("Oops!", LicenseInvalidMessage);
+            Alert.ShowAsync("Oops!", LicenseInvalidMessage);
             return;
         }
 
@@ -112,7 +112,7 @@ public partial class HomePage
             message = LicenseInvalidMessage;
         }
 
-        Alert.Show("License info", message);
+        Alert.ShowAsync("License info", message);
         return Task.CompletedTask;
     }
 
@@ -131,11 +131,11 @@ public partial class HomePage
         {
             IsLoading = true;
 
-            var imageSource = await PickImageAsync();
-            if (imageSource is null) return;
+            var image = await ImagePicker.PickImageAsSourceAsync();
+            if (image is null) return;
 
             // Creates a document from the given image as original image and create a Page object
-            var result = await ScanbotSDKMain.Document.CreateDocumentFromImagesAsync([imageSource], new CreateDocumentConfiguration
+            var result = await ScanbotSDKMain.Document.CreateDocumentFromImagesAsync([image], new CreateDocumentConfiguration
             {
                 // runs document detection on the given image.
                 DocumentDetection = true
@@ -143,7 +143,7 @@ public partial class HomePage
 
             if (!result.IsSuccess)
             {
-                Alert.Show(result.Error);
+                Alert.ShowAsync(result.Error);
                 return;
             }
             // success
@@ -159,11 +159,11 @@ public partial class HomePage
         }
     }
     
-    /// <summary>
+     /// <summary>
     /// Picks image from the photos application.
     /// </summary>
     /// <returns></returns>
-    public static async Task<FileImageSource> PickImageAsync()
+    internal static async Task<PlatformImage> PickPlatformImageAsync()
     {
         try
         {
@@ -171,42 +171,72 @@ public partial class HomePage
             FileResult photo = await MediaPicker.Default.PickPhotoAsync();
             if (photo != null)
             {
-              return ImageSource.FromFile(photo.FullPath) as FileImageSource;
+                // Optionally display or process the image
+                await using var stream = await photo.OpenReadAsync();
+                
+                // It returns a common interface IIMage which is implemented in PlatformImage.
+                return (PlatformImage)PlatformImage.FromStream(stream, ImageFormat.Jpeg);
             }
         }
         catch (Exception ex)
         {
-            Alert.Show("Error", $"Unable to pick image: {ex.Message}");
+            Alert.ShowAsync("Error", $"Unable to pick image: {ex.Message}");
         }
 
         return null;
     }
-    
+
+    /// <summary>
+    /// Picks image from the photos application.
+    /// </summary>
+    /// <returns></returns>
+    internal async Task<FileImageSource> PickFileImageAsync()
+    {
+        try
+        {
+            // Pick the photo
+            var photos = await MediaPicker.Default.PickPhotoAsync();
+            if (photos == null)
+            {
+                Alert.ShowAsync("Alert", $"No image was picked from the Photos application.");
+                return null;
+            }
+            
+            return ImageSource.FromFile(photos.FullPath) as FileImageSource;
+        }
+        catch (Exception ex)
+        {
+            Alert.ShowAsync("Error", $"Unable to pick image from the Photos application. \nMessage: {ex.Message}");
+        }
+        
+        return null;
+    }
+
     private async Task ExtractOcrFromImageClicked()
     {
-        var image = await PickImageAsync();
+        var image = await ImagePicker.PickImageAsSourceAsync();
         if (image == null) return;
         
         var result = await ScanbotSDKMain.OcrEngine.RecognizeOnImagesAsync(images:[image], configuration: OcrConfiguration.ScanbotOcr);
         if (!result.IsSuccess)
         {
-            Alert.Show(result.Error);
+            Alert.ShowAsync(result.Error);
             return;
         }
         // success
-        Alert.Show(title: "Ocr Result", message: result.Value.RecognizedText);
+        Alert.ShowAsync(title: "Ocr Result", message: result.Value.RecognizedText);
     }
     
     private async Task CreatePdfFromImageClicked()
     {
-        var image = await PickImageAsync();
+        var image = await ImagePicker.PickImageAsSourceAsync();
         if (image == null) return;
 
 
         var result = await ScanbotSDKMain.PdfGenerator.GenerateFromImagesAsync(images:[image], pdfConfiguration: new PdfConfiguration());
         if (!result.IsSuccess)
         {
-            Alert.Show(result.Error);
+            Alert.ShowAsync(result.Error);
             return;
         }
         
@@ -216,14 +246,14 @@ public partial class HomePage
 
     private async Task ConfigureMockCameraClicked()
     {
-        var image = await PickImageAsync();
-        if (image?.File == null)
+        var path = await ImagePicker.PickImageAsPathAsync();
+        if (string.IsNullOrWhiteSpace(path))
         {
-            Alert.Show("Error","Something went wrong while loading the image from photos app.");
+            Alert.ShowAsync("Error","Something went wrong while loading the image from photos app.");
             return;
         }
         // success
-        ScanbotSDKMain.MockCamera(image.File);
+        ScanbotSDKMain.MockCamera(path);
     }
 
     private async Task DeleteAllDocsFromStorageClicked()
@@ -239,10 +269,10 @@ public partial class HomePage
         var result = await ScanbotSDKMain.Document.DeleteAllDocumentsAsync();
         if (!result.IsSuccess)
         {
-            Alert.Show(result.Error);
+            Alert.ShowAsync(result.Error);
             return;
         }
 
-        Alert.Show("Alert", $"Number of documents deleted: {documentCount}");
+        Alert.ShowAsync("Alert", $"Number of documents deleted: {documentCount}");
     }
 }

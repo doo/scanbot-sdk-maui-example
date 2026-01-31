@@ -40,7 +40,7 @@ public static class DataDetectorsFeature
         if (result.IsSuccess)
         {
             var message = SdkUtils.ParseMrzResult(result.Value);
-            Alert.Show( "MRZ Result", message);
+            Alert.ShowAsync( "MRZ Result", message);
         }
     }
 
@@ -68,7 +68,7 @@ public static class DataDetectorsFeature
         if (result.IsSuccess)
         {
             var message = SdkUtils.GenericDocumentToString(result.Value.Document);
-            Alert.Show( "Document Data Result", message);
+            Alert.ShowAsync( "Document Data Result", message);
         }
     }
 
@@ -96,7 +96,7 @@ public static class DataDetectorsFeature
         if (result.IsSuccess)
         {
             var message = SdkUtils.GenericDocumentToString(result.Value.Check);
-            Alert.Show( "Check Result", message);
+            Alert.ShowAsync( "Check Result", message);
         }
     }
 
@@ -126,7 +126,7 @@ public static class DataDetectorsFeature
 
         if (result.IsSuccess)
         {
-            Alert.Show( $"Text Pattern Result", result.Value.RawText);
+            Alert.ShowAsync( $"Text Pattern Result", result.Value.RawText);
         }
     }
 
@@ -154,7 +154,7 @@ public static class DataDetectorsFeature
 
         if (result.IsSuccess)
         {
-            Alert.Show( $"Vin Result", result.Value.TextResult.RawText);
+            Alert.ShowAsync( $"Vin Result", result.Value.TextResult.RawText);
         }
     }
     
@@ -164,7 +164,7 @@ public static class DataDetectorsFeature
         var result = await ScanbotSDKMain.CreditCard.StartScannerAsync(configuration);
         if (result.IsSuccess)
         {
-            Alert.Show( $"Credit Card Result", SdkUtils.GenericDocumentToString(result.Value.CreditCard));
+            Alert.ShowAsync( $"Credit Card Result", SdkUtils.GenericDocumentToString(result.Value.CreditCard));
         }
     }
 }

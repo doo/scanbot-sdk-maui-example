@@ -16,7 +16,7 @@ public static class DetectOnImageFeature
 {
     public static async Task MrzDetectorClicked()
     {
-        var image = await HomePage.PickImageAsync();
+        var image = await ImagePicker.PickImageAsSourceAsync();
         if (image is null) return;
 
         var configuration = new MrzScannerConfiguration
@@ -28,16 +28,16 @@ public static class DetectOnImageFeature
         var result = await ScanbotSDKMain.Mrz.ScanFromImageAsync(image, configuration: configuration);
         if (!result.IsSuccess)
         {
-            Alert.Show(result.Error);
+            Alert.ShowAsync(result.Error);
             return;
         }
         // success
-        Alert.Show("MRZ result", SdkUtils.GenericDocumentToString(result.Value.Document));
+        Alert.ShowAsync("MRZ result", SdkUtils.GenericDocumentToString(result.Value.Document));
     }
 
     public static async Task DocumentDataExtractorClicked()
     {
-        var image = await HomePage.PickImageAsync();
+        var image = await ImagePicker.PickImageAsSourceAsync();
         if (image is null) return;
         
         var configuration = new DocumentDataExtractorConfiguration
@@ -63,18 +63,18 @@ public static class DetectOnImageFeature
         var result = await ScanbotSDKMain.DocumentDataExtractor.ScanFromImageAsync(image, configuration);
         if (!result.IsSuccess)
         {
-            Alert.Show(result.Error);
+            Alert.ShowAsync(result.Error);
             return;
         }
         // success
-        Alert.Show("Document Data Result", SdkUtils.GenericDocumentToString(result.Value.Document));
+        Alert.ShowAsync("Document Data Result", SdkUtils.GenericDocumentToString(result.Value.Document));
     }
 
     public static async Task CheckDetectorClicked()
     {
-        var image = await HomePage.PickImageAsync();
+        var image = await ImagePicker.PickImageAsSourceAsync();
         if (image is null) return;
-        
+
         var result = await ScanbotSDKMain.Check.ScanFromImageAsync(image, new CheckScannerConfiguration
         {
             AcceptedCheckStandards =
@@ -93,64 +93,65 @@ public static class DetectOnImageFeature
 
         if (!result.IsSuccess)
         {
-            Alert.Show(result.Error);
+            Alert.ShowAsync(result.Error);
             return;
         }
-        
+
         if (result.Value.CroppedImage == null)
         {
-            Alert.Show( "Check Result", SdkUtils.GenericDocumentToString(result.Value.Check));
+            Alert.ShowAsync("Check Result", SdkUtils.GenericDocumentToString(result.Value.Check));
             return;
         }
 
         // Executes when the ExtractCroppedImage is set to true.
-        Alert.Show( "Check Result", SdkUtils.ToAlertMessage(result.Value), () =>
+        var accepted = await Alert.ShowAsync("Check Result", SdkUtils.ToAlertMessage(result.Value), "Ok");
+        if (accepted)
         {
             var resultPage = new DetectOnImageResultPage();
             var source = result.Value.CroppedImage.ToImageSource();
             resultPage.NavigateData(source);
             App.Navigation.PushAsync(resultPage);
-        });
+        }
     }
 
     public static async Task MedicalCertificateDetectorClicked()
     {
-        var image = await HomePage.PickImageAsync();
+        var image = await ImagePicker.PickImageAsSourceAsync();
         if (image is null) return;
-        
+
         var configuration = new MedicalCertificateScanningParameters
         {
             ExtractCroppedImage = true
             // Configure other parameters as needed.
         };
-        
+
         var result = await ScanbotSDKMain.MedicalCertificate.ScanFromImageAsync(image, configuration);
         if (!result.IsSuccess)
         {
-            Alert.Show(result.Error);
+            Alert.ShowAsync(result.Error);
             return;
         }
 
         if (result.Value.CroppedImage == null)
         {
-            Alert.Show( "Medical Certificate Result", result.Value.ToFormattedString());
+            Alert.ShowAsync("Medical Certificate Result", result.Value.ToFormattedString());
             return;
         }
-        
+
         // Executes when the ExtractCroppedImage is set to true.
-        Alert.Show( "Medical Certificate Result", result.Value.ToFormattedString(), () =>
+        var accepted = await Alert.ShowAsync("Medical Certificate Result", result.Value.ToFormattedString(), "Ok");
+        if (accepted)
         {
             var resultPage = new DetectOnImageResultPage();
             var source = result.Value.CroppedImage.ToImageSource();
             resultPage.NavigateData(source);
             App.Navigation.PushAsync(resultPage);
-
-        });
+        }
     }
 
     public static async Task CreditCardDetectorClicked()
     {
-        var image = await HomePage.PickImageAsync();
+        var image = await ImagePicker.PickImageAsSourceAsync();
         if (image is null) return;
         
         var configuration = new CreditCardScannerConfiguration
@@ -162,10 +163,10 @@ public static class DetectOnImageFeature
         var result = await ScanbotSDKMain.CreditCard.ScanFromImageAsync(image, configuration: configuration);
         if (!result.IsSuccess)
         {
-            Alert.Show(result.Error);
+            Alert.ShowAsync(result.Error);
             return;
         }
         
-        Alert.Show( "Credit Card result", SdkUtils.GenericDocumentToString(result.Value.CreditCard));
+        Alert.ShowAsync( "Credit Card result", SdkUtils.GenericDocumentToString(result.Value.CreditCard));
     }
 }

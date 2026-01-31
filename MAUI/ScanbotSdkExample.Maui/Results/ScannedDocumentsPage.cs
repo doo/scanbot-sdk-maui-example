@@ -147,7 +147,7 @@ public class ScannedDocumentsPage : ContentPage
         if (!SdkUtils.CheckLicense(this) || !_document.Pages.Any()) { return; }
 
         var parameters = new [] { Pdf, Ocr, SandwichPdf, Tiff };
-        string action = await DisplayActionSheet("Save Image as", "Cancel", null, parameters);
+        string action = await DisplayActionSheetAsync("Save Image as", "Cancel", null, parameters);
 
         if (action == null || action.Equals("Cancel"))
         {
@@ -175,7 +175,7 @@ public class ScannedDocumentsPage : ContentPage
         }
         catch (Exception ex)
         {
-            Alert.Show( "Error: ", $"An error occurred while saving the document: {ex.Message}");
+            Alert.ShowAsync( "Error: ", $"An error occurred while saving the document: {ex.Message}");
         }
     }
 
@@ -201,7 +201,7 @@ public class ScannedDocumentsPage : ContentPage
 
         if (!result.IsSuccess)
         {
-            Alert.Show(result.Error);
+            Alert.ShowAsync(result.Error);
             return;
         }
         
@@ -224,12 +224,12 @@ public class ScannedDocumentsPage : ContentPage
         var result = await ScanbotSDKMain.OcrEngine.RecognizeOnImagesAsync(images: sourceImages, configuration: ocrEngine);
         if (!result.IsSuccess)
         {
-            Alert.Show(result.Error);
+            Alert.ShowAsync(result.Error);
             return;
         }
         
         // success: you can access the results with: result.Pages
-        Alert.Show("OCR", result.Value.RecognizedText);
+        Alert.ShowAsync("OCR", result.Value.RecognizedText);
     }
 
     private async Task GenerateSandwichPdfAsync()
@@ -265,7 +265,7 @@ public class ScannedDocumentsPage : ContentPage
         
         if (!result.IsSuccess)
         {
-            Alert.Show(result.Error);
+            Alert.ShowAsync(result.Error);
             return;
         }
 
@@ -292,15 +292,15 @@ public class ScannedDocumentsPage : ContentPage
     private async void OnDeleteButtonTapped(object sender, EventArgs e)
     {
         var message = "This will delete the current document that contains all the pages visible on the screen.";
-        var alertAccepted = await DisplayAlert("Attention!", message, "Confirm", "Cancel");
-        if (!alertAccepted) return;
+        var accepted = await Alert.ShowAsync("Attention!", message, "Confirm", "Cancel");
+        if (!accepted) return;
         
         using var loader = new PageLoader(this);
         
         var result = await _document.DeleteDocumentAsync();
         if (!result.IsSuccess)
         {
-            Alert.Show(result.Error);
+            Alert.ShowAsync(result.Error);
             return;
         }
 

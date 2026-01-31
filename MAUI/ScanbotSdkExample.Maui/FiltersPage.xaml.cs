@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Core.ImageProcessing;
 using ScanbotSdkExample.Maui.Models;
+using ScanbotSdkExample.Maui.Utils;
 
 namespace ScanbotSdkExample.Maui;
 
@@ -96,7 +97,7 @@ public partial class FiltersPage
         // Clear filters
         if (filterItem.FilterTitle == FilterItemConstants.None && checkBox.IsChecked)
         {
-            var result = await DisplayAlert("Alert",
+            var result = await Alert.ShowAsync("Alert",
                 "Selecting None will clear all your previous selections, Please confirm.", "Continue",
                 "Cancel");
 
@@ -174,7 +175,7 @@ public partial class FiltersPage
         if (ValidateEmptyValues(selectedFilters))
         {
             // if filter is selected but the picker values are left empty.
-            await DisplayAlert("Alert", "Please insert the required values for the selected filters and try again.", "Ok");
+            await Alert.ShowAsync("Alert", "Please insert the required values for the selected filters and try again.");
             return;
         }
 
