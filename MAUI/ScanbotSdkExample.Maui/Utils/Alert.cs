@@ -35,4 +35,12 @@ public static class Alert
     {
         await MainThread.InvokeOnMainThreadAsync(async () => await App.Navigation.CurrentPage.DisplayAlertAsync("Alert", exception.Message, "Close"));
     }
+    
+    public static async void Show(Exception ex)
+    {
+        _ = MainThread.InvokeOnMainThreadAsync(async () =>
+        {
+            await App.RootPage.DisplayAlert("Error", ex?.Message ?? "Something went wrong." , "Close");
+        });
+    }
 }
