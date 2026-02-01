@@ -1,5 +1,6 @@
 using ScanbotSDK.MAUI.Document;
 using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Core.Document;
 using ScanbotSDK.MAUI.Image;
 
 namespace ScanbotSdkExample.Maui.Snippets.DocumentScanner;
@@ -8,7 +9,7 @@ public static class DocumentOperationSnippets
 {
     static void CreateScannedDocument(ImageRef[] images)
     {
-        var configuration = new CreateDocumentConfiguration
+        var configuration = new CreateDocumentOptions
         {
             // detects the document when adding the page.
             // saves detected document is considered as an individual page(IPage) of the IScannedDocument object.

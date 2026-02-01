@@ -46,7 +46,7 @@ public class IntroductionSnippet
         configuration.IntroScreen.DoneButton.Background.FillColor = new ColorValue("#C8193C");
 
         // Present the view controller modally.
-        var result = await ScanbotSDKMain.DocumentDataExtractor.StartScannerAsync(configuration);
+        var result = await ScanbotSDKMain.DocumentDataExtractor.StartExtractorScreenAsync(configuration);
         if (!result.IsSuccess)
         {
             // Indicates failure in the operation. Please access the Exception object returned in `result.Error`

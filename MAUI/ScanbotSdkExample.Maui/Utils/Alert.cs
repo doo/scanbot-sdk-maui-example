@@ -7,10 +7,11 @@ public static class Alert
     /// </summary>
     /// <param name="title">Title string.</param>
     /// <param name="message">Message string.</param>
+    /// <param name="button">Button title string. Optional, defaults to Ok.</param>
     /// <returns>Returns a task object.</returns>
-    public static async Task ShowAsync(string title, string message)
+    public static async Task ShowAsync(string title, string message, string button = "Ok")
     {
-        await MainThread.InvokeOnMainThreadAsync(async () => await App.Navigation.CurrentPage.DisplayAlertAsync(title, message, "Ok"));
+        await MainThread.InvokeOnMainThreadAsync(() => App.Navigation.CurrentPage.DisplayAlertAsync(title, message, button));
     }
 
     /// <summary>
@@ -21,9 +22,9 @@ public static class Alert
     /// <param name="accept">Accept string.</param>
     /// <param name="reject">Reject string. Optional defaults to "Close".</param>
     /// <returns>Returns a task object.</returns>
-    public static async Task<bool> ShowAsync(string title, string message, string accept, string reject = "Close")
+    public static async Task<bool> ShowAsync(string title, string message, string accept, string reject)
     {
-        return await MainThread.InvokeOnMainThreadAsync(async () => await App.Navigation.CurrentPage.DisplayAlertAsync(title, message, accept, reject));
+        return await MainThread.InvokeOnMainThreadAsync(() => App.Navigation.CurrentPage.DisplayAlertAsync(title, message, accept, reject));
     }
 
     /// <summary>
@@ -33,14 +34,6 @@ public static class Alert
     /// <returns>Returns a task object.</returns>
     public static async Task ShowAsync(Exception exception)
     {
-        await MainThread.InvokeOnMainThreadAsync(async () => await App.Navigation.CurrentPage.DisplayAlertAsync("Alert", exception.Message, "Close"));
-    }
-    
-    public static async void Show(Exception ex)
-    {
-        _ = MainThread.InvokeOnMainThreadAsync(async () =>
-        {
-            await App.RootPage.DisplayAlert("Error", ex?.Message ?? "Something went wrong." , "Close");
-        });
+        await ShowAsync("Alert", exception?.Message ?? "Something went wrong.", "Close");
     }
 }

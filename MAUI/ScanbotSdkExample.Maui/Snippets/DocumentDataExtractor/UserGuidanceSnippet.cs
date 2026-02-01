@@ -38,7 +38,7 @@ public class UserGuidanceSnippet
         scanStatusUserGuidance.Background.FillColor = new ColorValue("#7A000000");
         
         // Present the view controller modally.
-        var result = await ScanbotSDKMain.DocumentDataExtractor.StartScannerAsync(configuration);
+        var result = await ScanbotSDKMain.DocumentDataExtractor.StartExtractorScreenAsync(configuration);
         if (!result.IsSuccess)
         {
             // Indicates failure in the operation. Please access the Exception object returned in `result.Error`

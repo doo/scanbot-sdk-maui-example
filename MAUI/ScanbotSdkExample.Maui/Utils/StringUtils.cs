@@ -1,38 +1,37 @@
 ﻿using System.Text;
-using ScanbotSDK.MAUI.Core.MedicalCertificate;
+using ScanbotSDK.MAUI.Core.Check;
+using ScanbotSDK.MAUI.Core.DocumentData;
+using ScanbotSDK.MAUI.Core.GenericDocument;
+using ScanbotSDK.MAUI.Mrz;
 
 namespace ScanbotSdkExample.Maui.Utils;
 public static class StringUtils
 {
-    public static string CopyrightLabel =>
-        $"Copyright (c) {DateTime.Now.Year} Scanbot SDK GmbH. All rights reserved";
-        
-        
-    public static string ToFormattedString(this MedicalCertificateScanningResult result)
+    public static string CopyrightLabel => $"Copyright (c) {DateTime.Now.Year} Scanbot SDK GmbH. All rights reserved";
+    
+    public static string ParseMrzResult(MrzScannerUiResult result)
     {
-        StringBuilder stringBuilder = new StringBuilder();
-            
-        stringBuilder.Append("Type: ").Append(result.CheckBoxes?.FirstOrDefault(medicalCertificateInfoBox => medicalCertificateInfoBox.Type == MedicalCertificateCheckBoxType.InitialCertificate) != null ? "Initial" :
-            result.CheckBoxes?.FirstOrDefault(medicalCertificateInfoBox => medicalCertificateInfoBox.Type == MedicalCertificateCheckBoxType.RenewedCertificate) != null ? "Renewed" : "Unknown").Append("\n");
-            
-        stringBuilder.Append("Work Accident: ").Append(result.CheckBoxes
-            ?.FirstOrDefault(medicalCertificateInfoBox => medicalCertificateInfoBox.Type == MedicalCertificateCheckBoxType.WorkAccident) != null ? "Yes" : "No").Append("\n");
-            
-        stringBuilder.Append("Accident Consultant: ").Append(result.CheckBoxes
-                                                                 ?.FirstOrDefault(medicalCertificateInfoBox => medicalCertificateInfoBox.Type == MedicalCertificateCheckBoxType.AssignedToAccidentInsuranceDoctor)
-                                                             != null ? "Yes" : "No").Append("\n");
-            
-        stringBuilder.Append("Start Date: ").Append(result.Dates?.FirstOrDefault(dateRecord => dateRecord.Type == MedicalCertificateDateRecordType.IncapableOfWorkSince)?.RawString).Append("\n");
-            
-        stringBuilder.Append("End Date: ").Append(result.Dates?.FirstOrDefault(dateRecord => dateRecord.Type ==  MedicalCertificateDateRecordType.IncapableOfWorkUntil)?.RawString).Append("\n");
-            
-        stringBuilder.Append("Issue Date: ").Append(result.Dates?.FirstOrDefault(dateRecord => dateRecord.Type == MedicalCertificateDateRecordType.DiagnosedOn)?.RawString).Append("\n");
-            
-        stringBuilder.Append($"Form type: {result.FormType}").Append("\n");
-            
-        stringBuilder.Append(string.Join("\n", result.PatientInfoBox.Fields.ToList().ConvertAll(field => $"{field.Type}: {field.Value}")));
-            
-        return stringBuilder?.ToString();
+        var builder = new StringBuilder();
+        builder.AppendLine($"DocumentType: {result.MrzDocument.Type.Name}");
+        foreach (var field in result.MrzDocument.Fields)
+        {
+            builder.AppendLine($"{field.Type.Name}: {field.Value.Text} ({field.Value.Confidence:F2})");
+        }
+        return builder.ToString();
     }
-        
+
+    internal static string GenericDocumentToString(GenericDocument document)
+    {
+        var formattedString = string.Empty;
+        if (document?.Fields == null) return formattedString;
+		
+        foreach (var field in document.Fields)
+        {
+            if (string.IsNullOrEmpty(field?.Type?.Name))
+                continue;
+            formattedString += $"{field.Type.Name}: {field.Value?.Text ?? "-"}\n";
+        }
+
+        return formattedString;
+    }
 }

@@ -5,6 +5,7 @@ using ScanbotSDK.MAUI.Document;
 using ScanbotSdkExample.Maui.ClassicUI.MVVM.Views;
 using ScanbotSdkExample.Maui.ClassicUI.Pages;
 using ScanbotSdkExample.Maui.Results;
+using ScanbotSdkExample.Maui.Utils;
 
 namespace ScanbotSdkExample.Maui.ReadyToUseUI;
 
@@ -49,10 +50,16 @@ public static class DocumentScannerFeature
         configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
 
         var result = await ScanbotSDKMain.Document.StartScannerAsync(configuration);
-        if (result.IsSuccess)
+        if (result.IsCanceled) return;
+
+        // error
+        if (!result.IsSuccess)
         {
-            await App.Navigation.PushAsync(new ScannedDocumentsPage(result.Value));
+            await Alert.ShowAsync(result.Error);
+            return;
         }
+
+        await App.Navigation.PushAsync(new ScannedDocumentsPage(result.Value));
     }
 
     public static async Task SingleFinderDocumentScanningClicked()

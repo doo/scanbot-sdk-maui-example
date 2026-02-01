@@ -9,6 +9,7 @@ using ScanbotSdkExample.Maui.Controls.ActionBar;
 using ScanbotSdkExample.Maui.Utils;
 
 namespace ScanbotSdkExample.Maui.Results;
+
 public class ScannedDocumentsPage : ContentPage
 {
     private const string Pdf = "PDF", Ocr = "Perform OCR", SandwichPdf = "Sandwiched PDF", Tiff = "TIFF (1-bit, B&W)";
@@ -19,6 +20,7 @@ public class ScannedDocumentsPage : ContentPage
     private IScannedDocument _document;
 
     private bool _isLoading;
+
     public bool IsLoading
     {
         get => _isLoading;
@@ -33,6 +35,7 @@ public class ScannedDocumentsPage : ContentPage
     private readonly struct PageLoader : IDisposable
     {
         private readonly ScannedDocumentsPage _page;
+
         public PageLoader(ScannedDocumentsPage page)
         {
             _page = page;
@@ -51,12 +54,12 @@ public class ScannedDocumentsPage : ContentPage
         Title = "Document";
         BackgroundColor = Colors.White;
         var screenWidth = DeviceDisplay.MainDisplayInfo.Width / DeviceDisplay.MainDisplayInfo.Density;
-        var itemSize = (screenWidth - 30) / 2; 
+        var itemSize = (screenWidth - 30) / 2;
         _resultList = new CollectionView
         {
             VerticalOptions = LayoutOptions.Start,
             HorizontalOptions = LayoutOptions.Fill,
-            
+
             ItemsLayout = new GridItemsLayout(2, ItemsLayoutOrientation.Vertical)
             {
                 HorizontalItemSpacing = 5,
@@ -71,7 +74,7 @@ public class ScannedDocumentsPage : ContentPage
             }),
             ItemsSource = document.Pages
         };
-        
+
         var bottomBar = new BottomActionBar(isDetailPage: false)
         {
             VerticalOptions = LayoutOptions.End
@@ -123,10 +126,7 @@ public class ScannedDocumentsPage : ContentPage
 
     private async void OnAddButtonTapped(object sender, EventArgs e)
     {
-        if (!SdkUtils.CheckLicense(this))
-        {
-            return;
-        }
+        if (!App.IsLicenseValid) return;
 
         using var loader = new PageLoader(this);
         var result = await ScanbotSDKMain.Document.StartScannerAsync(new DocumentScanningFlow
@@ -144,9 +144,12 @@ public class ScannedDocumentsPage : ContentPage
 
     private async void OnSaveButtonTapped(object sender, EventArgs e)
     {
-        if (!SdkUtils.CheckLicense(this) || !_document.Pages.Any()) { return; }
+        if (!App.IsLicenseValid || !_document.Pages.Any())
+        {
+            return;
+        }
 
-        var parameters = new [] { Pdf, Ocr, SandwichPdf, Tiff };
+        var parameters = new[] { Pdf, Ocr, SandwichPdf, Tiff };
         string action = await DisplayActionSheetAsync("Save Image as", "Cancel", null, parameters);
 
         if (action == null || action.Equals("Cancel"))
@@ -175,7 +178,7 @@ public class ScannedDocumentsPage : ContentPage
         }
         catch (Exception ex)
         {
-            Alert.ShowAsync( "Error: ", $"An error occurred while saving the document: {ex.Message}");
+            await Alert.ShowAsync("Error: ", $"An error occurred while saving the document: {ex.Message}");
         }
     }
 
@@ -201,10 +204,10 @@ public class ScannedDocumentsPage : ContentPage
 
         if (!result.IsSuccess)
         {
-            Alert.ShowAsync(result.Error);
+            await Alert.ShowAsync(result.Error);
             return;
         }
-        
+
         // success: sharing the Pdf.
         await SharingUtils.ShareFileAsync(result.Value.LocalPath, "application/pdf");
     }
@@ -224,12 +227,12 @@ public class ScannedDocumentsPage : ContentPage
         var result = await ScanbotSDKMain.OcrEngine.RecognizeOnImagesAsync(images: sourceImages, configuration: ocrEngine);
         if (!result.IsSuccess)
         {
-            Alert.ShowAsync(result.Error);
+            await Alert.ShowAsync(result.Error);
             return;
         }
-        
+
         // success: you can access the results with: result.Pages
-        Alert.ShowAsync("OCR", result.Value.RecognizedText);
+        await Alert.ShowAsync("OCR", result.Value.RecognizedText);
     }
 
     private async Task GenerateSandwichPdfAsync()
@@ -262,10 +265,10 @@ public class ScannedDocumentsPage : ContentPage
                 PageFit = PageFit.FitIn,
                 ResamplingMethod = ResamplingMethod.None
             }, ocrConfiguration: ocrEngine);
-        
+
         if (!result.IsSuccess)
         {
-            Alert.ShowAsync(result.Error);
+            await Alert.ShowAsync(result.Error);
             return;
         }
 
@@ -294,13 +297,13 @@ public class ScannedDocumentsPage : ContentPage
         var message = "This will delete the current document that contains all the pages visible on the screen.";
         var accepted = await Alert.ShowAsync("Attention!", message, "Confirm", "Cancel");
         if (!accepted) return;
-        
+
         using var loader = new PageLoader(this);
-        
+
         var result = await _document.DeleteDocumentAsync();
         if (!result.IsSuccess)
         {
-            Alert.ShowAsync(result.Error);
+            await Alert.ShowAsync(result.Error);
             return;
         }
 

@@ -16,7 +16,7 @@ public static class DataDetectorsFeature
     public static async Task MrzScannerClicked()
     {
         var configuration = new MrzScannerScreenConfiguration();
-        
+
         // Set colors
         configuration.Palette.SbColorPrimary = Constants.Colors.ScanbotRed;
         configuration.Palette.SbColorOnPrimary = Colors.White;
@@ -39,15 +39,15 @@ public static class DataDetectorsFeature
         var result = await ScanbotSDKMain.Mrz.StartScannerAsync(configuration);
         if (result.IsSuccess)
         {
-            var message = SdkUtils.ParseMrzResult(result.Value);
-            Alert.ShowAsync( "MRZ Result", message);
+            var message = StringUtils.ParseMrzResult(result.Value);
+            await Alert.ShowAsync("MRZ Result", message);
         }
     }
 
     public static async Task DocumentDataScannerClicked()
     {
         var configuration = new DocumentDataExtractorScreenConfiguration();
-        
+
         // Set colors
         configuration.Palette.SbColorPrimary = Constants.Colors.ScanbotRed;
         configuration.Palette.SbColorOnPrimary = Colors.White;
@@ -63,19 +63,19 @@ public static class DataDetectorsFeature
         // Modify the action bar
         configuration.ActionBar.FlipCameraButton.Visible = false;
         configuration.ActionBar.FlashButton.ActiveForegroundColor = Constants.Colors.ScanbotRed;
-        
-        var result = await ScanbotSDKMain.DocumentDataExtractor.StartScannerAsync(configuration);
+
+        var result = await ScanbotSDKMain.DocumentDataExtractor.StartExtractorScreenAsync(configuration);
         if (result.IsSuccess)
         {
-            var message = SdkUtils.GenericDocumentToString(result.Value.Document);
-            Alert.ShowAsync( "Document Data Result", message);
+            var message = StringUtils.GenericDocumentToString(result.Value.Document);
+            await Alert.ShowAsync("Document Data Result", message);
         }
     }
 
     public static async Task CheckScannerClicked()
     {
         var configuration = new CheckScannerScreenConfiguration();
-        
+
         // Set colors
         configuration.Palette.SbColorPrimary = Constants.Colors.ScanbotRed;
         configuration.Palette.SbColorOnPrimary = Colors.White;
@@ -95,15 +95,15 @@ public static class DataDetectorsFeature
         var result = await ScanbotSDKMain.Check.StartScannerAsync(configuration);
         if (result.IsSuccess)
         {
-            var message = SdkUtils.GenericDocumentToString(result.Value.Check);
-            Alert.ShowAsync( "Check Result", message);
+            var message = StringUtils.GenericDocumentToString(result.Value.Check);
+            await Alert.ShowAsync("Check Result", message);
         }
     }
 
     public static async Task TextPatternScannerClicked()
     {
         var configuration = new TextPatternScannerScreenConfiguration();
-        
+
         // Set colors
         configuration.Palette.SbColorPrimary = Constants.Colors.ScanbotRed;
         configuration.Palette.SbColorOnPrimary = Colors.White;
@@ -121,19 +121,19 @@ public static class DataDetectorsFeature
         configuration.ActionBar.FlashButton.ActiveForegroundColor = Constants.Colors.ScanbotRed;
 
         configuration.ScannerConfiguration.MinimumNumberOfRequiredFramesWithEqualScanningResult = 4;
-        
+
         var result = await ScanbotSDKMain.TextPattern.StartScannerAsync(configuration);
 
         if (result.IsSuccess)
         {
-            Alert.ShowAsync( $"Text Pattern Result", result.Value.RawText);
+            await Alert.ShowAsync($"Text Pattern Result", result.Value.RawText);
         }
     }
 
     public static async Task VinScannerClicked()
     {
         var configuration = new VinScannerScreenConfiguration();
-        
+
         // Set colors
         configuration.Palette.SbColorPrimary = Constants.Colors.ScanbotRed;
         configuration.Palette.SbColorOnPrimary = Colors.White;
@@ -154,17 +154,17 @@ public static class DataDetectorsFeature
 
         if (result.IsSuccess)
         {
-            Alert.ShowAsync( $"Vin Result", result.Value.TextResult.RawText);
+            await Alert.ShowAsync($"Vin Result", result.Value.TextResult.RawText);
         }
     }
-    
+
     public static async Task CreditCardScannerClicked()
     {
         var configuration = new CreditCardScannerScreenConfiguration();
         var result = await ScanbotSDKMain.CreditCard.StartScannerAsync(configuration);
         if (result.IsSuccess)
         {
-            Alert.ShowAsync( $"Credit Card Result", SdkUtils.GenericDocumentToString(result.Value.CreditCard));
+            await Alert.ShowAsync($"Credit Card Result", StringUtils.GenericDocumentToString(result.Value.CreditCard));
         }
     }
 }

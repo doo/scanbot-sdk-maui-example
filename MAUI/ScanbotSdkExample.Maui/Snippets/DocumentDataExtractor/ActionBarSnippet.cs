@@ -40,7 +40,7 @@ public class ActionBarSnippet
         actionBar.FlipCameraButton.ForegroundColor = new ColorValue("#FFFFFF");
 
         // Present the view controller modally.
-        var result = await ScanbotSDKMain.DocumentDataExtractor.StartScannerAsync(configuration);
+        var result = await ScanbotSDKMain.DocumentDataExtractor.StartExtractorScreenAsync(configuration);
         if (!result.IsSuccess)
         {
             // Indicates failure in the operation. Please access the Exception object returned in `result.Error`

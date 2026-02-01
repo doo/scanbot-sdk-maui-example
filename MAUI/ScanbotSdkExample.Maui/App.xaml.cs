@@ -1,21 +1,15 @@
-﻿namespace ScanbotSdkExample.Maui;
+﻿using ScanbotSDK.MAUI;
+
+namespace ScanbotSdkExample.Maui;
 
 public partial class App
 {
+    public static bool IsLicenseValid => ScanbotSDKMain.LicenseInfo()?.Value?.IsValid ?? false;
+    
     /// <summary>
     /// Enable this variable to turn on the encryption.
     /// </summary>
     public const bool IsEncryptionEnabled = false;
-
-    /// <summary>
-    /// Constant timespan value of 3 seconds to force close the scanner.
-    /// </summary>
-    public const int ForceCloseInterval = 3000;
-    
-    /// <summary>
-    /// Turns on the test code for Force closing the RTU UI scanners.
-    /// </summary>
-    internal const bool TestForceCloseFeature = true;
     
     /// <summary>
     /// Returns the NavigationPage object by accessing the singleton CurrentWindow instance.

@@ -1,4 +1,5 @@
 using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Core.Document;
 using ScanbotSDK.MAUI.Core.Image;
 using ScanbotSDK.MAUI.Core.ImageProcessing;
 using ScanbotSDK.MAUI.Image;
@@ -26,7 +27,11 @@ public static class FilterAndRotateOnDocumentPage
         var filter1 = new ScanbotBinarizationFilter { OutputMode = OutputMode.Antialiased };
         var filter2 = new BrightnessFilter { Brightness = 0.4 };
 
-        await page.ModifyPageAsync(filters: [filter1, filter2], rotation: rotation);
+        await page.ModifyPageAsync(new ModifyPageOptions
+        {
+            Filters = [filter1, filter2],
+            Rotation = rotation
+        });
     }
 
     private static ImageRef FilterAndRotateOnImage(ImageRef imageRef)
