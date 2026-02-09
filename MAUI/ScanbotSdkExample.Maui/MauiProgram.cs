@@ -30,8 +30,9 @@ public static partial class MauiProgram
             encryptionMode = FileEncryptionMode.Aes256;
         }
 
-        ScanbotSDKMain.Initialize(builder, LicenseKey, new SdkConfiguration
+        ScanbotSDKMain.Initialize(builder, new SdkConfiguration
         {
+            LicenseKey = LicenseKey,
             LoggingEnabled = true,
             StorageBaseDirectory = StorageBaseDirectoryForExampleApp(),
             StorageImageFormat = StorageImageFormat.Jpg,

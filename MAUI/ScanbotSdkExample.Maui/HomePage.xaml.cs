@@ -1,16 +1,12 @@
-﻿using Microsoft.Maui.Graphics.Platform;
-using ScanbotSDK.MAUI;
-using ScanbotSDK.MAUI.Common;
+﻿using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Core.Document;
+using ScanbotSDK.MAUI.Core.ImageProcessing;
 using ScanbotSDK.MAUI.Core.PdfGeneration;
-using ScanbotSDK.MAUI.Document;
 using ScanbotSDK.MAUI.Ocr;
 using ScanbotSdkExample.Maui.Models;
 using ScanbotSdkExample.Maui.Results;
 using ScanbotSdkExample.Maui.ReadyToUseUI;
 using ScanbotSdkExample.Maui.Utils;
-using Image = Microsoft.Maui.Controls.PlatformConfiguration.TizenSpecific.Image;
-using ImageSource = Microsoft.Maui.Controls.ImageSource;
 
 namespace ScanbotSdkExample.Maui;
 
@@ -32,14 +28,15 @@ public partial class HomePage
 
     public HomePage()
     {
+        InitializeComponent();
         SdkFeatures =
         [
             new SdkFeature("DOCUMENT SCANNER"),
             new SdkFeature("Single Document Scanning", DocumentScannerFeature.SingleDocumentScanningClicked),
-            new SdkFeature("Single Finder Document Scanning",
-                DocumentScannerFeature.SingleFinderDocumentScanningClicked),
+            new SdkFeature("Single Finder Document Scanning", DocumentScannerFeature.SingleFinderDocumentScanningClicked),
             new SdkFeature("Multiple Document Scanning", DocumentScannerFeature.MultipleDocumentScanningClicked),
-            new SdkFeature("Import Image", ImportButtonClicked),
+            new SdkFeature("Scan Document From Image", ScanDocumentFromImageClicked),
+            new SdkFeature("Scan Document From PDF", ScanDocumentFromPdfClicked),
             new SdkFeature("Delete all documents", DeleteAllDocsFromStorageClicked),
 
             new SdkFeature("CLASSIC COMPONENT"),
@@ -55,7 +52,7 @@ public partial class HomePage
             new SdkFeature("Text Pattern Scanner", DataDetectorsFeature.TextPatternScannerClicked),
             new SdkFeature("Vin Scanner", DataDetectorsFeature.VinScannerClicked),
 
-            new SdkFeature("DETECTION FROM IMAGE"),
+            new SdkFeature("SCAN FROM IMAGE"),
             new SdkFeature("Check Recognizer", DetectOnImageFeature.CheckDetectorClicked),
             new SdkFeature("Credit Card Recognizer", DetectOnImageFeature.CreditCardDetectorClicked),
             new SdkFeature("MRZ Recognizer", DetectOnImageFeature.MrzDetectorClicked),
@@ -64,28 +61,24 @@ public partial class HomePage
             new SdkFeature("SDK OPERATIONS"),
             new SdkFeature("Mock Camera", ConfigureMockCameraClicked),
             new SdkFeature("PDF from Image", CreatePdfFromImageClicked),
+            new SdkFeature("Extract Images from PDF", ExtractImagesFromPdfClicked),
             new SdkFeature("OCR from Image", ExtractOcrFromImageClicked),
+            
+            new SdkFeature("Test Images", TestImageResults),
 
             new SdkFeature("MISCELLANEOUS"),
             new SdkFeature(ViewLicenseInfo, ViewLicenseInfoClicked),
             new SdkFeature("Learn more about Scanbot SDK", LearnMoreClicked)
         ];
-
+        
         BindingContext = this;
-        InitializeComponent();
     }
 
     /// Item Selected method invoked on the ListView item selection.
-    async void SdkFeatureSelected(Object sender, SelectionChangedEventArgs e)
+    private async void SdkFeatureSelected(object sender, TappedEventArgs e)
     {
-        FeaturesCollectionView.SelectedItem = null;
-        if (e.CurrentSelection == null || e.CurrentSelection.Count == 0)
+        if (e.Parameter is not SdkFeature feature)
             return;
-
-        if (e.CurrentSelection.FirstOrDefault() is not SdkFeature feature || feature.DoTask == null)
-        {
-            return;
-        }
 
         if (!App.IsLicenseValid && feature.Title != ViewLicenseInfo)
         {
@@ -130,7 +123,7 @@ public partial class HomePage
             BrowserLaunchMode.SystemPreferred);
     }
 
-    private async Task ImportButtonClicked()
+    private async Task ScanDocumentFromImageClicked()
     {
         try
         {
@@ -144,6 +137,36 @@ public partial class HomePage
             {
                 // runs document detection on the given image.
                 DocumentDetection = true
+            });
+
+            if (!result.IsSuccess)
+            {
+                await Alert.ShowAsync(result.Error);
+                return;
+            }
+
+            // success
+            await Navigation.PushAsync(new ScannedDocumentsPage(result.Value));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task ScanDocumentFromPdfClicked()
+    {
+        try
+        {
+            var filePath = await PdfPicker.PickAsync();
+            var result = await ScanbotSDKMain.Document.CreateDocumentFromPdfAsync(filePath, new CreateDocumentOptions
+            {
+                DocumentDetection = true,
+                Filters = [new ColorDocumentFilter()]
             });
 
             if (!result.IsSuccess)
@@ -217,7 +240,7 @@ public partial class HomePage
         var documentIds = ScanbotSDKMain.Document.StoredDocumentUuids()?.ValueOrNull ?? [];
         if (documentIds.Length == 0)
         {
-            await Alert.ShowAsync("Alert!", "There are no more documents available to delete. either they are already deleted.", "Confirm", "Cancel");
+            await Alert.ShowAsync("Alert!", "There are no more documents available to delete.");
             return;
         }
 
@@ -233,5 +256,22 @@ public partial class HomePage
         }
 
         await Alert.ShowAsync("Alert", $"Number of documents deleted: {documentIds.Length}");
+    }
+
+    private async Task ExtractImagesFromPdfClicked()
+    {
+        var filePath = await PdfPicker.PickAsync();
+        var result = await ScanbotSDKMain.PdfImageExtractor.ExtractImageFilesAsync(pdfFileUri: filePath);
+        if (result.IsSuccess)
+        {
+            await Navigation.PushAsync(new PdfExtractedImageResultPage(result.Value));
+        }
+    }
+    
+    
+    private async Task TestImageResults()
+    {
+        var images = await ImagePicker.PickImagesAsSourceAsync();
+        await Navigation.PushAsync(new PdfExtractedImageResultPage(images));
     }
 }

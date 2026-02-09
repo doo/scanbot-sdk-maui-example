@@ -11,7 +11,7 @@ public static class Alert
     /// <returns>Returns a task object.</returns>
     public static async Task ShowAsync(string title, string message, string button = "Ok")
     {
-        await MainThread.InvokeOnMainThreadAsync(() => App.Navigation.CurrentPage.DisplayAlertAsync(title, message, button));
+        await MainThread.InvokeOnMainThreadAsync(async () => await App.Navigation.CurrentPage.DisplayAlertAsync(title, message, button));
     }
 
     /// <summary>
@@ -24,7 +24,7 @@ public static class Alert
     /// <returns>Returns a task object.</returns>
     public static async Task<bool> ShowAsync(string title, string message, string accept, string reject)
     {
-        return await MainThread.InvokeOnMainThreadAsync(() => App.Navigation.CurrentPage.DisplayAlertAsync(title, message, accept, reject));
+        return await MainThread.InvokeOnMainThreadAsync(async () => await App.Navigation.CurrentPage.DisplayAlertAsync(title, message, accept, reject));
     }
 
     /// <summary>

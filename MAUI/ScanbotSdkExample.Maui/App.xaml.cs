@@ -26,12 +26,18 @@ public partial class App
         {
             if (_currentWindow == null)
             {
-                _currentWindow = new Window(new NavigationPage(new HomePage()));
+                _currentWindow = new Window(new NavigationPage(new HomePage())
+                {
+                    BarBackgroundColor = ScanbotColor,
+                    BarTextColor = Colors.White
+                });
             }
 
             return _currentWindow;
         }
     }
+    
+    public static Color ScanbotColor => Color.FromRgb(200, 25, 60);
 
     public App()
     {

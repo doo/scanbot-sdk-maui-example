@@ -32,7 +32,6 @@ public class ImagePicker
 
             var stream = await file.OpenReadAsync();
             return ImageSource.FromStream(() => stream);
-            
         }
         catch (Exception ex)
         {
@@ -57,7 +56,7 @@ public class ImagePicker
                 return null;
             }
                 
-            var path = file.FullPath; // for iOS it returns only the File name.
+            var path = file.FullPath; // for iOS, it returns only the File name.
             if (!IsValidPath(path))
             {
                 // iOS
@@ -67,7 +66,7 @@ public class ImagePicker
                 if (string.IsNullOrEmpty(extension))
                     extension = ".jpg";
 
-                // note: This is just for testing purpose and it is used for saving the image locally after picking the image from gallery.
+                // note: This is just for testing purpose, and it is used for saving the image locally after picking the image from gallery.
                 // path of the file.
                 path = Path.Combine(FileSystem.CacheDirectory, "gallery-picked-items");
                 Directory.CreateDirectory(path);
@@ -77,7 +76,6 @@ public class ImagePicker
                 await using var destinationStream = File.Create(path);
                 await stream.CopyToAsync(destinationStream);
             }
-
             return path;
         }
         catch (Exception ex)
@@ -103,5 +101,23 @@ public class ImagePicker
             Debug.WriteLine("The file could not be found. For more details:\n" + e.Message);
             return false;
         }
+    }
+
+    public static async Task<List<ImageSource>> PickImagesAsSourceAsync()
+    {
+        var options = new MediaPickerOptions
+        {
+            Title = "Select a photo"
+        };
+        
+        var pickedList = await MediaPicker.Default.PickPhotosAsync(options);
+        List<ImageSource> imageSources = new List<ImageSource>();
+        foreach (var item in pickedList)
+        {
+            var stream = await item.OpenReadAsync();
+            imageSources.Add(ImageSource.FromStream(() => stream));
+        }
+
+        return imageSources;
     }
 }

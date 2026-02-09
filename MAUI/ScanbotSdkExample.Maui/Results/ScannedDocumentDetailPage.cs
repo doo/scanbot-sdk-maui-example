@@ -169,7 +169,12 @@ public class ScannedDocumentDetailPage : ContentPage
         var result = await Alert.ShowAsync("Attention!", message, "Yes", "No");
         if (result)
         {
-            await _selectedDocument.RemovePagesAsync([_selectedPage.Uuid]);
+            var removeResult = await _selectedDocument.RemovePagesAsync([_selectedPage.Uuid]);
+            if (!removeResult.IsSuccess)
+            {
+                await Alert.ShowAsync(removeResult.Error);
+                return;
+            }
             await Navigation.PopAsync(true);
         }
     }
