@@ -25,7 +25,7 @@ public class PageFilterSnippet : AppCompatActivity
 
 	private void StartFiltering()
 	{
-		var document = _scanbotSdk.DocumentApi.LoadDocument("Your_save_doc_Id").Get<Document>();
+		var document = _scanbotSdk.DocumentApi.LoadDocument("Your_save_doc_Id").GetOrThrow<Document>();
 
 		var binarizationFilter = new ScanbotBinarizationFilter(OutputMode.Antialiased);
 		var brightnessFilter = new BrightnessFilter(0.4);

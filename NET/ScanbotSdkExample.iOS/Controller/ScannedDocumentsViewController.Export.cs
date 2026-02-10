@@ -15,7 +15,7 @@ public partial class ScannedDocumentsViewController
         {
             var title = "Oops";
             var body = "Your license has expired";
-            Alert.Show(this, title, body);
+            Alert.Show(title, body);
             return;
         }
 
@@ -63,16 +63,16 @@ public partial class ScannedDocumentsViewController
             {
                 if (error != null)
                 {
-                    Alert.Show(this, "Perform OCR", error.LocalizedDescription);
+                    Alert.Show("Perform OCR", error.LocalizedDescription);
                     return;
                 }
             
-                Alert.Show(this, "Perform OCR", ocrResult.RecognizedText);
+                Alert.Show("Perform OCR", ocrResult.RecognizedText);
             });
         }
         catch (Exception exception)
         {
-            Alert.Show(this, "Perform OCR", exception.Message);
+            Alert.Show("Perform OCR", exception.Message);
         }
     }
 
@@ -108,7 +108,7 @@ public partial class ScannedDocumentsViewController
                 {
                     if (error != null)
                     {
-                        Alert.Show(this, "Create PDF", error.LocalizedDescription);
+                        Alert.Show("Create PDF", error.LocalizedDescription);
                     }
                     
                     OpenDocument(outputPdfUrl, false);
@@ -116,7 +116,7 @@ public partial class ScannedDocumentsViewController
         }
         catch (Exception ex)
         {
-            Alert.Show(this, "Create PDF", ex.Message);
+            Alert.Show("Create PDF", ex.Message);
         }
     }
     
@@ -164,7 +164,7 @@ public partial class ScannedDocumentsViewController
                 {
                     if (error != null)
                     {
-                        Alert.Show(this, "Sandwiched PDF", error.LocalizedDescription);
+                        Alert.Show("Sandwiched PDF", error.LocalizedDescription);
                     }
                     
                     OpenDocument(outputPdfUrl, false);
@@ -172,7 +172,7 @@ public partial class ScannedDocumentsViewController
         }
         catch (Exception ex)
         {
-            Alert.Show(this, "Sandwiched PDF", ex.Message);
+            Alert.Show("Sandwiched PDF", ex.Message);
         }
     }
 
@@ -191,7 +191,7 @@ public partial class ScannedDocumentsViewController
         {
             var title = "Write TIFF";
             var body = "TIFF file saved to: " + outputTiffUrl;
-            Alert.Show(this, title, body);
+            Alert.Show(title, body);
         }
         else
         {

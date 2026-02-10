@@ -1,5 +1,6 @@
 using Android.Content;
 using AndroidX.Core.Content;
+using IO.Scanbot.Common;
 using IO.Scanbot.Sdk.Imageprocessing;
 using IO.Scanbot.Sdk.Ocr;
 using IO.Scanbot.Sdk.Pdfgeneration;
@@ -94,14 +95,15 @@ public partial class PagePreviewActivity
 						jpegQuality: 80,
 						ResamplingMethod.None,
 						null); // ParametricFilter.ScanbotBinarizationFilter()
-		
-		// todo: Check with the team -- On how to handle Success/Failure.
-		_scanbotSdk.CreatePdfGenerator(null).Generate(_document, new Java.IO.File(output.Path!), pdfConfig: pdfConfig);
-		
-		// Check if the file was generated.
-		if (File.Exists(output.Path))
+
+		var result = _scanbotSdk.CreatePdfGenerator(null).Generate(_document, new Java.IO.File(output.Path!), pdfConfig: pdfConfig);
+		if (result is IResult.Success)
 		{
-			return output;	
+			// Check if the file was generated.
+			if (File.Exists(output.Path))
+			{
+				return output;
+			}
 		}
 
 		return null;
@@ -144,14 +146,16 @@ public partial class PagePreviewActivity
 							ResamplingMethod.None,
 							binarizationFilter: null);
 
-		// todo: Check with the team -- On how to handle Success/Failure.
-		_scanbotSdk.CreatePdfGenerator(ocrConfig).Generate(_document, new Java.IO.File(output.Path!), pdfConfig);
-		
-		// Check if the file was generated.
-		if (File.Exists(output.Path))
+		var result = _scanbotSdk.CreatePdfGenerator(ocrConfig).Generate(_document, new Java.IO.File(output.Path!), pdfConfig);
+		if (result is IResult.Success)
 		{
-			return output;	
+			// Check if the file was generated.
+			if (File.Exists(output.Path))
+			{
+				return output;
+			}
 		}
+
 		return null;
 	}
 
@@ -179,11 +183,15 @@ public partial class PagePreviewActivity
 			recognizer.SetOcrConfig(new IOcrEngineManager.OcrConfig(recognitionMode));
 		}
 
-		var ocrResult = recognizer.RecognizeFromDocument(_document).Get<OcrResult>();
-		RunOnUiThread(delegate
-	      {
-	          Alert.Show(this, "Ocr Result", ocrResult?.RecognizedText);
-	      });
+		try
+		{
+			var ocrResult = recognizer.RecognizeFromDocument(_document).GetOrThrow<OcrResult>();
+			RunOnUiThread(delegate { Alert.Show(this, "Ocr Result", ocrResult?.RecognizedText); });
+		}
+		catch (Exception ex)
+		{
+			Alert.Show(this, "Error", ex.Message);
+		}
 	}
 
 	private AndroidUri CreateTiff()
@@ -200,15 +208,16 @@ public partial class PagePreviewActivity
 			userFields: Array.Empty<UserField>(),
 			ParametricFilter.ScanbotBinarizationFilter());
 		
-		// todo: Check with the team -- On how to handle Success/Failure.
-		_scanbotSdk.CreateTiffGeneratorManager().GenerateFromDocument(_document, new Java.IO.File(output.Path!), options);
-		
-		// Check if the file was generated.
-		if (File.Exists(output.Path))
+		var result = _scanbotSdk.CreateTiffGeneratorManager().GenerateFromDocument(_document, new Java.IO.File(output.Path!), options);
+		if (result is IResult.Success)
 		{
-			return output;	
+			// Check if the file was generated.
+			if (File.Exists(output.Path))
+			{
+				return output;
+			}
 		}
-		
+
 		return null;
 	}
 }

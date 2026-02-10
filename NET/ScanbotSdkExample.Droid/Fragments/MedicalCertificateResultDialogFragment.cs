@@ -41,7 +41,7 @@ namespace ScanbotSdkExample.Droid.Fragments
             
             textView.TextFormatted = ParseData(_result);
             
-            var bitmap = _result.CroppedImage?.ToBitmap().Get<Bitmap>();
+            var bitmap = _result.CroppedImage?.ToBitmap().GetOrThrow<Bitmap>();
             if (bitmap != null)
             {
                 view.FindViewById<ImageView>(R.Id.front_snap_result)!.SetImageBitmap(bitmap);

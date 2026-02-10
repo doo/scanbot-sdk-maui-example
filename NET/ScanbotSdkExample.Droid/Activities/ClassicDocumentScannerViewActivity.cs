@@ -42,7 +42,7 @@ namespace ScanbotSdkExample.Droid.Activities
 
             _scanbotSdk = new IO.Scanbot.Sdk.ScanbotSDK(this);
             _documentScannerView = FindViewById<DocumentScannerView>(ResourceConstant.Id.document_scanner_view)!;
-            _documentScanner = _scanbotSdk.CreateDocumentScanner(new DocumentScannerConfiguration()).Get<IDocumentScanner>();
+            _documentScanner = _scanbotSdk.CreateDocumentScanner(new DocumentScannerConfiguration()).GetOrThrow<IDocumentScanner>();
 
             _documentScannerView.InitCamera();
             _documentScannerView.InitScanningBehavior(
@@ -199,10 +199,10 @@ namespace ScanbotSdkExample.Droid.Activities
         /// <param name="imageRef">Full image captured by the Camera</param>
         private void DetectDocumentOnImage(ImageRef imageRef)
         {
-            var detectionResult = _documentScanner?.Scan(imageRef).Get<DocumentScanningResult>();
+            var detectionResult = _documentScanner?.Scan(imageRef).GetOrThrow<DocumentScanningResult>();
 
             var defaultDocumentSizeLimit = 0;
-            var document = _scanbotSdk.DocumentApi.CreateDocument(defaultDocumentSizeLimit)?.Get<Document>();
+            var document = _scanbotSdk.DocumentApi.CreateDocument(defaultDocumentSizeLimit)?.GetOrThrow<Document>();
             document.AddPage(imageRef);
 
             if (detectionResult?.DetectionResult != null)

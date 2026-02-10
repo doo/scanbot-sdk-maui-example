@@ -53,7 +53,7 @@ public partial class PagePreviewActivity : AppCompatActivity, IFiltersListener
         _scanbotSdk = new IO.Scanbot.Sdk.ScanbotSDK(this);
         SetContentView(R.Layout.activity_page_preview);
         var documentId = Intent?.GetStringExtra("documentId");
-        _document = _scanbotSdk.DocumentApi.LoadDocument(documentId).Get<Document>();;
+        _document = _scanbotSdk.DocumentApi.LoadDocument(documentId).GetOrThrow<Document>();;
         SetupToolbar();
 
         _filterFragment = new FilterListFragment();
@@ -86,7 +86,7 @@ public partial class PagePreviewActivity : AppCompatActivity, IFiltersListener
         _crop.Text = Texts.Crop;
         _crop.Click += delegate
         {
-            var document = _scanbotSdk.DocumentApi.LoadDocument(documentId)?.Get<Document>();
+            var document = _scanbotSdk.DocumentApi.LoadDocument(documentId)?.GetOrThrow<Document>();
                 var pageId = document.PageAtIndex(0)?.Uuid;
             var configurations = CroppingActivityConfiguration.Init(documentId, pageId);
                 
@@ -111,7 +111,7 @@ public partial class PagePreviewActivity : AppCompatActivity, IFiltersListener
         _quality.Text = Texts.CheckDocumentQuality;
         _quality.Click += delegate
         {
-            var document = _scanbotSdk.DocumentApi.LoadDocument(documentId)?.Get<Document>();
+            var document = _scanbotSdk.DocumentApi.LoadDocument(documentId)?.GetOrThrow<Document>();
             var bitmap = document.PageAtIndex(0)?.DocumentImage;
                 
             if (bitmap == null)
@@ -119,9 +119,9 @@ public partial class PagePreviewActivity : AppCompatActivity, IFiltersListener
 
             var configuration = new DocumentQualityAnalyzerConfiguration();
             
-            var qualityAnalyzer = _scanbotSdk.CreateDocumentQualityAnalyzer(configuration).Get<IDocumentQualityAnalyzer>();
+            var qualityAnalyzer = _scanbotSdk.CreateDocumentQualityAnalyzer(configuration).GetOrThrow<IDocumentQualityAnalyzer>();
             var genericResult = qualityAnalyzer?.Run(ImageRef.FromBitmap(bitmap, new BasicImageLoadOptions()));
-                var documentQualityResult = genericResult.Get<DocumentQualityAnalyzerResult>();
+                var documentQualityResult = genericResult.GetOrThrow<DocumentQualityAnalyzerResult>();
             Alert.Show(this, "Document Quality", documentQualityResult?.Quality?.Name());
         };
 
@@ -158,7 +158,7 @@ public partial class PagePreviewActivity : AppCompatActivity, IFiltersListener
     {
         base.OnActivityResult(requestCode, resultCode, data);
             
-        _document = _scanbotSdk.DocumentApi.LoadDocument(_document.Uuid).Get<Document>(); // refresh from memory
+        _document = _scanbotSdk.DocumentApi.LoadDocument(_document.Uuid).GetOrThrow<Document>(); // refresh from memory
         _adapter.Refresh(_document);
         UpdateVisibility();
     }

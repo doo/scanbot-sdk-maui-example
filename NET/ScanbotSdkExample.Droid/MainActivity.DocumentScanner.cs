@@ -104,28 +104,35 @@ public partial class MainActivity
 
     private void HandleImageImport(Intent data)
     {
-        _progress.Visibility = ViewStates.Visible;
-
-        Alert.Toast(this, Texts.ImportingAndProcessing);
-
-        var bitmap = ImageUtils.ProcessGalleryResult(this, data);
-
-        var scanner = _scanbotSdk.CreateDocumentScanner(new DocumentScannerConfiguration()).Get<IDocumentScanner>();
-        var result = scanner.Scan(ImageRef.FromBitmap(bitmap, new BasicImageLoadOptions())).Get<DocumentScanningResult>();
-
-        var defaultDocumentSizeLimit = 0;
-        var document = _scanbotSdk.DocumentApi.CreateDocument(defaultDocumentSizeLimit)?.Get<Document>();
-        document.AddPage(bitmap);
-
-        if (result?.DetectionResult != null && result.DetectionResult.Status != DocumentDetectionStatus.ErrorNothingDetected)
+        try
         {
-            document.PageAtIndex(0).Polygon = result.DetectionResult.PointsNormalized;
+            _progress.Visibility = ViewStates.Visible;
+
+            Alert.Toast(this, Texts.ImportingAndProcessing);
+
+            var bitmap = ImageUtils.ProcessGalleryResult(this, data);
+
+            var scanner = _scanbotSdk.CreateDocumentScanner(new DocumentScannerConfiguration()).GetOrThrow<IDocumentScanner>();
+            var result = scanner.Scan(ImageRef.FromBitmap(bitmap, new BasicImageLoadOptions())).GetOrThrow<DocumentScanningResult>();
+
+            var defaultDocumentSizeLimit = 0;
+            var document = _scanbotSdk.DocumentApi.CreateDocument(defaultDocumentSizeLimit)?.GetOrThrow<Document>();
+            document.AddPage(bitmap);
+
+            if (result?.DetectionResult != null && result.DetectionResult.Status != DocumentDetectionStatus.ErrorNothingDetected)
+            {
+                document.PageAtIndex(0).Polygon = result.DetectionResult.PointsNormalized;
+            }
+
+            _progress.Visibility = ViewStates.Gone;
+
+            var intent = PagePreviewActivity.CreateIntent(this, document.Uuid);
+            StartActivity(intent);
         }
-
-        _progress.Visibility = ViewStates.Gone;
-
-        var intent = PagePreviewActivity.CreateIntent(this, document.Uuid);
-        StartActivity(intent);
+        catch (Exception ex)
+        {
+            Alert.Show(this, "Error", ex.Message);
+        }
     }
 
     private void ClassicDocumentScannerView()

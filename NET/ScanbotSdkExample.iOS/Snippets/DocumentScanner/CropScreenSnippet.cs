@@ -1,4 +1,5 @@
 using ScanbotSDK.iOS;
+using ScanbotSdkExample.iOS.Utils;
 
 namespace ScanbotSdkExample.iOS.Snippets.DocumentScanner;
 
@@ -30,18 +31,31 @@ public class CropScreenSnippet : UIViewController
         // e.g. customize a UI element's text
         configuration.Localization.CroppingTopBarCancelButtonTitle = "Cancel";
 
-        // Present the recognizer view controller modal on this view controller.
-        SBSDKUI2DocumentScannerController.PresentOn(this, configuration, error: out _, (controller, document, error) =>
-            {
-                // Completion handler to process the result.
-                if (document != null)
-                {
-                    // Handle the document.
-                }
-                else
-                {
-                    // Indicates that the cancel button was tapped.
-                }
-            });
+        try
+        {
+            // Launch the scanner view controller
+            SBSDKUI2DocumentScannerController.PresentOn(viewController: this, configuration: configuration, error: out var presentationError, completion: DocumentScannerCompletion).GetOrThrow(presentationError);
+        }
+        catch (Exception e)
+        {
+            // handle the error thrown from the GetOrThrow(...) function, referenced by the PresentOn(...) error object. 
+            Console.WriteLine(e);
+        }
+    }
+
+    private void DocumentScannerCompletion(SBSDKUI2DocumentScannerController controller, SBSDKScannedDocument document, NSError error)
+    {
+        // check for error
+        if (error != null)
+        {
+            // display error
+            Alert.ValidateAndShowError(error);
+            return;
+        }
+
+        // Handle the document result.
+        var documentId = document.Uuid;
+
+        // display presentation error
     }
 }

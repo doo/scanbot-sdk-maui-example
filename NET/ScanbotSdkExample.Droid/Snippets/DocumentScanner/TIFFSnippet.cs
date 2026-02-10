@@ -18,7 +18,7 @@ public class TIFFSnippet : AppCompatActivity
 
 		// Returns the singleton instance of the Sdk.
 		_scanbotSdk = new IO.Scanbot.Sdk.ScanbotSDK(this);
-		var document = _scanbotSdk.DocumentApi.LoadDocument("Your_Document_Id").Get<Document>();;
+		var document = _scanbotSdk.DocumentApi.LoadDocument("Your_Document_Id").GetOrThrow<Document>();;
 		
 		if (_scanbotSdk.LicenseInfo.IsValid)
 		{
@@ -49,7 +49,7 @@ public class TIFFSnippet : AppCompatActivity
 	
 	private void CreateTiffFromImages(List<Uri> inputUris)
 	{
-		var tiffFile = new Java.IO.File("Your path to tif file.");
+		var tiffFile = new Java.IO.File("Your path to .tiff file.");
 		
 		var defaultParams = TiffGeneratorParameters.Default();
 		

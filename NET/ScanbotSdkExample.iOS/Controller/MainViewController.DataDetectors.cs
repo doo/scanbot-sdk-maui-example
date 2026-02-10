@@ -10,6 +10,12 @@ public partial class MainViewController
         var configuration = new SBSDKUI2MRZScannerScreenConfiguration();
         SBSDKUI2MRZScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
+            if (error != null)
+            {
+                Alert.ValidateAndShowError(error);
+                return;
+            }
+
             if (result?.MrzDocument == null)
                 return;
 
@@ -23,8 +29,11 @@ public partial class MainViewController
         configuration.TopBar.CancelButton.Text = "Done";
         SBSDKUI2DocumentDataExtractorViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
-            if (result?.Document == null)
+            if (error != null)
+            {
+                Alert.ValidateAndShowError(error);
                 return;
+            }
             
             // Display the results.
             ShowPopup(this, result.Document?.ToFormattedString());
@@ -37,8 +46,11 @@ public partial class MainViewController
         configuration.TopBar.CancelButton.Text = "Done";
         SBSDKUI2CheckScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
-            if (result?.Check == null)
+            if (error != null)
+            {
+                Alert.ValidateAndShowError(error);
                 return;
+            }
            
             // Display the results.
             ShowPopup(this, result.Check?.ToFormattedString());
@@ -51,10 +63,18 @@ public partial class MainViewController
         configuration.TopBar.CancelButton.Text = "Done";
         SBSDKUI2TextPatternScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
-            if (!string.IsNullOrEmpty(result?.RawText))
+            if (error != null)
             {
-                Alert.Show(this, "Result Text:", result.RawText);
+                Alert.ValidateAndShowError(error);
+                return;
             }
+            
+            if (string.IsNullOrWhiteSpace(result.RawText))
+            {
+                Alert.Show("Alert", "Something went wrong while scanning the text.");
+                return;
+            }
+            Alert.Show("Result", result.RawText);
         });
     }
 
@@ -64,10 +84,19 @@ public partial class MainViewController
         configuration.TopBar.CancelButton.Text = "Done";
         SBSDKUI2VINScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
-            if (result?.TextResult?.RawText == null)
+            if (error != null)
+            {
+                Alert.ValidateAndShowError(error);
                 return;
+            }
 
-            Alert.Show(this, "Result Text:", result.TextResult.RawText);
+            if (!result.TextResult.ValidationSuccessful)
+            {
+                Alert.Show("Alert", "Something went wrong while scanning the text.");
+                return;
+            }
+
+            Alert.Show("Result", result.TextResult.RawText);
         });
     }
 
@@ -78,6 +107,12 @@ public partial class MainViewController
 
         SBSDKUI2CreditCardScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
+            if (error != null)
+            {
+                Alert.ValidateAndShowError(error);
+                return;
+            }
+            
             if (result?.CreditCard == null)
                 return;
 

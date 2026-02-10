@@ -1,4 +1,5 @@
 using ScanbotSDK.iOS;
+using ScanbotSdkExample.iOS.Utils;
 
 namespace ScanbotSdkExample.iOS.Snippets.DocumentScanner;
 
@@ -9,28 +10,45 @@ public class StorageForPageSnippet
         // Convert array of UIImage to SBSDKImageRef.
         var imageRefs = images.Select(item => SBSDKImageRef.FromUIImageWithImage(item, new SBSDKRawImageLoadOptions()));
 
-        // Create a new document with the specified maximum image size.
-        // Setting the limit to 0, effectively disables the size limit.
-        var scannedDocument = new SBSDKScannedDocument(documentImageSizeLimit: 0, out _);
-
-        // add images to the document.
-        foreach (var imageRef in imageRefs)
+        try
         {
-            scannedDocument.AddPageWith(image: imageRef, polygon:new SBSDKPolygon(), filters: new SBSDKParametricFilter[] {}, out _);
+            NSError error;
+        
+            // Create a new document with the specified maximum image size.
+            // Setting the limit to 0, effectively disables the size limit.
+            var scannedDocument = new SBSDKScannedDocument(documentImageSizeLimit: 0, error: out error).GetOrThrow(error);
+
+            // add images to the document.
+            foreach (var imageRef in imageRefs)
+            {
+                scannedDocument.AddPageWith(image: imageRef, polygon:new SBSDKPolygon(), filters: [new SBSDKColorDocumentFilter()], error: out error).GetOrThrow(error);
+            }
+        }
+        catch (Exception ex)
+        {
+            // handle the error thrown from the GetOrThrow(...) function.
+            Alert.Show(ex);
         }
     }
 
     SBSDKScannedDocument CreateFromDocument(SBSDKDocument document)
     {
-        // Create the scanned document using convenience initializer `init?(document:documentImageSizeLimit:)`
-        // `SBSDKDocument` doesn't support `documentImageSizeLimit`, but you can add it to unify size of the documents.
-        var scannedDocument = new SBSDKScannedDocument(document: document, documentImageSizeLimit: 2048, out _);
-
-        // Return newly created scanned document
-        return scannedDocument;
+        try
+        {
+            // Create the scanned document using convenience initializer `init?(document:documentImageSizeLimit:)`
+            // `SBSDKDocument` doesn't support `documentImageSizeLimit`, but you can add it to unify size of the documents.
+            var scannedDocument = new SBSDKScannedDocument(document: document, documentImageSizeLimit: 2048,error: out var error).GetOrThrow(error);
+            return scannedDocument;
+        }
+        catch (Exception ex)
+        {
+            // Handle error.
+            Alert.Show(ex);
+            return null;
+        }
     }
 
-    void AccessImageURLs(SBSDKScannedDocument scannedDocument)
+    void AccessImageUrLs(SBSDKScannedDocument scannedDocument)
     {
         // get an array of original image URLs from scanned document.
         var originalImageUris = scannedDocument.Pages.Select(page => page.OriginalImageURI);
@@ -50,66 +68,63 @@ public class StorageForPageSnippet
 
         // create destination index.
         var destinationIndex = 0;
-
-        // Reorder images in the scanned document.
-        scannedDocument.MovePageAtTo(sourceIndex, destinationIndex, out _);
+        try
+        {
+            // Reorder images in the scanned document.
+            scannedDocument.MovePageAtTo(sourceIndex, destinationIndex, error: out var error).GetOrThrow(error);
+        }
+        catch (Exception ex)
+        {
+            // Handle error.
+            Alert.Show(ex);
+        }
     }
 
     void RemoveAllPagesFromScannedDocument(SBSDKScannedDocument scannedDocument)
     {
-        // Call the `removeAllPages(onError:)` to remove all pages from the document, but keep the document itself.
-        scannedDocument.RemoveAllPagesAndReturnError(out var nsError);
-        if (nsError != null)
+        try
+        {
+            // Call the `RemoveAllPagesAndReturnError(onError:)` to remove all pages from the document, but keep the document itself.
+            scannedDocument.RemoveAllPagesAndReturnError(error: out var error).GetOrThrow(error);
+        }
+        catch (Exception ex)
         {
             // Handle error.
-            SBSDKLog.LogError($"Failed to remove pages from document{scannedDocument.Uuid} with error: {nsError.LocalizedDescription}");
+            Alert.Show(ex);
         }
     }
 
     void RemovePdfFromScannedDocument(SBSDKScannedDocument scannedDocument)
     {
         // Create a file manager instance.
-        var fileManager = Foundation.NSFileManager.DefaultManager;
+        var fileManager = NSFileManager.DefaultManager;
 
         try
         {
-            NSError error;
-
             // Try to remove a PDF file at URL provided by `SBSDKScannedDocument`.
-            fileManager.Remove(scannedDocument.PdfURI, out error);
-            if (error != null)
-            {
-                SBSDKLog.LogError("Error message: " + error.LocalizedDescription);
-            }
+            fileManager.Remove(scannedDocument.PdfURI, error: out var error).GetOrThrow(error);
         }
-        catch
+        catch (Exception ex)
         {
             // Handle error.
-            SBSDKLog.LogError("Failed to remove a PDF at " + scannedDocument.PdfURI);
+            Alert.Show(ex);
         }
     }
 
-    void RemoveTIFFFromScannedDocument(SBSDKScannedDocument scannedDocument)
+    void RemoveTiffFromScannedDocument(SBSDKScannedDocument scannedDocument)
     {
-
         // Create a file manager instance.
-        var fileManager = Foundation.NSFileManager.DefaultManager;
+        var fileManager = NSFileManager.DefaultManager;
 
         try
         {
-            NSError error;
-
-            // Try to remove a PDF file at URL provided by `SBSDKScannedDocument`.
-            fileManager.Remove(scannedDocument.TiffURI, out error);
-            if (error != null)
-            {
-                SBSDKLog.LogError("Error message: " + error.LocalizedDescription);
-            }
+            // Try to remove a TIFF file at URL provided by `SBSDKScannedDocument`.
+            fileManager.Remove(url: scannedDocument.TiffURI, error: out var error).GetOrThrow(error);
         }
-        catch
+        catch (Exception ex)
         {
             // Handle error.
-            SBSDKLog.LogError("Failed to remove a Tiff at " + scannedDocument.TiffURI);
+            Alert.Show(ex);
         }
     }
 
@@ -117,18 +132,13 @@ public class StorageForPageSnippet
     {
         try
         {
-            NSError error;
             // Try to delate scanned document comparely, including all images and generated files from disk.
-            scannedDocument.DeleteAndReturnError(out error);
-            if (error != null)
-            {
-                SBSDKLog.LogError("Error message: " + error.LocalizedDescription);
-            }
+            scannedDocument.DeleteAndReturnError(out var error).GetOrThrow(error);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
             // Handle error.
-            SBSDKLog.LogError("Failed to devare scanned document:" + e.Message);
+            Alert.Show(ex);
         }
     }
 }

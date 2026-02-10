@@ -142,7 +142,7 @@ namespace ScanbotSdkExample.iOS.Controller
             var message = "License Valid: " + (ScanbotSDKGlobal.IsLicenseValid ? "Yes" : "No");
             message += "\nLicense status: " + ScanbotSDKGlobal.LicenseStatus;
             
-            Alert.Show(this, "License Info", message);
+            Alert.Show("License Info", message);
         }
     }
 }

@@ -60,7 +60,7 @@ public partial class ScannedDocumentsViewController : UIViewController
 
         // Get the document quality analysis result by passing the image to the analyzer
         var documentQuality = documentAnalyzer.RunWithImage(documentPageImage, out var scanningError);
-        Alert.Show(this, "Document Quality", Map(documentQuality?.Quality));
+        Alert.Show("Document Quality", Map(documentQuality?.Quality));
     }
 
     private void OnManualCropClicked(object sender, EventArgs e)
@@ -107,7 +107,7 @@ public partial class ScannedDocumentsViewController : UIViewController
     {
         var title = "Oops!";
         var body = "Something went wrong with saving your file. Please try again";
-        Alert.Show(this, title, body);
+        Alert.Show(title, body);
     }
 
     private void OnFilterButtonClicked(object sender, EventArgs e)

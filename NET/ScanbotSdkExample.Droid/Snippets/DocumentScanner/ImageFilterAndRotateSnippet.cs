@@ -34,10 +34,10 @@ public class ImageFilterAndRotateSnippet : AppCompatActivity
 		var imageRef = ImageRef.FromBitmap(bitmap, new BasicImageLoadOptions());
 
 		// Create a document detector
-		var documentDetector = _scanbotSdk.CreateDocumentScanner(new DocumentScannerConfiguration()).Get<IDocumentScanner>();
+		var documentDetector = _scanbotSdk.CreateDocumentScanner(new DocumentScannerConfiguration()).GetOrThrow<IDocumentScanner>();
 
 		// Run detection on the picked image
-		var result = documentDetector?.Scan(imageRef).Get<DocumentScanningResult>();
+		var result = documentDetector?.Scan(imageRef).GetOrThrow<DocumentScanningResult>();
 
 		// Validate the result status and retrieve the detected polygon.
 		if (result?.DetectionResult == null || result.DetectionResult.Status != DocumentDetectionStatus.Ok)
@@ -64,6 +64,6 @@ public class ImageFilterAndRotateSnippet : AppCompatActivity
 		imageProcessor.ApplyFilter(brightnessFilter);
 
 		// Result Image
-		return imageProcessor.ProcessedBitmap().Get<Bitmap>();
+		return imageProcessor.ProcessedBitmap().GetOrThrow<Bitmap>();
 	}
 }
