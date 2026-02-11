@@ -1,12 +1,15 @@
 ﻿using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Core.ImageProcessing;
+using ScanbotSDK.MAUI.Core.PdfGeneration;
+using ScanbotSDK.MAUI.Core.TiffGeneration;
 using ScanbotSDK.MAUI.Document;
 using ScanbotSDK.MAUI.Ocr;
 using ScanbotSdkExample.Maui.Controls;
 using ScanbotSdkExample.Maui.Controls.ActionBar;
 using ScanbotSdkExample.Maui.Utils;
-using static ScanbotSDK.MAUI.ScanbotSDKMain;
 
 namespace ScanbotSdkExample.Maui.Results;
+
 public class ScannedDocumentsPage : ContentPage
 {
     private const string Pdf = "PDF", Ocr = "Perform OCR", SandwichPdf = "Sandwiched PDF", Tiff = "TIFF (1-bit, B&W)";
@@ -14,9 +17,10 @@ public class ScannedDocumentsPage : ContentPage
     private readonly CollectionView _resultList;
     private readonly SBLoader _loader;
 
-    private ScannedDocument _document;
+    private IScannedDocument _document;
 
     private bool _isLoading;
+
     public bool IsLoading
     {
         get => _isLoading;
@@ -31,6 +35,7 @@ public class ScannedDocumentsPage : ContentPage
     private readonly struct PageLoader : IDisposable
     {
         private readonly ScannedDocumentsPage _page;
+
         public PageLoader(ScannedDocumentsPage page)
         {
             _page = page;
@@ -43,18 +48,18 @@ public class ScannedDocumentsPage : ContentPage
         }
     }
 
-    public ScannedDocumentsPage(ScannedDocument document)
+    public ScannedDocumentsPage(IScannedDocument document)
     {
         _document = document;
         Title = "Document";
         BackgroundColor = Colors.White;
         var screenWidth = DeviceDisplay.MainDisplayInfo.Width / DeviceDisplay.MainDisplayInfo.Density;
-        var itemSize = (screenWidth - 30) / 2; 
+        var itemSize = (screenWidth - 30) / 2;
         _resultList = new CollectionView
         {
             VerticalOptions = LayoutOptions.Start,
             HorizontalOptions = LayoutOptions.Fill,
-            
+
             ItemsLayout = new GridItemsLayout(2, ItemsLayoutOrientation.Vertical)
             {
                 HorizontalItemSpacing = 5,
@@ -69,7 +74,7 @@ public class ScannedDocumentsPage : ContentPage
             }),
             ItemsSource = document.Pages
         };
-        
+
         var bottomBar = new BottomActionBar(isDetailPage: false)
         {
             VerticalOptions = LayoutOptions.End
@@ -113,7 +118,7 @@ public class ScannedDocumentsPage : ContentPage
         _resultList.ItemsSource = _document.Pages;
     }
 
-    private void OnSelectDocumentPage(ScannedDocument.Page selectedPage)
+    private void OnSelectDocumentPage(IScannedDocument.IPage selectedPage)
     {
         if (selectedPage == null) return;
         Navigation.PushAsync(new ScannedDocumentDetailPage(_document, selectedPage));
@@ -121,20 +126,17 @@ public class ScannedDocumentsPage : ContentPage
 
     private async void OnAddButtonTapped(object sender, EventArgs e)
     {
-        if (!SdkUtils.CheckLicense(this))
-        {
-            return;
-        }
+        if (!App.IsLicenseValid) return;
 
         using var loader = new PageLoader(this);
-        var result = await Rtu.DocumentScanner.LaunchAsync(new DocumentScanningFlow
+        var result = await ScanbotSDKMain.Document.StartScannerAsync(new DocumentScanningFlow
         {
             DocumentUuid = _document.Uuid.ToString()
         });
 
-        if (result.Status == OperationResult.Ok)
+        if (result.IsSuccess)
         {
-            _document = result.Result;
+            _document = result.Value;
             _resultList.ItemsSource = _document.Pages;
             _pageGridView.PlatformSizeChanged();
         }
@@ -142,10 +144,13 @@ public class ScannedDocumentsPage : ContentPage
 
     private async void OnSaveButtonTapped(object sender, EventArgs e)
     {
-        if (!SdkUtils.CheckLicense(this) || !_document.Pages.Any()) { return; }
+        if (!App.IsLicenseValid || !_document.Pages.Any())
+        {
+            return;
+        }
 
-        var parameters = new [] { Pdf, Ocr, SandwichPdf, Tiff };
-        string action = await DisplayActionSheet("Save Image as", "Cancel", null, parameters);
+        var parameters = new[] { Pdf, Ocr, SandwichPdf, Tiff };
+        string action = await DisplayActionSheetAsync("Save Image as", "Cancel", null, parameters);
 
         if (action == null || action.Equals("Cancel"))
         {
@@ -173,13 +178,13 @@ public class ScannedDocumentsPage : ContentPage
         }
         catch (Exception ex)
         {
-            Alert.Show( "Error: ", $"An error occurred while saving the document: {ex.Message}");
+            await Alert.ShowAsync("Error: ", $"An error occurred while saving the document: {ex.Message}");
         }
     }
 
     private async Task GeneratePdfAsync()
     {
-        var fileUri = await _document.CreatePdfAsync(new PdfConfiguration
+        var result = await _document.CreatePdfAsync(new PdfConfiguration
         {
             PageDirection = PageDirection.Auto,
             PageSize = PageSize.A4,
@@ -196,44 +201,54 @@ public class ScannedDocumentsPage : ContentPage
             PageFit = PageFit.FitIn,
             ResamplingMethod = ResamplingMethod.None
         });
-        
-        // Sharing the Pdf.
-        await SharingUtils.ShareFileAsync(fileUri.LocalPath, "application/pdf");
+
+        if (!result.IsSuccess)
+        {
+            await Alert.ShowAsync(result.Error);
+            return;
+        }
+
+        // success: sharing the Pdf.
+        await SharingUtils.ShareFileAsync(result.Value.LocalPath, "application/pdf");
     }
 
     private async Task PerformOcrAsync()
     {
         // NOTE:
-        // The default OCR engine is 'OcrConfig.ScanbotOCR' which is ML based. This mode doesn't expect the Langauges array.
-        // If you wish to use the previous engine please use 'OcrConfig.Tesseract(...)'. The Languages array is mandatory in this mode.
-        // Uncomment the below code to use the past legacy 'OcrConfig.Tesseract(...)' engine mode.
-        // var ocrConfig = OcrConfig.Tesseract(withLanguageString: new List<string>{ "en", "de" });
+        // The default OCR engine is 'OcrConfiguration.ScanbotOCR' which is ML based. This mode doesn't expect the Languages array.
+        // If you wish to use the previous engine please use 'OcrConfiguration.Tesseract(...)'. The Languages array is mandatory in this mode.
+        // Uncomment the below code to use the past legacy 'OcrConfiguration.Tesseract(...)' engine mode.
+        // var ocrEngine = OcrConfiguration.Tesseract(withLanguageString: [ "en", "de" ]);
 
         // Using the default OCR option
-        var ocrConfig = OcrConfig.ScanbotOcr;
+        var ocrEngine = OcrConfiguration.ScanbotOcr;
 
         var sourceImages = _document.Pages.Select(p => new FileImageSource { File = p.OriginalImageUri.LocalPath });
-        var result = await CommonOperations.PerformOcrAsync(sourceImages: sourceImages, sourceImagesEncrypted: App.IsEncryptionEnabled, configuration: ocrConfig);
-        
-        // You can access the results with: result.Pages
-        Alert.Show("OCR", result.Text);
+        var result = await ScanbotSDKMain.OcrEngine.RecognizeOnImagesAsync(images: sourceImages, configuration: ocrEngine);
+        if (!result.IsSuccess)
+        {
+            await Alert.ShowAsync(result.Error);
+            return;
+        }
+
+        // success: you can access the results with: result.Pages
+        await Alert.ShowAsync("OCR", result.Value.RecognizedText);
     }
 
     private async Task GenerateSandwichPdfAsync()
     {
         // NOTE:
-        // The default OCR engine is 'OcrConfig.ScanbotOCR' which is ML based. This mode doesn't expect the Langauges array.
-        // If you wish to use the previous engine please use 'OcrConfig.Tesseract(...)'. The Languages array is mandatory in this mode.
-        // Uncomment the below code to use the past legacy 'OcrConfig.Tesseract(...)' engine mode.
-        // var ocrConfig = OcrConfig.Tesseract(withLanguageString: [ "en", "de" ]);
+        // The default OCR engine is 'OcrEngine.ScanbotOCR' which is ML based. This mode doesn't expect the Languages array.
+        // If you wish to use the previous engine please use 'OcrEngine.Tesseract(...)'. The Languages array is mandatory in this mode.
+        // Uncomment the below code to use the past legacy 'OcrEngine.Tesseract(...)' engine mode.
+        // var ocrEngine = OcrEngine.Tesseract(withLanguageString: [ "en", "de" ]);
 
         // Using the default OCR option
-        var ocrConfig = OcrConfig.ScanbotOcr;
+        var ocrEngine = OcrConfiguration.ScanbotOcr;
 
-        var result = await CommonOperations.CreateSandwichPdfAsync(
-            sourceImages: _document.Pages.Select(p => new FileImageSource { File = p.OriginalImageUri.LocalPath }),
-            sourceImagesEncrypted: App.IsEncryptionEnabled,
-            pdfConfig: new PdfConfiguration
+        var result = await ScanbotSDKMain.PdfGenerator.GenerateFromImagesAsync(
+            images: _document.Pages.Select(p => new FileImageSource { File = p.OriginalImageUri.LocalPath }),
+            pdfConfiguration: new PdfConfiguration
             {
                 PageDirection = PageDirection.Auto,
                 PageSize = PageSize.A4,
@@ -249,15 +264,21 @@ public class ScannedDocumentsPage : ContentPage
                 JpegQuality = 80,
                 PageFit = PageFit.FitIn,
                 ResamplingMethod = ResamplingMethod.None
-            }, ocrConfig: ocrConfig);
+            }, ocrConfiguration: ocrEngine);
 
-        // Sharing the Pdf.
-        await SharingUtils.ShareFileAsync(result.LocalPath, "application/pdf");
+        if (!result.IsSuccess)
+        {
+            await Alert.ShowAsync(result.Error);
+            return;
+        }
+
+        // success: Sharing the Pdf.
+        await SharingUtils.ShareFileAsync(result.Value.LocalPath, "application/pdf");
     }
 
     private async Task GenerateTiffAsync()
     {
-        var fileUri = await _document.CreateTiffAsync(new TiffGeneratorParameters
+        var result = await _document.CreateTiffAsync(new TiffGeneratorParameters
             {
                 Compression = CompressionMode.CcittT6,
                 Dpi = 72,
@@ -268,16 +289,24 @@ public class ScannedDocumentsPage : ContentPage
         );
 
         // Sharing the Tiff file.
-        await SharingUtils.ShareFileAsync(fileUri.LocalPath, "image/tiff");
+        await SharingUtils.ShareFileAsync(result.Value.LocalPath, "image/tiff");
     }
 
     private async void OnDeleteButtonTapped(object sender, EventArgs e)
     {
         var message = "This will delete the current document that contains all the pages visible on the screen.";
-        var result = await DisplayAlert("Attention!", message, "Confirm", "Cancel");
-        if (!result) return;
+        var accepted = await Alert.ShowAsync("Attention!", message, "Confirm", "Cancel");
+        if (!accepted) return;
+
         using var loader = new PageLoader(this);
-        await _document.DeleteAsync();
+
+        var result = await _document.DeleteDocumentAsync();
+        if (!result.IsSuccess)
+        {
+            await Alert.ShowAsync(result.Error);
+            return;
+        }
+
         await Navigation.PopAsync(true);
     }
 }
