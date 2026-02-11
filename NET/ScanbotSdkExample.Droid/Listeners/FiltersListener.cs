@@ -1,4 +1,4 @@
-﻿using IO.Scanbot.Sdk.Imagefilters;
+﻿using IO.Scanbot.Sdk.Imageprocessing;
 
 namespace ScanbotSdkExample.Droid.Listeners
 {

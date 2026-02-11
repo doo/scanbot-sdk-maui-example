@@ -1,11 +1,12 @@
 using Android.Content;
 using IO.Scanbot.Sdk.Check;
 using IO.Scanbot.Sdk.Creditcard;
-using IO.Scanbot.Sdk.Document;
-using ScanbotSdkExample.Droid.Model;
 using IO.Scanbot.Sdk.Documentdata;
-using IO.Scanbot.Sdk.Ehicscanner;
-using IO.Scanbot.Sdk.MC;
+using IO.Scanbot.Sdk.Image;
+using IO.Scanbot.Sdk.Medicalcertificate;
+using IO.Scanbot.Sdk.Mrz;
+using ScanbotSDK.Droid.Helpers;
+using ScanbotSdkExample.Droid.Model;
 using ScanbotSdkExample.Droid.Fragments;
 using ScanbotSdkExample.Droid.Utils;
 using ScanbotSdkExample.Droid.Views;
@@ -16,12 +17,11 @@ public partial class MainActivity
 {
     private Dictionary<int, Action<Intent>> DetectOnImageActions => new Dictionary<int, Action<Intent>>
     {
-        { DetectMrzFromImageCode, RecognizeMrzFromImage },
-        { DetectEhicFromImageCode, RecognizeEhicFromImage },
-        { DetectCheckFromImageCode, RecognizeCheckFromImage },
-        { DetectMedicalCertificateFromImageCode, RecognizeMedicalCertificateFromImage },
+        { DetectMrzFromImageCode, ScanMrzFromImage },
+        { DetectCheckFromImageCode, ScanCheckFromImage },
+        { DetectMedicalCertificateFromImageCode, ScanMedicalCertificateFromImage },
         { ExtractDocumentDataFromImageCode, ExtractDocumentDataFromImage },
-        { DetectCreditCardFromImageCode, RecognizeCreditCardFromImage },
+        { DetectCreditCardFromImageCode, ScanCreditCardFromImage },
     };
 
     private void LaunchImagePicker(int activityRequestCode)
@@ -36,110 +36,122 @@ public partial class MainActivity
         StartActivityForResult(chooser, activityRequestCode);
     }
 
-    private void RecognizeMrzFromImage(Intent data)
+    private void ScanMrzFromImage(Intent data)
     {
-        var bitmap = ImageUtils.ProcessGalleryResult(this, data);
-        var recognizer = _scanbotSdk.CreateMrzScanner();
-        var result = recognizer.ScanFromBitmap(bitmap, 0);
-
-        if (result?.Document == null || !result.Success)
+        try
         {
-            Alert.Show(this, "Error", "Unable to detect the MRZ.");
-            return;
-        }
+            var bitmap = ImageUtils.ProcessGalleryResult(this, data);
+            var recognizer = _scanbotSdk.CreateMrzScanner(new MrzScannerConfiguration()).GetOrThrow<IMrzScanner>();
+            var result = recognizer?.Run(ImageRef.FromBitmap(bitmap, new BasicImageLoadOptions())).GetOrThrow<MrzScannerResult>();
 
-        var fragment = MRZDialogFragment.CreateInstance(result.Document);
-        ShowFragment(fragment, MRZDialogFragment.Name);
+            if (result?.Document == null || !result.Success)
+            {
+                Alert.Show(this, "Error", "Unable to detect the MRZ.");
+                return;
+            }
+
+            var fragment = MRZDialogFragment.CreateInstance(result.Document);
+            ShowFragment(fragment, MRZDialogFragment.Name);
+        }
+        catch (Exception ex)
+        {
+            Alert.Show(this, "Error", ex.Message);
+        }
     }
 
-    private void RecognizeCheckFromImage(Intent data)
+    private void ScanCheckFromImage(Intent data)
     {
-        var bitmap = ImageUtils.ProcessGalleryResult(this, data);
-        var recognizer = _scanbotSdk.CreateCheckScanner();
-        var result = recognizer.ScanFromBitmap(bitmap, 0);
-        
-        if (result?.Check == null)
+        try
         {
-            Alert.Show(this, "Error", "Unable to detect the Check.");
-            return;
-        }
-        
-        var description = result.Check.ToFormattedString();
-        Alert.Show(this, "Result", description);
-    }
-    
-    private void RecognizeMedicalCertificateFromImage(Intent data)
-    {
-        var bitmap = ImageUtils.ProcessGalleryResult(this, data);
-        var recognizer = _scanbotSdk.CreateMedicalCertificateScanner();
-        
-        var parameters = new MedicalCertificateScanningParameters(
-            shouldCropDocument: true,
-            recognizePatientInfoBox: true,
-            recognizeBarcode: true,
-            extractCroppedImage: true,
-            preprocessInput: true);
-        
-        var result = recognizer.ScanFromBitmap(image: bitmap,
-            orientation: 0,
-            parameters: parameters);
+            var bitmap = ImageUtils.ProcessGalleryResult(this, data);
+            var recognizer = _scanbotSdk.CreateCheckScanner(new CheckScannerConfiguration()).GetOrThrow<ICheckScanner>();
+            var result = recognizer?.Run(ImageRef.FromBitmap(bitmap, new BasicImageLoadOptions())).GetOrThrow<CheckScanningResult>();
 
-        if (result == null || !result.ScanningSuccessful)
+            if (result?.Check == null)
+            {
+                Alert.Show(this, "Error", "Unable to detect the Check.");
+                return;
+            }
+
+            var description = result.Check.ToFormattedString();
+            Alert.Show(this, "Result", description);
+        }
+        catch (Exception ex)
         {
-            Alert.Show(this, "Error", "Unable to detect the Medical certificate.");
-            return;
+            Alert.Show(this, "Error", ex.Message);
         }
-
-        var fragment = MedicalCertificateResultDialogFragment.CreateInstance(result);
-        ShowFragment(fragment, MedicalCertificateResultDialogFragment.Name);
     }
 
-    private void RecognizeEhicFromImage(Intent data)
+    private void ScanMedicalCertificateFromImage(Intent data)
     {
-        var bitmap = ImageUtils.ProcessGalleryResult(this, data);
-        var recognizer = _scanbotSdk.CreateHealthInsuranceCardScanner();
-        var result = recognizer.RecognizeBitmap(bitmap, 0);
+        try {
+            var bitmap = ImageUtils.ProcessGalleryResult(this, data);
+            var recognizer = _scanbotSdk.CreateMedicalCertificateScanner().GetOrThrow<IMedicalCertificateScanner>();;
+        
+            var parameters = new MedicalCertificateScanningParameters(
+                shouldCropDocument: true,
+                recognizePatientInfoBox: true,
+                recognizeBarcode: true,
+                extractCroppedImage: true,
+                preprocessInput: true);
+        
+            var result = recognizer?.Run(image: ImageRef.FromBitmap(bitmap, new BasicImageLoadOptions()), parameters: parameters).GetOrThrow<MedicalCertificateScanningResult>();
 
-        if (result == null)
+            if (result == null || !result.ScanningSuccessful)
+            {
+                Alert.Show(this, "Error", "Unable to detect the Medical certificate.");
+                return;
+            }
+
+            var fragment = MedicalCertificateResultDialogFragment.CreateInstance(result);
+            ShowFragment(fragment, MedicalCertificateResultDialogFragment.Name);  }
+        catch (Exception ex)
         {
-            Alert.Show(this, "Error", "Unable to detect the EHIC.");
-            return;
+            Alert.Show(this, "Error", ex.Message);
         }
-
-        var fragment = HealthInsuranceCardFragment.CreateInstance(result);
-        ShowFragment(fragment, HealthInsuranceCardFragment.Name);
     }
 
     private void ExtractDocumentDataFromImage(Intent data)
     {
-        var bitmap = ImageUtils.ProcessGalleryResult(this, data);
-        var recognizer = _scanbotSdk.CreateDocumentDataExtractor();
-        var result = recognizer.ExtractFromBitmap(bitmap,  0, DocumentDataExtractionMode.SingleShot);
+        try {
+            var bitmap = ImageUtils.ProcessGalleryResult(this, data);
+            var recognizer = _scanbotSdk.CreateDocumentDataExtractor(new DocumentDataExtractorConfiguration()).GetOrThrow<IDocumentDataExtractor>();
+            var result = recognizer.Run(ImageRef.FromBitmap(bitmap, new BasicImageLoadOptions())).GetOrThrow<DocumentDataExtractionResult>();
         
-        if (result?.Document == null) 
+            if (result?.Document == null) 
+            {
+                Alert.Show(this, "Error", "Unable to extract the Document data.");
+                return;
+            }
+        
+            var description = result.Document.ToFormattedString();
+            Alert.Show(this, "Result", description);  }
+        catch (Exception ex)
         {
-            Alert.Show(this, "Error", "Unable to extract the Document data.");
-            return;
+            Alert.Show(this, "Error", ex.Message);
         }
-        
-        var description = result.Document.ToFormattedString();
-        Alert.Show(this, "Result", description);
     }
     
-    private void RecognizeCreditCardFromImage(Intent data)
+    private void ScanCreditCardFromImage(Intent data)
     {
-        var bitmap = ImageUtils.ProcessGalleryResult(this, data);
-        var recognizer = _scanbotSdk.CreateCreditCardScanner();
-        var result = recognizer.ScanFromBitmap(bitmap, 0);
+        try {
+            var bitmap = ImageUtils.ProcessGalleryResult(this, data);
+            var recognizer = _scanbotSdk.CreateCreditCardScanner(new CreditCardScannerConfiguration()).GetOrThrow<ICreditCardScanner>();
+            var result = recognizer?.Run(ImageRef.FromBitmap(bitmap,new BasicImageLoadOptions())).GetOrThrow<CreditCardScanningResult>();
     
-        if (result?.CreditCard == null) 
-        {
-            Alert.Show(this, "Error", "Unable to detect the Credit card.");
-            return;
-        }
+            if (result?.CreditCard == null) 
+            {
+                Alert.Show(this, "Error", "Unable to detect the Credit card.");
+                return;
+            }
         
-        var description = result.CreditCard.ToFormattedString();
-        Alert.Show(this, "Result", description);
+            var description = result.CreditCard.ToFormattedString();
+            Alert.Show(this, "Result", description);
+        }
+        catch (Exception ex)
+        {
+            Alert.Show(this, "Error", ex.Message);
+        }
     }
 
     private void ShowFragment(BaseDialogFragment fragment, string name)

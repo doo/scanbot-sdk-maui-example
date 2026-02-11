@@ -1,6 +1,8 @@
+using System.Diagnostics;
 using ScanbotSdkExample.iOS.Models;
 using Scanbot.ImagePicker.iOS;
 using ScanbotSDK.iOS;
+using ScanbotSdkExample.iOS.Utils;
 
 namespace ScanbotSdkExample.iOS.Controller;
 
@@ -8,8 +10,6 @@ public partial class MainViewController: IClassicDocumentScannerViewResult
 {
     private void SingleDocumentScanning()
     {
-        SBSDKUI2DocumentScannerController controller = null;
-        
         // Initialize document scanner configuration object using default configurations
         var configuration = new SBSDKUI2DocumentScanningFlow();
 
@@ -48,14 +48,23 @@ public partial class MainViewController: IClassicDocumentScannerViewResult
         configuration.Screens.Camera.UserGuidance.StatesTitles.TooSmall = "Document too small";
         configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
 
-        // Launch the scanner.
-        controller = SBSDKUI2DocumentScannerController.PresentOn(this, configuration, scannedDocument => DidCompleteDocumentScanning(controller, scannedDocument));
+        try
+        {
+            // Launch the scanner.
+            // The GetOrThrow(NSError error); validates the operation if error. Throws if error occured.  
+            SBSDKUI2DocumentScannerController.PresentOn(viewController: this,
+                configuration: configuration,
+                error: out var presentationError,
+                completion: DidCompleteDocumentScanning).GetOrThrow(presentationError);
+        }
+        catch (Exception ex)
+        {
+            Alert.ValidateAndShowError(ex);
+        }
     }
 
     private void MultipleDocumentScanning()
     {
-        SBSDKUI2DocumentScannerController controller = null;
-        
         // Initialize document scanner configuration object using default configurations
         var configuration = new SBSDKUI2DocumentScanningFlow();
 
@@ -107,14 +116,23 @@ public partial class MainViewController: IClassicDocumentScannerViewResult
         configuration.Screens.Cropping.BottomBar.RotateButton.Visible = true;
         configuration.Screens.Cropping.BottomBar.DetectButton.Visible = true;
         
-        // Launch the scanner.
-        controller = SBSDKUI2DocumentScannerController.PresentOn(this, configuration, scannedDocument => DidCompleteDocumentScanning(controller, scannedDocument));
+        try
+        {
+            // Launch the scanner.
+            // The GetOrThrow(NSError error); validates the operation if error. Throws if error occured.  
+            SBSDKUI2DocumentScannerController.PresentOn(viewController: this,
+                configuration: configuration,
+                error: out var presentationError,
+                completion: DidCompleteDocumentScanning).GetOrThrow(presentationError);
+        }
+        catch (Exception ex)
+        {
+            Alert.ValidateAndShowError(ex);
+        }
     }
 
     private void SingleFinderDocumentScanning()
     {
-        SBSDKUI2DocumentScannerController controller = null;
-        
         // Initialize document scanner configuration object using default configurations
         var configuration = new SBSDKUI2DocumentScanningFlow();
 
@@ -144,16 +162,46 @@ public partial class MainViewController: IClassicDocumentScannerViewResult
         configuration.Screens.Camera.UserGuidance.StatesTitles.TooSmall = "Document too small";
         configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
        
-        // Launch the scanner.
-        controller = SBSDKUI2DocumentScannerController.PresentOn(this, configuration, scannedDocument => DidCompleteDocumentScanning(controller, scannedDocument));
+        try
+        {
+            // Launch the scanner.
+            // The GetOrThrow(NSError error) extension, validates the operation if error. Throws if error occured.  
+            SBSDKUI2DocumentScannerController.PresentOn(viewController: this,
+                configuration: configuration,
+                error: out var presentationError,
+                completion: DidCompleteDocumentScanning).GetOrThrow(presentationError);
+        }
+        catch (Exception ex)
+        {
+            Alert.ValidateAndShowError(ex);
+        }
     }
 
-    private void DidCompleteDocumentScanning(SBSDKUI2DocumentScannerController controller, SBSDKScannedDocument scannedDocument)
+    private void DidCompleteDocumentScanning(SBSDKUI2DocumentScannerController controller, SBSDKScannedDocument scannedDocument, NSError error)
     {
+        // Dispose the controller instance returned in the handler.
         controller?.Dispose();
-        DidCompleteDocumentScanning(scannedDocument);
-    }
+        
+        if (error != null)
+        {
+           Alert.ValidateAndShowError(error);
+           return;
+        }
 
+        // Completion handler to process the result.
+        if (scannedDocument?.Pages == null || scannedDocument.Pages.Length == 0)
+        {
+            return;
+        }
+
+        // Display results page.
+        OpenImageListController(scannedDocument.Uuid);
+    }
+    
+    /// <summary>
+    /// IClassicDocumentScannerViewResult implementation. Invoked from the Classic Component.
+    /// </summary>
+    /// <param name="scannedDocument"></param>
     public void DidCompleteDocumentScanning(SBSDKScannedDocument scannedDocument)
     {
         if (scannedDocument?.Pages == null || scannedDocument.Pages.Length == 0)
@@ -166,29 +214,48 @@ public partial class MainViewController: IClassicDocumentScannerViewResult
     
     private async void CreateDocFromImage()
     {
-        var image = await ImagePicker.Instance.PickImageAsync();
-
-        // Create an instance of a detector
-        var detector = new SBSDKDocumentScanner();
-
-        // Run detection on the image
-        var result = detector.ScanFromImage(image, false);
-
-        if (result == null)
+        try
         {
-            return;
+            NSError error;
+            
+            // pick the image from photo library.
+            var image = await ImagePicker.Instance.PickImageAsync();
+            
+            // convert UIImage to SBSDKImageRef
+            var imageRef = SBSDKImageRef.FromUIImageWithImage(image, new SBSDKRawImageLoadOptions());
+
+            // Create an instance of a detector
+            // The GetOrThrow(NSError error) extension, validates the operation if error. Throws if error occured.
+            var detector = new SBSDKDocumentScanner(new SBSDKDocumentScannerConfiguration(), out error).GetOrThrow(error);
+
+            // Run detection on the image
+            var result = detector.RunWithImage(imageRef, out error).GetOrThrow(error);
+            if (result == null)
+            {
+                Alert.Show("Error", "Unable to scan the document from image.");
+                return;
+            }
+
+            // Create an instance of a document
+            var document = new SBSDKScannedDocument(documentImageSizeLimit: 0, out error).GetOrThrow(error);
+
+            // Add page to the document using the image and the detected polygon on the image (if any)
+            document.AddPageWith(image: imageRef, polygon: result.Polygon ?? new SBSDKPolygon(), filters: [], out error).GetOrThrow(error);
+            
+            // show the result
+            OpenImageListController(document.Uuid);
         }
-
-        // Create an instance of a document
-        var document = new SBSDKScannedDocument();
-
-        // Add page to the document using the image and the detected polygon on the image (if any)
-        document.AddPageWith(image, result.Polygon ?? new SBSDKPolygon(), []);
-
-        Console.WriteLine("Attempted document detection on imported page: " + result.Status);
-        OpenImageListController(document.Uuid);
+        catch (Exception ex)
+        {
+            // display error
+            Alert.ValidateAndShowError(ex);
+        }
     }
 
+    /// <summary>
+    /// Display Document results page.
+    /// </summary>
+    /// <param name="documentId">Document Guid string.</param>
     private void OpenImageListController(string documentId)
     {
         var controller = new ScannedDocumentsViewController();
@@ -196,6 +263,9 @@ public partial class MainViewController: IClassicDocumentScannerViewResult
         NavigationController?.PushViewController(controller, true);
     }
 
+    /// <summary>
+    ///  Launch the Classic Component - SBSDKDocumentScannerViewController.
+    /// </summary>
     private void ClassicDocumentScannerView()
     {
         var viewController = new ClassicDocumentScannerViewController

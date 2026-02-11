@@ -1,7 +1,9 @@
 using AndroidX.AppCompat.App;
 using IO.Scanbot.Sdk.Docprocessing;
-using IO.Scanbot.Sdk.Imagefilters;
-using IO.Scanbot.Sdk.Tiff.Model;
+using IO.Scanbot.Sdk.Imageprocessing;
+using IO.Scanbot.Sdk.Tiffgeneration;
+using ScanbotSDK.Droid.Helpers;
+using Boolean = Java.Lang.Boolean;
 using Uri = Android.Net.Uri;
 
 namespace ScanbotSdkExample.Droid.Snippets;
@@ -16,7 +18,7 @@ public class TIFFSnippet : AppCompatActivity
 
 		// Returns the singleton instance of the Sdk.
 		_scanbotSdk = new IO.Scanbot.Sdk.ScanbotSDK(this);
-		var document = _scanbotSdk.DocumentApi.LoadDocument("Your_Document_Id");
+		var document = _scanbotSdk.DocumentApi.LoadDocument("Your_Document_Id").GetOrThrow<Document>();;
 		
 		if (_scanbotSdk.LicenseInfo.IsValid)
 		{
@@ -38,7 +40,7 @@ public class TIFFSnippet : AppCompatActivity
 			userFields: Array.Empty<UserField>(),
 			ParametricFilter.ScanbotBinarizationFilter());
 
-		var isTiffGenerated = _scanbotSdk.CreateTiffGenerator().GenerateFromDocument(document, tiffFile, options);
+		var isTiffGenerated = _scanbotSdk.CreateTiffGeneratorManager().GenerateFromDocument(document, tiffFile, options).GetValue<bool>();
 		if (isTiffGenerated && document?.TiffUri != null)
 		{
 			// Do something with the TIFF file
@@ -47,7 +49,7 @@ public class TIFFSnippet : AppCompatActivity
 	
 	private void CreateTiffFromImages(List<Uri> inputUris)
 	{
-		var tiffFile = new Java.IO.File("Your path to tif file.");
+		var tiffFile = new Java.IO.File("Your path to .tiff file.");
 		
 		var defaultParams = TiffGeneratorParameters.Default();
 		
@@ -61,8 +63,7 @@ public class TIFFSnippet : AppCompatActivity
 
 		// Notify the renderer that the images are encrypted with global sdk-encryption settings
 		var encryptionEnabled = false;
-		
-		var isFileCreated = _scanbotSdk.CreateTiffGenerator().GenerateFromUris(inputUris.ToArray(), encryptionEnabled, tiffFile, options, Binarization.EnabledIfBinarizationFilterSet);
+		var isFileCreated = _scanbotSdk.CreateTiffGeneratorManager().GenerateFromUris(inputUris.ToArray(), encryptionEnabled, tiffFile, options, PageBinarization.EnabledIfBinarizationFilterSet).GetValue<bool>();
 		if (isFileCreated && tiffFile.Exists())
 		{
 			// Do something with the TIFF file

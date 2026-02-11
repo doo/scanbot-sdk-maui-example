@@ -15,7 +15,7 @@ public partial class ScannedDocumentsViewController
         {
             var title = "Oops";
             var body = "Your license has expired";
-            Alert.Show(this, title, body);
+            Alert.Show(title, body);
             return;
         }
 
@@ -52,26 +52,27 @@ public partial class ScannedDocumentsViewController
         if (recognitionMode == SBSDKOCREngineMode.Tesseract)
         {
             var installedLanguages = SBSDKOCRLanguagesManager.InstalledLanguages;
+            
             ocrConfiguration = SBSDKOCREngineConfiguration.TesseractWith(installedLanguages);
         }
 
         try
         {
-            var ocrEngine = new SBSDKOCREngine(ocrConfiguration);
-            ocrEngine.RecognizeFromScannedDocument(scannedDocument, completion: (ocrResult, error) =>
+            var manager = new SBSDKOCREngineManager(ocrConfiguration);
+            manager.RecognizeFromScannedDocument(scannedDocument, completion: (ocrResult, error) =>
             {
                 if (error != null)
                 {
-                    Alert.Show(this, "Perform OCR", error.LocalizedDescription);
+                    Alert.Show("Perform OCR", error.LocalizedDescription);
                     return;
                 }
-
-                Alert.Show(this, "Perform OCR", ocrResult.RecognizedText);
+            
+                Alert.Show("Perform OCR", ocrResult.RecognizedText);
             });
         }
         catch (Exception exception)
         {
-            Alert.Show(this, "Perform OCR", exception.Message);
+            Alert.Show("Perform OCR", exception.Message);
         }
     }
 
@@ -99,7 +100,7 @@ public partial class ScannedDocumentsViewController
                                 keywords: "PDF, ScanbotSDK");
 
              // Renders the document into a searchable PDF at the specified file url
-             var generator = new SBSDKPDFGenerator(configuration: configuration, ocrConfiguration: null, ScanbotUI.DefaultImageStoreEncrypter);
+             var generator = new SBSDKPDFGenerator(configuration: configuration, ocrConfiguration: null, useEncryptionIfAvailable: AppDelegate.IsEncryptionEnabled, error: out _);
              
              // Start the rendering operation and store the SBSDKProgress to watch the progress or cancel the operation.
              generator.GenerateFromScannedDocument(document, output: outputPdfUrl, 
@@ -107,7 +108,7 @@ public partial class ScannedDocumentsViewController
                 {
                     if (error != null)
                     {
-                        Alert.Show(this, "Create PDF", error.LocalizedDescription);
+                        Alert.Show("Create PDF", error.LocalizedDescription);
                     }
                     
                     OpenDocument(outputPdfUrl, false);
@@ -115,7 +116,7 @@ public partial class ScannedDocumentsViewController
         }
         catch (Exception ex)
         {
-            Alert.Show(this, "Create PDF", ex.Message);
+            Alert.Show("Create PDF", ex.Message);
         }
     }
     
@@ -155,7 +156,7 @@ public partial class ScannedDocumentsViewController
                 keywords: "PDF, ScanbotSDK");
 
             // Renders the document into a searchable PDF at the specified file url
-            var generator = new SBSDKPDFGenerator(configuration: configuration, ocrConfiguration: ocrConfiguration, ScanbotUI.DefaultImageStoreEncrypter);
+            var generator = new SBSDKPDFGenerator(configuration: configuration, ocrConfiguration: ocrConfiguration, useEncryptionIfAvailable: AppDelegate.IsEncryptionEnabled, error: out _);
  
             // Start the rendering operation and store the SBSDKProgress to watch the progress or cancel the operation.
             generator.GenerateFromScannedDocument(document, output: outputPdfUrl, 
@@ -163,7 +164,7 @@ public partial class ScannedDocumentsViewController
                 {
                     if (error != null)
                     {
-                        Alert.Show(this, "Sandwiched PDF", error.LocalizedDescription);
+                        Alert.Show("Sandwiched PDF", error.LocalizedDescription);
                     }
                     
                     OpenDocument(outputPdfUrl, false);
@@ -171,7 +172,7 @@ public partial class ScannedDocumentsViewController
         }
         catch (Exception ex)
         {
-            Alert.Show(this, "Sandwiched PDF", ex.Message);
+            Alert.Show("Sandwiched PDF", ex.Message);
         }
     }
 
@@ -184,13 +185,13 @@ public partial class ScannedDocumentsViewController
         options.Dpi = 300;
 
         var outputTiffUrl = new NSUrl(outputUrl.AbsoluteString + Guid.NewGuid() + ".tiff");
-        var tiffWriter = new SBSDKTIFFGenerator(parameters: options);
-        var success = tiffWriter.GenerateFromScannedDocumentToFile(scannedDocument, outputTiffUrl);
+        var tiffWriter = new SBSDKTIFFGenerator(parameters: options, useEncryptionIfAvailable: AppDelegate.IsEncryptionEnabled, error: out _);
+        var success = tiffWriter.GenerateFromScannedDocumentToFile(scannedDocument, outputTiffUrl, out _);
         if (success)
         {
             var title = "Write TIFF";
             var body = "TIFF file saved to: " + outputTiffUrl;
-            Alert.Show(this, title, body);
+            Alert.Show(title, body);
         }
         else
         {

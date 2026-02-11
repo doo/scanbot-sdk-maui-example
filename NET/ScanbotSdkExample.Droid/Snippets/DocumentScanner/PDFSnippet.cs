@@ -1,8 +1,9 @@
-using Android.Content;
-using Android.Graphics;
 using AndroidX.AppCompat.App;
-using IO.Scanbot.Pdf.Model;
+using IO.Scanbot.Common;
 using IO.Scanbot.Sdk.Docprocessing;
+using IO.Scanbot.Sdk.Imageprocessing;
+using IO.Scanbot.Sdk.Pdfgeneration;
+using ScanbotSDK.Droid.Helpers;
 
 namespace ScanbotSdkExample.Droid.Snippets;
 
@@ -16,7 +17,7 @@ public class PdfSnippet : AppCompatActivity
 
 		// Returns the singleton instance of the Sdk.
 		_scanbotSdk = new IO.Scanbot.Sdk.ScanbotSDK(this);
-		var document = _scanbotSdk.DocumentApi.LoadDocument("Your_Document_Id");
+		var document = _scanbotSdk.DocumentApi.LoadDocument("Your_Document_Id").GetOrThrow<Document>();;
 		
 		if (_scanbotSdk.LicenseInfo.IsValid)
 		{
@@ -28,31 +29,34 @@ public class PdfSnippet : AppCompatActivity
 	{
 		// Create the PDF attributes.  
 		var pdfAttributes = new PdfAttributes(
-							author: "Your author",
-							creator: "Your creator",
-							title: "Your title",
-							subject: "Your subject",
-							keywords: "Your keywords");
-                    
+			author: "Your author",
+			creator: "Your creator",
+			title: "Your title",
+			subject: "Your subject",
+			keywords: "Your keywords");
+
 		// Create the PDF rendering configurations.
-		var pdfConfig = new PdfConfiguration(attributes: pdfAttributes, 
-							pageSize:PageSize.A4, 
-							pageDirection:PageDirection.Auto, 
-							pageFit:PageFit.None, 
-							dpi:200, 
-							jpegQuality:100, 
-							ResamplingMethod.None);
+		var pdfConfig = new PdfConfiguration(attributes: pdfAttributes,
+			pageSize: PageSize.A4,
+			pageDirection: PageDirection.Auto,
+			pageFit: PageFit.None,
+			dpi: 200,
+			jpegQuality: 100,
+			ResamplingMethod.None,
+			ParametricFilter.ScanbotBinarizationFilter());
 
 		// Render the images to a PDF file.
-		var isPdfRendered = _scanbotSdk.CreatePdfGenerator().GenerateFromDocument(document, pdfConfig);
-		if (isPdfRendered && document?.PdfUri != null)
+		var result = _scanbotSdk.CreatePdfGenerator(null).Generate(document, pdfConfig);
+		if (result is IResult.Success && document?.PdfUri != null)
 		{
 			// Do something with the PDF file
 		}
 	}
-	
+
 	private void CreatePdfFromImage(List<Android.Net.Uri> inputUris)
 	{
+		var pdfFile = new Java.IO.File("Your path to pdf file.");
+		
 		// Create the PDF attributes.  
 		var pdfAttributes = new PdfAttributes(
 							author: "Your author",
@@ -68,14 +72,15 @@ public class PdfSnippet : AppCompatActivity
 							pageFit:PageFit.None, 
 							dpi:200, 
 							jpegQuality:100, 
-							ResamplingMethod.None);
+							ResamplingMethod.None,
+							ParametricFilter.ScanbotBinarizationFilter());
 
 		// Notify the renderer that the images are encrypted with global sdk-encryption settings
 		var encryptionEnabled = false;
 
 		// Render the images to a PDF file.
-		var pdfFile = _scanbotSdk.CreatePdfGenerator().GenerateFromUris(inputUris.ToArray(), encryptionEnabled, pdfConfig);
-		if (pdfFile != null && pdfFile.Exists())
+		var result = _scanbotSdk.CreatePdfGenerator(null).Generate(inputUris.ToArray(), outputFile: pdfFile, encryptionEnabled, pdfConfig);
+		if (result is IResult.Success && pdfFile.Exists())
 		{
 			// Do something with the PDF file
 		}

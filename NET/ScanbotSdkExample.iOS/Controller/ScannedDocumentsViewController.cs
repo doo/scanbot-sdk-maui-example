@@ -13,7 +13,7 @@ public partial class ScannedDocumentsViewController : UIViewController
 
     internal void NavigateData(string documentId)
     {
-        _scannedDocument = new SBSDKScannedDocument(documentId);
+        _scannedDocument = SBSDKScannedDocument.LoadDocumentWithDocumentUuid(documentId, out var error);
     }
 
     public override void ViewDidLoad()
@@ -49,18 +49,18 @@ public partial class ScannedDocumentsViewController : UIViewController
     private void OnAnalyzeDocumentClicked(object sender, EventArgs e)
     {
         // Get the cropped image
-        var documentPageImage = _scannedDocument.PageAt(0)?.DocumentImage;
+        var documentPageImage = _scannedDocument.PageAt(0, out _)?.DocumentImage;
         if (documentPageImage == null)
         {
             return;
         }
 
         // Initialize document quality analyzer
-        var documentAnalyzer = new SBSDKDocumentQualityAnalyzer();
+        var documentAnalyzer = new SBSDKDocumentQualityAnalyzer(new SBSDKDocumentQualityAnalyzerConfiguration(), out var initializationError);
 
         // Get the document quality analysis result by passing the image to the analyzer
-        var documentQuality = documentAnalyzer.AnalyzeOnImage(documentPageImage);
-        Alert.Show(this, "Document Quality", Map(documentQuality?.Quality));
+        var documentQuality = documentAnalyzer.RunWithImage(documentPageImage, out var scanningError);
+        Alert.Show("Document Quality", Map(documentQuality?.Quality));
     }
 
     private void OnManualCropClicked(object sender, EventArgs e)
@@ -74,10 +74,10 @@ public partial class ScannedDocumentsViewController : UIViewController
         // e.g. customize a UI element's text
         configuration.Localization.CroppingTopBarCancelButtonTitle = "Cancel";
 
-        SBSDKUI2CroppingViewController.PresentOn(this, configuration, completion: CroppingFinished);
+        SBSDKUI2CroppingViewController.PresentOn(this, configuration, completion: CroppingFinished, error: out _);
     }
 
-    private void CroppingFinished(SBSDKUI2CroppingResult result)
+    private void CroppingFinished(SBSDKUI2CroppingViewController controller, SBSDKUI2CroppingResult result, NSError error)
     {
         LoadPages();
     }
@@ -107,7 +107,7 @@ public partial class ScannedDocumentsViewController : UIViewController
     {
         var title = "Oops!";
         var body = "Something went wrong with saving your file. Please try again";
-        Alert.Show(this, title, body);
+        Alert.Show(title, body);
     }
 
     private void OnFilterButtonClicked(object sender, EventArgs e)

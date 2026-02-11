@@ -1,13 +1,12 @@
 using Android.Content;
 using AndroidX.Core.Content;
-using Com.Googlecode.Tesseract.Android;
-using IO.Scanbot.Pdf.Model;
-using IO.Scanbot.Sdk.Imagefilters;
+using IO.Scanbot.Common;
+using IO.Scanbot.Sdk.Imageprocessing;
 using IO.Scanbot.Sdk.Ocr;
-using IO.Scanbot.Sdk.Ocr.Intelligence;
-using IO.Scanbot.Sdk.Process;
-using IO.Scanbot.Sdk.Tiff.Model;
+using IO.Scanbot.Sdk.Pdfgeneration;
+using IO.Scanbot.Sdk.Tiffgeneration;
 using IO.Scanbot.Sdk.Util.Thread;
+using ScanbotSDK.Droid.Helpers;
 using ScanbotSdkExample.Droid.Model;
 using ScanbotSdkExample.Droid.Utils;
 using AndroidUri = Android.Net.Uri;
@@ -87,17 +86,27 @@ public partial class PagePreviewActivity
 							subject: "Your subject",
 							keywords: "Your keywords");
 
-		var pdfConfig = new IO.Scanbot.Pdf.Model.PdfConfiguration(
+		var pdfConfig = new PdfConfiguration(
 						attributes: pdfAttributes,
 						pageSize: PageSize.A4,
 						pageDirection: PageDirection.Auto,
 						pageFit: PageFit.FitIn,
 						dpi: 72,
 						jpegQuality: 80,
-						ResamplingMethod.None);
+						ResamplingMethod.None,
+						null); // ParametricFilter.ScanbotBinarizationFilter()
 
-		_scanbotSdk.CreatePdfGenerator().GenerateFromDocument(_document, new Java.IO.File(output.Path), pdfConfig: pdfConfig);
-		return output;
+		var result = _scanbotSdk.CreatePdfGenerator(null).Generate(_document, new Java.IO.File(output.Path!), pdfConfig: pdfConfig);
+		if (result is IResult.Success)
+		{
+			// Check if the file was generated.
+			if (File.Exists(output.Path))
+			{
+				return output;
+			}
+		}
+
+		return null;
 	}
 
 	private AndroidUri CreateSandwichPdf()
@@ -105,20 +114,20 @@ public partial class PagePreviewActivity
 		var output = GetOutputUri(".pdf");
 		
 		// This is the new OCR configuration with ML which doesn't require the languages.
-		var recognitionMode =  IOcrEngine.EngineMode.ScanbotOcr;
-		IOcrEngine.OcrConfig ocrConfig = new IOcrEngine.OcrConfig(recognitionMode);
+		var recognitionMode =  IOcrEngineManager.EngineMode.ScanbotOcr;
+		IOcrEngineManager.OcrConfig ocrConfig = new IOcrEngineManager.OcrConfig(recognitionMode);
 		
 		// to use legacy configuration we have to pass the installed languages.
-		if (recognitionMode == IOcrEngine.EngineMode.Tesseract)
+		if (recognitionMode == IOcrEngineManager.EngineMode.Tesseract)
 		{
-			var languages = _scanbotSdk.CreateOcrEngine().InstalledLanguages;
+			var languages = _scanbotSdk.CreateOcrEngineManager().InstalledLanguages;
 			if (languages.Count == 0)
 			{
 				RunOnUiThread(delegate { Alert.Toast(this, "OCR languages blobs are not available"); });
 				return null;
 			}
 
-			ocrConfig = new IOcrEngine.OcrConfig(recognitionMode, languages);
+			ocrConfig = new IOcrEngineManager.OcrConfig(recognitionMode, languages);
 		}
 
 		var pdfAttributes = new PdfAttributes(
@@ -128,34 +137,36 @@ public partial class PagePreviewActivity
 							subject: "Your subject",
 							keywords: "Your keywords");
 
-		var pdfConfig = new IO.Scanbot.Pdf.Model.PdfConfiguration(attributes: pdfAttributes,
+		var pdfConfig = new PdfConfiguration(attributes: pdfAttributes,
 							pageSize: PageSize.A4,
 							pageDirection: PageDirection.Auto,
 							pageFit: PageFit.FitIn,
 							dpi: 72,
 							jpegQuality: 80,
-							ResamplingMethod.None);
+							ResamplingMethod.None,
+							binarizationFilter: null);
 
-		var pdfGenerated = _scanbotSdk.CreatePdfGenerator().GenerateWithOcrFromDocument(_document, pdfConfig, ocrConfig);
-		if (pdfGenerated)
+		var result = _scanbotSdk.CreatePdfGenerator(ocrConfig).Generate(_document, new Java.IO.File(output.Path!), pdfConfig);
+		if (result is IResult.Success)
 		{
-			if (string.IsNullOrEmpty(_document.PdfUri?.Path))
+			// Check if the file was generated.
+			if (File.Exists(output.Path))
+			{
 				return output;
-			
-			File.Move(_document.PdfUri.Path, new Java.IO.File(output.Path!).AbsolutePath);
+			}
 		}
 
-		return output;
+		return null;
 	}
 
 	private void PerformOcr()
 	{
 		// This is the new OCR configuration with ML which doesn't require the languages.
-		var recognitionMode = IOcrEngine.EngineMode.ScanbotOcr;
-		var recognizer = _scanbotSdk.CreateOcrEngine();
+		var recognitionMode = IOcrEngineManager.EngineMode.ScanbotOcr;
+		var recognizer = _scanbotSdk.CreateOcrEngineManager();
 
 		// to use legacy configuration we have to pass the installed languages.
-		if (recognitionMode == IOcrEngine.EngineMode.Tesseract)
+		if (recognitionMode == IOcrEngineManager.EngineMode.Tesseract)
 		{
 			var languages = recognizer.InstalledLanguages;
 			if (languages.Count == 0)
@@ -164,36 +175,49 @@ public partial class PagePreviewActivity
 				return;
 			}
 
-			var ocrConfig = new IOcrEngine.OcrConfig(recognitionMode, languages);
+			var ocrConfig = new IOcrEngineManager.OcrConfig(recognitionMode, languages);
 			recognizer.SetOcrConfig(ocrConfig);
 		}
 		else
 		{
-			recognizer.SetOcrConfig(new IOcrEngine.OcrConfig(recognitionMode));
+			recognizer.SetOcrConfig(new IOcrEngineManager.OcrConfig(recognitionMode));
 		}
 
-		var ocrResult = recognizer.RecognizeFromDocument(_document);
-		RunOnUiThread(delegate
-	      {
-	          Alert.Show(this, "Ocr Result", ocrResult.RecognizedText);
-	      });
+		try
+		{
+			var ocrResult = recognizer.RecognizeFromDocument(_document).GetOrThrow<OcrResult>();
+			RunOnUiThread(delegate { Alert.Show(this, "Ocr Result", ocrResult?.RecognizedText); });
+		}
+		catch (Exception ex)
+		{
+			Alert.Show(this, "Error", ex.Message);
+		}
 	}
 
 	private AndroidUri CreateTiff()
 	{
 		var output = GetOutputUri(".tiff");
 		var defaultParams = TiffGeneratorParameters.Default();
-		
+
 		// Please note that some compression types are only compatible for 1-bit encoded images (binarized black & white images)!
-		var options = new IO.Scanbot.Sdk.Tiff.Model.TiffGeneratorParameters(
-			IO.Scanbot.Sdk.Tiff.Model.CompressionMode.None,
+		var options = new TiffGeneratorParameters(
+			CompressionMode.None,
 			jpegQuality: defaultParams.JpegQuality,
 			zipCompressionLevel: defaultParams.ZipCompressionLevel,
 			dpi: 200,
 			userFields: Array.Empty<UserField>(),
 			ParametricFilter.ScanbotBinarizationFilter());
+		
+		var result = _scanbotSdk.CreateTiffGeneratorManager().GenerateFromDocument(_document, new Java.IO.File(output.Path!), options);
+		if (result is IResult.Success)
+		{
+			// Check if the file was generated.
+			if (File.Exists(output.Path))
+			{
+				return output;
+			}
+		}
 
-		_scanbotSdk.CreateTiffGenerator().GenerateFromDocument(_document, new Java.IO.File(output.Path), options);
-		return output;
+		return null;
 	}
 }
