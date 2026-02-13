@@ -21,7 +21,6 @@ public partial class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
     private const int ScanCreditCardRequestCode = 4005;
     private const int ScanCheckRequestCode = 4008;
     private const int  DetectMrzFromImageCode = 6001;
-    private const int DetectMedicalCertificateFromImageCode = 6003;
     private const int DetectCheckFromImageCode = 6004;
     private const int ExtractDocumentDataFromImageCode = 6005;
     private const int DetectCreditCardFromImageCode = 6006;
@@ -66,7 +65,6 @@ public partial class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
             new ListItemButton(this, "Scan Check on Image", () => LaunchImagePicker(DetectCheckFromImageCode)),
             new ListItemButton(this, "Scan Credit Card on Image", () => LaunchImagePicker(DetectCreditCardFromImageCode)),
             new ListItemButton(this, "Extract Document Data from Image", () => LaunchImagePicker(ExtractDocumentDataFromImageCode)),
-            new ListItemButton(this, "Scan Medical Certificate on Image", () => LaunchImagePicker(DetectMedicalCertificateFromImageCode)),
             new ListItemButton(this, "Scan MRZ on Image", () => LaunchImagePicker(DetectMrzFromImageCode))
         ]);
             

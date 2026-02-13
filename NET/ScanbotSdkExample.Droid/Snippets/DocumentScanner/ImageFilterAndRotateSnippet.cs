@@ -37,10 +37,10 @@ public class ImageFilterAndRotateSnippet : AppCompatActivity
 		var documentDetector = _scanbotSdk.CreateDocumentScanner(new DocumentScannerConfiguration()).GetOrThrow<IDocumentScanner>();
 
 		// Run detection on the picked image
-		var result = documentDetector?.Scan(imageRef).GetOrThrow<DocumentScanningResult>();
+		var result = documentDetector.Scan(imageRef).GetOrThrow<DocumentScanningResult>();
 
 		// Validate the result status and retrieve the detected polygon.
-		if (result?.DetectionResult == null || result.DetectionResult.Status != DocumentDetectionStatus.Ok)
+		if (result.DetectionResult == null || !result.DetectionResult.Status.Equals(DocumentDetectionStatus.Ok))
 		{
 			return bitmap;
 		}
@@ -53,7 +53,7 @@ public class ImageFilterAndRotateSnippet : AppCompatActivity
 		imageProcessor.Rotate(ImageRotation.Clockwise90);
 
 		// You can crop the image using the polygon if you want.
-		imageProcessor.Crop(result?.DetectionResult.PointsNormalized);
+		imageProcessor.Crop(result.DetectionResult.PointsNormalized);
 
 		// Resize the image.
 		imageProcessor.Resize(700);

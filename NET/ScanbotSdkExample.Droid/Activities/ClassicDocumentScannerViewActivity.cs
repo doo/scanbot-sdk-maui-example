@@ -4,6 +4,7 @@ using Android.Graphics;
 using Android.Views;
 using AndroidX.AppCompat.App;
 using AndroidX.Core.View;
+using IO.Scanbot.Common;
 using IO.Scanbot.Sdk.Camera;
 using IO.Scanbot.Sdk.Docprocessing;
 using IO.Scanbot.Sdk.Document;
@@ -13,6 +14,7 @@ using IO.Scanbot.Sdk.Image;
 using IO.Scanbot.Sdk.Ui_v2.Common.Activity;
 using IO.Scanbot.Sdk.UI.Camera;
 using ScanbotSDK.Droid.Helpers;
+using ScanbotSdkExample.Droid.Utils;
 
 namespace ScanbotSdkExample.Droid.Activities
 {
@@ -42,9 +44,18 @@ namespace ScanbotSdkExample.Droid.Activities
 
             _scanbotSdk = new IO.Scanbot.Sdk.ScanbotSDK(this);
             _documentScannerView = FindViewById<DocumentScannerView>(ResourceConstant.Id.document_scanner_view)!;
-            _documentScanner = _scanbotSdk.CreateDocumentScanner(new DocumentScannerConfiguration()).GetOrThrow<IDocumentScanner>();
-
             _documentScannerView.InitCamera();
+            
+            try
+            {
+                _documentScanner = _scanbotSdk.CreateDocumentScanner(new DocumentScannerConfiguration()).GetOrThrow<IDocumentScanner>();
+            }
+            catch (Exception ex)
+            {
+                Alert.Show(this, "Error", ex.Message);
+                return;
+            }
+          
             _documentScannerView.InitScanningBehavior(
                 documentScanner: _documentScanner,
                 scannerViewCallback: this,
@@ -98,38 +109,50 @@ namespace ScanbotSdkExample.Droid.Activities
         /// This function is invoked for every frame while scanning.
         /// Below implementation helps in getting the User Guidance while scanning. 
         /// </summary>
-        /// <param name="result"></param>
-        /// <param name="frame"></param>
-        /// <returns></returns>
-        private bool HandleDocumentScannerFrame(DocumentDetectionResult result, FrameHandler.Frame frame)
+        /// <param name="resultWrapper">IResult object that wraps the DocumentScanningResult or Exception if occured.</param>
+        /// <param name="frame">Current frame of the scanner.</param>
+        /// <returns>Boolean</returns>
+        private bool HandleDocumentScannerFrame(IResult resultWrapper, FrameHandler.Frame frame)
         {
-            if (!_autoSnappingEnabled || result == null)
-            {
-                return false;
-            }
+            // return if auto snapping is off.
+            if (!_autoSnappingEnabled) return _autoSnappingEnabled;
 
             if (Java.Lang.JavaSystem.CurrentTimeMillis() - _lastUserGuidanceHintTs < 400)
             {
                 return false;
             }
 
+            DocumentDetectionResult result;
+            try
+            {
+                // return if null result
+                result = resultWrapper?.GetOrThrow<DocumentDetectionResult>();
+                if (result == null) return false;
+            }
+            catch (Exception e)
+            {
+                SetAutoSnapEnabled(false);
+                Alert.Show(this, "Error", e.Message);
+                return false;
+            }
+            
             var color = Color.Red;
             var guideText = "";
 
-            if (result.Status == DocumentDetectionStatus.Ok)
+            if (result.Status.Equals(DocumentDetectionStatus.Ok))
             {
                 guideText = "Don't move.\nCapturing...";
                 color = Color.Green;
             }
-            else if (result.Status == DocumentDetectionStatus.OkButTooSmall)
+            else if (result.Status.Equals(DocumentDetectionStatus.OkButTooSmall))
             {
                 guideText = "Move closer";
             }
-            else if (result.Status == DocumentDetectionStatus.OkButBadAngles)
+            else if (result.Status.Equals(DocumentDetectionStatus.OkButBadAngles))
             {
                 guideText = "Perspective";
             }
-            else if (result.Status == DocumentDetectionStatus.OkButBadAspectRatio)
+            else if (result.Status.Equals(DocumentDetectionStatus.OkButBadAspectRatio))
             {
                 guideText = "Wrong aspect ratio.\n Rotate your device";
                 if (IgnoreBadAspectRatio)
@@ -138,15 +161,15 @@ namespace ScanbotSdkExample.Droid.Activities
                     color = Color.Green;
                 }
             }
-            else if (result.Status == DocumentDetectionStatus.ErrorNothingDetected)
+            else if (result.Status.Equals(DocumentDetectionStatus.ErrorNothingDetected))
             {
                 guideText = "No Document";
             }
-            else if (result.Status == DocumentDetectionStatus.ErrorTooNoisy)
+            else if (result.Status.Equals(DocumentDetectionStatus.ErrorTooNoisy))
             {
                 guideText = "Background too noisy";
             }
-            else if (result.Status == DocumentDetectionStatus.ErrorTooDark)
+            else if (result.Status.Equals(DocumentDetectionStatus.ErrorTooDark))
             {
                 guideText = "Poor light";
             }
@@ -199,22 +222,31 @@ namespace ScanbotSdkExample.Droid.Activities
         /// <param name="imageRef">Full image captured by the Camera</param>
         private void DetectDocumentOnImage(ImageRef imageRef)
         {
-            var detectionResult = _documentScanner?.Scan(imageRef).GetOrThrow<DocumentScanningResult>();
-
-            var defaultDocumentSizeLimit = 0;
-            var document = _scanbotSdk.DocumentApi.CreateDocument(defaultDocumentSizeLimit)?.GetOrThrow<Document>();
-            document.AddPage(imageRef);
-
-            if (detectionResult?.DetectionResult != null)
+            try
             {
-                document.PageAtIndex(0).Polygon = detectionResult.DetectionResult.PointsNormalized;
-            }
+                var detectionResult = _documentScanner?.Scan(imageRef).GetOrThrow<DocumentScanningResult>();
+                var defaultDocumentSizeLimit = 0;
 
-            Bundle extras = new Bundle();
-            extras.PutString(ActivityConstants.ExtraKeyRtuResult, document.Uuid);
-            Intent intent = new Intent();
-            intent.PutExtras(extras);
-            SetResult(Result.Ok, intent);
+                var document = _scanbotSdk.DocumentApi.CreateDocument(defaultDocumentSizeLimit)?.GetOrThrow<Document>();
+                if (document == null) return;
+
+                document.AddPage(imageRef);
+
+                if (detectionResult?.DetectionResult != null)
+                {
+                    document.PageAtIndex(0).Polygon = detectionResult.DetectionResult.PointsNormalized;
+                }
+
+                Bundle extras = new Bundle();
+                extras.PutString(ActivityConstants.ExtraKeyRtuResult, document.Uuid);
+                Intent intent = new Intent();
+                intent.PutExtras(extras);
+                SetResult(Result.Ok, intent);
+            }
+            catch (Exception ex)
+            {
+                Alert.Show(this, "Error", ex.Message);
+            }
         }
 
         void SetAutoSnapEnabled(bool enabled)

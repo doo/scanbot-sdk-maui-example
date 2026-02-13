@@ -28,7 +28,7 @@ public partial class MainViewController
             
             // run the scanner on image
             var result = scanner.RunWithImage(imageRef, out error).GetOrThrow(error);
-            if (result?.Document == null || !result.Success)
+            if (result.Document == null || !result.Success)
             {
                 Alert.Show("Error", "Unable to detect the MRZ.");
                 return;
@@ -77,7 +77,7 @@ public partial class MainViewController
 
             // run the extractor on image
             var result = extractor.RunWithImage(imageRef, out error).GetOrThrow(error);
-            if (result?.Document == null)
+            if (result.Document == null)
             {
                 Alert.Show("Error", "Unable to extract the Document data.");
                 return;
@@ -114,7 +114,7 @@ public partial class MainViewController
 
             // run the scanner on image
             var result = scanner.RunWithImage(imageRef, out error).GetOrThrow(error);
-            if (result?.Check == null)
+            if (result.Check == null)
             {
                 Alert.Show("Error", "Unable to detect the Check.");
                 return;
@@ -151,7 +151,7 @@ public partial class MainViewController
 
             // run the scanner on image
             var result = scanner.RunWithImage(imageRef, out error).GetOrThrow(error);
-            if (result?.CreditCard == null)
+            if (result.CreditCard == null)
             {
                 Alert.Show("Error", "Unable to detect the Credit card.");
                 return;

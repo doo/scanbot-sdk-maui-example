@@ -5,9 +5,7 @@ public class Alert
 {
     public static void ShowLicenseDialog(Context context)
     {
-        var text =
-            "The demo app will terminate because of the missing license key. " +
-            "Get your free 30-day license today!";
+        var text = "The demo app will terminate because of the missing license key.\nGet your free 30-day license today!";
         Toast(context, text);
     }
 

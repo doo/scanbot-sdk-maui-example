@@ -24,7 +24,7 @@ public static class Alert
     {
         if (ex is not NSErrorException nsErrorException)
         {
-            Show( "Error", ex.Message);
+            Show("Error", ex.Message);
             return;
         }
             
