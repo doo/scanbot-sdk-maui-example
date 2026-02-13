@@ -1,4 +1,5 @@
 using ScanbotSDK.iOS;
+using ScanbotSdkExample.iOS.Utils;
 
 namespace ScanbotSdkExample.iOS.Snippets.DocumentScanner;
 
@@ -14,17 +15,28 @@ public class PageFilterSnippet : UIViewController
 
 	private void ApplyFilterAndRotateScannedPage()
 	{
-		// Retrieve the scanned document
-		var document = new SBSDKScannedDocument(documentUuid: "SOME_SAVED_UUID");
-        
-		// Retrieve the selected document page.
-		SBSDKScannedPage page = document.PageAt(0);
-		
-		// Apply rotation and filters on the page
-		// Create the instances of the filters you want to apply.
-		var filter1 = new SBSDKScanbotBinarizationFilter(outputMode: SBSDKOutputMode.Antialiased);
-		var filter2 = new SBSDKBrightnessFilter(brightness: 0.4);
+		try
+		{
+			NSError error;
+			// Retrieve the scanned document
+			var document = new SBSDKScannedDocument(documentImageSizeLimit: 0, out error).GetOrThrow(error);
 
-		page?.ApplyWithRotation(page.Rotation, new SBSDKPolygon(), [filter1, filter2]);
+			SBSDKScannedDocument.LoadDocumentWithDocumentUuid(documentUuid: "SOME_SAVED_UUID", out error).GetOrThrow(error);
+
+			// Retrieve the selected document page.
+			SBSDKScannedPage page = document.PageAt(0, out error).GetOrThrow(error);
+
+			// Apply rotation and filters on the page
+			// Create the instances of the filters you want to apply.
+			var filter1 = new SBSDKScanbotBinarizationFilter(outputMode: SBSDKOutputMode.Antialiased);
+			var filter2 = new SBSDKBrightnessFilter(brightness: 0.4);
+
+			page?.ApplyWithRotation(rotation: page.Rotation, polygon: new SBSDKPolygon(), filters: [filter1, filter2], out error).GetOrThrow(error);
+		}
+		catch (Exception exception)
+		{
+			// handle error
+			Alert.ValidateAndShowError(exception);
+		}
 	}
 }

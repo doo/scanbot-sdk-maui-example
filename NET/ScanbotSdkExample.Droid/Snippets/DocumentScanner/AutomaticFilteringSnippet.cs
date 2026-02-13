@@ -1,6 +1,7 @@
 using Android.Content;
 using AndroidX.AppCompat.App;
-using IO.Scanbot.Sdk.Imagefilters;
+using IO.Scanbot.Sdk.Imageprocessing;
+using IO.Scanbot.Sdk.Ui_v2.Common.Activity;
 using IO.Scanbot.Sdk.Ui_v2.Document;
 using IO.Scanbot.Sdk.Ui_v2.Document.Configuration;
 
@@ -53,7 +54,7 @@ public class AutomaticFilteringSnippet : AppCompatActivity
 		if (requestCode == ScanDocumentRequestCode)
 		{
 			// Handle the document result ("documentUuid").
-			var documentUuid = data?.GetStringExtra(IO.Scanbot.Sdk.Ui_v2.Common.Activity.ActivityConstants.ExtraKeyRtuResult);
+			var documentUuid = data?.GetStringExtra(ActivityConstants.ExtraKeyRtuResult);
 		}
 	}
 }
