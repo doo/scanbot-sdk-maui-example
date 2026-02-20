@@ -21,7 +21,7 @@ public static class DocumentOperationSnippets
         var scannedDocument = ScanbotSDKMain.Document.CreateDocumentFromImagesAsync(images, configuration);
     }
 
-    static void LoadDocument(Guid documentUuid)
+    static void LoadDocument(string documentUuid)
     {
         var loadedDocument = ScanbotSDKMain.Document.LoadDocument(documentUuid);
     }
@@ -31,7 +31,7 @@ public static class DocumentOperationSnippets
         var documentUuids = ScanbotSDKMain.Document.StoredDocumentUuids;
     }
 
-    static void ReorderDocumentPages(Guid documentUuid)
+    static void ReorderDocumentPages(string documentUuid)
     {
         var result = ScanbotSDKMain.Document.LoadDocument(documentUuid);
         if (!result.IsSuccess)
@@ -49,7 +49,7 @@ public static class DocumentOperationSnippets
         result.Value.MovePage(sourceIndex, destinationIndex);
     }
 
-    static async Task RemoveAllPagesFromDocument(Guid documentUuid)
+    static async Task RemoveAllPagesFromDocument(string documentUuid)
     {
         var result = ScanbotSDKMain.Document.LoadDocument(documentUuid);
         if (!result.IsSuccess)
@@ -60,11 +60,13 @@ public static class DocumentOperationSnippets
         await result.Value.RemoveAllPagesAsync();
     }
 
-    static async Task DeleteDocument(Guid documentUuid)
+    static async Task DeleteDocument(string documentUuid)
     {
         await ScanbotSDKMain.Document.DeleteDocumentAsync(documentUuid);
-        // or
-        // await ScanbotSDKMain.Document.LoadDocument(documentUuid).DeleteDocumentAsync();
+        
+        // or -- When working with the existing document object.
+        // IScannedDocument document = null; 
+        // await document?.DeleteDocumentAsync();
     }
 
     static async Task DeleteAllDocuments()

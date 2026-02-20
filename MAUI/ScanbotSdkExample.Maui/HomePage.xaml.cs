@@ -1,8 +1,8 @@
 ﻿using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Core.Document;
 using ScanbotSDK.MAUI.Core.ImageProcessing;
+using OcrConfiguration = ScanbotSDK.MAUI.Core.Ocr.OcrConfiguration;
 using ScanbotSDK.MAUI.Core.PdfGeneration;
-using ScanbotSDK.MAUI.Ocr;
 using ScanbotSdkExample.Maui.Models;
 using ScanbotSdkExample.Maui.Results;
 using ScanbotSdkExample.Maui.ReadyToUseUI;
@@ -119,8 +119,7 @@ public partial class HomePage
     // ------------------------------------
     private async Task LearnMoreClicked()
     {
-        await Browser.OpenAsync(new Uri("https://scanbot.io/developer/net-maui-barcode-scanner-sdk/"),
-            BrowserLaunchMode.SystemPreferred);
+        await Browser.OpenAsync(new Uri("https://scanbot.io/developer/net-maui-barcode-scanner-sdk/"), BrowserLaunchMode.SystemPreferred);
     }
 
     private async Task ScanDocumentFromImageClicked()
@@ -163,6 +162,8 @@ public partial class HomePage
         try
         {
             var filePath = await PdfPicker.PickAsync();
+            if (filePath is null) return;
+            
             var result = await ScanbotSDKMain.Document.CreateDocumentFromPdfAsync(filePath, new CreateDocumentOptions
             {
                 DocumentDetection = true,
@@ -261,7 +262,9 @@ public partial class HomePage
     private async Task ExtractImagesFromPdfClicked()
     {
         var filePath = await PdfPicker.PickAsync();
-        var result = await ScanbotSDKMain.PdfImageExtractor.ExtractImageFilesAsync(pdfFileUri: filePath);
+        if (filePath is null) return;
+        
+        var result = await ScanbotSDKMain.PdfImageExtractor.ExtractImageFilesAsync(pdfFileUri: new Uri(filePath));
         if (result.IsSuccess)
         {
             await Navigation.PushAsync(new PdfExtractedImageResultPage(result.Value));

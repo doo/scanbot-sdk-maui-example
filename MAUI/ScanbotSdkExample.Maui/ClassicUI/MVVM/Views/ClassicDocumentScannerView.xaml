@@ -29,8 +29,8 @@
                                                  PolygonEnabled="{Binding IsPolygonEnabled}">
                     <classicView:DocumentScannerView.Behaviors>
                         <toolkit:EventToCommandBehavior
-                            EventName="OnSnappedDocumentImageResult"
-                            Command="{Binding SnappedDocumentImageResultCommand}"
+                            EventName="OnSnappedDocumentResult"
+                            Command="{Binding SnappedDocumentResultCommand}"
                             EventArgsConverter="{converters:SnappedDocumentImageEventArgsConverter}"/>
                         <toolkit:EventToCommandBehavior
                             EventName="OnUpdateDetectionStatus"

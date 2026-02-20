@@ -1,5 +1,6 @@
 ﻿using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Core.ImageProcessing;
+using ScanbotSDK.MAUI.Core.Ocr;
 using ScanbotSDK.MAUI.Core.PdfGeneration;
 using ScanbotSDK.MAUI.Core.TiffGeneration;
 using ScanbotSDK.MAUI.Document;

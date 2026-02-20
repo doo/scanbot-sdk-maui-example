@@ -21,8 +21,8 @@ public partial class ClassicDocumentScannerPage : ContentPage
 	{
 		InitializeComponent();
 
-		DocumentScannerView.OnSnappedDocumentImageResult += OnSnappedDocumentImageResult;
-		DocumentScannerView.OnUpdateDetectionStatus += UpdateDetectionHintFromStatus;
+		DocumentScannerView.OnSnappedDocumentResult += OnSnappedDocumentImageResult;
+		DocumentScannerView.OnFrameDetectionResult += UpdateDetectionHintFromStatus;
 		
 		// ==> Polygon Configuration: Uncomment below code for 
 		// DocumentScannerView.PolygonColor = Colors.Red;
@@ -53,7 +53,7 @@ public partial class ClassicDocumentScannerPage : ContentPage
 			new(Polygons, () => IsPolygonEnabled = !IsPolygonEnabled),
 			new(Visibility, ToggleVisibility),
 			new(Stop, null, true),
-			new(Snap, DocumentScannerView.SnapDocumentImage),
+			new(Snap, () => DocumentScannerView.SnapDocument())
 		};
 		
 		BindingContext = this;
@@ -146,7 +146,7 @@ public partial class ClassicDocumentScannerPage : ContentPage
 	}
 
 	// Receives the result of Document Scanning. 
-	private async void OnSnappedDocumentImageResult(object sender, SnappedDocumentImageResultEventArgs eventArgs)
+	private async void OnSnappedDocumentImageResult(object sender, SnappedDocumentResultEventArgs eventArgs)
 	{
 		var resultsPage = new DocumentScannerResultPage();
 		resultsPage.SetData(eventArgs.DocumentImage.ToImageSource(quality: 50));
@@ -155,7 +155,7 @@ public partial class ClassicDocumentScannerPage : ContentPage
 
 	private void UpdateDetectionHintFromStatus(object sender, DetectionStatusEventArgs args)
 	{
-		var status = args.Status;
+		var status = args.Result.Status;
 		Debug.WriteLine("Document Detection Status: " + status);
 		var hint = string.Empty;
 		var backgroundColor = Colors.Transparent;

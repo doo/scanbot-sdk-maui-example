@@ -27,10 +27,10 @@ public static partial class MauiProgram
          //    - https://developer.android.com/guide/topics/data/data-storage
          //    - https://docs.microsoft.com/en-us/xamarin/android/platform/files/
          //
-         //       var directory = GetExternalFilesDir(null).AbsolutePath;
-         //       var externalPublicPath = Path.Combine(directory, "my-custom-storage");
-         //      Directory.CreateDirectory(externalPublicPath);
-         //     return externalPublicPath;
+         // var directory = GetExternalFilesDir(null).Path;
+         // var externalPublicPath = Path.Combine(directory, "my-custom-storage");
+         // Directory.CreateDirectory(externalPublicPath);
+         // return externalPublicPath;
 
         var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         var folder = Path.Combine(documents, "maui-dev-app-storage");

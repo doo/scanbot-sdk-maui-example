@@ -8,7 +8,7 @@ namespace ScanbotSdkExample.Maui.Snippets.DocumentScanner;
 
 public static class FilterAndRotateOnDocumentPage
 {
-    private static async Task StartScannerAsync(Guid documentUuid)
+    private static async Task StartScannerAsync(string documentUuid)
     {
         // Retrieve the scanned document (replace Guid.Empty with a real value)
         var result = ScanbotSDKMain.Document.LoadDocument(documentUuid: documentUuid);

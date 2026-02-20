@@ -10,13 +10,13 @@ public class ClassicDocumentScannerViewModel : BaseViewModel
 {
     public ClassicDocumentScannerViewModel()
     {
-        SnappedDocumentImageResultCommand = new Command<SnappedDocumentImageResultEventArgs>(OnSnappedDocumentImageResult);
+        SnappedDocumentResultCommand = new Command<SnappedDocumentResultEventArgs>(OnSnappedDocumentResult);
         UpdateDetectionStatusCommand = new Command<DetectionStatusEventArgs>(OnUpdateDetectionHintFromStatus);
         SwitchFlashEnabledCommand = new Command(() => IsFlashEnabled = !IsFlashEnabled);
         SwitchPolygonEnabledCommand = new Command(() => IsPolygonEnabled = !IsPolygonEnabled);
     }
 
-    public ICommand SnappedDocumentImageResultCommand { get; private set; }
+    public ICommand SnappedDocumentResultCommand { get; private set; }
 
     public ICommand UpdateDetectionStatusCommand { get; private set; }
 
@@ -87,7 +87,7 @@ public class ClassicDocumentScannerViewModel : BaseViewModel
 	}
 
 	// Receives the result of Document Scanning.
-	private async void OnSnappedDocumentImageResult(SnappedDocumentImageResultEventArgs eventArgs)
+	private async void OnSnappedDocumentResult(SnappedDocumentResultEventArgs eventArgs)
 	{
 		var resultsPage = new DocumentScannerResultPage();
 		resultsPage.SetData(eventArgs.DocumentImage.ToImageSource());
@@ -96,7 +96,7 @@ public class ClassicDocumentScannerViewModel : BaseViewModel
 
 	private void OnUpdateDetectionHintFromStatus(DetectionStatusEventArgs args)
 	{
-		var status = args.Status;
+		var status = args.Result.Status;
 		Debug.WriteLine("Document Detection Status: " + status);
 		var hint = string.Empty;
 		var backgroundColor = Colors.Transparent;

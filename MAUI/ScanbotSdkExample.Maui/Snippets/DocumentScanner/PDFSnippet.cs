@@ -12,8 +12,8 @@ public static class PdfSnippets
         var result = await scannedDocument.CreatePdfAsync(config);
         if (result.IsSuccess)
         {
-          // access the PdfUrl
-          _ = scannedDocument.PdfUri;
+          // access the result PdfUri
+          Uri outputUri = scannedDocument.PdfUri;
         }
     }
 
@@ -23,8 +23,8 @@ public static class PdfSnippets
         var result = await ScanbotSDKMain.PdfGenerator.GenerateFromImagesAsync(images: imageFiles.Select(f => new FileImageSource { File = f.LocalPath }), pdfConfiguration: config);
         if (result.IsSuccess)
         {
-            // todo: Check the Uri
-            _ = result.Value;
+            // Access the result Uri
+            Uri outputUri = result.Value;
         }
     }
 }

@@ -23,7 +23,7 @@ public partial class PdfExtractedImageResultPage : ContentPage
 {
     private List<ExtractedPdfImage> _imageList;
     public ObservableCollection<ExtractedPdfImage> ImageList { get; set; }
-    public PdfExtractedImageResultPage(string[] imagePaths)
+    public PdfExtractedImageResultPage(Uri[] imagePaths)
     {
         InitializeComponent();
         BindingContext = this;
@@ -31,7 +31,7 @@ public partial class PdfExtractedImageResultPage : ContentPage
         _imageList = new List<ExtractedPdfImage>();
         foreach (var imagePath in imagePaths)
         {
-            _imageList.Add(new ExtractedPdfImage(imagePath));
+            _imageList.Add(new ExtractedPdfImage(imagePath.LocalPath));
         }
     }
     

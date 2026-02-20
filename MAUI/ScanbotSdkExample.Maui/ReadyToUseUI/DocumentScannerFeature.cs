@@ -48,7 +48,8 @@ public static class DocumentScannerFeature
         configuration.Screens.Camera.UserGuidance.StatesTitles.TooDark = "Need more lighting to detect a document";
         configuration.Screens.Camera.UserGuidance.StatesTitles.TooSmall = "Document too small";
         configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
-
+        
+        // launch the scanner
         var result = await ScanbotSDKMain.Document.StartScannerAsync(configuration);
         if (result.IsCanceled) return;
 

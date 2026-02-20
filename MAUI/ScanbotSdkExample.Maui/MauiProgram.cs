@@ -7,19 +7,18 @@ namespace ScanbotSdkExample.Maui;
 
 public static partial class MauiProgram
 {
-    private const string LicenseKey = "";
+    private const string LicenseKey =   "";
 
     [SuppressMessage("ReSharper", "ExpressionIsAlwaysNull")]
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
-        builder.UseMauiApp<App>()
-            .UseMauiCommunityToolkit();
+        builder.UseMauiApp<App>().UseMauiCommunityToolkit();
         builder.ConfigureFonts(fonts =>
-            {
-                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-            });
+        {
+            fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+            fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+        });
         
         // Note: You can enable encryption by setting the 'App.IsEncryptionEnabled' variable to 'true':
         string password = null;
