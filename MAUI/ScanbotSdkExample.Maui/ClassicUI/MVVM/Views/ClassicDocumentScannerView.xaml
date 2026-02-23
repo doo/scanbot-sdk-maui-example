@@ -30,11 +30,11 @@
                     <classicView:DocumentScannerView.Behaviors>
                         <toolkit:EventToCommandBehavior
                             EventName="OnSnappedDocumentResult"
-                            Command="{Binding SnappedDocumentResultCommand}"
+                            Command="{Binding BindingContext.SnappedDocumentResultCommand, Source={x:Reference DocumentScannerView}}"
                             EventArgsConverter="{converters:SnappedDocumentImageEventArgsConverter}"/>
                         <toolkit:EventToCommandBehavior
                             EventName="OnFrameDetectionResult"
-                            Command="{Binding UpdateDetectionStatusCommand}"
+                            Command="{Binding BindingContext.UpdateDetectionStatusCommand, Source={x:Reference DocumentScannerView}}"
                             EventArgsConverter="{converters:DetectionStatusEventArgsConverter}"/>
                     </classicView:DocumentScannerView.Behaviors>
                 </classicView:DocumentScannerView>

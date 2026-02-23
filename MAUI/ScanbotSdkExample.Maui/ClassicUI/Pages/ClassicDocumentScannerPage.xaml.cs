@@ -149,7 +149,7 @@ public partial class ClassicDocumentScannerPage : ContentPage
 	private async void OnSnappedDocumentImageResult(object sender, SnappedDocumentResultEventArgs eventArgs)
 	{
 		var resultsPage = new DocumentScannerResultPage();
-		resultsPage.SetData(eventArgs.DocumentImage.ToImageSource(quality: 50));
+		resultsPage.SetData(eventArgs.DocumentImage?.ToImageSource(quality: 50));
 		await Navigation.PushAsync(resultsPage);
 	}
 
