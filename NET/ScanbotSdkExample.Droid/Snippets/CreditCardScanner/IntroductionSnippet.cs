@@ -2,6 +2,7 @@ using Android.Content;
 using AndroidX.AppCompat.App;
 using IO.Scanbot.Sdk.Creditcard.Entity;
 using IO.Scanbot.Sdk.Ui_v2.Common;
+using IO.Scanbot.Sdk.Ui_v2.Common.Activity;
 using IO.Scanbot.Sdk.Ui_v2.Creditcard;
 using IO.Scanbot.Sdk.Ui_v2.Creditcard.Configuration;
 using IO.Scanbot.Sdk.UI.View.Base;
@@ -25,6 +26,7 @@ public class IntroductionSnippet : AppCompatActivity
             LaunchCreditCardScanner();
         }
     }
+    
     private void LaunchCreditCardScanner()
     {
         // Create the default configuration object.
@@ -70,11 +72,10 @@ public class IntroductionSnippet : AppCompatActivity
         StartActivityForResult(intent, ScanCreditCardRequestCode);
     }
 
-
     public override void StartActivityForResult(Intent intent, int requestCode, Bundle options)
     {
         base.StartActivityForResult(intent, requestCode, options);
-        var resultEntity = (CreditCardScannerUiResult)intent.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+        var resultEntity = (CreditCardScannerUiResult)intent?.GetParcelableExtra(ActivityConstants.ExtraKeyRtuResult);
         if (resultEntity?.CreditCard == null)
         {
             return;

@@ -58,7 +58,7 @@ class IntroductionSnippet : UIViewController
         configuration.IntroScreen.DoneButton.Background.FillColor = new SBSDKUI2Color("#C8193C");
 
         // Present the view controller modally.
-        SBSDKUI2TextPatternScannerViewController.PresentOn(this, configuration, result =>
+        SBSDKUI2TextPatternScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
             if (result != null)
             {

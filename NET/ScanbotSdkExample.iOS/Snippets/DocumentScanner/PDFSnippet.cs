@@ -1,5 +1,5 @@
 using ScanbotSDK.iOS;
-using UniformTypeIdentifiers;
+using ScanbotSdkExample.iOS.Utils;
 
 namespace ScanbotSdkExample.iOS.Snippets.DocumentScanner;
 
@@ -7,71 +7,91 @@ public class PdfSnippet
 {
     void CreatePdfFromDocument(SBSDKScannedDocument scannedDocument)
     {
+        NSError error;
 
         // Specify the file URL where the TIFF will be saved to. Nil makes no sense here.
         var outputPdfUrl = new NSUrl("outputPdfUrl");
 
-        // Create the OCR configuration for a searchable Pdf (HOCR).
+        // Create the OCR configuration for a searchable PDF (HOCR).
         var ocrConfiguration = SBSDKOCREngineConfiguration.ScanbotOCR;
 
-        // Create the default Pdf rendering options.
+        // Create the default PDF rendering options.
         var options = new SBSDKPDFConfiguration();
 
-        // Create the Pdf renderer and pass the Pdf options to it.
-        var renderer = new SBSDKPDFGenerator(options, ocrConfiguration: ocrConfiguration, encrypter: ScanbotUI.DefaultImageStoreEncrypter);
         try
         {
-            //If output URL is `null`the default Pdf location of the scanned document will be used.
-            renderer.GenerateFromScannedDocument(scannedDocument: scannedDocument, output: outputPdfUrl,
-                completion:(isCompleted, error) =>
+            // Create the PDF renderer and pass the PDF options to it.
+            var renderer = new SBSDKPDFGenerator(options, ocrConfiguration: ocrConfiguration, useEncryptionIfAvailable: AppDelegate.IsEncryptionEnabled, error: out error).GetOrThrow(error);
+
+            //If output URL is `null`the default PDF location of the scanned document will be used.
+            renderer.GenerateFromScannedDocument(scannedDocument: scannedDocument, output: outputPdfUrl, completion: (isCompleted, generationError) =>
+            {
+                // Handle the error
+                if (generationError != null)
                 {
-                    // completion status  
-                });
+                    // display error
+                    Alert.ValidateAndShowError(generationError);
+                    return;
+                }
+
+                // completion status - isCompleted
+            });
         }
-        catch (Exception error)
+        catch (Exception ex)
         {
-            SBSDKLog.LogError("Failed to render Pdf: " + error.Message);
+            // handle the error thrown from the GetOrThrow(...) function.
+            Alert.Show(ex);
         }
     }
 
     void CreatePdfFromImage(UIImage image)
     {
-        // Specify the file URL where the Pdf will be saved to. Nil makes no sense here.
+        NSError error;
+
+        // Convert UIImage to SBSDKImageRef.
+        var imageRef = SBSDKImageRef.FromUIImageWithImage(image, new SBSDKRawImageLoadOptions());
+
+        // Specify the file URL where the PDF will be saved to. Nil makes no sense here.
         var outputPdfUrl = new NSUrl("outputPdfUrl");
 
         // Create an image storage to save the captured or imported document image to
         var url = SBSDKStorageLocation.ApplicationSupportFolderURL;
-        var tmp = NSUrl.FromFilename(string.Format("{0}/{1}", url.Scheme == "file" ? url.Path : url.AbsoluteString,
-                            Guid.NewGuid()));
+        var tmp = NSUrl.FromFilename($"{(url.Scheme == "file" ? url.Path : url.AbsoluteString)}/{Guid.NewGuid()}");
         var location = new SBSDKStorageLocation(tmp);
-        var imageStorage = new SBSDKIndexedImageStorage(storageLocation: location);
+        var imageStorage = new SBSDKIndexedImageStorage(storageLocation: location, cryptingProvider: ScanbotSDKGlobal.DefaultCryptingProvider);
 
         // Add the image to the image storage
-        imageStorage.AddImage(image);
+        imageStorage.AddImage(imageRef);
 
-        // In case you want to encrypt your Pdf file, create encrypter using a password and an encryption mode.
-        var encrypter = new SBSDKAESEncrypter(password: "password_example#42",
-                            mode: SBSDKAESEncrypterMode.SBSDKAESEncrypterModeAES256);
-
-        // Create the default Pdf rendering options.
+        // Create the default PDF rendering options.
         var configuration = new SBSDKPDFConfiguration();
 
         // Set the maximum JPEG Quality.
         configuration.JpegQuality = 100;
-
-        // Create the Pdf renderer and pass the Pdf options to it.
-        var renderer = new SBSDKPDFGenerator(configuration: configuration, ocrConfiguration: null, encrypter: encrypter);
+        
         try
         {
-            // Synchronously renders the images from the image storage into a Pdf file with the given page size, and saves the Pdf to the specified URL.
-            renderer.GenerateFromImageStorage(imageStorage, null, outputPdfUrl, completion: (isComplete, error) =>
+            // Create the PDF renderer and pass the PDF options to it.
+            var renderer = new SBSDKPDFGenerator(configuration: configuration, ocrConfiguration: null, useEncryptionIfAvailable: AppDelegate.IsEncryptionEnabled, error: out error).GetOrThrow(error);
+
+            // Synchronously renders the images from the image storage into a PDF file with the given page size, and saves the PDF to the specified URL.
+            renderer.GenerateFromImageStorage(imageStorage, null, outputPdfUrl, completion: (isComplete, generationError) =>
             {
-                // completion status  
+                // Handle the error
+                if (generationError != null)
+                {
+                    // display error
+                    Alert.ValidateAndShowError(generationError);
+                    return;
+                }
+
+                // completion status - isCompleted
             });
         }
-        catch (Exception error)
+        catch (Exception ex)
         {
-            SBSDKLog.LogError("Failed to generate Pdf:" + error.Message);
+            // handle the error thrown from the GetOrThrow(...) function.
+            Alert.Show(ex);
         }
     }
 }
