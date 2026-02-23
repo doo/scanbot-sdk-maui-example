@@ -1,6 +1,7 @@
 ﻿using ScanbotSdkExample.iOS.Models;
 using ScanbotSdkExample.iOS.View;
 using ScanbotSDK.iOS;
+using ScanbotSdkExample.iOS.Utils;
 
 namespace ScanbotSdkExample.iOS.Controller
 {
@@ -11,7 +12,8 @@ namespace ScanbotSdkExample.iOS.Controller
         private SBSDKScannedDocument _scannedDocument;
         private readonly List<FilterItem> _filters;
         private Action<SBSDKParametricFilter> _onFilterSelected;
-
+        private NSError _error;
+        
         public FilterController()
         {
             _filters =
@@ -41,8 +43,12 @@ namespace ScanbotSdkExample.iOS.Controller
             View = _contentView;
 
             _contentView.SetPickerModel(_filters);
-            _contentView.ImageView.Image = _scannedDocument.Pages.First().DocumentImage;
-
+            _contentView.ImageView.Image = _scannedDocument.Pages.First().DocumentImage?.ToUIImageAndReturnError(out _error);
+            if (_error != null)
+            {
+                Alert.Show(_error);
+            }
+            
             Title = "Choose filter";
 
             var button = new UIBarButtonItem("Apply", UIBarButtonItemStyle.Done, FilterChosen);
@@ -55,10 +61,14 @@ namespace ScanbotSdkExample.iOS.Controller
 
             foreach (var page in _scannedDocument.Pages)
             {
-                page.Filters = [ _selectedParametricFilter ];
+                page.Filters = [_selectedParametricFilter];
             }
             
-            _contentView.ImageView.Image = _scannedDocument.Pages.First().DocumentImage;
+            _contentView.ImageView.Image = _scannedDocument.Pages.First().DocumentImage?.ToUIImageAndReturnError(out _error);
+            if (_error != null)
+            {
+               Alert.Show(_error);
+            }
         }
 
         private void FilterChosen(object sender, EventArgs e)

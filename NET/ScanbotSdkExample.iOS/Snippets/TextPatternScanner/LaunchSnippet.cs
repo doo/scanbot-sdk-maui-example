@@ -18,7 +18,7 @@ class LaunchSnippet : UIViewController
         var configuration = new SBSDKUI2TextPatternScannerScreenConfiguration();
 
         // Present the view controller modally.
-        SBSDKUI2TextPatternScannerViewController.PresentOn(this, configuration, result =>
+        SBSDKUI2TextPatternScannerViewController.PresentOn(this, configuration, completion: (controller, result, error) =>
         {
             if (result != null)
             {

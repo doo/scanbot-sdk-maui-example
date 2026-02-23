@@ -4,23 +4,30 @@ using Android.Graphics;
 using Android.Views;
 using AndroidX.AppCompat.App;
 using AndroidX.Core.View;
-using IO.Scanbot.Sdk;
+using IO.Scanbot.Common;
 using IO.Scanbot.Sdk.Camera;
+using IO.Scanbot.Sdk.Docprocessing;
 using IO.Scanbot.Sdk.Document;
 using IO.Scanbot.Sdk.Document.UI;
+using IO.Scanbot.Sdk.Documentscanner;
+using IO.Scanbot.Sdk.Image;
+using IO.Scanbot.Sdk.Ui_v2.Common.Activity;
 using IO.Scanbot.Sdk.UI.Camera;
+using ScanbotSDK.Droid.Helpers;
+using ScanbotSdkExample.Droid.Utils;
 
 namespace ScanbotSdkExample.Droid.Activities
 {
-    [Activity(Theme = "@style/Theme.AppCompat")]
-    public class ClassicDocumentScannerViewActivity : AppCompatActivity,  IDocumentScannerViewCallback
-    {   
+    [Activity]
+    public class ClassicDocumentScannerViewActivity : AppCompatActivity, IDocumentScannerViewCallback
+    {
         private bool _flashEnabled;
         private bool _autoSnappingEnabled = true;
         private const bool IgnoreBadAspectRatio = true;
         private long _lastUserGuidanceHintTs;
 
         private DocumentScannerView _documentScannerView;
+        private IDocumentScanner _documentScanner;
         private TextView _userGuidanceTextView;
         private ProgressBar _imageProcessingProgress;
         private ShutterButton _shutterButton;
@@ -32,26 +39,35 @@ namespace ScanbotSdkExample.Droid.Activities
         {
             SupportRequestWindowFeature(WindowCompat.FeatureActionBarOverlay);
             base.OnCreate(savedInstanceState);
-            
+
             SetContentView(ResourceConstant.Layout.document_scanner_view_activity);
-            
+
             _scanbotSdk = new IO.Scanbot.Sdk.ScanbotSDK(this);
             _documentScannerView = FindViewById<DocumentScannerView>(ResourceConstant.Id.document_scanner_view)!;
+            _documentScannerView.InitCamera();
             
-            var documentDetector = _scanbotSdk.CreateDocumentScanner();
-            
-            DocumentScannerViewWrapper.InitCamera(_documentScannerView);
-            DocumentScannerViewWrapper.InitScanningBehavior(_documentScannerView,
-                                documentScanner: documentDetector,
-                                new DocumentScannerResultImplementation(ShowUserGuidance), this);
+            try
+            {
+                _documentScanner = _scanbotSdk.CreateDocumentScanner(new DocumentScannerConfiguration()).GetOrThrow<IDocumentScanner>();
+            }
+            catch (Exception ex)
+            {
+                Alert.Show(this, "Error", ex.Message);
+                return;
+            }
+          
+            _documentScannerView.InitScanningBehavior(
+                documentScanner: _documentScanner,
+                scannerViewCallback: this,
+                handler: HandleDocumentScannerFrame);
 
             SupportActionBar?.Hide();
 
             // Uncomment to disable AutoFocus by manually touching the camera view:
             // _documentScannerView.CameraConfiguration.SetAutoFocusOnTouch(false);
-            
+
             _documentScannerView.CameraConfiguration.SetCameraPreviewMode(CameraPreviewMode.FitIn);
-          
+
             // custom color to the polygon view
             _documentScannerView.PolygonConfiguration.SetPolygonStrokeColor(Color.Red);
             _documentScannerView.PolygonConfiguration.SetPolygonStrokeColorOK(Color.Green);
@@ -59,7 +75,7 @@ namespace ScanbotSdkExample.Droid.Activities
 
             // set automatic snapping enabled.
             _documentScannerView.ViewController.AutoSnappingEnabled = _autoSnappingEnabled;
-            
+
             SetUpUiElements();
         }
 
@@ -68,60 +84,75 @@ namespace ScanbotSdkExample.Droid.Activities
             _userGuidanceTextView = FindViewById<TextView>(ResourceConstant.Id.user_guidance_text_view)!;
             _imageProcessingProgress = FindViewById<ProgressBar>(ResourceConstant.Id.image_processing_progress)!;
             _shutterButton = FindViewById<ShutterButton>(ResourceConstant.Id.shutter_button)!;
-            
-            _shutterButton.Click += delegate
-            {
-               _documentScannerView.ViewController.TakePicture(false);
-            };
-            
+
+            _shutterButton.Click += delegate { _documentScannerView.ViewController.TakePicture(false); };
+
             _shutterButton.Visibility = ViewStates.Visible;
 
-            FindViewById(ResourceConstant.Id.flash_button)!.Click += delegate 
+            FindViewById(ResourceConstant.Id.flash_button)!.Click += delegate
             {
-              _documentScannerView.ViewController.UseFlash(!_flashEnabled);
-              _flashEnabled = !_flashEnabled;
+                _documentScannerView.ViewController.UseFlash(!_flashEnabled);
+                _flashEnabled = !_flashEnabled;
             };
 
             _autoSnappingToggleButton = FindViewById<Button>(ResourceConstant.Id.auto_snapping_toggle_button)!;
-            _autoSnappingToggleButton.Click += delegate 
+            _autoSnappingToggleButton.Click += delegate
             {
-              _autoSnappingEnabled = !_autoSnappingEnabled;
-              SetAutoSnapEnabled(_autoSnappingEnabled);
+                _autoSnappingEnabled = !_autoSnappingEnabled;
+                SetAutoSnapEnabled(_autoSnappingEnabled);
             };
 
-            _shutterButton.Post(() =>
-            {
-               SetAutoSnapEnabled(_autoSnappingEnabled);
-            });
+            _shutterButton.Post(() => { SetAutoSnapEnabled(_autoSnappingEnabled); });
         }
 
-        private bool ShowUserGuidance(DocumentScannerFrameHandler.DetectedFrame frame, SdkLicenseError error)
+        /// <summary>
+        /// This function is invoked for every frame while scanning.
+        /// Below implementation helps in getting the User Guidance while scanning. 
+        /// </summary>
+        /// <param name="resultWrapper">IResult object that wraps the DocumentScanningResult or Exception if occured.</param>
+        /// <param name="frame">Current frame of the scanner.</param>
+        /// <returns>Boolean</returns>
+        private bool HandleDocumentScannerFrame(IResult resultWrapper, FrameHandler.Frame frame)
         {
-            if (!_autoSnappingEnabled || frame == null) { return false; }
+            // return if auto snapping is off.
+            if (!_autoSnappingEnabled) return _autoSnappingEnabled;
 
             if (Java.Lang.JavaSystem.CurrentTimeMillis() - _lastUserGuidanceHintTs < 400)
             {
                 return false;
             }
 
+            DocumentDetectionResult result;
+            try
+            {
+                // return if null result
+                result = resultWrapper?.GetOrThrow<DocumentDetectionResult>();
+                if (result == null) return false;
+            }
+            catch (Exception e)
+            {
+                SetAutoSnapEnabled(false);
+                Alert.Show(this, "Error", e.Message);
+                return false;
+            }
+            
             var color = Color.Red;
             var guideText = "";
 
-            var result = frame.DetectionStatus;
-            if (result == DocumentDetectionStatus.Ok)
+            if (result.Status.Equals(DocumentDetectionStatus.Ok))
             {
                 guideText = "Don't move.\nCapturing...";
                 color = Color.Green;
             }
-            else if (result == DocumentDetectionStatus.OkButTooSmall)
+            else if (result.Status.Equals(DocumentDetectionStatus.OkButTooSmall))
             {
                 guideText = "Move closer";
             }
-            else if (result == DocumentDetectionStatus.OkButBadAngles)
+            else if (result.Status.Equals(DocumentDetectionStatus.OkButBadAngles))
             {
                 guideText = "Perspective";
             }
-            else if (result == DocumentDetectionStatus.OkButBadAspectRatio)
+            else if (result.Status.Equals(DocumentDetectionStatus.OkButBadAspectRatio))
             {
                 guideText = "Wrong aspect ratio.\n Rotate your device";
                 if (IgnoreBadAspectRatio)
@@ -130,15 +161,15 @@ namespace ScanbotSdkExample.Droid.Activities
                     color = Color.Green;
                 }
             }
-            else if (result == DocumentDetectionStatus.ErrorNothingDetected)
+            else if (result.Status.Equals(DocumentDetectionStatus.ErrorNothingDetected))
             {
                 guideText = "No Document";
             }
-            else if (result == DocumentDetectionStatus.ErrorTooNoisy)
+            else if (result.Status.Equals(DocumentDetectionStatus.ErrorTooNoisy))
             {
                 guideText = "Background too noisy";
             }
-            else if (result == DocumentDetectionStatus.ErrorTooDark)
+            else if (result.Status.Equals(DocumentDetectionStatus.ErrorTooDark))
             {
                 guideText = "Poor light";
             }
@@ -168,7 +199,7 @@ namespace ScanbotSdkExample.Droid.Activities
             _documentScannerView.ViewController.ContinuousFocus();
         }
 
-        public void OnPictureTaken(byte[] image, CaptureInfo captureInfo)
+        public void OnPictureTaken(ImageRef image, CaptureInfo captureInfo)
         {
             // Here we get the full image from the camera and further apply document detection on it.
             // This is just a demo showing detected image as downscaled preview image.
@@ -180,23 +211,7 @@ namespace ScanbotSdkExample.Droid.Activities
                 _userGuidanceTextView.Visibility = ViewStates.Gone;
             });
 
-            // decode bytes as Bitmap
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.InSampleSize = 1;
-            
-            var originalBitmap = BitmapFactory.DecodeByteArray(image, 0, image.Length, options);
-            if (originalBitmap == null)
-                return;
-
-            // rotate original image if required:
-            if (captureInfo.ImageOrientation > 0)
-            {
-                Matrix matrix = new Matrix();
-                matrix.SetRotate(captureInfo.ImageOrientation, originalBitmap.Width / 2f, originalBitmap.Height / 2f);
-                originalBitmap = Bitmap.CreateBitmap(originalBitmap, 0, 0, originalBitmap.Width, originalBitmap.Height, matrix, false);
-            }
-
-            DetectDocumentOnImage(originalBitmap);
+            DetectDocumentOnImage(image);
             Finish();
         }
 
@@ -204,37 +219,45 @@ namespace ScanbotSdkExample.Droid.Activities
         /// Detects the document on the bitmap image and adds it to the document storage.
         /// The document can be further access with the Document Uuid.
         /// </summary>
-        /// <param name="originalBitmap">Full image captured by the Camera</param>
-        private void DetectDocumentOnImage(Bitmap originalBitmap)
+        /// <param name="imageRef">Full image captured by the Camera</param>
+        private void DetectDocumentOnImage(ImageRef imageRef)
         {
-            var scanner = _scanbotSdk.CreateDocumentScanner();
-            var detectionResult = scanner.ScanFromBitmap(originalBitmap);
-
-            var defaultDocumentSizeLimit = 0;
-            var document = _scanbotSdk.DocumentApi.CreateDocument(defaultDocumentSizeLimit);
-            document.AddPage(originalBitmap);
-
-            if (detectionResult != null)
+            try
             {
-                document.PageAtIndex(0).Polygon = detectionResult.PointsNormalized;
+                var detectionResult = _documentScanner?.Scan(imageRef).GetOrThrow<DocumentScanningResult>();
+                var defaultDocumentSizeLimit = 0;
+
+                var document = _scanbotSdk.DocumentApi.CreateDocument(defaultDocumentSizeLimit)?.GetOrThrow<Document>();
+                if (document == null) return;
+
+                document.AddPage(imageRef);
+
+                if (detectionResult?.DetectionResult != null)
+                {
+                    document.PageAtIndex(0).Polygon = detectionResult.DetectionResult.PointsNormalized;
+                }
+
+                Bundle extras = new Bundle();
+                extras.PutString(ActivityConstants.ExtraKeyRtuResult, document.Uuid);
+                Intent intent = new Intent();
+                intent.PutExtras(extras);
+                SetResult(Result.Ok, intent);
             }
-            
-            Bundle extras = new Bundle();
-            extras.PutString(IO.Scanbot.Sdk.Ui_v2.Common.Activity.ActivityConstants.ExtraKeyRtuResult, document.Uuid);
-            Intent intent = new Intent();
-            intent.PutExtras(extras);
-            SetResult(Result.Ok, intent);
+            catch (Exception ex)
+            {
+                Alert.Show(this, "Error", ex.Message);
+            }
         }
 
         void SetAutoSnapEnabled(bool enabled)
         {
             _documentScannerView.ViewController.AutoSnappingEnabled = enabled;
             _documentScannerView.ViewController.FrameProcessingEnabled = enabled;
-            
+
             _documentScannerView.PolygonConfiguration.SetPolygonViewVisible(enabled);
             _documentScannerView.PolygonConfiguration.SetPolygonAutoSnapProgressEnabled(enabled);
-            
-            _autoSnappingToggleButton.Text = ("Automatic " + (enabled ? "ON" : "OFF"));
+
+            _autoSnappingToggleButton.Text = "Automatic " + (enabled ? "ON" : "OFF");
             if (enabled)
             {
                 _shutterButton.ShowAutoButton();
@@ -247,11 +270,4 @@ namespace ScanbotSdkExample.Droid.Activities
             }
         }
     }
-}
-
-internal class DocumentScannerResultImplementation(DocumentScannerResultImplementation.DocumentScannerHandleResult handleResult) : DocumentScannerResultHandlerWrapper
-{
-   internal delegate bool DocumentScannerHandleResult(DocumentScannerFrameHandler.DetectedFrame frame, SdkLicenseError error);
-
-   public override bool HandleResult(DocumentScannerFrameHandler.DetectedFrame result, SdkLicenseError error) => handleResult?.Invoke(result, error) ?? false;
 }

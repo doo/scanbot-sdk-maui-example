@@ -27,7 +27,7 @@ class LocalizationSnippet : UIViewController
         localization.CameraPermissionCloseButton = NSBundle.MainBundle.GetLocalizedString("camera.permission.close", "");
 
         // Present the view controller modally.
-        SBSDKUI2TextPatternScannerViewController.PresentOn(this, configuration, result =>
+        SBSDKUI2TextPatternScannerViewController.PresentOn(presenter: this, configuration: configuration, completion: (controller, result, error) =>
         {
             if (result != null)
             {

@@ -8,36 +8,32 @@ public partial class MainViewController
     private void ScanMrz()
     {
         var configuration = new SBSDKUI2MRZScannerScreenConfiguration();
-        SBSDKUI2MRZScannerViewController.PresentOn(this, configuration, result =>
+        SBSDKUI2MRZScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
+            if (error != null)
+            {
+                Alert.ValidateAndShowError(error);
+                return;
+            }
+
             if (result?.MrzDocument == null)
                 return;
 
             ShowPopup(this, result.MrzDocument.ToFormattedString());
         });
     }
-
-    private void ScanEhic()
-    {
-        var configuration = SBSDKUIHealthInsuranceCardRecognizerConfiguration.DefaultConfiguration;
-        configuration.TextConfiguration.CancelButtonTitle = "Done";
-        var controller = SBSDKUIHealthInsuranceCardRecognizerViewController.CreateWithConfiguration(configuration, null);
-        controller.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
-        controller.DidDetectCard += (_, args) =>
-        {
-            controller.DismissViewController(true, () => ShowPopup(this, args.Card.Fields.ToFormattedString()));
-        };
-        PresentViewController(controller, false, null);
-    }
-
+    
     private void ExtractDocumentData()
     {
         var configuration = new SBSDKUI2DocumentDataExtractorScreenConfiguration();
         configuration.TopBar.CancelButton.Text = "Done";
-        SBSDKUI2DocumentDataExtractorViewController.PresentOn(this, configuration, result =>
+        SBSDKUI2DocumentDataExtractorViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
-            if (result?.Document == null)
+            if (error != null)
+            {
+                Alert.ValidateAndShowError(error);
                 return;
+            }
             
             // Display the results.
             ShowPopup(this, result.Document?.ToFormattedString());
@@ -48,10 +44,13 @@ public partial class MainViewController
     {
         var configuration = new SBSDKUI2CheckScannerScreenConfiguration();
         configuration.TopBar.CancelButton.Text = "Done";
-        SBSDKUI2CheckScannerViewController.PresentOn(this, configuration, result =>
+        SBSDKUI2CheckScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
-            if (result?.Check == null)
+            if (error != null)
+            {
+                Alert.ValidateAndShowError(error);
                 return;
+            }
            
             // Display the results.
             ShowPopup(this, result.Check?.ToFormattedString());
@@ -62,12 +61,20 @@ public partial class MainViewController
     {
         var configuration = new SBSDKUI2TextPatternScannerScreenConfiguration();
         configuration.TopBar.CancelButton.Text = "Done";
-        SBSDKUI2TextPatternScannerViewController.PresentOn(this, configuration, result =>
+        SBSDKUI2TextPatternScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
-            if (!string.IsNullOrEmpty(result?.RawText))
+            if (error != null)
             {
-                Alert.Show(this, "Result Text:", result.RawText);
+                Alert.ValidateAndShowError(error);
+                return;
             }
+            
+            if (string.IsNullOrWhiteSpace(result.RawText))
+            {
+                Alert.Show("Alert", "Something went wrong while scanning the text.");
+                return;
+            }
+            Alert.Show("Result", result.RawText);
         });
     }
 
@@ -75,29 +82,22 @@ public partial class MainViewController
     {
         var configuration = new SBSDKUI2VINScannerScreenConfiguration();
         configuration.TopBar.CancelButton.Text = "Done";
-        SBSDKUI2VINScannerViewController.PresentOn(this, configuration, result =>
+        SBSDKUI2VINScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
-            if (result?.TextResult?.RawText == null)
-                return;
-
-            Alert.Show(this, "Result Text:", result.TextResult.RawText);
-        });
-    }
-
-    private void ScanMedicalCertificate()
-    {
-        var configuration = SBSDKUIMedicalCertificateScannerConfiguration.DefaultConfiguration;
-        configuration.TextConfiguration.CancelButtonTitle = "Done";
-        var scanner = SBSDKUIMedicalCertificateScannerViewController.CreateWithConfiguration(configuration, null);
-        scanner.DidFinishWithResult += (_, args) =>
-        {
-            scanner.IsRecognitionEnabled = false;
-            scanner.DismissViewController(true, () =>
+            if (error != null)
             {
-                ShowPopupWithAttributedText(this, args.Result?.ToFormattedAttributeString());
-            });
-        };
-        PresentViewController(scanner, true, null);
+                Alert.ValidateAndShowError(error);
+                return;
+            }
+
+            if (!result.TextResult.ValidationSuccessful)
+            {
+                Alert.Show("Alert", "Something went wrong while scanning the text.");
+                return;
+            }
+
+            Alert.Show("Result", result.TextResult.RawText);
+        });
     }
 
     private void ScanCreditCard()
@@ -105,8 +105,14 @@ public partial class MainViewController
         var configuration = new SBSDKUI2CreditCardScannerScreenConfiguration();
         configuration.TopBar.CancelButton.Text = "Done";
 
-        SBSDKUI2CreditCardScannerViewController.PresentOn(this, configuration, (result) =>
+        SBSDKUI2CreditCardScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
+            if (error != null)
+            {
+                Alert.ValidateAndShowError(error);
+                return;
+            }
+            
             if (result?.CreditCard == null)
                 return;
 

@@ -1,4 +1,5 @@
 using AndroidX.AppCompat.App;
+using IO.Scanbot.Sdk.Documentqualityanalyzer;
 using IO.Scanbot.Sdk.Process;
 using IO.Scanbot.Sdk.Ui_v2.Common;
 using IO.Scanbot.Sdk.Ui_v2.Document;
@@ -54,7 +55,7 @@ public class AcknowledgementScreenSnippet : AppCompatActivity
 		// Configure the acknowledgment screen's hint message which is shown if the least acceptable quality is not met.
 		configuration.Screens.Camera.Acknowledgement.BadImageHint.Visible = true;
 
-		// Launch the scanner here .. 
+		// Launch the scanner here.
 		// Start the Document Scanner activity.
 		var intent = DocumentScannerActivity.NewIntent(this, configuration);
 		StartActivityForResult(intent, ScanDocumentRequestCode);
