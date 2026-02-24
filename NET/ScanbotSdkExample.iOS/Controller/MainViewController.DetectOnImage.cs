@@ -135,13 +135,13 @@ public partial class MainViewController
         try
         {
             NSError error;
-            
+
             // pick the image from photo library.
             var image = await ImagePicker.Instance.PickImageAsync();
-            
+
             // convert UIImage to SBSDKImageRef
             var imageRef = SBSDKImageRef.FromUIImageWithImage(image, new SBSDKRawImageLoadOptions());
-            
+
             // create the configuration
             var configuration = new SBSDKCreditCardScannerConfiguration();
             configuration.ProcessingMode = SBSDKProcessingMode.SingleShot;
@@ -159,39 +159,6 @@ public partial class MainViewController
 
             // show the result
             ShowPopup(this, result.CreditCard.ToFormattedString());
-        }
-        catch (Exception ex)
-        {
-            // display error
-            Alert.ValidateAndShowError(ex);
-        }
-    }
-	
-    private async void RecognizeMedicalCertificate()
-    {
-        try
-        {
-            NSError error;
-            
-            // pick the image from photo library.
-            var image = await ImagePicker.Instance.PickImageAsync();
-            
-            // convert UIImage to SBSDKImageRef
-            var imageRef = SBSDKImageRef.FromUIImageWithImage(image, new SBSDKRawImageLoadOptions());
-            
-            // create the scanner
-            var scanner = SBSDKMedicalCertificateScanner.CreateAndReturnError(out error).GetOrThrow(error);
-            
-            // run the scanner on image
-            var result = scanner.RunWithImage(imageRef, new SBSDKMedicalCertificateScanningParameters(), out error).GetOrThrow(error);
-            if (result == null || !result.ScanningSuccessful)
-            {
-                Alert.Show("Error", "Unable to detect the Medical certificate.");
-                return;
-            }
-
-            // display the result
-            ShowPopupWithAttributedText(this, result.ToFormattedAttributeString());
         }
         catch (Exception ex)
         {
