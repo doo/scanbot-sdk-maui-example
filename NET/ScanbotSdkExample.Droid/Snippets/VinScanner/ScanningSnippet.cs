@@ -26,6 +26,7 @@ public class ScanningSnippet : AppCompatActivity
             LaunchVinScanner();
         }
     }
+    
     private void LaunchVinScanner()
     {
         var configuration = new VinScannerScreenConfiguration();
@@ -55,7 +56,7 @@ public class ScanningSnippet : AppCompatActivity
         configuration.Sound.SuccessBeepEnabled = true;
         configuration.Sound.SoundType = SoundType.ModernBeep;
 
-		// Launch the scanner
+        // Launch the scanner
         var intent = VinScannerActivity.NewIntent(this, configuration);
         StartActivityForResult(intent, ScanVinRequestCode);
     }

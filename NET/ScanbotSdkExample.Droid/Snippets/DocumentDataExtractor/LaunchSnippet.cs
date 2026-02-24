@@ -9,43 +9,43 @@ namespace ScanbotSdkExample.Droid.Snippets.DocumentDataExtractor;
 
 public class LaunchSnippet : AppCompatActivity
 {
-	private IO.Scanbot.Sdk.ScanbotSDK _scanbotSdk;
-	private const int ScanDocumentDataExtractorRequestCode = 001;
+    private IO.Scanbot.Sdk.ScanbotSDK _scanbotSdk;
+    private const int ScanDocumentDataExtractorRequestCode = 001;
 
-	protected override void OnCreate(Bundle savedInstanceState)
-	{
-		base.OnCreate(savedInstanceState);
+    protected override void OnCreate(Bundle savedInstanceState)
+    {
+        base.OnCreate(savedInstanceState);
 		
-		// Returns the singleton instance of the Sdk.
-		_scanbotSdk = new IO.Scanbot.Sdk.ScanbotSDK(this);
+        // Returns the singleton instance of the Sdk.
+        _scanbotSdk = new IO.Scanbot.Sdk.ScanbotSDK(this);
 		
-		if (_scanbotSdk.LicenseInfo.IsValid)
-		{
-			LaunchDocumentDataExtractor();
-		}
-	}
-	private void LaunchDocumentDataExtractor()
-	{
-		// Create the default configuration object.
-		var configuration = new DocumentDataExtractorScreenConfiguration();
+        if (_scanbotSdk.LicenseInfo.IsValid)
+        {
+            LaunchDocumentDataExtractor();
+        }
+    }
+    private void LaunchDocumentDataExtractor()
+    {
+        // Create the default configuration object.
+        var configuration = new DocumentDataExtractorScreenConfiguration();
 		
-		var intent = DocumentDataExtractorActivity.NewIntent(this, configuration);
-		StartActivityForResult(intent, ScanDocumentDataExtractorRequestCode);
-	}
+        var intent = DocumentDataExtractorActivity.NewIntent(this, configuration);
+        StartActivityForResult(intent, ScanDocumentDataExtractorRequestCode);
+    }
 
-	public override void StartActivityForResult(Intent intent, int requestCode, Bundle options)
-	{
-		base.StartActivityForResult(intent, requestCode, options);
-		var resultEntity = (DocumentDataExtractorUiResult)intent?.GetParcelableExtra(ActivityConstants.ExtraKeyRtuResult);
-		if (resultEntity?.Document == null)
-		{
-			return;
-		}
+    public override void StartActivityForResult(Intent intent, int requestCode, Bundle options)
+    {
+        base.StartActivityForResult(intent, requestCode, options);
+        var resultEntity = (DocumentDataExtractorUiResult)intent?.GetParcelableExtra(ActivityConstants.ExtraKeyRtuResult);
+        if (resultEntity?.Document == null)
+        {
+            return;
+        }
 
-		// Iterate through all the document fields
-		foreach (var field in resultEntity.Document.Fields)
-		{
-			Console.WriteLine($"{field.Type.Name}: {field.Value?.Text}");
-		}
-	}
+        // Iterate through all the document fields
+        foreach (var field in resultEntity.Document.Fields)
+        {
+            Console.WriteLine($"{field.Type.Name}: {field.Value?.Text}");
+        }
+    }
 }

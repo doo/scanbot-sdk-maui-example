@@ -26,6 +26,7 @@ public class IntroductionSnippet : AppCompatActivity
             LaunchMrzScanner();
         }
     }
+    
     private void LaunchMrzScanner()
     {
         var configuration = new MrzScannerScreenConfiguration();
@@ -85,8 +86,8 @@ public class IntroductionSnippet : AppCompatActivity
         var birthDate = mrz.BirthDate.Value.Text;
         var expiryDate = mrz.ExpiryDate.Value.Text;
         Toast.MakeText(
-                this,
-                $"Given Name: {givenName}, Birth Date: {birthDate}, Expiry Date: {expiryDate}",
-                ToastLength.Long)?.Show();
+            this,
+            $"Given Name: {givenName}, Birth Date: {birthDate}, Expiry Date: {expiryDate}",
+            ToastLength.Long)?.Show();
     }
 }

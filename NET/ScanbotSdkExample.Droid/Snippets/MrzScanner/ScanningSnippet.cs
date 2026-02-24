@@ -27,6 +27,7 @@ public class ScanningSnippet : AppCompatActivity
             LaunchMrzScanner();
         }
     }
+    
     private void LaunchMrzScanner()
     {
         var configuration = new MrzScannerScreenConfiguration();
@@ -56,7 +57,7 @@ public class ScanningSnippet : AppCompatActivity
         configuration.Sound.SuccessBeepEnabled = true;
         configuration.Sound.SoundType = SoundType.ModernBeep;
 
-		// Launch the scanner
+        // Launch the scanner
         var intent = MrzScannerActivity.NewIntent(this, configuration);
         StartActivityForResult(intent, ScanMrzRequestCode);
     }

@@ -26,6 +26,7 @@ public class PaletteSnippet : AppCompatActivity
             LaunchMrzScanner();
         }
     }
+    
     private void LaunchMrzScanner()
     {
         // Create the default configuration object.

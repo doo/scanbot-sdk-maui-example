@@ -3,7 +3,6 @@ using IO.Scanbot.Sdk.Check;
 using IO.Scanbot.Sdk.Creditcard;
 using IO.Scanbot.Sdk.Documentdata;
 using IO.Scanbot.Sdk.Image;
-using IO.Scanbot.Sdk.Medicalcertificate;
 using IO.Scanbot.Sdk.Mrz;
 using ScanbotSDK.Droid.Helpers;
 using ScanbotSdkExample.Droid.Model;
@@ -100,19 +99,20 @@ public partial class MainActivity
             Alert.Show(this, "Error", ex.Message);
         }
     }
-    
+
     private void ScanCreditCardFromImage(Intent data)
     {
-        try {
+        try
+        {
             var bitmap = ImageUtils.ProcessGalleryResult(this, data);
             var recognizer = _scanbotSdk.CreateCreditCardScanner(new CreditCardScannerConfiguration()).GetOrThrow<ICreditCardScanner>();
-            var result = recognizer.Run(ImageRef.FromBitmap(bitmap,new BasicImageLoadOptions())).GetOrThrow<CreditCardScanningResult>();
-            if (result.CreditCard == null) 
+            var result = recognizer.Run(ImageRef.FromBitmap(bitmap, new BasicImageLoadOptions())).GetOrThrow<CreditCardScanningResult>();
+            if (result.CreditCard == null)
             {
                 Alert.Show(this, "Error", "Unable to detect the Credit card.");
                 return;
             }
-        
+
             var description = result.CreditCard.ToFormattedString();
             Alert.Show(this, "Result", description);
         }

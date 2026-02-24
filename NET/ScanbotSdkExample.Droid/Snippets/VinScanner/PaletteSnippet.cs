@@ -25,6 +25,7 @@ public class PaletteSnippet : AppCompatActivity
             LaunchVinScanner();
         }
     }
+    
     private void LaunchVinScanner()
     {
         // Create the default configuration object.

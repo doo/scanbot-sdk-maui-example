@@ -28,6 +28,7 @@ public class ScanningSnippet : AppCompatActivity
             LaunchTextPatternScanner();
         }
     }
+    
     private void LaunchTextPatternScanner()
     {
         var configuration = new TextPatternScannerScreenConfiguration();

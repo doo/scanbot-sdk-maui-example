@@ -26,6 +26,7 @@ public class UserGuidanceSnippet : AppCompatActivity
             LaunchMrzScanner();
         }
     }
+    
     private void LaunchMrzScanner()
     {
         var configuration = new MrzScannerScreenConfiguration();

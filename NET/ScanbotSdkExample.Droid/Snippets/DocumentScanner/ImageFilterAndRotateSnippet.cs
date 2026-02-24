@@ -11,59 +11,59 @@ namespace ScanbotSdkExample.Droid.Snippets;
 
 public class ImageFilterAndRotateSnippet : AppCompatActivity
 {
-	private IO.Scanbot.Sdk.ScanbotSDK _scanbotSdk;
+    private IO.Scanbot.Sdk.ScanbotSDK _scanbotSdk;
 
-	protected override async void OnCreate(Bundle savedInstanceState)
-	{
-		base.OnCreate(savedInstanceState);
+    protected override async void OnCreate(Bundle savedInstanceState)
+    {
+        base.OnCreate(savedInstanceState);
 
-		// Returns the singleton instance of the Sdk.
-		_scanbotSdk = new IO.Scanbot.Sdk.ScanbotSDK(this);
+        // Returns the singleton instance of the Sdk.
+        _scanbotSdk = new IO.Scanbot.Sdk.ScanbotSDK(this);
 
-		if (_scanbotSdk.LicenseInfo.IsValid)
-		{
-			var resultImage = await ApplyImageFilterAndRotate();
-		}
-	}
+        if (_scanbotSdk.LicenseInfo.IsValid)
+        {
+            var resultImage = await ApplyImageFilterAndRotate();
+        }
+    }
 
-	private async Task<Bitmap> ApplyImageFilterAndRotate()
-	{
-		// Pick image from gallery
-		var bitmap = await ImagePickerServiceActivity.PickImageAsync(this);
+    private async Task<Bitmap> ApplyImageFilterAndRotate()
+    {
+        // Pick image from gallery
+        var bitmap = await ImagePickerServiceActivity.PickImageAsync(this);
 		
-		var imageRef = ImageRef.FromBitmap(bitmap, new BasicImageLoadOptions());
+        var imageRef = ImageRef.FromBitmap(bitmap, new BasicImageLoadOptions());
 
-		// Create a document detector
-		var documentDetector = _scanbotSdk.CreateDocumentScanner(new DocumentScannerConfiguration()).GetOrThrow<IDocumentScanner>();
+        // Create a document detector
+        var documentDetector = _scanbotSdk.CreateDocumentScanner(new DocumentScannerConfiguration()).GetOrThrow<IDocumentScanner>();
 
-		// Run detection on the picked image
-		var result = documentDetector.Scan(imageRef).GetOrThrow<DocumentScanningResult>();
+        // Run detection on the picked image
+        var result = documentDetector.Scan(imageRef).GetOrThrow<DocumentScanningResult>();
 
-		// Validate the result status and retrieve the detected polygon.
-		if (result.DetectionResult == null || !result.DetectionResult.Status.Equals(DocumentDetectionStatus.Ok))
-		{
-			return bitmap;
-		}
+        // Validate the result status and retrieve the detected polygon.
+        if (result.DetectionResult == null || !result.DetectionResult.Status.Equals(DocumentDetectionStatus.Ok))
+        {
+            return bitmap;
+        }
 
-		// If the result is an acceptable polygon, we warp the image into the polygon.
-		var imageProcessor = new ImageProcessor();
+        // If the result is an acceptable polygon, we warp the image into the polygon.
+        var imageProcessor = new ImageProcessor();
 
-		// Perform operations like rotating, resizing and applying filters to the image.
-		// Rotate the image.
-		imageProcessor.Rotate(ImageRotation.Clockwise90);
+        // Perform operations like rotating, resizing and applying filters to the image.
+        // Rotate the image.
+        imageProcessor.Rotate(ImageRotation.Clockwise90);
 
-		// You can crop the image using the polygon if you want.
-		imageProcessor.Crop(result.DetectionResult.PointsNormalized);
+        // You can crop the image using the polygon if you want.
+        imageProcessor.Crop(result.DetectionResult.PointsNormalized);
 
-		// Resize the image.
-		imageProcessor.Resize(700);
+        // Resize the image.
+        imageProcessor.Resize(700);
 
-		var binarizationFilter = new ScanbotBinarizationFilter(OutputMode.Antialiased);
-		var brightnessFilter = new BrightnessFilter(0.4);
-		imageProcessor.ApplyFilter(binarizationFilter);
-		imageProcessor.ApplyFilter(brightnessFilter);
+        var binarizationFilter = new ScanbotBinarizationFilter(OutputMode.Antialiased);
+        var brightnessFilter = new BrightnessFilter(0.4);
+        imageProcessor.ApplyFilter(binarizationFilter);
+        imageProcessor.ApplyFilter(brightnessFilter);
 
-		// Result Image
-		return imageProcessor.ProcessedBitmap().GetOrThrow<Bitmap>();
-	}
+        // Result Image
+        return imageProcessor.ProcessedBitmap().GetOrThrow<Bitmap>();
+    }
 }
