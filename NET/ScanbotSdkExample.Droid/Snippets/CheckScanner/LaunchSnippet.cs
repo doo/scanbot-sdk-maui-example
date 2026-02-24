@@ -10,45 +10,45 @@ namespace ScanbotSdkExample.Droid.Snippets.CheckScanner;
 
 public class LaunchSnippet : AppCompatActivity
 {
-	private IO.Scanbot.Sdk.ScanbotSDK _scanbotSdk;
-	private const int ScanCheckRequestCode = 001;
+    private IO.Scanbot.Sdk.ScanbotSDK _scanbotSdk;
+    private const int ScanCheckRequestCode = 001;
 
-	protected override void OnCreate(Bundle savedInstanceState)
-	{
-		base.OnCreate(savedInstanceState);
+    protected override void OnCreate(Bundle savedInstanceState)
+    {
+        base.OnCreate(savedInstanceState);
 		
-		// Returns the singleton instance of the Sdk.
-		_scanbotSdk = new IO.Scanbot.Sdk.ScanbotSDK(this);
+        // Returns the singleton instance of the Sdk.
+        _scanbotSdk = new IO.Scanbot.Sdk.ScanbotSDK(this);
 		
-		if (_scanbotSdk.LicenseInfo.IsValid)
-		{
-			LaunchCheckScanner();
-		}
-	}
-	private void LaunchCheckScanner()
-	{
-		// Create the default configuration object.
-		var configuration = new CheckScannerScreenConfiguration();
+        if (_scanbotSdk.LicenseInfo.IsValid)
+        {
+            LaunchCheckScanner();
+        }
+    }
+    private void LaunchCheckScanner()
+    {
+        // Create the default configuration object.
+        var configuration = new CheckScannerScreenConfiguration();
 		
-		var intent = CheckScannerActivity.NewIntent(this, configuration);
-		StartActivityForResult(intent, ScanCheckRequestCode);
-	}
+        var intent = CheckScannerActivity.NewIntent(this, configuration);
+        StartActivityForResult(intent, ScanCheckRequestCode);
+    }
 	
-	public override void StartActivityForResult(Intent intent, int requestCode, Bundle options)
-	{
-		base.StartActivityForResult(intent, requestCode, options);
-		var resultEntity = (CheckScannerUiResult)intent?.GetParcelableExtra(ActivityConstants.ExtraKeyRtuResult);
-		if (resultEntity?.Check == null)
-		{
-			return;
-		}
+    public override void StartActivityForResult(Intent intent, int requestCode, Bundle options)
+    {
+        base.StartActivityForResult(intent, requestCode, options);
+        var resultEntity = (CheckScannerUiResult)intent?.GetParcelableExtra(ActivityConstants.ExtraKeyRtuResult);
+        if (resultEntity?.Check == null)
+        {
+            return;
+        }
 
-		// Wrap the resulted generic document to the strongly typed check.
-		var check = new USACheck(resultEntity.Check);
+        // Wrap the resulted generic document to the strongly typed check.
+        var check = new USACheck(resultEntity.Check);
            
-		// Retrieve the values.
-		Console.WriteLine($"Account number: {check.AccountNumber?.Value?.Text}");
-		Console.WriteLine($"Transit Number: {check.TransitNumber?.Value?.Text}");
-		Console.WriteLine($"AuxiliaryOnUs: {check.AuxiliaryOnUs?.Value?.Text}");
-	}
+        // Retrieve the values.
+        Console.WriteLine($"Account number: {check.AccountNumber?.Value?.Text}");
+        Console.WriteLine($"Transit Number: {check.TransitNumber?.Value?.Text}");
+        Console.WriteLine($"AuxiliaryOnUs: {check.AuxiliaryOnUs?.Value?.Text}");
+    }
 }

@@ -55,7 +55,5 @@ public class CropScreenSnippet : UIViewController
 
         // Handle the document result.
         var documentId = document.Uuid;
-
-        // display presentation error
     }
 }

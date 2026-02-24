@@ -73,9 +73,9 @@ public class ActionBarSnippet : AppCompatActivity
         var cardholderName = creditCard.CardholderName.Value.Text;
         var expiryDate = creditCard.ExpiryDate.Value.Text;
         Toast.MakeText(
-                this,
-                $"Card Number: {cardNumber}, Cardholder Name: {cardholderName}, Expiry Date: {expiryDate}",
-                ToastLength.Long
-            )?.Show();
+            this,
+            $"Card Number: {cardNumber}, Cardholder Name: {cardholderName}, Expiry Date: {expiryDate}",
+            ToastLength.Long
+        )?.Show();
     }
 }

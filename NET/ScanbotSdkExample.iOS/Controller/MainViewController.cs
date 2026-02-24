@@ -46,7 +46,6 @@ namespace ScanbotSdkExample.iOS.Controller
                 new ListItem("Detect Check From Image", RecognizeCheck),
                 new ListItem("Detect Credit Card From Image", RecognizeCreditCard),
                 new ListItem("Extract Document Data From Image", RecognizeDocumentData),
-                new ListItem("Detect Medical Certificate From Image", RecognizeMedicalCertificate),
                 new ListItem("Detect MRZ From Image", RecognizeMrz),
             ];
             

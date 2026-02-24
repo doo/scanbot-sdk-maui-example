@@ -25,6 +25,7 @@ public class ActionBarSnippet : AppCompatActivity
             LaunchVinScanner();
         }
     }
+    
     private void LaunchVinScanner()
     {
         var configuration = new VinScannerScreenConfiguration();
