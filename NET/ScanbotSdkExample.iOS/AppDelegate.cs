@@ -93,13 +93,13 @@ namespace ScanbotSdkExample.iOS
                 // encrypted.
             }
             
-            // Set Storage Url for Native
+            // Set Storage Url
             var customStoragePath = PageStoragePathForExample();
             var storageUrl = SetCustomPath
                 ? customStoragePath
                 : SBSDKStorageLocation.DefaultURL;
             nativeConfiguration.FileStorageBaseDirectory = storageUrl;
-            
+
             // Subscribe to License failure handler for logs.
             nativeConfiguration.LicenseFailureHandler = (status, feature, message) =>
             {
@@ -117,7 +117,7 @@ namespace ScanbotSdkExample.iOS
         private static NSUrl PageStoragePathForExample()
         {
             // For demo purposes we use a sub-folder in the Documents folder in the Data Container of this App, since the contents can be shared via iTunes.
-            // For more detais about the iOS file system see:
+            // For more details about the iOS file system see:
             // - https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/FileSystemOverview/FileSystemOverview.html
             // - https://docs.microsoft.com/en-us/xamarin/ios/app-fundamentals/file-system
             // - https://docs.microsoft.com/en-us/dotnet/api/system.environment.specialfolder
@@ -125,7 +125,11 @@ namespace ScanbotSdkExample.iOS
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "scanbot-sdk-maui"
             );
+            
+            // create directory
             Directory.CreateDirectory(customDocumentsFolder);
+            
+            // return NSUrl
             return new NSUrl(customDocumentsFolder, isDir: true);
         }
     }
