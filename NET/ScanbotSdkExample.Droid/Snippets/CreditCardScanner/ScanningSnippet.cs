@@ -56,7 +56,7 @@ public class ScanningSnippet : AppCompatActivity
         configuration.Sound.SuccessBeepEnabled = true;
         configuration.Sound.SoundType = SoundType.ModernBeep;
 
-		// Launch the scanner
+        // Launch the scanner
         var intent = CreditCardScannerActivity.NewIntent(this, configuration);
         StartActivityForResult(intent, ScanCreditCardRequestCode);
     }

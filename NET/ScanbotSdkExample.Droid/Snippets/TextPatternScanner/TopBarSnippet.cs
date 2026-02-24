@@ -25,6 +25,7 @@ public class TopBarSnippet : AppCompatActivity
             LaunchTextPatternScanner();
         }
     }
+    
     private void LaunchTextPatternScanner()
     {
         var configuration = new TextPatternScannerScreenConfiguration();

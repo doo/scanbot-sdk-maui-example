@@ -25,6 +25,7 @@ public class PaletteSnippet : AppCompatActivity
             LaunchTextPatternScanner();
         }
     }
+    
     private void LaunchTextPatternScanner()
     {
         // Create the default configuration object.

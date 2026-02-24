@@ -25,6 +25,7 @@ public class UserGuidanceSnippet : AppCompatActivity
             LaunchTextPatternScanner();
         }
     }
+    
     private void LaunchTextPatternScanner()
     {
         var configuration = new TextPatternScannerScreenConfiguration();

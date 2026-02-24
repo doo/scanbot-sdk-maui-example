@@ -25,6 +25,7 @@ public class TopBarSnippet : AppCompatActivity
             LaunchVinScanner();
         }
     }
+    
     private void LaunchVinScanner()
     {
         var configuration = new VinScannerScreenConfiguration();
