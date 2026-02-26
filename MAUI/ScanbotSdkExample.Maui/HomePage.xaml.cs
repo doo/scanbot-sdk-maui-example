@@ -128,6 +128,7 @@ public partial class HomePage
         {
             IsLoading = true;
 
+            // @Tag("Detect Document from Image")
             var image = await ImagePicker.PickImageAsSourceAsync();
             if (image is null) return;
 
@@ -146,6 +147,7 @@ public partial class HomePage
 
             // success
             await Navigation.PushAsync(new ScannedDocumentsPage(result.Value));
+            // @EndTag("Detect Document from Image")
         }
         catch (Exception ex)
         {
