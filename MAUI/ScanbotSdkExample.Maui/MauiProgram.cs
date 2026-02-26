@@ -7,7 +7,7 @@ namespace ScanbotSdkExample.Maui;
 
 public static partial class MauiProgram
 {
-    private const string LicenseKey =   "";
+    private const string LicenseKey = "";
 
     [SuppressMessage("ReSharper", "ExpressionIsAlwaysNull")]
     public static MauiApp CreateMauiApp()
@@ -19,7 +19,7 @@ public static partial class MauiProgram
             fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
             fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
         });
-        
+
         // Note: You can enable encryption by setting the 'App.IsEncryptionEnabled' variable to 'true':
         string password = null;
         FileEncryptionMode? encryptionMode = null;
@@ -39,10 +39,10 @@ public static partial class MauiProgram
             // Note: all the images and files exported through the SDK will
             // not be openable from external applications, if they will be
             // encrypted.
-           FileEncryptionPassword = password,
-           FileEncryptionMode = encryptionMode
+            FileEncryptionPassword = password,
+            FileEncryptionMode = encryptionMode
         });
-        
+
         return builder.Build();
     }
 
