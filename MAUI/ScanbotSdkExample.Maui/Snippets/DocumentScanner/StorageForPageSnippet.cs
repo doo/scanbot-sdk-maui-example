@@ -7,7 +7,8 @@ namespace ScanbotSdkExample.Maui.Snippets.DocumentScanner;
 
 public static class DocumentOperationSnippets
 {
-    static void CreateScannedDocument(ImageRef[] images)
+    // @Tag("Page access from storage")
+    static async Task CreateScannedDocumentAsync(ImageRef[] images)
     {
         var configuration = new CreateDocumentOptions
         {
@@ -18,7 +19,7 @@ public static class DocumentOperationSnippets
         
         // Create a new document with the specified maximum image size.
         // Setting the limit to 0, effectively disables the size limit.
-        var scannedDocument = ScanbotSDKMain.Document.CreateDocumentFromImagesAsync(images, configuration);
+        var scannedDocument = await ScanbotSDKMain.Document.CreateDocumentFromImagesAsync(images, configuration);
     }
 
     static void LoadDocument(string documentUuid)
@@ -60,7 +61,7 @@ public static class DocumentOperationSnippets
         await result.Value.RemoveAllPagesAsync();
     }
 
-    static async Task DeleteDocument(string documentUuid)
+    static async Task DeleteDocumentAsync(string documentUuid)
     {
         await ScanbotSDKMain.Document.DeleteDocumentAsync(documentUuid);
         
@@ -69,8 +70,9 @@ public static class DocumentOperationSnippets
         // await document?.DeleteDocumentAsync();
     }
 
-    static async Task DeleteAllDocuments()
+    static async Task DeleteAllDocumentsAsync()
     {
         await ScanbotSDKMain.Document.DeleteAllDocumentsAsync();
     }
+    // @EndTag("Page access from storage")
 }

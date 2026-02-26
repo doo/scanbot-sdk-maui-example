@@ -6,15 +6,19 @@ namespace ScanbotSdkExample.Maui.Snippets.DocumentScanner;
 
 public static class TiffSnippets
 {
-    static void CreateTiffFromDocument(IScannedDocument scannedDocument)
+    // @Tag("Create Tiff from Document")
+    static async Task CreateTiffFromDocumentAsync(IScannedDocument scannedDocument)
     {
         var parameters = new TiffGeneratorParameters();
-        var outputFileUri = scannedDocument.CreateTiffAsync(parameters);
+        var outputFileUri = await scannedDocument.CreateTiffAsync(parameters);
     }
+    // @EndTag("Create Tiff from Document")
 
-    static async void CreateTiffFromImage(Uri[] imageFiles)
+    // @Tag("Create Tiff from Image File")
+    static async Task CreateTiffFromImageAsync(Uri[] imageFiles)
     {
         var parameters = new TiffGeneratorParameters();
         var outputFileUri = await ScanbotSDKMain.TiffGenerator.GenerateFromImagesAsync(images: imageFiles.Select(f => new FileImageSource { File = f.LocalPath }), tiffGeneratorParameters: parameters);
     }
+    // @EndTag("Create Tiff from Image File")
 }

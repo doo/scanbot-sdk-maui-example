@@ -145,6 +145,7 @@ public class ScannedDocumentDetailPage : ContentPage
         _documentImage.Source = _selectedPage.DocumentImagePreview.ToImageSource();
     }
 
+    // @Tag("Document Quality Analyzer")
     private async void OnAnalyzeQualityTapped(object sender, EventArgs e)
     {
         if (!App.IsLicenseValid) return;
@@ -164,6 +165,7 @@ public class ScannedDocumentDetailPage : ContentPage
 
         await Alert.ShowAsync("Document Quality", $"Detected quality is: {result.Value.Quality}");
     }
+    // @EndTag("Document Quality Analyzer")
 
     private async void OnDeleteButtonTapped(object sender, EventArgs e)
     {

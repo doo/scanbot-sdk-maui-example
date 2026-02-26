@@ -13,6 +13,7 @@ public static class DetectOnImageFeature
 {
     public static async Task MrzDetectorClicked()
     {
+        // @Tag("Scan MRZ from Image")
         var image = await ImagePicker.PickImageAsSourceAsync();
         if (image is null) return;
 
@@ -31,6 +32,7 @@ public static class DetectOnImageFeature
 
         // success
         await Alert.ShowAsync("MRZ result", StringUtils.GenericDocumentToString(result.Value.Document));
+        // @EndTag("Scan MRZ from Image")
     }
 
     public static async Task DocumentDataExtractorClicked()
@@ -115,6 +117,7 @@ public static class DetectOnImageFeature
 
     public static async Task CreditCardDetectorClicked()
     {
+        // @Tag("Scan Credit Card from Image")
         var image = await ImagePicker.PickImageAsSourceAsync();
         if (image is null) return;
 
@@ -132,5 +135,6 @@ public static class DetectOnImageFeature
         }
 
         await Alert.ShowAsync("Credit Card result", StringUtils.GenericDocumentToString(result.Value.CreditCard));
+        // @EndTag("Scan Credit Card from Image")
     }
 }
