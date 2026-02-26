@@ -132,7 +132,7 @@ public class ScannedDocumentsPage : ContentPage
         using var loader = new PageLoader(this);
         var result = await ScanbotSDKMain.Document.StartScannerAsync(new DocumentScanningFlow
         {
-            DocumentUuid = _document.Uuid.ToString()
+            DocumentUuid = _document.Uuid
         });
 
         if (result.IsSuccess)
@@ -140,6 +140,10 @@ public class ScannedDocumentsPage : ContentPage
             _document = result.Value;
             _resultList.ItemsSource = _document.Pages;
             _pageGridView.PlatformSizeChanged();
+        }
+        else
+        {
+            await Alert.ShowAsync(result.Error);
         }
     }
 
@@ -209,7 +213,6 @@ public class ScannedDocumentsPage : ContentPage
             return;
         }
 
-        // success: sharing the Pdf.
         await SharingUtils.ShareFileAsync(result.Value.LocalPath, "application/pdf");
     }
 
@@ -233,7 +236,6 @@ public class ScannedDocumentsPage : ContentPage
             return;
         }
 
-        // success: you can access the results with: result.Pages
         await Alert.ShowAsync("OCR", result.Value.RecognizedText);
     }
     // @EndTag("Perform OCR")
@@ -275,7 +277,6 @@ public class ScannedDocumentsPage : ContentPage
             return;
         }
 
-        // success: Sharing the Pdf.
         await SharingUtils.ShareFileAsync(result.Value.LocalPath, "application/pdf");
     }
 
@@ -290,15 +291,24 @@ public class ScannedDocumentsPage : ContentPage
                 ZipCompressionLevel = 6,
             }
         );
-
-        // Sharing the Tiff file.
+        
+        if (!result.IsSuccess)
+        {
+            await Alert.ShowAsync(result.Error);
+            return;
+        }
+        
         await SharingUtils.ShareFileAsync(result.Value.LocalPath, "image/tiff");
     }
 
     private async void OnDeleteButtonTapped(object sender, EventArgs e)
     {
-        var message = "This will delete the current document that contains all the pages visible on the screen.";
-        var accepted = await Alert.ShowAsync("Attention!", message, "Confirm", "Cancel");
+        var accepted = await Alert.ShowAsync(
+            "Attention!",
+            "This will delete the current document that contains all the pages visible on the screen.",
+            "Confirm",
+            "Cancel"
+        );
         if (!accepted) return;
 
         using var loader = new PageLoader(this);

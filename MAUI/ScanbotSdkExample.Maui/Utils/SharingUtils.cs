@@ -6,7 +6,6 @@ public class SharingUtils
     {
         if (string.IsNullOrEmpty(localFilePath) || !File.Exists(localFilePath))
         {
-            // Handle file-not-found scenario
             await Alert.ShowAsync("Error", "Unable to find the file:" + localFilePath);
             return;
         }

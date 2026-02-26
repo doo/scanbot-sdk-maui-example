@@ -4,18 +4,20 @@ public class PdfPicker
 {
     public static async Task<string> PickAsync()
     {
-        var file = await FilePicker.Default.PickAsync(new PickOptions
+        try
         {
-            FileTypes = FilePickerFileType.Pdf,
-            PickerTitle = "Select a pdf file",
-        });
-
-        if (file == null)
+            var file = await FilePicker.Default.PickAsync(new PickOptions
+            {
+                FileTypes = FilePickerFileType.Pdf,
+                PickerTitle = "Select a pdf file",
+            });
+            
+            return file?.FullPath;
+        } 
+        catch (Exception ex) 
         {
-            await Alert.ShowAsync("Alert", "Something went wrong while picking the file from the storage.");
+            await Alert.ShowAsync("Error", $"Unable to pick pdf file: {ex.Message}");
             return null;
         }
-        
-        return file.FullPath;
     }
 }

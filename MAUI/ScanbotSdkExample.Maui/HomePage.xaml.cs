@@ -44,7 +44,6 @@ public partial class HomePage
             new SdkFeature("Classic Document Scanner (MVVM)", DocumentScannerFeature.ClassicDocumentScannerMVVMViewClicked),
 
             new SdkFeature("DATA DETECTORS"),
-
             new SdkFeature("Check Scanner", DataDetectorsFeature.CheckScannerClicked),
             new SdkFeature("Credit Card Scanner", DataDetectorsFeature.CreditCardScannerClicked),
             new SdkFeature("Document Data Scanner", DataDetectorsFeature.DocumentDataScannerClicked),
@@ -64,10 +63,10 @@ public partial class HomePage
             new SdkFeature("Extract Images from PDF", ExtractImagesFromPdfClicked),
             new SdkFeature("OCR from Image", ExtractOcrFromImageClicked),
             
-            new SdkFeature("Test Images", TestImageResults),
+            new SdkFeature("Test Images", TestImageResultsClicked),
 
             new SdkFeature("MISCELLANEOUS"),
-            new SdkFeature(ViewLicenseInfo, ViewLicenseInfoClicked),
+            new SdkFeature(ViewLicenseInfo, ViewLicenseInfoClicked), 
             new SdkFeature("Learn more about Scanbot SDK", LearnMoreClicked)
         ];
         
@@ -86,40 +85,7 @@ public partial class HomePage
             return;
         }
 
-        await feature.DoTask();
-    }
-
-    // ------------------------------------
-    // View License Info
-    // ------------------------------------
-    private async Task ViewLicenseInfoClicked()
-    {
-        var result = ScanbotSDKMain.LicenseInfo();
-        if (!result.IsSuccess)
-        {
-            await Alert.ShowAsync(result.Error);
-            return;
-        }
-
-        var message = $"License status: {result.Value.Status}\n";
-        if (result.Value.IsValid)
-        {
-            message += $"It is valid until {result.Value.ExpirationDateString}.";
-        }
-        else
-        {
-            message = LicenseInvalidMessage;
-        }
-
-        await Alert.ShowAsync("License info", message);
-    }
-
-    // ------------------------------------
-    // Learn More
-    // ------------------------------------
-    private async Task LearnMoreClicked()
-    {
-        await Browser.OpenAsync(new Uri("https://scanbot.io/developer/net-maui-barcode-scanner-sdk/"), BrowserLaunchMode.SystemPreferred);
+        await feature.Action();
     }
 
     private async Task ScanDocumentFromImageClicked()
@@ -145,13 +111,12 @@ public partial class HomePage
                 return;
             }
 
-            // success
             await Navigation.PushAsync(new ScannedDocumentsPage(result.Value));
             // @EndTag("Detect Document from Image")
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            await Alert.ShowAsync("Error", ex.Message);
         }
         finally
         {
@@ -165,6 +130,8 @@ public partial class HomePage
         {
             var filePath = await PdfPicker.PickAsync();
             if (filePath is null) return;
+         
+            IsLoading = true;
             
             var result = await ScanbotSDKMain.Document.CreateDocumentFromPdfAsync(filePath, new CreateDocumentOptions
             {
@@ -178,12 +145,11 @@ public partial class HomePage
                 return;
             }
 
-            // success
             await Navigation.PushAsync(new ScannedDocumentsPage(result.Value));
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            await Alert.ShowAsync("Error", ex.Message);
         }
         finally
         {
@@ -193,26 +159,38 @@ public partial class HomePage
 
     private async Task ExtractOcrFromImageClicked()
     {
-        var image = await ImagePicker.PickImageAsSourceAsync();
-        if (image == null) return;
-
-        var result = await ScanbotSDKMain.OcrEngine.RecognizeOnImagesAsync(images: [image], configuration: OcrConfiguration.ScanbotOcr);
-        if (!result.IsSuccess)
+        try
         {
-            await Alert.ShowAsync(result.Error);
-            return;
-        }
+            var image = await ImagePicker.PickImageAsSourceAsync();
+            if (image is null) return;
 
-        await DisplayAlertAsync(title: "Ocr Result", message: result.Value.RecognizedText, cancel:"OK");
-        // success
-        // await Alert.ShowAsync(title: "Ocr Result", message: result.Value.RecognizedText);
+            IsLoading = true;
+
+            var result =
+                await ScanbotSDKMain.OcrEngine.RecognizeOnImagesAsync(images: [image],
+                    configuration: OcrConfiguration.ScanbotOcr);
+            if (!result.IsSuccess)
+            {
+                await Alert.ShowAsync(result.Error);
+                return;
+            }
+
+            await Alert.ShowAsync(title: "Ocr Result", message: result.Value.RecognizedText);
+        }
+        catch (Exception ex)
+        {
+            await Alert.ShowAsync("Error", ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 
     private async Task CreatePdfFromImageClicked()
     {
         var image = await ImagePicker.PickImageAsSourceAsync();
-        if (image == null) return;
-
+        if (image is null) return; 
 
         var result = await ScanbotSDKMain.PdfGenerator.GenerateFromImagesAsync(images: [image], pdfConfiguration: new PdfConfiguration());
         if (!result.IsSuccess)
@@ -220,24 +198,10 @@ public partial class HomePage
             await Alert.ShowAsync(result.Error);
             return;
         }
-
-        // Sharing the Pdf.
+        
         await SharingUtils.ShareFileAsync(result.Value.LocalPath, "application/pdf");
     }
-
-    private async Task ConfigureMockCameraClicked()
-    {
-        var path = await ImagePicker.PickImageAsPathAsync();
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            await Alert.ShowAsync("Error", "Something went wrong while loading the image from photos app.");
-            return;
-        }
-
-        // success
-        ScanbotSDKMain.MockCamera(path);
-    }
-
+    
     private async Task DeleteAllDocsFromStorageClicked()
     {
         var documentIds = ScanbotSDKMain.Document.StoredDocumentUuids()?.ValueOrNull ?? [];
@@ -261,22 +225,75 @@ public partial class HomePage
         await Alert.ShowAsync("Alert", $"Number of documents deleted: {documentIds.Length}");
     }
 
+    private async Task ConfigureMockCameraClicked()
+    {
+        var path = await ImagePicker.PickImageAsPathAsync();
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            await Alert.ShowAsync("Error", "Something went wrong while loading the image from photos app.");
+            return;
+        }
+
+        ScanbotSDKMain.MockCamera(path);
+    }
+    
     private async Task ExtractImagesFromPdfClicked()
     {
-        var filePath = await PdfPicker.PickAsync();
-        if (filePath is null) return;
-        
-        var result = await ScanbotSDKMain.PdfImageExtractor.ExtractImageFilesAsync(pdfFileUri: new Uri(filePath));
-        if (result.IsSuccess)
+        try
         {
+            var filePath = await PdfPicker.PickAsync();
+            if (filePath is null) return;
+
+            IsLoading = true;
+
+            var result = await ScanbotSDKMain.PdfImageExtractor.ExtractImageFilesAsync(
+                pdfFileUri: new Uri(filePath));
+
+            if (!result.IsSuccess)
+            {
+                await Alert.ShowAsync(result.Error);
+                return;
+            }
+
             await Navigation.PushAsync(new PdfExtractedImageResultPage(result.Value));
+        }
+        catch (Exception ex)
+        {
+            await Alert.ShowAsync("Error", ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
     
-    
-    private async Task TestImageResults()
+    private async Task TestImageResultsClicked()
     {
         var images = await ImagePicker.PickImagesAsSourceAsync();
+        if (images is null || images.Count == 0) return;
+
         await Navigation.PushAsync(new PdfExtractedImageResultPage(images));
+    }
+
+    private async Task ViewLicenseInfoClicked()
+    {
+        var result = ScanbotSDKMain.LicenseInfo();
+        if (!result.IsSuccess)
+        {
+            await Alert.ShowAsync(result.Error);
+            return;
+        }
+
+        var info = result.Value;
+        var message = info.IsValid
+            ? $"License status: {info.Status}\nIt is valid until {info.ExpirationDateString}."
+            : LicenseInvalidMessage;
+
+        await Alert.ShowAsync("License info", message);
+    }
+
+    private async Task LearnMoreClicked()
+    {
+        await Browser.OpenAsync(new Uri("https://scanbot.io/developer/net-maui-barcode-scanner-sdk/"), BrowserLaunchMode.SystemPreferred);
     }
 }

@@ -30,7 +30,6 @@ public static class DetectOnImageFeature
             return;
         }
 
-        // success
         await Alert.ShowAsync("MRZ result", StringUtils.GenericDocumentToString(result.Value.Document));
         // @EndTag("Scan MRZ from Image")
     }
@@ -68,7 +67,6 @@ public static class DetectOnImageFeature
             return;
         }
 
-        // success
         await Alert.ShowAsync("Document Data Result", StringUtils.GenericDocumentToString(result.Value.Document));
         // @EndTag("Extract data from Image")
     }
@@ -134,7 +132,7 @@ public static class DetectOnImageFeature
         var result = await ScanbotSDKMain.CreditCard.ScanFromImageAsync(image, configuration: configuration);
         if (!result.IsSuccess)
         {
-            await Alert.ShowAsync(result.Error);
+            await Alert.ShowAsync(result.Error ?? new Exception("Unknown error."));
             return;
         }
 

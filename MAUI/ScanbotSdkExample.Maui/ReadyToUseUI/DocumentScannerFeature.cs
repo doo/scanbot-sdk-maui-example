@@ -53,7 +53,6 @@ public static class DocumentScannerFeature
         var result = await ScanbotSDKMain.Document.StartScannerAsync(configuration);
         if (result.IsCanceled) return;
 
-        // error
         if (!result.IsSuccess)
         {
             await Alert.ShowAsync(result.Error);
@@ -114,8 +113,8 @@ public static class DocumentScannerFeature
         configuration.Screens.Camera.BottomBar.ManualSnappingModeButton.Visible = true;
 
         // Set colors
-        //configuration.Palette.SbColorPrimary = new SBSDKUI2Color(uiColor: Colors.ScanbotRed);
-        //configuration.Palette.SbColorOnPrimary = new SBSDKUI2Color(uiColor: Colors.NearWhite);
+        // configuration.Palette.SbColorPrimary = Constants.Colors.ScanbotRed;
+        // configuration.Palette.SbColorOnPrimary = Colors.White;
 
         // Configure the hint texts for different scenarios
         // e.G

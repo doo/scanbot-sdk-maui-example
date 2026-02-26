@@ -10,7 +10,7 @@
              x:Class="ScanbotSdkExample.Maui.ClassicUI.MVVM.Views.ClassicDocumentScannerView"
              x:DataType="viewModels:ClassicDocumentScannerViewModel">
     <ContentPage.Resources>
-        <Style x:Key="ScannerButonStyle" TargetType="Button">
+        <Style x:Key="ScannerButtonStyle" TargetType="Button">
             <Setter Property="CornerRadius">10</Setter>
             <Setter Property="BackgroundColor">WhiteSmoke</Setter>
             <Setter Property="TextColor">DarkSlateGrey</Setter>
@@ -19,7 +19,6 @@
     </ContentPage.Resources>
     <ContentPage.Content>
         <Grid
-            x:Name="GridParent"
             RowDefinitions="9*,1*">
             <Grid>
                 <classicView:DocumentScannerView x:Name="DocumentScannerView"
@@ -30,11 +29,11 @@
                     <classicView:DocumentScannerView.Behaviors>
                         <toolkit:EventToCommandBehavior
                             EventName="OnSnappedDocumentResult"
-                            Command="{Binding BindingContext.SnappedDocumentResultCommand, Source={x:Reference DocumentScannerView}}"
-                            EventArgsConverter="{converters:SnappedDocumentImageEventArgsConverter}"/>
+                            Command="{Binding SnappedDocumentResultCommand}"
+                            EventArgsConverter="{converters:SnappedDocumentResultEventArgsConverter}"/>
                         <toolkit:EventToCommandBehavior
                             EventName="OnFrameDetectionResult"
-                            Command="{Binding BindingContext.UpdateDetectionStatusCommand, Source={x:Reference DocumentScannerView}}"
+                            Command="{Binding UpdateDetectionStatusCommand}"
                             EventArgsConverter="{converters:DetectionStatusEventArgsConverter}"/>
                     </classicView:DocumentScannerView.Behaviors>
                 </classicView:DocumentScannerView>
@@ -54,20 +53,20 @@
                   Margin="10">
                 <customButton:ToggleButton Grid.Column="0"
                                            Text="Flash"
-                                           Style="{x:StaticResource Key=ScannerButonStyle}"
+                                           Style="{x:StaticResource Key=ScannerButtonStyle}"
                                            IsSelected="{Binding IsFlashEnabled}"
                                            Command="{Binding SwitchFlashEnabledCommand}"/>
 
                 <customButton:ToggleButton Grid.Column="1"
                                            Text="Polygon"
-                                           Style="{x:StaticResource Key=ScannerButonStyle}"
+                                           Style="{x:StaticResource Key=ScannerButtonStyle}"
                                            IsSelected="{Binding IsPolygonEnabled}"
                                            Command="{Binding SwitchPolygonEnabledCommand}"/>
 
                 <customButton:ToggleButton Grid.Column="2"
                                            Text="Snap"
-                                           Style="{x:StaticResource Key=ScannerButonStyle}"
-                                           Command="{Binding SnapDocumentImageCommand}"/>
+                                           Style="{x:StaticResource Key=ScannerButtonStyle}"
+                                           Command="{Binding SnapDocumentCommand}"/>
             </Grid>
         </Grid>
     </ContentPage.Content>

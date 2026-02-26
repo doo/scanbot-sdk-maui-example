@@ -7,7 +7,7 @@ public partial class SBLoader : ContentView
 {
     private const string LoaderText = "•";
     private const int TextLimit = 5;
-    
+
     public SBLoader()
     {
         InitializeComponent();

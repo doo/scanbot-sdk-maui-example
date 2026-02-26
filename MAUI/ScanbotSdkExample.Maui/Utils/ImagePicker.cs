@@ -4,6 +4,13 @@ namespace ScanbotSdkExample.Maui.Utils;
 
 public class ImagePicker
 {
+    // Workaround for a .NET MAUI bug (https://github.com/dotnet/maui/pull/34250):
+    // After the native photo picker is dismissed, the platform needs a moment to
+    // fully restore the original view/window hierarchy. Without this delay, any
+    // subsequent UI call (e.g., Alert.ShowAsync) may silently fail because it tries
+    // to present over a window that is still mid-transition.
+    private const int PickerDismissalDelayMs = 500;
+
     private static async Task<FileResult> PickImageAsync()
     {
         var options = new MediaPickerOptions
@@ -11,24 +18,23 @@ public class ImagePicker
             Title = "Select a photo",
             SelectionLimit = 1
         };
+
         var pickedList = await MediaPicker.Default.PickPhotosAsync(options);
-        return pickedList.FirstOrDefault();
+        await Task.Delay(PickerDismissalDelayMs);
+        return pickedList?.FirstOrDefault();
     }
 
     /// <summary>
-    /// Picks image from the photos application.
+    /// Picks an image from the photos application.
     /// </summary>
-    /// <returns>ImageSource object.</returns>
+    /// <returns>An <see cref="ImageSource"/> of the picked image, or <c>null</c> if cancelled.</returns>
     public static async Task<ImageSource> PickImageAsSourceAsync()
     {
         try
         {
             var file = await PickImageAsync();
             if (file is null)
-            {
-                //add error
                 return null;
-            }
 
             var stream = await file.OpenReadAsync();
             return ImageSource.FromStream(() => stream);
@@ -42,40 +48,35 @@ public class ImagePicker
     }
 
     /// <summary>
-    /// Picks image from the photos application.
+    /// Picks an image from the photos application.
     /// </summary>
-    /// <returns>Image path string.</returns>
+    /// <returns>The local file path of the picked image, or <c>null</c> if cancelled.</returns>
     public static async Task<string> PickImageAsPathAsync()
     {
         try
         {
             var file = await PickImageAsync();
             if (file?.FullPath is null)
-            {
-                //add error
                 return null;
-            }
-                
-            var path = file.FullPath; // for iOS, it returns only the File name.
-            if (!IsValidPath(path))
-            {
-                // iOS
-                var stream = await file.OpenReadAsync();
 
-                var extension = Path.GetExtension(file.FileName);
-                if (string.IsNullOrEmpty(extension))
-                    extension = ".jpg";
+            var path = file.FullPath;
+            if (IsValidPath(path))
+                return path;
 
-                // note: This is just for testing purpose, and it is used for saving the image locally after picking the image from gallery.
-                // path of the file.
-                path = Path.Combine(FileSystem.CacheDirectory, "gallery-picked-items");
-                Directory.CreateDirectory(path);
+            // On iOS, FullPath may return only a filename without a valid absolute path.
+            // In that case, copy the picked image to the local cache directory.
+            var extension = Path.GetExtension(file.FileName);
+            if (string.IsNullOrEmpty(extension))
+                extension = ".jpg";
 
-                // name of the file
-                path = Path.Combine(path, file.FileName);
-                await using var destinationStream = File.Create(path);
-                await stream.CopyToAsync(destinationStream);
-            }
+            var cacheDir = Path.Combine(FileSystem.CacheDirectory, "gallery-picked-items");
+            Directory.CreateDirectory(cacheDir);
+            path = Path.Combine(cacheDir, file.FileName);
+
+            var stream = await file.OpenReadAsync();
+            await using var destinationStream = File.Create(path);
+            await stream.CopyToAsync(destinationStream);
+
             return path;
         }
         catch (Exception ex)
@@ -85,33 +86,18 @@ public class ImagePicker
 
         return null;
     }
-        
-    private static bool IsValidPath(string path)
-    {
-        if (string.IsNullOrWhiteSpace(path))
-            return false;
 
-        try
-        {
-            var exist = File.Exists(path);
-            return exist;
-        }
-        catch (Exception e)
-        {
-            Debug.WriteLine("The file could not be found. For more details:\n" + e.Message);
-            return false;
-        }
-    }
-
+    /// <summary>
+    /// Picks multiple images from the photos application.
+    /// </summary>
+    /// <returns>A list of <see cref="ImageSource"/> objects for the picked images.</returns>
     public static async Task<List<ImageSource>> PickImagesAsSourceAsync()
     {
-        var options = new MediaPickerOptions
-        {
-            Title = "Select a photo"
-        };
-        
+        var options = new MediaPickerOptions { Title = "Select photos" };
+
         var pickedList = await MediaPicker.Default.PickPhotosAsync(options);
-        List<ImageSource> imageSources = new List<ImageSource>();
+
+        var imageSources = new List<ImageSource>();
         foreach (var item in pickedList)
         {
             var stream = await item.OpenReadAsync();
@@ -119,5 +105,21 @@ public class ImagePicker
         }
 
         return imageSources;
+    }
+
+    private static bool IsValidPath(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            return false;
+
+        try
+        {
+            return File.Exists(path);
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine($"Could not validate path. Details:\n{e.Message}");
+            return false;
+        }
     }
 }

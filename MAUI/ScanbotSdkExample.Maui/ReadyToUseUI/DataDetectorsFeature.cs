@@ -95,21 +95,6 @@ public static class DataDetectorsFeature
         
         // Launch the scanner
         var result = await ScanbotSDKMain.Check.StartScannerAsync(configuration);
-
-        // The scanner was canceled.
-        if (result.IsCanceled)
-        {
-            return;
-        }
-
-        // The scanning was failed
-        if (!result.IsSuccess && result.Error != null)
-        {
-            await Alert.ShowAsync(result.Error);
-            return;
-        }
-
-        // The scanning was success
         if (result.IsSuccess)
         {
             var message = StringUtils.GenericDocumentToString(result.Value.Check);
@@ -140,10 +125,9 @@ public static class DataDetectorsFeature
         configuration.ScannerConfiguration.MinimumNumberOfRequiredFramesWithEqualScanningResult = 4;
         
         var result = await ScanbotSDKMain.TextPattern.StartScannerAsync(configuration);
-
         if (result.IsSuccess)
         {
-            await Alert.ShowAsync($"Text Pattern Result", result.Value.RawText);
+            await Alert.ShowAsync("Text Pattern Result", result.Value.RawText);
         }
     }
 
@@ -169,10 +153,9 @@ public static class DataDetectorsFeature
         
         // launch the scanner
         var result = await ScanbotSDKMain.Vin.StartScannerAsync(configuration);
-
         if (result.IsSuccess)
         {
-            await Alert.ShowAsync($"Vin Result", result.Value.TextResult.RawText);
+            await Alert.ShowAsync("Vin Result", result.Value.TextResult.RawText);
         }
     }
 
@@ -184,7 +167,7 @@ public static class DataDetectorsFeature
         var result = await ScanbotSDKMain.CreditCard.StartScannerAsync(configuration);
         if (result.IsSuccess)
         {
-            await Alert.ShowAsync($"Credit Card Result", StringUtils.GenericDocumentToString(result.Value.CreditCard));
+            await Alert.ShowAsync("Credit Card Result", StringUtils.GenericDocumentToString(result.Value.CreditCard));
         }
     }
 }

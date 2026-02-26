@@ -45,6 +45,6 @@ public class UserGuidanceSnippet
         }
 
         // Print the scanned text results
-        Console.WriteLine("Scanned Vin Scanner: "+ result.Value.TextResult?.RawText);
+        Console.WriteLine($"Scanned Vin Scanner: {result.Value.TextResult?.RawText}");
     } 
 }

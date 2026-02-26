@@ -32,7 +32,7 @@
                                 </StackLayout.GestureRecognizers>
                                 <Label
                                     Padding="10,0"
-                                    IsVisible="{Binding ShowHeading}"
+                                    IsVisible="{Binding IsHeader}"
                                     HeightRequest="55"
                                     IsEnabled="False"
                                     FontSize="Medium"
@@ -43,7 +43,7 @@
                                     BackgroundColor="{StaticResource ScanbotRed}" />
                                 <Label
                                     Padding="10,0"
-                                    IsVisible="{Binding ShowFeature}"
+                                    IsVisible="{Binding IsVisible}"
                                     HeightRequest="45"
                                     IsEnabled="True"
                                     FontSize="15"

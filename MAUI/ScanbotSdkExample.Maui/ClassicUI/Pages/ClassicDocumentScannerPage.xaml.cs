@@ -160,53 +160,48 @@ public partial class ClassicDocumentScannerPage : ContentPage
 	{
 		var status = args.Result.Status;
 		Debug.WriteLine("Document Detection Status: " + status);
-		var hint = string.Empty;
-		var backgroundColor = Colors.Transparent;
 		switch (status)
 		{
 			case DocumentDetectionStatus.Ok:
-				hint = "The document is Ok";
-				backgroundColor = Colors.Green;
+				ScanningHintLabel.Text  = "The document is Ok";
+				ScanningHintLabel.BackgroundColor = Colors.Green.WithAlpha(0.5f);;
 				break;
 			case DocumentDetectionStatus.OkButTooSmall:
-				hint = "Please move the camera closer to the document.";
-				backgroundColor = Colors.Yellow;
+				ScanningHintLabel.Text  = "Please move the camera closer to the document.";
+				ScanningHintLabel.BackgroundColor = Colors.Yellow.WithAlpha(0.5f);;
 				break;
 			case DocumentDetectionStatus.OkButBadAngles:
-				hint = "Please hold the camera in parallel over the document.";
-				backgroundColor = Colors.Yellow;
+				ScanningHintLabel.Text  = "Please hold the camera in parallel over the document.";
+				ScanningHintLabel.BackgroundColor = Colors.Yellow.WithAlpha(0.5f);;
 				break;
 			case DocumentDetectionStatus.OkButBadAspectRatio:
-				hint = "The document size is too long.";
-				backgroundColor = Colors.Yellow;
+				ScanningHintLabel.Text  = "The document size is too long.";
+				ScanningHintLabel.BackgroundColor = Colors.Yellow.WithAlpha(0.5f);;
 				break;
 			case DocumentDetectionStatus.ErrorNothingDetected:
-				hint = "Unable to detect the document.";
-				backgroundColor = Colors.Red;
+				ScanningHintLabel.Text  = "Unable to detect the document.";
+				ScanningHintLabel.BackgroundColor = Colors.Red.WithAlpha(0.5f);;
 				break;
 			case DocumentDetectionStatus.OkButTooDark:
-				hint = "Unable to detect due to dark lighting conditions.";
-				backgroundColor = Colors.Red;
+				ScanningHintLabel.Text  = "Unable to detect due to dark lighting conditions.";
+				ScanningHintLabel.BackgroundColor = Colors.Yellow.WithAlpha(0.5f);;
 				break;
 			case DocumentDetectionStatus.ErrorTooNoisy:
-				hint = "Unable to detect document due to too much noise in the preview.";
-				backgroundColor = Colors.Red;
+				ScanningHintLabel.Text  = "Unable to detect document due to too much noise in the preview.";
+				ScanningHintLabel.BackgroundColor = Colors.Red.WithAlpha(0.5f);;
 				break;
 			case DocumentDetectionStatus.NotAcquired:
-				hint = "Unable to acquire the document.";
-				backgroundColor = Colors.Red;
+				ScanningHintLabel.Text  = "Unable to acquire the document.";
+				ScanningHintLabel.BackgroundColor = Colors.Red.WithAlpha(0.5f);;
 				break;
 			case DocumentDetectionStatus.OkButOrientationMismatch:
-				hint = "Unable to acquire the document.";
-				backgroundColor = Colors.Red;
+				ScanningHintLabel.Text  = "Unable to acquire the document.";
+				ScanningHintLabel.BackgroundColor = Colors.Yellow.WithAlpha(0.5f);;
 				break;
 			default:
 				ScanningHintLabel.IsVisible = false;
 				return;
 		}
-
-		ScanningHintLabel.Text = hint;
-		ScanningHintLabel.BackgroundColor = backgroundColor.WithAlpha(0.5f);
 		ScanningHintLabel.IsVisible = IsAutoSnappingEnabled;
 	}
 	// @EndTag("Classic UI EventHandlers Implementation")

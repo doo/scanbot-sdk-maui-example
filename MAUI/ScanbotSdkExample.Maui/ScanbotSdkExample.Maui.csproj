@@ -106,7 +106,7 @@
     </ItemGroup>
     <!-- When running with the .NET 10 target frameworks -->
     <ItemGroup Condition="$(TargetFramework.Contains('net10'))">
-        <PackageReference Include="CommunityToolkit.Maui" Version="13.0.0" />
+        <PackageReference Include="CommunityToolkit.Maui" Version="9.1.0" />
         <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.*" />
     </ItemGroup>
 

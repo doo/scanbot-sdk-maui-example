@@ -99,18 +99,16 @@ public class ScannedDocumentDetailPage : ContentPage
         // @Tag("Cropping UI")
         var result = await ScanbotSDKMain.Document.StartCroppingScreenAsync(new CroppingConfiguration
         {
-            DocumentUuid = _selectedDocument.Uuid.ToString(),
-            PageUuid = _selectedPage.Uuid.ToString()
+            DocumentUuid = _selectedDocument.Uuid,
+            PageUuid = _selectedPage.Uuid
         });
 
-        // error
         if (!result.IsSuccess)
         {
             await Alert.ShowAsync(result.Error);
             return;
         }
 
-        // success
         _documentImage.Source = _selectedPage.DocumentImagePreview.ToImageSource();
         // @EndTag("Cropping UI")
     }
