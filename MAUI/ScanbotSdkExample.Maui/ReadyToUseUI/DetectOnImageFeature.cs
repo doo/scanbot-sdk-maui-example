@@ -37,6 +37,7 @@ public static class DetectOnImageFeature
 
     public static async Task DocumentDataExtractorClicked()
     {
+        // @Tag("Extract data from Image")
         var image = await ImagePicker.PickImageAsSourceAsync();
         if (image is null) return;
 
@@ -69,10 +70,12 @@ public static class DetectOnImageFeature
 
         // success
         await Alert.ShowAsync("Document Data Result", StringUtils.GenericDocumentToString(result.Value.Document));
+        // @EndTag("Extract data from Image")
     }
 
     public static async Task CheckDetectorClicked()
     {
+        // @Tag("Scan Check from Image")
         var image = await ImagePicker.PickImageAsSourceAsync();
         if (image is null) return;
 
@@ -113,6 +116,7 @@ public static class DetectOnImageFeature
             resultPage.NavigateData(source);
             App.Navigation.PushAsync(resultPage);
         }
+        // @EndTag("Scan Check from Image")
     }
 
     public static async Task CreditCardDetectorClicked()

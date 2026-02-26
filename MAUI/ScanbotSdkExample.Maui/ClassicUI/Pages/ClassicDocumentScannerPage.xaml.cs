@@ -21,8 +21,10 @@ public partial class ClassicDocumentScannerPage : ContentPage
 	{
 		InitializeComponent();
 
+		// @Tag("Classic UI EventHandlers")
 		DocumentScannerView.OnSnappedDocumentResult += OnSnappedDocumentImageResult;
 		DocumentScannerView.OnFrameDetectionResult += UpdateDetectionHintFromStatus;
+		// @EndTag("Classic UI EventHandlers")
 		
 		// ==> Polygon Configuration: Uncomment below code for 
 		// DocumentScannerView.PolygonColor = Colors.Red;
@@ -145,6 +147,7 @@ public partial class ClassicDocumentScannerPage : ContentPage
 		}
 	}
 
+	// @Tag("Classic UI EventHandlers Implementation")
 	// Receives the result of Document Scanning. 
 	private async void OnSnappedDocumentImageResult(object sender, SnappedDocumentResultEventArgs eventArgs)
 	{
@@ -206,7 +209,8 @@ public partial class ClassicDocumentScannerPage : ContentPage
 		ScanningHintLabel.BackgroundColor = backgroundColor.WithAlpha(0.5f);
 		ScanningHintLabel.IsVisible = IsAutoSnappingEnabled;
 	}
-	
+	// @EndTag("Classic UI EventHandlers Implementation")
+
 	private void ScannerButtonOnClicked(object sender, EventArgs e)
 	{
 		var selectedItem = (sender as Button)?.BindingContext as ClassicCollectionItem;

@@ -213,6 +213,7 @@ public class ScannedDocumentsPage : ContentPage
         await SharingUtils.ShareFileAsync(result.Value.LocalPath, "application/pdf");
     }
 
+    // @Tag("Perform OCR")
     private async Task PerformOcrAsync()
     {
         // NOTE:
@@ -235,6 +236,7 @@ public class ScannedDocumentsPage : ContentPage
         // success: you can access the results with: result.Pages
         await Alert.ShowAsync("OCR", result.Value.RecognizedText);
     }
+    // @EndTag("Perform OCR")
 
     private async Task GenerateSandwichPdfAsync()
     {
