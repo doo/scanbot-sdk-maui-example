@@ -23,7 +23,7 @@ public static class LocalizationSnippet
         var result = await ScanbotSDKMain.Document.StartScannerAsync(configuration);
         if (!result.IsSuccess)
         {
-            // Indicates that the cancel button was tapped.
+            // Indicates failure in the operation. Please access the Exception object returned in `result.Error`
             return;
         }
         
