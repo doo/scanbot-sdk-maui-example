@@ -1,4 +1,3 @@
-
 using System.Drawing;
 using ScanbotSDK.MAUI.Core.Image;
 using ScanbotSDK.MAUI.Image;

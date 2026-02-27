@@ -63,8 +63,6 @@ public partial class HomePage
             new SdkFeature("Extract Images from PDF", ExtractImagesFromPdfClicked),
             new SdkFeature("OCR from Image", ExtractOcrFromImageClicked),
             
-            new SdkFeature("Test Images", TestImageResultsClicked),
-
             new SdkFeature("MISCELLANEOUS"),
             new SdkFeature(ViewLicenseInfo, ViewLicenseInfoClicked), 
             new SdkFeature("Learn more about Scanbot SDK", LearnMoreClicked)
@@ -265,14 +263,6 @@ public partial class HomePage
         {
             IsLoading = false;
         }
-    }
-    
-    private async Task TestImageResultsClicked()
-    {
-        var images = await ImagePicker.PickImagesAsSourceAsync();
-        if (images is null || images.Count == 0) return;
-
-        await Navigation.PushAsync(new PdfExtractedImageResultPage(images));
     }
 
     private async Task ViewLicenseInfoClicked()
