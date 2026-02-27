@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<ContentPage x:Name="ScannerViewPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:classicView="clr-namespace:ScanbotSDK.MAUI.Document.ClassicComponent;assembly=DocumentSDK.MAUI"
              xmlns:customButton="clr-namespace:ScanbotSdkExample.Maui.Controls;assembly=ScanbotSdkExample.Maui"
              xmlns:viewModels="clr-namespace:ScanbotSdkExample.Maui.ClassicUI.MVVM.ViewModels"
              xmlns:converters="clr-namespace:ScanbotSdkExample.Maui.ClassicUI.MVVM.Converters"
-             x:Class="ScanbotSdkExample.Maui.ClassicUI.MVVM.Views.ClassicDocumentScannerView"
+             x:Class="ScanbotSdkExample.Maui.ClassicUI.MVVM.Views.ClassicDocumentScannerView" 
              x:DataType="viewModels:ClassicDocumentScannerViewModel">
+    
     <ContentPage.Resources>
         <Style x:Key="ScannerButtonStyle" TargetType="Button">
-            <Setter Property="CornerRadius">10</Setter>
-            <Setter Property="BackgroundColor">WhiteSmoke</Setter>
-            <Setter Property="TextColor">DarkSlateGrey</Setter>
-            <Setter Property="FontAttributes">Bold</Setter>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="BackgroundColor" Value="WhiteSmoke"/>
+            <Setter Property="TextColor" Value="DarkSlateGrey"/>
+            <Setter Property="FontAttributes" Value="Bold"/>
         </Style>
     </ContentPage.Resources>
+    
     <ContentPage.Content>
-        <Grid
-            RowDefinitions="9*,1*">
+        <Grid RowDefinitions="9*,1*">
             <Grid>
                 <classicView:DocumentScannerView x:Name="DocumentScannerView"
                                                  IgnoreOrientationMismatch="True"
@@ -28,16 +30,19 @@
                                                  PolygonEnabled="{Binding IsPolygonEnabled}">
                     <classicView:DocumentScannerView.Behaviors>
                         <toolkit:EventToCommandBehavior
-                            EventName="OnSnappedDocumentResult"
+                            BindingContext="{Binding BindingContext, Source={x:Reference DocumentScannerView}, x:DataType=classicView:DocumentScannerView}"
                             Command="{Binding SnappedDocumentResultCommand}"
-                            EventArgsConverter="{converters:SnappedDocumentResultEventArgsConverter}"/>
+                            EventArgsConverter="{converters:SnappedDocumentResultEventArgsConverter}"
+                            EventName="OnSnappedDocumentResult" />
                         <toolkit:EventToCommandBehavior
-                            EventName="OnFrameDetectionResult"
+                            BindingContext="{Binding BindingContext, Source={x:Reference DocumentScannerView}, x:DataType=classicView:DocumentScannerView}"
                             Command="{Binding UpdateDetectionStatusCommand}"
-                            EventArgsConverter="{converters:DetectionStatusEventArgsConverter}"/>
+                            EventArgsConverter="{converters:DetectionStatusEventArgsConverter}"
+                            EventName="OnFrameDetectionResult" />
                     </classicView:DocumentScannerView.Behaviors>
                 </classicView:DocumentScannerView>
-                <Label Text="{x:Binding ScanningHintText}"
+                
+                <Label Text="{Binding ScanningHintText}"
                        IsVisible="{Binding IsScanningHintVisible}"
                        BackgroundColor="{Binding ScanningHintBackgroundColor}"
                        TextColor="White"
@@ -46,6 +51,7 @@
                        Margin="20"
                        Padding="10" />
             </Grid>
+            
             <Grid Grid.Row="1"
                   ColumnDefinitions="*,*,*"
                   ColumnSpacing="10"
@@ -53,19 +59,19 @@
                   Margin="10">
                 <customButton:ToggleButton Grid.Column="0"
                                            Text="Flash"
-                                           Style="{x:StaticResource Key=ScannerButtonStyle}"
+                                           Style="{StaticResource ScannerButtonStyle}"
                                            IsSelected="{Binding IsFlashEnabled}"
                                            Command="{Binding SwitchFlashEnabledCommand}"/>
-
+                                           
                 <customButton:ToggleButton Grid.Column="1"
                                            Text="Polygon"
-                                           Style="{x:StaticResource Key=ScannerButtonStyle}"
+                                           Style="{StaticResource ScannerButtonStyle}"
                                            IsSelected="{Binding IsPolygonEnabled}"
                                            Command="{Binding SwitchPolygonEnabledCommand}"/>
-
+                                           
                 <customButton:ToggleButton Grid.Column="2"
                                            Text="Snap"
-                                           Style="{x:StaticResource Key=ScannerButtonStyle}"
+                                           Style="{StaticResource ScannerButtonStyle}"
                                            Command="{Binding SnapDocumentCommand}"/>
             </Grid>
         </Grid>
