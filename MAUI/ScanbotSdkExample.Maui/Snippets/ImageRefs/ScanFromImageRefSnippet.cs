@@ -1,7 +1,6 @@
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Core.DocumentScanner;
 using ScanbotSDK.MAUI.Image;
-using ScanbotSdkExample.Maui.Utils;
 
 namespace ScanbotSdkExample.Maui.Snippets.ImageRefs;
 
