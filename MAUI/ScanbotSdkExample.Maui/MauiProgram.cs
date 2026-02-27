@@ -5,7 +5,7 @@ using ScanbotSDK.MAUI.Core.Sdk;
 
 namespace ScanbotSdkExample.Maui;
 
-public static partial class MauiProgram
+public static class MauiProgram
 {
     private const string LicenseKey = ""; // Insert your Scanbot SDK license key here. 
     
@@ -33,13 +33,6 @@ public static partial class MauiProgram
         {
             LicenseKey = LicenseKey,
             LoggingEnabled = true,
-            // @Tag("Storage Base Directory")
-            StorageBaseDirectory = StorageBaseDirectoryForExampleApp(),
-            // @EndTag("Storage Base Directory")
-            // @Tag("Storage Image Format & Quality")
-            StorageImageFormat = StorageImageFormat.Jpg,
-            StorageImageQuality = 50,
-            // @EndTag("Storage Image Format & Quality")
             // Note: all the images and files exported through the SDK will
             // not be openable from external applications, if they will be
             // encrypted.
@@ -49,6 +42,4 @@ public static partial class MauiProgram
 
         return builder.Build();
     }
-
-    private static partial string StorageBaseDirectoryForExampleApp();
 }
