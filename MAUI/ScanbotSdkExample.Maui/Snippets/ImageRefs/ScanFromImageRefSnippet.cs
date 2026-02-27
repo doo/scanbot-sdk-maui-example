@@ -18,12 +18,11 @@ public class ScanFromImageRefSnippet
             await ScanbotSDKMain.Document.ScanFromImageAsync(imageRef,
                 configuration: new DocumentScannerConfiguration());
 
-        if (!result.IsSuccess)
+        // Get value or null if unsuccessful
+        var value = result.ValueOrNull;
+        if (value != null)
         {
-            await Alert.ShowAsync(result.Error);
-            return;
+            var documentScanningResult = result.Value;
         }
-
-        var documentScanningResult = result.Value;
     }
 }
