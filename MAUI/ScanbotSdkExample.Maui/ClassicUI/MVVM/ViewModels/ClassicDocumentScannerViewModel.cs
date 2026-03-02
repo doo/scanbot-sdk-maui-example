@@ -1,9 +1,7 @@
 using System.Diagnostics;
 using System.Windows.Input;
-using ScanbotSDK.MAUI;
-using ScanbotSDK.MAUI.Core.Document;
+using ScanbotSDK.MAUI.Core.DocumentScanner;
 using ScanbotSDK.MAUI.Document.ClassicComponent;
-using ScanbotSdkExample.Maui.Models;
 using ScanbotSdkExample.Maui.Results;
 
 namespace ScanbotSdkExample.Maui.ClassicUI.MVVM.ViewModels;
@@ -12,24 +10,29 @@ public class ClassicDocumentScannerViewModel : BaseViewModel
 {
     public ClassicDocumentScannerViewModel()
     {
-        SnappedDocumentImageResultCommand = new Command<SnappedDocumentImageResultEventArgs>(OnSnappedDocumentImageResult);
-        UpdateDetectionStatusCommand = new Command<DetectionStatusEventArgs>(OnUpdateDetectionHintFromStatus);
+	    SnappedDocumentResultCommand = new Command<SnappedDocumentResultEventArgs>(OnSnappedDocumentResult);
+	    UpdateDetectionStatusCommand = new Command<DetectionStatusEventArgs>(OnUpdateDetectionHintFromStatus);
         SwitchFlashEnabledCommand = new Command(() => IsFlashEnabled = !IsFlashEnabled);
         SwitchPolygonEnabledCommand = new Command(() => IsPolygonEnabled = !IsPolygonEnabled);
     }
 
-    public ICommand SnappedDocumentImageResultCommand { get; private set; }
-
+    public ICommand SnappedDocumentResultCommand { get; private set; }
     public ICommand UpdateDetectionStatusCommand { get; private set; }
-
     public ICommand SwitchFlashEnabledCommand { get; private set; }
-
     public ICommand SwitchPolygonEnabledCommand { get; private set; }
-
-    public ICommand SnapDocumentImageCommand { get; set; }
-
+    
+    private ICommand _snapDocumentCommand;
+    public ICommand SnapDocumentCommand
+    {
+	    get => _snapDocumentCommand;
+	    set
+	    {
+		    _snapDocumentCommand = value;
+		    OnPropertyChanged();
+	    }
+    }
+	
 	private bool _isFlashEnabled;
-
 	public bool IsFlashEnabled
 	{
 		get => _isFlashEnabled;
@@ -41,7 +44,6 @@ public class ClassicDocumentScannerViewModel : BaseViewModel
 	}
 
 	private bool _isPolygonEnabled;
-
 	public bool IsPolygonEnabled
 	{
 		get => _isPolygonEnabled;
@@ -53,7 +55,6 @@ public class ClassicDocumentScannerViewModel : BaseViewModel
 	}
 
 	private string _scanningHintText;
-
 	public string ScanningHintText
 	{
 		get => _scanningHintText;
@@ -65,7 +66,6 @@ public class ClassicDocumentScannerViewModel : BaseViewModel
 	}
 
 	private bool _isScanningHintVisible;
-
 	public bool IsScanningHintVisible
 	{
 		get => _isScanningHintVisible;
@@ -77,7 +77,6 @@ public class ClassicDocumentScannerViewModel : BaseViewModel
 	}
 
 	private Color _scanningHintBackgroundColor;
-
 	public Color ScanningHintBackgroundColor
 	{
 		get => _scanningHintBackgroundColor;
@@ -89,64 +88,59 @@ public class ClassicDocumentScannerViewModel : BaseViewModel
 	}
 
 	// Receives the result of Document Scanning.
-	private async void OnSnappedDocumentImageResult(SnappedDocumentImageResultEventArgs eventArgs)
+	private async void OnSnappedDocumentResult(SnappedDocumentResultEventArgs eventArgs)
 	{
 		var resultsPage = new DocumentScannerResultPage();
-		resultsPage.SetData(ImageSource.FromStream(() => eventArgs.DocumentImage.AsStream()));
+		resultsPage.SetData(eventArgs?.DocumentImage?.ToImageSource());
 		await App.Navigation.PushAsync(resultsPage);
 	}
 
 	private void OnUpdateDetectionHintFromStatus(DetectionStatusEventArgs args)
 	{
-		var status = args.Status;
+		var status = args.Result.Status;
 		Debug.WriteLine("Document Detection Status: " + status);
-		var hint = string.Empty;
-		var backgroundColor = Colors.Transparent;
 		switch (status)
 		{
 			case DocumentDetectionStatus.Ok:
-				hint = "The document is Ok";
-				backgroundColor = Colors.Green;
+				ScanningHintText = "The document is Ok";
+				ScanningHintBackgroundColor = Colors.Green.WithAlpha(0.5f);
 				break;
 			case DocumentDetectionStatus.OkButTooSmall:
-				hint = "Please move the camera closer to the document.";
-				backgroundColor = Colors.Yellow;
+				ScanningHintText = "Please move the camera closer to the document.";
+				ScanningHintBackgroundColor = Colors.Yellow.WithAlpha(0.5f);
 				break;
 			case DocumentDetectionStatus.OkButBadAngles:
-				hint = "Please hold the camera in parallel over the document.";
-				backgroundColor = Colors.Yellow;
+				ScanningHintText = "Please hold the camera in parallel over the document.";
+				ScanningHintBackgroundColor = Colors.Yellow.WithAlpha(0.5f);
 				break;
 			case DocumentDetectionStatus.OkButBadAspectRatio:
-				hint = "The document size is too long.";
-				backgroundColor = Colors.Yellow;
+				ScanningHintText = "The document size is too long.";
+				ScanningHintBackgroundColor = Colors.Yellow.WithAlpha(0.5f);
 				break;
 			case DocumentDetectionStatus.ErrorNothingDetected:
-				hint = "Unable to detect the document.";
-				backgroundColor = Colors.Red;
+				ScanningHintText = "Unable to detect the document.";
+				ScanningHintBackgroundColor = Colors.Red.WithAlpha(0.5f);
 				break;
 			case DocumentDetectionStatus.OkButTooDark:
-				hint = "Unable to detect due to dark lighting conditions.";
-				backgroundColor = Colors.Red;
+				ScanningHintText = "Unable to detect due to dark lighting conditions.";
+				ScanningHintBackgroundColor = Colors.Yellow.WithAlpha(0.5f);
 				break;
 			case DocumentDetectionStatus.ErrorTooNoisy:
-				hint = "Unable to detect document due to too much noise in the preview.";
-				backgroundColor = Colors.Red;
+				ScanningHintText = "Unable to detect document due to too much noise in the preview.";
+				ScanningHintBackgroundColor = Colors.Red.WithAlpha(0.5f);
 				break;
 			case DocumentDetectionStatus.NotAcquired:
-				hint = "Unable to acquire the document.";
-				backgroundColor = Colors.Red;
+				ScanningHintText = "Unable to acquire the document.";
+				ScanningHintBackgroundColor = Colors.Red.WithAlpha(0.5f);
 				break;
 			case DocumentDetectionStatus.OkButOrientationMismatch:
-				hint = "Unable to acquire the document.";
-				backgroundColor = Colors.Red;
+				ScanningHintText = "Unable to acquire the document.";
+				ScanningHintBackgroundColor = Colors.Yellow.WithAlpha(0.5f);;
 				break;
 			default:
 				IsScanningHintVisible = false;
 				return;
 		}
-
-		ScanningHintText = hint;
-		ScanningHintBackgroundColor = backgroundColor.WithAlpha(0.5f);
 		IsScanningHintVisible = true;
 	}
 }

@@ -1,12 +1,12 @@
 using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Common;
-using ScanbotSDK.MAUI.DocumentDataExtractor;
+using ScanbotSDK.MAUI.DocumentData;
 
 namespace ScanbotSdkExample.Maui.Snippets.DocumentDataExtractor;
 
 public class TopBarSnippet
 {
-    public static async Task LaunchAsync()
+    public static async Task StartScannerAsync()
     {
         // Create the default configuration object.
         var configuration = new DocumentDataExtractorScreenConfiguration();
@@ -25,15 +25,15 @@ public class TopBarSnippet
         configuration.TopBar.CancelButton.Foreground.Color = new ColorValue("#FFFFFF");
         
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSDKMain.Rtu.DocumentDataExtractor.LaunchAsync(configuration);
-        if (scannedOutput.Status != OperationResult.Ok)
+        var result = await ScanbotSDKMain.DocumentDataExtractor.StartExtractorScreenAsync(configuration);
+        if (!result.IsSuccess)
         {
-            // Indicates that cancel was tapped or the result was unsuccessful
+            // Indicates failure in the operation. Please access the Exception object returned in `result.Error`
             return;
         }
         
         // Iterate through all the document fields
-        foreach (var field in scannedOutput.Result.Document.Fields)
+        foreach (var field in result.Value.Document.Fields)
         {
             Console.WriteLine($"{field.Type.Name}: {field.Value.Text}");
         }

@@ -1,8 +1,7 @@
 using System.Diagnostics;
 using ScanbotSdkExample.Maui.Models;
 using ScanbotSdkExample.Maui.Results;
-using ScanbotSDK.MAUI;
-using ScanbotSDK.MAUI.Core.Document;
+using ScanbotSDK.MAUI.Core.DocumentScanner;
 using ScanbotSDK.MAUI.Document.ClassicComponent;
 
 namespace ScanbotSdkExample.Maui.ClassicUI.Pages;
@@ -22,8 +21,10 @@ public partial class ClassicDocumentScannerPage : ContentPage
 	{
 		InitializeComponent();
 
-		DocumentScannerView.OnSnappedDocumentImageResult += OnSnappedDocumentImageResult;
-		DocumentScannerView.OnUpdateDetectionStatus += UpdateDetectionHintFromStatus;
+		// @Tag("Classic UI EventHandlers")
+		DocumentScannerView.OnSnappedDocumentResult += OnSnappedDocumentImageResult;
+		DocumentScannerView.OnFrameDetectionResult += UpdateDetectionHintFromStatus;
+		// @EndTag("Classic UI EventHandlers")
 		
 		// ==> Polygon Configuration: Uncomment below code for 
 		// DocumentScannerView.PolygonColor = Colors.Red;
@@ -54,7 +55,7 @@ public partial class ClassicDocumentScannerPage : ContentPage
 			new(Polygons, () => IsPolygonEnabled = !IsPolygonEnabled),
 			new(Visibility, ToggleVisibility),
 			new(Stop, null, true),
-			new(Snap, DocumentScannerView.SnapDocumentImage),
+			new(Snap, () => DocumentScannerView.SnapDocument())
 		};
 		
 		BindingContext = this;
@@ -146,68 +147,65 @@ public partial class ClassicDocumentScannerPage : ContentPage
 		}
 	}
 
+	// @Tag("Classic UI EventHandlers Implementation")
 	// Receives the result of Document Scanning. 
-	private async void OnSnappedDocumentImageResult(object sender, SnappedDocumentImageResultEventArgs eventArgs)
+	private async void OnSnappedDocumentImageResult(object sender, SnappedDocumentResultEventArgs eventArgs)
 	{
 		var resultsPage = new DocumentScannerResultPage();
-		resultsPage.SetData(Microsoft.Maui.Controls.ImageSource.FromStream(() => eventArgs.DocumentImage.AsStream(quality: 0.4f, format: ImageFormat.Jpeg)));
+		resultsPage.SetData(eventArgs.DocumentImage?.ToImageSource(quality: 50));
 		await Navigation.PushAsync(resultsPage);
 	}
 
 	private void UpdateDetectionHintFromStatus(object sender, DetectionStatusEventArgs args)
 	{
-		var status = args.Status;
+		var status = args.Result.Status;
 		Debug.WriteLine("Document Detection Status: " + status);
-		var hint = string.Empty;
-		var backgroundColor = Colors.Transparent;
 		switch (status)
 		{
 			case DocumentDetectionStatus.Ok:
-				hint = "The document is Ok";
-				backgroundColor = Colors.Green;
+				ScanningHintLabel.Text  = "The document is Ok";
+				ScanningHintLabel.BackgroundColor = Colors.Green.WithAlpha(0.5f);;
 				break;
 			case DocumentDetectionStatus.OkButTooSmall:
-				hint = "Please move the camera closer to the document.";
-				backgroundColor = Colors.Yellow;
+				ScanningHintLabel.Text  = "Please move the camera closer to the document.";
+				ScanningHintLabel.BackgroundColor = Colors.Yellow.WithAlpha(0.5f);;
 				break;
 			case DocumentDetectionStatus.OkButBadAngles:
-				hint = "Please hold the camera in parallel over the document.";
-				backgroundColor = Colors.Yellow;
+				ScanningHintLabel.Text  = "Please hold the camera in parallel over the document.";
+				ScanningHintLabel.BackgroundColor = Colors.Yellow.WithAlpha(0.5f);;
 				break;
 			case DocumentDetectionStatus.OkButBadAspectRatio:
-				hint = "The document size is too long.";
-				backgroundColor = Colors.Yellow;
+				ScanningHintLabel.Text  = "The document size is too long.";
+				ScanningHintLabel.BackgroundColor = Colors.Yellow.WithAlpha(0.5f);;
 				break;
 			case DocumentDetectionStatus.ErrorNothingDetected:
-				hint = "Unable to detect the document.";
-				backgroundColor = Colors.Red;
+				ScanningHintLabel.Text  = "Unable to detect the document.";
+				ScanningHintLabel.BackgroundColor = Colors.Red.WithAlpha(0.5f);;
 				break;
 			case DocumentDetectionStatus.OkButTooDark:
-				hint = "Unable to detect due to dark lighting conditions.";
-				backgroundColor = Colors.Red;
+				ScanningHintLabel.Text  = "Unable to detect due to dark lighting conditions.";
+				ScanningHintLabel.BackgroundColor = Colors.Yellow.WithAlpha(0.5f);;
 				break;
 			case DocumentDetectionStatus.ErrorTooNoisy:
-				hint = "Unable to detect document due to too much noise in the preview.";
-				backgroundColor = Colors.Red;
+				ScanningHintLabel.Text  = "Unable to detect document due to too much noise in the preview.";
+				ScanningHintLabel.BackgroundColor = Colors.Red.WithAlpha(0.5f);;
 				break;
 			case DocumentDetectionStatus.NotAcquired:
-				hint = "Unable to acquire the document.";
-				backgroundColor = Colors.Red;
+				ScanningHintLabel.Text  = "Unable to acquire the document.";
+				ScanningHintLabel.BackgroundColor = Colors.Red.WithAlpha(0.5f);;
 				break;
 			case DocumentDetectionStatus.OkButOrientationMismatch:
-				hint = "Unable to acquire the document.";
-				backgroundColor = Colors.Red;
+				ScanningHintLabel.Text  = "Unable to acquire the document.";
+				ScanningHintLabel.BackgroundColor = Colors.Yellow.WithAlpha(0.5f);;
 				break;
 			default:
 				ScanningHintLabel.IsVisible = false;
 				return;
 		}
-
-		ScanningHintLabel.Text = hint;
-		ScanningHintLabel.BackgroundColor = backgroundColor.WithAlpha(0.5f);
 		ScanningHintLabel.IsVisible = IsAutoSnappingEnabled;
 	}
-	
+	// @EndTag("Classic UI EventHandlers Implementation")
+
 	private void ScannerButtonOnClicked(object sender, EventArgs e)
 	{
 		var selectedItem = (sender as Button)?.BindingContext as ClassicCollectionItem;

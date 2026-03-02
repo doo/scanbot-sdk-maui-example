@@ -5,7 +5,7 @@ namespace ScanbotSdkExample.Maui.Snippets.VinScanner;
 
 public class IntroductionSnippet
 {
-    public static async Task LaunchAsync()
+    public static async Task StartScannerAsync()
     {
         // Create the default configuration object.
         var configuration = new VinScannerScreenConfiguration();
@@ -47,14 +47,14 @@ public class IntroductionSnippet
         configuration.IntroScreen.DoneButton.Background.FillColor = new ColorValue("#C8193C");
 
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSDKMain.Rtu.VinScanner.LaunchAsync(configuration);
-        if (scannedOutput.Status != OperationResult.Ok)
+        var result = await ScanbotSDKMain.Vin.StartScannerAsync(configuration);
+        if (!result.IsSuccess)
         {
-            // Indicates that cancel was tapped or the result was unsuccessful
+            // Indicates failure in the operation. Please access the Exception object returned in `result.Error`
             return;
         }
 
         // Print the scanned text results
-        Console.WriteLine("Scanned Vin Scanner: "+ scannedOutput.Result.TextResult?.RawText);
+        Console.WriteLine("Scanned Vin Scanner: "+ result.Value.TextResult?.RawText);
     } 
 }

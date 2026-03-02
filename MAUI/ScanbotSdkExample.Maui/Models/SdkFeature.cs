@@ -1,16 +1,10 @@
 namespace ScanbotSdkExample.Maui.Models;
 
-public struct SdkFeature
+public readonly struct SdkFeature(string title, Func<Task> action = null)
 {
-    public SdkFeature(string title, Func<Task> doTask = null)
-    {
-        Title = title;
-        DoTask = doTask;
-    }
+    public string Title { get; } = title;
+    public Func<Task> Action { get; } = action;
 
-    public string Title { get; private set; }
-    public Func<Task> DoTask { get; private set; }
-
-    public bool ShowHeading => DoTask == null;
-    public bool ShowFeature => DoTask != null;
+    public bool IsHeader => Action is null;
+    public bool IsVisible => Action is not null;
 }
