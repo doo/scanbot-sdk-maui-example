@@ -46,12 +46,6 @@ public class ScannedDocumentPageView : ContentView
             return;
         }
         _currentPage = (IScannedDocument.IPage)BindingContext;
-        // If encryption is enabled, load the decrypted document.
-        // Else accessible via page.Document
-        // TODO: DONE - TEST - the decryption in Encoded. If doesn't work - Switch to DocumentImageUri.
-        // Should we encrypt here or not -- Ask Marko if the ImageRef perform decryption under-the hood now.
-        // Document.Source = await Source.DecryptedDocumentPreview();
-        // _pagePreview.Source = ImageSource.FromFile(_currentPage.DocumentImagePreviewUri.LocalPath);
 
         _pagePreview.Source = _currentPage.DocumentImagePreview.ToImageSource();
     }
