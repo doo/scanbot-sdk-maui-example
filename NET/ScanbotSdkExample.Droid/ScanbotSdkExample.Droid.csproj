@@ -15,7 +15,6 @@
         <NoWarn>CA1422;CS0618;XAOBS001</NoWarn>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Scanbot.Xamarin.ImagePicker" Version="0.0.3-beta.1" />
-        <PackageReference Include="ScanbotSDK.NET" Version="8.0.0-alpha.1" />
+        <PackageReference Include="ScanbotSDK.NET" Version="8.0.0-rc.1" />
     </ItemGroup>
 </Project>
