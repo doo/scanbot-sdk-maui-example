@@ -108,6 +108,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="ScanbotSDK.MAUI" Version="8.0.0-rc.1" />
+        <PackageReference Include="ScanbotSDK.MAUI" Version="8.0.0-beta.1" />
     </ItemGroup>
 </Project>
