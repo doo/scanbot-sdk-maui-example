@@ -155,7 +155,7 @@ public class ScannedDocumentsPage : ContentPage
         }
 
         var parameters = new[] { Pdf, Ocr, SandwichPdf, Tiff };
-        string action = await DisplayActionSheetAsync("Save Image as", "Cancel", null, parameters);
+        string action = await DisplayActionSheet("Save Image as", "Cancel", null, parameters);
 
         if (action == null || action.Equals("Cancel"))
         {

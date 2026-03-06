@@ -15,13 +15,12 @@ public class ImagePicker
     {
         var options = new MediaPickerOptions
         {
-            Title = "Select a photo",
-            SelectionLimit = 1
+            Title = "Select a photo"
         };
 
-        var pickedList = await MediaPicker.Default.PickPhotosAsync(options);
+        var fileResult = await MediaPicker.Default.PickPhotoAsync(options);
         await Task.Delay(PickerDismissalDelayMs);
-        return pickedList?.FirstOrDefault();
+        return fileResult;
     }
 
     /// <summary>
