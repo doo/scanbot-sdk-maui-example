@@ -98,8 +98,8 @@
 
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Maui" Version="12.3.0" />
-        <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.51" />
-        <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.51" />
+        <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.120" />
+        <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.120" />
         <PackageReference Include="ScanbotSDK.MAUI" Version="8.0.0-beta.1" />
     </ItemGroup>
 </Project>
