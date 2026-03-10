@@ -74,7 +74,7 @@ public partial class HomePage
     /// Item Selected method invoked on the ListView item selection.
     private async void SdkFeatureSelected(object sender, TappedEventArgs e)
     {
-        if (e.Parameter is not SdkFeature feature)
+        if (e.Parameter is not SdkFeature feature || feature.Action == null)
             return;
 
         if (!App.IsLicenseValid && feature.Title != ViewLicenseInfo)
