@@ -91,7 +91,7 @@ public class ClassicDocumentScannerViewModel : BaseViewModel
 	private async void OnSnappedDocumentResult(SnappedDocumentResultEventArgs eventArgs)
 	{
 		var resultsPage = new DocumentScannerResultPage();
-		resultsPage.SetData(eventArgs?.DocumentImage?.ToImageSource());
+		resultsPage.SetData((eventArgs.DocumentImage ?? eventArgs.OriginalImage).ToImageSource(quality: 50));
 		await App.Navigation.PushAsync(resultsPage);
 	}
 
