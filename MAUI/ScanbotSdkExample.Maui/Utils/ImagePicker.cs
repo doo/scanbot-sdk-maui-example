@@ -87,26 +87,6 @@ public class ImagePicker
         return null;
     }
 
-    /// <summary>
-    /// Picks multiple images from the photos application.
-    /// </summary>
-    /// <returns>A list of <see cref="ImageSource"/> objects for the picked images.</returns>
-    public static async Task<List<ImageSource>> PickImagesAsSourceAsync()
-    {
-        var options = new MediaPickerOptions { Title = "Select photos" };
-
-        var pickedList = await MediaPicker.Default.PickPhotosAsync(options);
-
-        var imageSources = new List<ImageSource>();
-        foreach (var item in pickedList)
-        {
-            var stream = await item.OpenReadAsync();
-            imageSources.Add(ImageSource.FromStream(() => stream));
-        }
-
-        return imageSources;
-    }
-
     private static bool IsValidPath(string path)
     {
         if (string.IsNullOrWhiteSpace(path))
