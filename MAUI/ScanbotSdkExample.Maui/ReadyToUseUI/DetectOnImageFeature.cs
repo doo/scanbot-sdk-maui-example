@@ -63,11 +63,11 @@ public static class DetectOnImageFeature
         
         var configuration = new DocumentDataExtractorConfiguration
         {
-            Configurations = 
+            Configurations =
             [
                 new DocumentDataExtractorCommonConfiguration
                 {
-                    AcceptedDocumentTypes = 
+                    AcceptedDocumentTypes =
                     [
                         DocumentsModelRootType.MRZ.DocumentType.Name,
                         DocumentsModelRootType.DeIdCardBack.DocumentType.Name,
