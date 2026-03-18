@@ -61,26 +61,7 @@ public static class DetectOnImageFeature
         var image = await HomePage.PickPlatformImageAsync();
         if (image is null) return;
         
-        var configuration = new DocumentDataExtractorConfiguration
-        {
-            Configurations = 
-            [
-                new DocumentDataExtractorCommonConfiguration
-                {
-                    AcceptedDocumentTypes = 
-                    [
-                        DocumentsModelRootType.MRZ.DocumentType.Name,
-                        DocumentsModelRootType.DeIdCardBack.DocumentType.Name,
-                        DocumentsModelRootType.DeIdCardFront.DocumentType.Name,
-                        DocumentsModelRootType.DePassport.DocumentType.Name,
-                        DocumentsModelRootType.DeResidencePermitBack.DocumentType.Name,
-                        DocumentsModelRootType.DeResidencePermitFront.DocumentType.Name,
-                        DocumentsModelRootType.EuropeanHealthInsuranceCard.DocumentType.Name,
-                        DocumentsModelRootType.DeHealthInsuranceCardFront.DocumentType.Name,
-                    ]
-                }
-            ]
-        };
+        var configuration = new DocumentDataExtractorConfiguration();
         var result = await Detector.DocumentDataExtractor.DetectOnImageAsync(image, configuration);
         if (result?.Document == null || result.Status != DocumentDataExtractionStatus.Success)
         {
