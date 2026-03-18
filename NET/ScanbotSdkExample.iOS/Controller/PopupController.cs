@@ -12,21 +12,21 @@ namespace ScanbotSdkExample.iOS.Controller
 
         public PopupController(string text)
         {
-            this._text = text;
-            this._images = new List<UIImage>();
+            _text = text;
+            _images = new List<UIImage>();
         }
         
         public PopupController(NSAttributedString text)
         {
-            this._attributedString = text;
-            this._images = new List<UIImage>();
+            _attributedString = text;
+            _images = new List<UIImage>();
             _isAttributedText = true;
         }
         
         public PopupController(string text, List<UIImage> images)
         {
-            this._text = text;
-            this._images = images;
+            _text = text;
+            _images = images;
 
             ModalPresentationStyle = UIModalPresentationStyle.OverFullScreen;
         }

@@ -1,24 +1,25 @@
 using ScanbotSDK.iOS;
+using ScanbotSdkExample.iOS.Utils;
 
 namespace ScanbotSdkExample.iOS.Snippets.DocumentScanner;
 
 public class ScanningScreenSnippet : UIViewController
 {
-	public override void ViewDidLoad()
-	{
-		if (ScanbotSDKGlobal.IsLicenseValid)
-		{
-			LaunchDocumentScanner();;
-		}
-	}
+    public override void ViewDidLoad()
+    {
+        if (ScanbotSDKGlobal.IsLicenseValid)
+        {
+            LaunchDocumentScanner();;
+        }
+    }
 
-	private void LaunchDocumentScanner()
-	{
-		// Create the default configuration object.
-		var configuration = new SBSDKUI2DocumentScanningFlow();;
+    private void LaunchDocumentScanner()
+    {
+        // Create the default configuration object.
+        var configuration = new SBSDKUI2DocumentScanningFlow();;
 		
-		   // MARK: Set the limit for the number of pages you want to scan.
-		   configuration.OutputSettings.PagesScanLimit = 30;
+        // MARK: Set the limit for the number of pages you want to scan.
+        configuration.OutputSettings.PagesScanLimit = 30;
         
         // Pass the DOCUMENT_UUID here to resume an old session, or pass null; to start a new session or to resume a draft session.
         configuration.DocumentUuid = null;
@@ -94,19 +95,29 @@ public class ScanningScreenSnippet : UIViewController
         // Or you can choose the funnel animation.
         cameraScreenConfig.CaptureFeedback.SnapFeedbackMode = new SBSDKUI2PageSnapFunnelAnimation();
 
-		// Present the recognizer view controller modal on this view controller.
-		SBSDKUI2DocumentScannerController.PresentOn(this, configuration,
-            (document) =>
-            {
-                // Completion handler to process the result.
-                if (document != null)
-                {
-                    // Handle the document.
-                }
-                else
-                {
-                    // Indicates that the cancel button was tapped.
-                }
-            });
+        try
+        {
+            // Launch the scanner view controller
+            SBSDKUI2DocumentScannerController.PresentOn(viewController: this, configuration: configuration, error: out var presentationError, completion: DocumentScannerCompletion).GetOrThrow(presentationError);
+        }
+        catch (Exception e)
+        {
+            // handle the error thrown from the GetOrThrow(...) function, referenced by the PresentOn(...) error object. 
+            Console.WriteLine(e);
+        }
+    }
+
+    private void DocumentScannerCompletion(SBSDKUI2DocumentScannerController controller, SBSDKScannedDocument document, NSError error)
+    {
+        // check for error
+        if (error != null)
+        {
+            // display error
+            Alert.ValidateAndShowError(error);
+            return;
+        }
+
+        // Handle the document result.
+        var documentId = document.Uuid;
     }
 }

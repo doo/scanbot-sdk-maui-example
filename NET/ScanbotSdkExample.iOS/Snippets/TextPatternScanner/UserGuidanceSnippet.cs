@@ -43,7 +43,7 @@ class UserGuidanceSnippet : UIViewController
         finderUserGuidance.Background.FillColor = new SBSDKUI2Color("#7A000000");
 
         // Present the view controller modally.
-        SBSDKUI2TextPatternScannerViewController.PresentOn(this, configuration, result =>
+        SBSDKUI2TextPatternScannerViewController.PresentOn(this, configuration, completion: (controller, result, error)  =>
         {
             if (result != null)
             {

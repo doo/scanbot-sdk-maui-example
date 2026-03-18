@@ -2,7 +2,7 @@ using Android.Content;
 using Android.Graphics;
 using Android.Views;
 using Google.Android.Material.BottomSheet;
-using IO.Scanbot.Sdk.Imagefilters;
+using IO.Scanbot.Sdk.Imageprocessing;
 using R = _Microsoft.Android.Resource.Designer.ResourceConstant;
 using ScanbotSdkExample.Droid.Listeners;
 using ScanbotSdkExample.Droid.Model;

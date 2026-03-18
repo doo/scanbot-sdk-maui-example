@@ -1,6 +1,5 @@
 ﻿using ScanbotSdkExample.iOS.Controller;
 using ScanbotSDK.iOS;
-using System.Diagnostics;
 
 namespace ScanbotSdkExample.iOS
 {
@@ -10,8 +9,18 @@ namespace ScanbotSdkExample.iOS
         public UINavigationController Controller { get; private set; }
 
         public override UIWindow Window { get; set; }
+        
+        /// <summary>
+        /// Set the flag to true for enabling encryption.
+        /// </summary>
+        public const bool IsEncryptionEnabled = false;
+        
+        /// <summary>
+        /// Set the flag to false, for the default storage path.
+        /// </summary>
+        public const bool SetCustomPath = true;
 
-        private const int ImageQuality = 80;
+        private const int ImageQuality = 100;
 
         /// <summary>
         /// Returns the navigation controller object throughout the app.
@@ -52,43 +61,76 @@ namespace ScanbotSdkExample.iOS
 
             return true;
         }
-
-        private static void InitializeScanbotSdk(UIApplication application)
+        
+        private void InitializeScanbotSdk(UIApplication application)
         {
-            Debug.WriteLine("Scanbot SDK Example: Initializing Scanbot SDK...");
+            // application object
+            ScanbotSDKGlobal.SharedApplication = application;
 
-            ScanbotSDKGlobal.SetLoggingEnabled(true);
-            SBSDKDocumentPageFileStorage.DefaultStorage = new SBSDKDocumentPageFileStorage(SBSDKImageFileFormat.Jpeg, ImageQuality, new SBSDKStorageLocation(NSUrl.FromFilename(PageStoragePathForExample())));
+            var nativeConfiguration = ScanbotSDKConfiguration.DefaultConfiguration;
 
-            // Uncomment the below to test our encyption functionality.
-            // ScanbotUI.DefaultImageStoreEncrypter = new SBSDKAESEncrypter("S0m3W3irDL0ngPa$$w0rdino!!!!", SBSDKAESEncrypterMode.SBSDKAESEncrypterModeAES128);
-            // Note: all the images and files exported through the SDK will
-            // not be openable from external applications, since they will be
-            // encrypted.
+            // Logging
+            nativeConfiguration.LoggingEnabled = true;
 
-            if (!string.IsNullOrEmpty(LicenseKey))
+            if (!string.IsNullOrWhiteSpace(LicenseKey))
             {
-                ScanbotSDKGlobal.SetLicense(LicenseKey);
+                // License
+                nativeConfiguration.LicenseString = LicenseKey;
             }
 
-            ScanbotSDKGlobal.SetupDefaultLicenseFailureHandler();
-            ScanbotSDKGlobal.SharedApplication = application;
+            // Storage Format
+            nativeConfiguration.FileStorageImageFormat = SBSDKImageFileFormat.Jpeg;
+            nativeConfiguration.FileStorageImageQuality = (byte)ImageQuality;
+
+            // Encryption
+            if (IsEncryptionEnabled)
+            {
+                nativeConfiguration.FileEncryptionMode = SBSDKAESEncrypterMode.SBSDKAESEncrypterModeAES256;
+                nativeConfiguration.FileEncryptionPassword = "S0m3W3irDL0ngPa$$w0rdino!!!!";
+                
+                // Note: all the images and files exported through the SDK will
+                // not be openable from external applications, since they will be
+                // encrypted.
+            }
+            
+            // Set Storage Url
+            var customStoragePath = PageStoragePathForExample();
+            var storageUrl = SetCustomPath
+                ? customStoragePath
+                : SBSDKStorageLocation.DefaultURL;
+            nativeConfiguration.FileStorageBaseDirectory = storageUrl;
+
+            // Subscribe to License failure handler for logs.
+            nativeConfiguration.LicenseFailureHandler = (status, feature, message) =>
+            {
+                Console.WriteLine($"License status: {status} \nFeature: {feature} \nMessage:{message}");
+            };
+            
+            // Apply Configs
+            var success = ScanbotSDKGlobal.ApplyConfiguration(nativeConfiguration);
+            if (!success)
+            {
+                Console.WriteLine("Failed to apply configuration to the ScanbotSDK Initializer.");
+            }
         }
 
-        private static string PageStoragePathForExample()
+        private static NSUrl PageStoragePathForExample()
         {
             // For demo purposes we use a sub-folder in the Documents folder in the Data Container of this App, since the contents can be shared via iTunes.
-            // For more detais about the iOS file system see:
+            // For more details about the iOS file system see:
             // - https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/FileSystemOverview/FileSystemOverview.html
             // - https://docs.microsoft.com/en-us/xamarin/ios/app-fundamentals/file-system
             // - https://docs.microsoft.com/en-us/dotnet/api/system.environment.specialfolder
-
             var customDocumentsFolder = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "sbsdk-rtu-storage"
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "scanbot-sdk-maui"
             );
+            
+            // create directory
             Directory.CreateDirectory(customDocumentsFolder);
-            return customDocumentsFolder;
+            
+            // return NSUrl
+            return new NSUrl(customDocumentsFolder, isDir: true);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using R = _Microsoft.Android.Resource.Designer.ResourceConstant;
 using Android.Views;
+using IO.Scanbot.Sdk.Genericdocument;
 using ScanbotSdkExample.Droid.Utils;
-using GenericDocument = IO.Scanbot.Sdk.Genericdocument.Entity.GenericDocument;
 using ScanbotSdkExample.Droid.Views;
 
 namespace ScanbotSdkExample.Droid.Fragments

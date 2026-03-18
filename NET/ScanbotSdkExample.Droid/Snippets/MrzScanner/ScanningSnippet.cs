@@ -2,6 +2,7 @@ using Android.Content;
 using AndroidX.AppCompat.App;
 using IO.Scanbot.Sdk.Documentdata.Entity;
 using IO.Scanbot.Sdk.Ui_v2.Common;
+using IO.Scanbot.Sdk.Ui_v2.Common.Activity;
 using IO.Scanbot.Sdk.Ui_v2.Mrz;
 using IO.Scanbot.Sdk.Ui_v2.Mrz.Configuration;
 using IO.Scanbot.Sdk.UI.View.Base;
@@ -26,6 +27,7 @@ public class ScanningSnippet : AppCompatActivity
             LaunchMrzScanner();
         }
     }
+    
     private void LaunchMrzScanner()
     {
         var configuration = new MrzScannerScreenConfiguration();
@@ -55,7 +57,7 @@ public class ScanningSnippet : AppCompatActivity
         configuration.Sound.SuccessBeepEnabled = true;
         configuration.Sound.SoundType = SoundType.ModernBeep;
 
-		// Launch the scanner
+        // Launch the scanner
         var intent = MrzScannerActivity.NewIntent(this, configuration);
         StartActivityForResult(intent, ScanMrzRequestCode);
     }
@@ -64,7 +66,7 @@ public class ScanningSnippet : AppCompatActivity
     public override void StartActivityForResult(Intent intent, int requestCode, Bundle options)
     {
         base.StartActivityForResult(intent, requestCode, options);
-        var resultEntity = (MrzScannerUiResult)intent.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+        var resultEntity = (MrzScannerUiResult)intent?.GetParcelableExtra(ActivityConstants.ExtraKeyRtuResult);
         if (resultEntity?.MrzDocument == null)
         {
             return;

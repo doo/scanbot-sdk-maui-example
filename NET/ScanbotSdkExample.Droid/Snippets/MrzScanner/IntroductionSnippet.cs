@@ -2,6 +2,7 @@ using Android.Content;
 using AndroidX.AppCompat.App;
 using IO.Scanbot.Sdk.Documentdata.Entity;
 using IO.Scanbot.Sdk.Ui_v2.Common;
+using IO.Scanbot.Sdk.Ui_v2.Common.Activity;
 using IO.Scanbot.Sdk.Ui_v2.Mrz;
 using IO.Scanbot.Sdk.Ui_v2.Mrz.Configuration;
 using IO.Scanbot.Sdk.UI.View.Base;
@@ -25,6 +26,7 @@ public class IntroductionSnippet : AppCompatActivity
             LaunchMrzScanner();
         }
     }
+    
     private void LaunchMrzScanner()
     {
         var configuration = new MrzScannerScreenConfiguration();
@@ -73,7 +75,7 @@ public class IntroductionSnippet : AppCompatActivity
     public override void StartActivityForResult(Intent intent, int requestCode, Bundle options)
     {
         base.StartActivityForResult(intent, requestCode, options);
-        var resultEntity = (MrzScannerUiResult)intent.GetParcelableExtra(RtuConstants.ExtraKeyRtuResult);
+        var resultEntity = (MrzScannerUiResult)intent?.GetParcelableExtra(ActivityConstants.ExtraKeyRtuResult);
         if (resultEntity?.MrzDocument == null)
         {
             return;
@@ -84,8 +86,8 @@ public class IntroductionSnippet : AppCompatActivity
         var birthDate = mrz.BirthDate.Value.Text;
         var expiryDate = mrz.ExpiryDate.Value.Text;
         Toast.MakeText(
-                this,
-                $"Given Name: {givenName}, Birth Date: {birthDate}, Expiry Date: {expiryDate}",
-                ToastLength.Long)?.Show();
+            this,
+            $"Given Name: {givenName}, Birth Date: {birthDate}, Expiry Date: {expiryDate}",
+            ToastLength.Long)?.Show();
     }
 }

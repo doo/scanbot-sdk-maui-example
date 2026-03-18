@@ -1,53 +1,64 @@
 using ScanbotSDK.iOS;
+using ScanbotSdkExample.iOS.Utils;
 
 namespace ScanbotSdkExample.iOS.Snippets.DocumentScanner;
 
 public class ReorderScreenSnippet : UIViewController
 {
-	public override void ViewDidLoad()
-	{
-		if (ScanbotSDKGlobal.IsLicenseValid)
-		{
-			LaunchDocumentScanner();
-		}
-	}
+    public override void ViewDidLoad()
+    {
+        if (ScanbotSDKGlobal.IsLicenseValid)
+        {
+            LaunchDocumentScanner();
+        }
+    }
 
-	private void LaunchDocumentScanner()
-	{
-		// Create the default configuration object.
-		var configuration = new SBSDKUI2DocumentScanningFlow();
+    private void LaunchDocumentScanner()
+    {
+        // Create the default configuration object.
+        var configuration = new SBSDKUI2DocumentScanningFlow();
 		
-		// Retrieve the instance of the reorder pages configuration from the main configuration object.
-		var reorderScreenConfiguration = configuration.Screens.ReorderPages;
+        // Retrieve the instance of the reorder pages configuration from the main configuration object.
+        var reorderScreenConfiguration = configuration.Screens.ReorderPages;
         
-		// Hide the guidance view.
-		reorderScreenConfiguration.Guidance.Visible = false;
+        // Hide the guidance view.
+        reorderScreenConfiguration.Guidance.Visible = false;
         
-		// Set the title for the reorder screen.
-		reorderScreenConfiguration.TopBarTitle.Text = "Reorder Pages Screen";
+        // Set the title for the reorder screen.
+        reorderScreenConfiguration.TopBarTitle.Text = "Reorder Pages Screen";
         
-		// Set the title for the guidance.
-		reorderScreenConfiguration.Guidance.Title.Text = "Reorder";
+        // Set the title for the guidance.
+        reorderScreenConfiguration.Guidance.Title.Text = "Reorder";
         
-		// Set the color for the page number text.
-		reorderScreenConfiguration.PageTextStyle.Color = new SBSDKUI2Color(uiColor: UIColor.Black);
+        // Set the color for the page number text.
+        reorderScreenConfiguration.PageTextStyle.Color = new SBSDKUI2Color(uiColor: UIColor.Black);
         
-		// Apply the configurations.
-		configuration.Screens.ReorderPages = reorderScreenConfiguration;
+        // Apply the configurations.
+        configuration.Screens.ReorderPages = reorderScreenConfiguration;
 
-		// Present the recognizer view controller modal on this view controller.
-		SBSDKUI2DocumentScannerController.PresentOn(this, configuration,
-			(document) =>
-		    {
-			    // Completion handler to process the result.
-			    if (document != null)
-			    {
-				    // Handle the document.
-			    }
-			    else
-			    {
-				    // Indicates that the cancel button was tapped.
-			    }
-		    });
-	}
+        try
+        {
+            // Launch the scanner view controller
+            SBSDKUI2DocumentScannerController.PresentOn(viewController: this, configuration: configuration, error: out var presentationError, completion: DocumentScannerCompletion).GetOrThrow(presentationError);
+        }
+        catch (Exception e)
+        {
+            // handle the error thrown from the GetOrThrow(...) function, referenced by the PresentOn(...) error object. 
+            Console.WriteLine(e);
+        }
+    }
+
+    private void DocumentScannerCompletion(SBSDKUI2DocumentScannerController controller, SBSDKScannedDocument document, NSError error)
+    {
+        // check for error
+        if (error != null)
+        {
+            // display error
+            Alert.ValidateAndShowError(error);
+            return;
+        }
+
+        // Handle the document result.
+        var documentId = document.Uuid;
+    }
 }

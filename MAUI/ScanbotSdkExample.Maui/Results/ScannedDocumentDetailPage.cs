@@ -1,10 +1,11 @@
 ﻿using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Core.Document;
+using ScanbotSDK.MAUI.Core.DocumentQualityAnalyzer;
+using ScanbotSDK.MAUI.Core.ImageProcessing;
 using ScanbotSDK.MAUI.Document;
 using ScanbotSdkExample.Maui.Controls;
 using ScanbotSdkExample.Maui.Controls.ActionBar;
 using ScanbotSdkExample.Maui.Utils;
-using static ScanbotSDK.MAUI.ScanbotSDKMain;
-using DocumentQualityAnalyzerConfiguration = ScanbotSDK.MAUI.DocumentQualityAnalyzerConfiguration;
 
 namespace ScanbotSdkExample.Maui.Results;
 
@@ -13,10 +14,11 @@ public class ScannedDocumentDetailPage : ContentPage
     private readonly Image _documentImage;
     private readonly SBLoader _loader;
 
-    private readonly ScannedDocument _selectedDocument;
-    private ScannedDocument.Page _selectedPage;
-        
+    private readonly IScannedDocument _selectedDocument;
+    private IScannedDocument.IPage _selectedPage;
+
     private bool _isLoading;
+
     public bool IsLoading
     {
         get => _isLoading;
@@ -27,8 +29,8 @@ public class ScannedDocumentDetailPage : ContentPage
             OnPropertyChanged(nameof(IsLoading));
         }
     }
-        
-    public ScannedDocumentDetailPage(ScannedDocument selectedDocument, ScannedDocument.Page selectedPage)
+
+    public ScannedDocumentDetailPage(IScannedDocument selectedDocument, IScannedDocument.IPage selectedPage)
     {
         _selectedDocument = selectedDocument;
         _selectedPage = selectedPage;
@@ -66,7 +68,7 @@ public class ScannedDocumentDetailPage : ContentPage
         {
             IsVisible = false
         };
-            
+
         Content = new Grid
         {
             Children = { gridView, _loader },
@@ -84,65 +86,97 @@ public class ScannedDocumentDetailPage : ContentPage
     {
         base.OnAppearing();
 
-        _documentImage.Source = ImageSource.FromStream(() => _selectedPage.DocumentImagePreview.AsStream(ImageFormat.Jpeg, 0.7f)); 
+        _documentImage.Source = _selectedPage.DocumentImagePreview.ToImageSource();
     }
 
     private async void OnCropButtonTapped(object sender, EventArgs e)
     {
-        if (!SdkUtils.CheckLicense(this)) { return; }
-
-        var croppingOutput = await Rtu.CroppingScreen.LaunchAsync(new CroppingConfiguration
-        {
-            DocumentUuid = _selectedDocument.Uuid.ToString(),
-            PageUuid = _selectedPage.Uuid.ToString()
-        });
-        
-        if (croppingOutput.Status == OperationResult.Ok)
-        {
-            _documentImage.Source = ImageSource.FromStream(() => _selectedPage.DocumentImagePreview.AsStream(ImageFormat.Jpeg, 0.7f));
-        }
-    }
-
-    private async void OnFilterButtonTapped(object sender, EventArgs e)
-    {
-        if (!SdkUtils.CheckLicense(this))
+        if (!App.IsLicenseValid)
         {
             return;
         }
 
+        // @Tag("Cropping UI")
+        var result = await ScanbotSDKMain.Document.StartCroppingScreenAsync(new CroppingConfiguration
+        {
+            DocumentUuid = _selectedDocument.Uuid,
+            PageUuid = _selectedPage.Uuid
+        });
+
+        if (!result.IsSuccess)
+        {
+            await Alert.ShowAsync(result.Error);
+            return;
+        }
+
+        _documentImage.Source = _selectedPage.DocumentImagePreview.ToImageSource();
+        // @EndTag("Cropping UI")
+    }
+
+    private async void OnFilterButtonTapped(object sender, EventArgs e)
+    {
+        if (!App.IsLicenseValid) return;
+
         IsLoading = true;
         var filterPage = new FiltersPage();
-        filterPage.NavigateData(async filters =>
-        {
-            _documentImage.Source = null;
-            _selectedPage = await _selectedPage.ModifyPageAsync(filters: filters);
-            _documentImage.Source =  ImageSource.FromStream(() => _selectedPage.DocumentImagePreview.AsStream(ImageFormat.Jpeg, 0.7f));
-        });            
+        filterPage.NavigateData(ApplyFilterHandler);
+
         await Navigation.PushAsync(filterPage);
         IsLoading = false;
     }
 
+    private async void ApplyFilterHandler(ParametricFilter[] filters)
+    {
+        _documentImage.Source = null;
+        var result = await _selectedPage.ModifyPageAsync(new ModifyPageOptions
+        {
+            Filters = filters
+        });
+
+        if (!result.IsSuccess)
+        {
+            await Alert.ShowAsync(result.Error);
+            return;
+        }
+
+        _selectedPage = result.Value;
+        _documentImage.Source = _selectedPage.DocumentImagePreview.ToImageSource();
+    }
+
+    // @Tag("Document Quality Analyzer")
     private async void OnAnalyzeQualityTapped(object sender, EventArgs e)
     {
-        if (!SdkUtils.CheckLicense(this)) { return; }
+        if (!App.IsLicenseValid) return;
         IsLoading = true;
-        var quality = await CommonOperations.DetectDocumentQualityAsync(_selectedPage.DocumentImage, new DocumentQualityAnalyzerConfiguration
+        var result = await ScanbotSDKMain.Document.AnalyzeQualityOnImageAsync(_selectedPage.DocumentImage, new DocumentQualityAnalyzerConfiguration
         {
             MaxImageSize = 2500,
             MinEstimatedNumberOfSymbolsForDocument = 20
         });
-            
+
         IsLoading = false;
-        Alert.Show("Document Quality", $"Detected quality is: {quality.Quality}");
+        if (!result.IsSuccess)
+        {
+            await Alert.ShowAsync(result.Error);
+            return;
+        }
+
+        await Alert.ShowAsync("Document Quality", $"Detected quality is: {result.Value.Quality}");
     }
+    // @EndTag("Document Quality Analyzer")
 
     private async void OnDeleteButtonTapped(object sender, EventArgs e)
     {
         var message = "Do you really want to delete this page?";
-        var result = await DisplayAlert("Attention!", message, "Yes", "No");
+        var result = await Alert.ShowAsync("Attention!", message, "Yes", "No");
         if (result)
         {
-            await _selectedDocument.RemovePageAsync(_selectedPage);
+            var removeResult = await _selectedDocument.RemovePagesAsync([_selectedPage.Uuid]);
+            if (!removeResult.IsSuccess)
+            {
+                await Alert.ShowAsync(removeResult.Error);
+                return;
+            }
             await Navigation.PopAsync(true);
         }
     }

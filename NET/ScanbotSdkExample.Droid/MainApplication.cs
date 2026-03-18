@@ -38,27 +38,27 @@ namespace ScanbotSdkExample.Droid
         private static void InitializeScanbotSdk(Application app)
         {
             Log.Debug(LogTag, "Initializing Scanbot SDK...");
-            
+
             var initializer = new IO.Scanbot.Sdk.ScanbotSDKInitializer();
             initializer.WithLogging(useLog: true, enableNativeLogging: false);
-            
+
             // Uncomment below code to set a custom storage path.
-            //initializer.SdkFilesDirectory(app, PageStoragePathForExample(app));
-            
+            // initializer.SdkFilesDirectory(app, PageStoragePathForExample(app));
+
             initializer.License(app, LicenseKey);
             initializer.UsePageStorageSettings(new IO.Scanbot.Sdk.Persistence.Page.PageStorageSettings.Builder()
-                                .ImageQuality(80)
-                                .ImageFormat(IO.Scanbot.Sdk.Persistence.CameraImageFormat.Jpg)
-                                .PreviewTargetMax(1500) // max size for the preview images
-                                .Build());
+                .ImageQuality(80)
+                .ImageFormat(IO.Scanbot.Sdk.Persistence.CameraImageFormat.Jpg)
+                .PreviewTargetMax(1500) // max size for the preview images
+                .Build());
             initializer.OcrBlobsPath(app, "SBSDKLanguageData");
             initializer.PrepareOCRLanguagesBlobs(true);
-            
+
             // You can enable encryption by uncommenting the following lines:
             // initializer.UseFileEncryption(enableFileEncryption: UseEncryption, new AESEncryptedFileIOProcessor(
-            //        "S0m3W3irDL0ngPa$$w0rdino!!!!",
-            //        AESEncryptedFileIOProcessor.AESEncrypterMode.Aes256
-            //    ));
+            //     "S0m3W3irDL0ngPa$$w0rdino!!!!",
+            //     AESEncryptedFileIOProcessor.AESEncrypterMode.Aes256
+            // ));
             // Note: all the images and files exported through the SDK will
             // not be openable from external applications, since they will be
             // encrypted.

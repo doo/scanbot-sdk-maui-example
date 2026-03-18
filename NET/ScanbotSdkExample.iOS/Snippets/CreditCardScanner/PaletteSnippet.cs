@@ -39,7 +39,7 @@ class PaletteSnippet : UIViewController
         palette.SbColorModalOverlay = new SBSDKUI2Color("#A3000000");
 
         // Present the view controller modally.
-        SBSDKUI2CreditCardScannerViewController.PresentOn(this, configuration, (result) =>
+        SBSDKUI2CreditCardScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
         {
             if (result == null)
             {
