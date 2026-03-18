@@ -58,25 +58,6 @@ public partial class MainViewController
             
             // create the configuration
             var configuration = new SBSDKDocumentDataExtractorConfiguration();
-            
-            // set the accepted document types
-            configuration.Configurations =
-            [
-                new SBSDKDocumentDataExtractorCommonConfiguration
-                {
-                    AcceptedDocumentTypes =
-                    [
-                        SBSDKDocumentsModelRootType.Mrz.Name,
-                        SBSDKDocumentsModelRootType.DeIdCardBack.Name,
-                        SBSDKDocumentsModelRootType.DeIdCardFront.Name,
-                        SBSDKDocumentsModelRootType.DePassport.Name,
-                        SBSDKDocumentsModelRootType.DeResidencePermitBack.Name,
-                        SBSDKDocumentsModelRootType.DeResidencePermitFront.Name,
-                        SBSDKDocumentsModelRootType.EuropeanHealthInsuranceCard.Name,
-                        SBSDKDocumentsModelRootType.DeHealthInsuranceCardFront.Name
-                    ]
-                }
-            ];
 
             // returns the cropped image in the result
             configuration.ReturnCrops = true;
