@@ -58,7 +58,6 @@ public partial class HomePage
             new SdkFeature("Document Data Extractor", DetectOnImageFeature.DocumentDataExtractorClicked),
 
             new SdkFeature("SDK OPERATIONS"),
-            new SdkFeature("Mock Camera", ConfigureMockCameraClicked),
             new SdkFeature("PDF from Image", CreatePdfFromImageClicked),
             new SdkFeature("Extract Images from PDF", ExtractImagesFromPdfClicked),
             new SdkFeature("OCR from Image", ExtractOcrFromImageClicked),
@@ -221,18 +220,6 @@ public partial class HomePage
         }
 
         await Alert.ShowAsync("Alert", $"Number of documents deleted: {documentIds.Length}");
-    }
-
-    private async Task ConfigureMockCameraClicked()
-    {
-        var path = await ImagePicker.PickImageAsPathAsync();
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            await Alert.ShowAsync("Error", "Something went wrong while loading the image from photos app.");
-            return;
-        }
-
-        ScanbotSDKMain.MockCamera(path);
     }
     
     private async Task ExtractImagesFromPdfClicked()
