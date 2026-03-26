@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:results="clr-namespace:ScanbotSdkExample.Maui.Results"
+             x:Class="ScanbotSdkExample.Maui.Results.PdfExtractedImageResultPage"
+             x:DataType="results:PdfExtractedImageResultPage"
+             Title="Extracted Images">
+    <ContentPage.Content>
+        <Grid>
+            <CollectionView
+                x:Name="CollectionViewImages"
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate 
+                        x:DataType="results:ExtractedPdfImage">
+                       <Image
+                           Source="{Binding ExtractedImageSource}"
+                            Aspect="AspectFit"
+                            HorizontalOptions="Fill"
+                            VerticalOptions="Fill"
+                           MinimumHeightRequest="500"
+                           MinimumWidthRequest="300" />
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

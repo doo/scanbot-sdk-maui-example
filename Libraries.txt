@@ -5,126 +5,126 @@ Open Source libraries used in the Scanbot SDK for .NET and MAUI version 8.0.0:
 .NET for Android bindings for the Android Java library 'androidx.activity:activity-compose'.
 
 Library description: Compose integration with Activity: 
-.NET for Android bindings for the Android Java library 'androidx.activity:activity-ktx'.
+.NET for Android and MAUI bindings for the Android Java library 'androidx.activity:activity-ktx'.
 
 Library description: Kotlin extensions for 'activity' artifact: 
 .NET for Android bindings for the Android Java library 'androidx.appcompat:appcompat'.
 
 Library description: Provides backwards-compatible implementations of UI-related Android SDK functionality, including dark mode and Material theming.: 
-.NET for Android bindings for the Android Java library 'androidx.appcompat:appcompat'.
+.NET for Android and MAUI bindings for the Android Java library 'androidx.appcompat:appcompat'.
 
 Library description: Provides backwards-compatible implementations of UI-related Android SDK functionality, including dark mode and Material theming.: 
 .NET for Android bindings for the Android Java library 'androidx.camera:camera-camera2'.
 
 Library description: Camera2 implementation and extensions for the Jetpack Camera Library, a library providing a consistent and reliable camera foundation that enables great camera driven experiences across all of Android.: 
-.NET for Android bindings for the Android Java library 'androidx.camera:camera-camera2'.
+.NET for Android and MAUI bindings for the Android Java library 'androidx.camera:camera-camera2'.
 
 Library description: Camera2 implementation and extensions for the Jetpack Camera Library, a library providing a consistent and reliable camera foundation that enables great camera driven experiences across all of Android.: 
 .NET for Android bindings for the Android Java library 'androidx.camera:camera-extensions'.
 
 Library description: OEM Extensions for the Jetpack Camera Library, a library providing interfaces to integrate with OEM specific camera features.: 
-.NET for Android bindings for the Android Java library 'androidx.camera:camera-extensions'.
+.NET for Android and MAUI bindings for the Android Java library 'androidx.camera:camera-extensions'.
 
 Library description: OEM Extensions for the Jetpack Camera Library, a library providing interfaces to integrate with OEM specific camera features.: 
 .NET for Android bindings for the Android Java library 'androidx.camera:camera-view'.
 
 Library description: UI tools for the Jetpack Camera Library, a library providing a consistent and reliable camera foundation that enables great camera driven experiences across all of Android.: 
-.NET for Android bindings for the Android Java library 'androidx.camera:camera-view'.
+.NET for Android and MAUI bindings for the Android Java library 'androidx.camera:camera-view'.
 
 Library description: UI tools for the Jetpack Camera Library, a library providing a consistent and reliable camera foundation that enables great camera driven experiences across all of Android.: 
-.NET for Android bindings for the Android Java library 'androidx.collection:collection-ktx'.
+.NET for Android and MAUI bindings for the Android Java library 'androidx.collection:collection-ktx'.
 
 Library description: Kotlin extensions for 'collection' artifact: 
 .NET for Android bindings for the Android Java library 'androidx.compose.material:material'. Note this package only adds the Java library to the application. C# bindings are not provided.
 
 Library description: Compose Material Design Components library: 
-.NET for Android bindings for the Android Java library 'androidx.compose.material:material'. Note this package only adds the Java library to the application. C# bindings are not provided.
+.NET for Android and MAUI bindings for the Android Java library 'androidx.compose.material:material'. Note this package only adds the Java library to the application. C# bindings are not provided.
 
 Library description: Compose Material Design Components library: 
 .NET for Android bindings for the Android Java library 'androidx.compose.material3:material3'. Note this package only adds the Java library to the application. C# bindings are not provided.
 
 Library description: Compose Material You Design Components library: 
-.NET for Android bindings for the Android Java library 'androidx.compose.material3:material3'. Note this package only adds the Java library to the application. C# bindings are not provided.
+.NET for Android and MAUI bindings for the Android Java library 'androidx.compose.material3:material3'. Note this package only adds the Java library to the application. C# bindings are not provided.
 
 Library description: Compose Material You Design Components library: 
 .NET for Android bindings for the Android Java library 'androidx.compose.ui:ui-viewbinding'. Note this package only adds the Java library to the application. C# bindings are not provided.
 
 Library description: Compose integration with ViewBinding: 
-.NET for Android bindings for the Android Java library 'androidx.compose.ui:ui-viewbinding'. Note this package only adds the Java library to the application. C# bindings are not provided.
+.NET for Android and MAUI bindings for the Android Java library 'androidx.compose.ui:ui-viewbinding'. Note this package only adds the Java library to the application. C# bindings are not provided.
 
 Library description: Compose integration with ViewBinding: 
 .NET for Android bindings for the Android Java library 'androidx.constraintlayout:constraintlayout-core'.
 
 Library description: This library contains engines and algorithms for constraint based layout and complex animations (it is used by the ConstraintLayout library): 
-.NET for Android bindings for the Android Java library 'androidx.constraintlayout:constraintlayout-core'.
+.NET for Android and MAUI bindings for the Android Java library 'androidx.constraintlayout:constraintlayout-core'.
 
 Library description: This library contains engines and algorithms for constraint based layout and complex animations (it is used by the ConstraintLayout library): 
 Xamarin.Android bindings for AndroidX - legacy-support-v4: 
-.NET for Android bindings for the Android Java library 'androidx.legacy:legacy-support-v4'.
+.NET for Android and MAUI bindings for the Android Java library 'androidx.legacy:legacy-support-v4'.
 
 Library description: The Support Library is a static library that you can add to your Android application in order to use APIs that are either not available for older platform versions or utility APIs that aren't a part of the framework APIs. Compatible on devices running API 14 or later.: 
-.NET for Android bindings for the Android Java library 'androidx.navigation:navigation-compose'.
+.NET for Android and MAUI bindings for the Android Java library 'androidx.navigation:navigation-compose'.
 
 Library description: Compose integration with Navigation: 
-.NET for Android bindings for the Android Java library 'androidx.navigation:navigation-compose'.
+.NET for Android and MAUI bindings for the Android Java library 'androidx.navigation:navigation-compose'.
 
 Library description: Compose integration with Navigation: 
 .NET for Android (formerly Xamarin.Android) bindings for AndroidX library 'androidx.preference:preference'.: 
-.NET for Android bindings for the Android Java library 'androidx.preference:preference'.
+.NET for Android and MAUI bindings for the Android Java library 'androidx.preference:preference'.
 
 Library description: AndroidX Preference: 
 Xamarin.Android bindings for AndroidX - security-crypto: 
 .NET for Android bindings for the Android Java library 'com.google.accompanist:accompanist-appcompat-theme'.
 
 Library description: Utilities for Jetpack Compose: 
-.NET for Android bindings for the Android Java library 'com.google.accompanist:accompanist-appcompat-theme'.
+.NET for Android and MAUI bindings for the Android Java library 'com.google.accompanist:accompanist-appcompat-theme'.
 
 Library description: Utilities for Jetpack Compose: 
 .NET for Android bindings for the Android Java library 'com.google.accompanist:accompanist-drawablepainter'.
 
 Library description: Utilities for Jetpack Compose: 
-.NET for Android bindings for the Android Java library 'com.google.accompanist:accompanist-drawablepainter'.
+.NET for Android and MAUI bindings for the Android Java library 'com.google.accompanist:accompanist-drawablepainter'.
 
 Library description: Utilities for Jetpack Compose: 
 .NET for Android bindings for the Android Java library 'com.google.accompanist:accompanist-flowlayout'.
 
 Library description: Utilities for Jetpack Compose: 
-.NET for Android bindings for the Android Java library 'com.google.accompanist:accompanist-flowlayout'.
+.NET for Android and MAUI bindings for the Android Java library 'com.google.accompanist:accompanist-flowlayout'.
 
 Library description: Utilities for Jetpack Compose: 
 .NET for Android bindings for the Android Java library 'com.google.accompanist:accompanist-pager-indicators'.
 
 Library description: Utilities for Jetpack Compose: 
-.NET for Android bindings for the Android Java library 'com.google.accompanist:accompanist-pager-indicators'.
+.NET for Android and MAUI bindings for the Android Java library 'com.google.accompanist:accompanist-pager-indicators'.
 
 Library description: Utilities for Jetpack Compose: 
 .NET for Android bindings for the Android Java library 'com.google.accompanist:accompanist-permissions'.
 
 Library description: Utilities for Jetpack Compose: 
-.NET for Android bindings for the Android Java library 'com.google.accompanist:accompanist-permissions'.
+.NET for Android and MAUI bindings for the Android Java library 'com.google.accompanist:accompanist-permissions'.
 
 Library description: Utilities for Jetpack Compose: 
 .NET for Android bindings for the Android Java library 'com.google.accompanist:accompanist-placeholder'.
 
 Library description: Utilities for Jetpack Compose: 
-.NET for Android bindings for the Android Java library 'com.google.accompanist:accompanist-placeholder'.
+.NET for Android and MAUI bindings for the Android Java library 'com.google.accompanist:accompanist-placeholder'.
 
 Library description: Utilities for Jetpack Compose: 
 .NET for Android bindings for the Android Java library 'com.google.accompanist:accompanist-systemuicontroller'.
 
 Library description: Utilities for Jetpack Compose: 
-.NET for Android bindings for the Android Java library 'com.google.accompanist:accompanist-systemuicontroller'.
+.NET for Android and MAUI bindings for the Android Java library 'com.google.accompanist:accompanist-systemuicontroller'.
 
 Library description: Utilities for Jetpack Compose: 
 Xamarin.Android bindings for AndroidX - material: 
 .NET for Android (formerly Xamarin.Android) bindings for Google Dagger: 
-.NET for Android bindings for the Android Java library 'com.google.dagger:dagger'.
+.NET for Android and MAUI bindings for the Android Java library 'com.google.dagger:dagger'.
 
 Library description: A fast dependency injector for Android and Java.: 
 .NET for Android bindings for the Android Java library 'org.jetbrains.kotlin:kotlin-parcelize-runtime'.
 
 Library description: Runtime library for the Parcelize compiler plugin: 
-.NET for Android bindings for the Android Java library 'org.jetbrains.kotlin:kotlin-parcelize-runtime'.
+.NET for Android and MAUI bindings for the Android Java library 'org.jetbrains.kotlin:kotlin-parcelize-runtime'.
 
 Library description: Runtime library for the Parcelize compiler plugin: 
 

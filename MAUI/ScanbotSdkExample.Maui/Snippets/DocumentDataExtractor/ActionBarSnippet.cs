@@ -1,12 +1,12 @@
 using ScanbotSDK.MAUI;
-using ScanbotSDK.MAUI.DocumentDataExtractor;
+using ScanbotSDK.MAUI.DocumentData;
 using ScanbotSDK.MAUI.DocumentsModel;
 
 namespace ScanbotSdkExample.Maui.Snippets.DocumentDataExtractor;
 
 public class ActionBarSnippet
 {
-    public static async Task LaunchAsync()
+    public static async Task StartScannerAsync()
     {
         // Create the default configuration object.
         var configuration = new DocumentDataExtractorScreenConfiguration();
@@ -40,23 +40,23 @@ public class ActionBarSnippet
         actionBar.FlipCameraButton.ForegroundColor = new ColorValue("#FFFFFF");
 
         // Present the view controller modally.
-        var scannedOutput = await ScanbotSDKMain.Rtu.DocumentDataExtractor.LaunchAsync(configuration);
-        if (scannedOutput.Status != OperationResult.Ok)
+        var result = await ScanbotSDKMain.DocumentDataExtractor.StartExtractorScreenAsync(configuration);
+        if (!result.IsSuccess)
         {
-            // Indicates that cancel was tapped or the result was unsuccessful
+            // Indicates failure in the operation. Please access the Exception object returned in `result.Error`
             return;
         }
 
         // Wraps the resulted document to the strongly typed DeIdCardFront class.
-        if (scannedOutput.Result.Document.Type.Name == DocumentsModelRootType.DeIdCardFront.DocumentType.Name)
+        if (result.Value.Document.Type.Name == DocumentsModelRootType.DeIdCardFront.DocumentType.Name)
         {
-            var idCardFront = new DeIdCardFront(scannedOutput.Result.Document);
+            var idCardFront = new DeIdCardFront(result.Value.Document);
             PrintDeIdCardFront(idCardFront);
             return;
         }
         
         // Iterate through all the document fields
-        foreach (var field in scannedOutput.Result.Document.Fields)
+        foreach (var field in result.Value.Document.Fields)
         {
             Console.WriteLine($"{field.Type.Name}: {field.Value.Text}");
         }

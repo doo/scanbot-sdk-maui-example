@@ -9,12 +9,9 @@
              x:DataType="page:HomePage"
              Title="Scanbot SDK MAUI">
     <Grid>
-        <ScrollView BackgroundColor="White">
-            <StackLayout>
-                <CollectionView
+        <CollectionView
                     x:Name="FeaturesCollectionView"
                     ItemsSource="{Binding SdkFeatures}"
-                    SelectionChanged="SdkFeatureSelected"
                     SelectionMode="Single"
                     VerticalScrollBarVisibility="Default">
                     <CollectionView.ItemTemplate>
@@ -30,10 +27,12 @@
                                         </VisualState>
                                     </VisualStateGroup>
                                 </VisualStateManager.VisualStateGroups>
-
+                                <StackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="SdkFeatureSelected" CommandParameter="{Binding .}" />
+                                </StackLayout.GestureRecognizers>
                                 <Label
                                     Padding="10,0"
-                                    IsVisible="{Binding ShowHeading}"
+                                    IsVisible="{Binding IsHeader}"
                                     HeightRequest="55"
                                     IsEnabled="False"
                                     FontSize="Medium"
@@ -44,7 +43,7 @@
                                     BackgroundColor="{StaticResource ScanbotRed}" />
                                 <Label
                                     Padding="10,0"
-                                    IsVisible="{Binding ShowFeature}"
+                                    IsVisible="{Binding IsVisible}"
                                     HeightRequest="45"
                                     IsEnabled="True"
                                     FontSize="15"
@@ -58,9 +57,6 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
-                <StackLayout HeightRequest="10" />
-            </StackLayout>
-        </ScrollView>
         <customView:SBLoader x:Name="SbLoader" IsVisible="False" />
     </Grid>
 </ContentPage>
