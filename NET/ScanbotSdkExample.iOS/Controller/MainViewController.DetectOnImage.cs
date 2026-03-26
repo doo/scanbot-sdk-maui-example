@@ -58,16 +58,6 @@ public partial class MainViewController
             
             // create the configuration
             var configuration = new SBSDKDocumentDataExtractorConfiguration();
-            var detectionTypes = SBSDKDocumentsModelRootType.AllDocumentTypes.Select(_ => ToString()).ToArray();
-            
-            // set the accepted document types
-            configuration.Configurations =
-            [
-                new SBSDKDocumentDataExtractorCommonConfiguration
-                {
-                    AcceptedDocumentTypes = detectionTypes
-                }
-            ];
 
             // returns the cropped image in the result
             configuration.ReturnCrops = true;
