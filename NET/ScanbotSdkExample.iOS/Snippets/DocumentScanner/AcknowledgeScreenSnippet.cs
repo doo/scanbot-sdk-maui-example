@@ -25,24 +25,23 @@ public class AcknowledgementScreenSnippet : UIViewController
         // - `none`: Skips the quality check entirely.
         configuration.Screens.Camera.Acknowledgement.AcknowledgementMode = SBSDKUI2AcknowledgementMode.Always;
 
-        // Set the minimum acceptable document quality.
-        // Options: excellent, good, reasonable, poor, veryPoor, or noDocument.
-        configuration.Screens.Camera.Acknowledgement.MinimumQuality = SBSDKDocumentQuality.Reasonable;
+        // Set the minimum threshold of unacceptable and uncertain qualities.
+        configuration.Screens.Camera.DocumentQualityAnalyzerConfiguration.QualityUnacceptableUncertainThreshold = 0.75;
 
         // Set the background color for the acknowledgment screen.
         configuration.Screens.Camera.Acknowledgement.BackgroundColor = new SBSDKUI2Color(colorString: "#EFEFEF");
 
         // You can also configure the buttons in the bottom bar of the acknowledgment screen.
-        // e.g To force the user to retake, if the captured document is not OK.
-        configuration.Screens.Camera.Acknowledgement.BottomBar.AcceptWhenNotOkButton.Visible = false;
+        // E.g. to force the user to retake, if the captured document is not acceptable.
+        configuration.Screens.Camera.Acknowledgement.BottomBar.AcceptWhenAcceptableButton.Visible = false;
 
         // Hide the titles of the buttons.
-        configuration.Screens.Camera.Acknowledgement.BottomBar.AcceptWhenNotOkButton.Title.Visible = false;
-        configuration.Screens.Camera.Acknowledgement.BottomBar.AcceptWhenOkButton.Title.Visible = false;
+        configuration.Screens.Camera.Acknowledgement.BottomBar.AcceptWhenAcceptableButton.Title.Visible = false;
+        configuration.Screens.Camera.Acknowledgement.BottomBar.ProceedAnywayButton.UnacceptableQuality.Title.Visible = false;
         configuration.Screens.Camera.Acknowledgement.BottomBar.RetakeButton.Title.Visible = false;
 
         // Configure the acknowledgment screen's hint message which is shown if the least acceptable quality is not met.
-        configuration.Screens.Camera.Acknowledgement.BadImageHint.Visible = true;
+        configuration.Screens.Camera.Acknowledgement.UnacceptableQualityWarning.Visible = true;
 
         try
         {

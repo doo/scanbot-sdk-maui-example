@@ -60,7 +60,7 @@ public partial class ScannedDocumentsViewController : UIViewController
 
         // Get the document quality analysis result by passing the image to the analyzer
         var documentQuality = documentAnalyzer.RunWithImage(documentPageImage, out var scanningError);
-        Alert.Show("Document Quality", Map(documentQuality?.Quality));
+        Alert.Show("Document Quality", Map(documentQuality?.QualityLevel));
     }
 
     private void OnManualCropClicked(object sender, EventArgs e)

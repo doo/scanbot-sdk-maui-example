@@ -31,7 +31,7 @@ public class PageFilterSnippet : UIViewController
             var filter1 = new SBSDKScanbotBinarizationFilter(outputMode: SBSDKOutputMode.Antialiased);
             var filter2 = new SBSDKBrightnessFilter(brightness: 0.4);
 
-            page?.ApplyWithRotation(rotation: page.Rotation, polygon: new SBSDKPolygon(), filters: [filter1, filter2], out error).GetOrThrow(error);
+            page?.ApplyWithRotation(rotation: page.Rotation, polygon: new SBSDKPolygon(), filters: [filter1, filter2], new SBSDKDocumentStraighteningParameters(), out error).GetOrThrow(error);
         }
         catch (Exception exception)
         {
