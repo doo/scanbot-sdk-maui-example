@@ -1,5 +1,6 @@
 using AndroidX.AppCompat.App;
 using IO.Scanbot.Sdk.Docprocessing;
+using IO.Scanbot.Sdk.Documentscanner;
 using IO.Scanbot.Sdk.Image;
 using IO.Scanbot.Sdk.Imageprocessing;
 using ScanbotSDK.Droid.Helpers;
@@ -33,7 +34,10 @@ public class PageFilterSnippet : AppCompatActivity
 		
         foreach (var documentPage in document.Pages)
         {
-            documentPage.Apply(imageRotation, documentPage.Polygon,  new List<ParametricFilter> {binarizationFilter, brightnessFilter});
+            documentPage.Apply(newImageRotation:imageRotation, 
+                newPolygon: documentPage.Polygon, 
+                newFilters: [binarizationFilter, brightnessFilter],
+                newStraighteningParameters: new DocumentStraighteningParameters());
         }
     }
 }

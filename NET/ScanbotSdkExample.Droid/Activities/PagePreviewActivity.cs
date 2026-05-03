@@ -9,6 +9,7 @@ using ScanbotSdkExample.Droid.Listeners;
 using ScanbotSdkExample.Droid.Utils;
 using IO.Scanbot.Sdk.Docprocessing;
 using IO.Scanbot.Sdk.Documentqualityanalyzer;
+using IO.Scanbot.Sdk.Documentscanner;
 using IO.Scanbot.Sdk.Image;
 using IO.Scanbot.Sdk.Imageprocessing;
 using IO.Scanbot.Sdk.Ui_v2.Common;
@@ -204,7 +205,7 @@ public partial class PagePreviewActivity : AppCompatActivity, IFiltersListener
     {
         foreach (var page in _document.Pages)
         {
-            page.Apply(page.Rotation, page.Polygon, [ selectedFilter ]);
+            page.Apply(page.Rotation, page.Polygon, [ selectedFilter ], new DocumentStraighteningParameters());
         }
         _adapter.Refresh(_document);                                          
     }
