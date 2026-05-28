@@ -24,7 +24,7 @@ public static class CreatePdfFromDocumentSnippet
             pageFit: PageFit.FitIn,
             dpi: 72,
             jpegQuality: 80,
-            ResamplingMethod.None,
+            resamplingMethod: ResamplingMethod.None,
             binarizationFilter: ParametricFilter.ScanbotBinarizationFilter());
 
         var ocrConfig = new IOcrEngineManager.OcrConfig
