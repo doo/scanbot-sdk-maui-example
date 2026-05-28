@@ -31,7 +31,8 @@ public class CreatePdfFromImageSnippet
             var renderer = new SBSDKPDFGenerator(configuration: configuration, ocrConfiguration: ocrConfiguration,
                 useEncryptionIfAvailable: true, error: out var error).GetOrThrow(error);
 
-            // Synchronously renders the images from the image storage into a PDF file with the given page size, and saves the PDF to the specified URL.
+            // Generates a PDF from the images in the image storage and saves it to the specified URL.
+            // The completion callback is invoked when generation finishes or if an error occurs.
             renderer.GenerateFromImageStorage(imageStorage, null, outputPdfUrl,
                 completion: (isCompleted, generationError) =>
                 {
