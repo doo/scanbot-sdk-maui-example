@@ -6,25 +6,18 @@ public static class OcrSnippet
 {
     public static void PerformOcrOnImage(SBSDKImageRef imageRef)
     {
-        try
-        {
-            var ocrConfiguration = SBSDKOCREngineConfiguration.ScanbotOCR;
+        var ocrConfiguration = SBSDKOCREngineConfiguration.ScanbotOCR;
 
-            var manager = new SBSDKOCREngineManager(ocrConfiguration);
-            manager.RecognizeFromImage(imageRef, (ocrResult, error) =>
+        var manager = new SBSDKOCREngineManager(ocrConfiguration);
+        manager.RecognizeFromImage(imageRef, (ocrResult, error) =>
+        {
+            if (error != null)
             {
-                if (error != null)
-                {
-                    Console.WriteLine(error.LocalizedDescription);
-                    return;
-                }
+                Console.WriteLine(error.LocalizedDescription);
+                return;
+            }
 
-                Console.WriteLine(ocrResult.RecognizedText);
-            });
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
+            Console.WriteLine(ocrResult.RecognizedText);
+        });
     }
 }
