@@ -20,8 +20,6 @@ namespace ScanbotSdkExample.iOS
         /// </summary>
         public const bool SetCustomPath = true;
 
-        private const int ImageQuality = 100;
-
         /// <summary>
         /// Returns the navigation controller object throughout the app.
         /// </summary>
@@ -80,7 +78,7 @@ namespace ScanbotSdkExample.iOS
 
             // Storage Format
             nativeConfiguration.FileStorageImageFormat = SBSDKImageFileFormat.Jpeg;
-            nativeConfiguration.FileStorageImageQuality = (byte)ImageQuality;
+            nativeConfiguration.FileStorageImageQuality = 100;
 
             // Encryption
             if (IsEncryptionEnabled)
