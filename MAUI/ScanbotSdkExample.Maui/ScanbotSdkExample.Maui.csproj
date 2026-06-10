@@ -16,7 +16,7 @@
         <ApplicationVersion>1.0</ApplicationVersion>
         <!-- Supported Platforms -->
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">13.0</SupportedOSPlatformVersion>
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21</SupportedOSPlatformVersion>
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">23</SupportedOSPlatformVersion>
         <WarningsAsErrors>NU1603</WarningsAsErrors>
         <NoWarn>CS0162;CS4014</NoWarn>
         <LangVersion>12.0</LangVersion>
