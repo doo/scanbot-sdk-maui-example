@@ -42,8 +42,9 @@ public class PdfSnippet : AppCompatActivity
             pageFit: PageFit.None,
             dpi: 200,
             jpegQuality: 100,
-            ResamplingMethod.None,
-            ParametricFilter.ScanbotBinarizationFilter());
+            jpegOptimize: false,
+            resamplingMethod: ResamplingMethod.None,
+            binarizationFilter: ParametricFilter.ScanbotBinarizationFilter());
 
         // Render the images to a PDF file.
         var result = _scanbotSdk.CreatePdfGenerator(null).Generate(document, pdfConfig);
@@ -71,7 +72,8 @@ public class PdfSnippet : AppCompatActivity
             pageDirection:PageDirection.Auto, 
             pageFit:PageFit.None, 
             dpi:200, 
-            jpegQuality:100, 
+            jpegQuality:100,
+            jpegOptimize: false,
             ResamplingMethod.None,
             ParametricFilter.ScanbotBinarizationFilter());
 

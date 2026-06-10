@@ -93,6 +93,7 @@ public partial class PagePreviewActivity
             pageFit: PageFit.FitIn,
             dpi: 72,
             jpegQuality: 80,
+            jpegOptimize: false,
             ResamplingMethod.None,
             binarizationFilter: ParametricFilter.ScanbotBinarizationFilter());
 
@@ -140,6 +141,7 @@ public partial class PagePreviewActivity
             pageFit: PageFit.FitIn,
             dpi: 72,
             jpegQuality: 80,
+            jpegOptimize: false,
             ResamplingMethod.None,
             binarizationFilter: null);
 
