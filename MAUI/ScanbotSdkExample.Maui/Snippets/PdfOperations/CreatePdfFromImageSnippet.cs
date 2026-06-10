@@ -13,10 +13,8 @@ public class CreatePdfFromImageSnippet
         var image = await ImagePicker.PickImageAsSourceAsync();
         if (image is null) return;
 
-        var result =
-            await ScanbotSDKMain.PdfGenerator.GenerateFromImagesAsync(images: [image],
-                pdfConfiguration: new PdfConfiguration(),
-                ocrConfiguration: new OcrConfiguration { OcrMode = OcrMode.ScanbotOcr });
+        var result = await ScanbotSDKMain.PdfGenerator.GenerateFromImagesAsync(images: [image], 
+                pdfConfiguration: new PdfConfiguration(), performOcr: true);
 
         if (result.IsSuccess)
         {

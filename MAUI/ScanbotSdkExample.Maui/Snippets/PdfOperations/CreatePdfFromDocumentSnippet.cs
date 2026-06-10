@@ -9,10 +9,9 @@ public class CreatePdfFromDocumentSnippet
 {
     public static async Task CreatePdfFromDocumentAsync(string documentUuid)
     {
-        var result =
-            await ScanbotSDKMain.PdfGenerator.GenerateFromDocumentAsync(documentUuid,
+        var result = await ScanbotSDKMain.PdfGenerator.GenerateFromDocumentAsync(documentUuid,
                 pdfConfiguration: new PdfConfiguration { PageSize = PageSize.A4 },
-                ocrConfiguration: new OcrConfiguration { OcrMode = OcrMode.ScanbotOcr });
+                performOcr: true);
 
         if (result.IsSuccess)
         {

@@ -8,8 +8,7 @@ public static class OcrSnippet
     public static async Task PerformOcrOnImageAsync(ImageSource image)
     {
         var result =
-            await ScanbotSDKMain.OcrEngine.RecognizeOnImagesAsync(images: [image],
-                configuration: OcrConfiguration.ScanbotOcr);
+            await ScanbotSDKMain.OcrEngine.RecognizeOnImagesAsync(images: [image]);
 
         if (!result.IsSuccess)
         {
