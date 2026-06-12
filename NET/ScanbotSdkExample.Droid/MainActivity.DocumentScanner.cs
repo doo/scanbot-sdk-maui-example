@@ -1,4 +1,5 @@
 using Android.Content;
+using Android.Graphics;
 using Android.Views;
 using IO.Scanbot.Sdk.Ui_v2.Common;
 using IO.Scanbot.Sdk.Ui_v2.Document.Configuration;
@@ -13,7 +14,9 @@ using IO.Scanbot.Sdk.Documentscanner;
 using IO.Scanbot.Sdk.Geometry;
 using IO.Scanbot.Sdk.Image;
 using IO.Scanbot.Sdk.Ui_v2.Common.Activity;
+using IO.Scanbot.Sdk.Util;
 using ScanbotSDK.Droid.Helpers;
+using ImageUtils = ScanbotSdkExample.Droid.Utils.ImageUtils;
 
 namespace ScanbotSdkExample.Droid;
 
@@ -23,6 +26,7 @@ public partial class MainActivity
     {
         { ScanDocumentRequestCode, HandleDocumentScannerResult },
         { ImportImageRequestCode, HandleImageImport },
+        { StraightenDocumentFromImageCode, HandleDocumentStraightenerResult },
     };
 
     private void SingleDocumentScanning()
@@ -139,5 +143,24 @@ public partial class MainActivity
     {
         Intent intent = new Intent(this, typeof(ClassicDocumentScannerViewActivity));
         StartActivityForResult(intent, ScanDocumentRequestCode);
+    }
+    
+    private async void HandleDocumentStraightenerResult(Intent data)
+    {
+        var bitmap = ImageUtils.ProcessGalleryResult(this, data);
+        
+        var docEnhancerResult = _scanbotSdk.CreateDocumentEnhancer().GetOrThrow<IDocumentEnhancer>();
+        var straightenedResult = docEnhancerResult.Straighten(ImageRef.FromBitmap(bitmap), new DocumentStraighteningParameters(), []).GetOrThrow<DocumentStraighteningResult>();
+        
+        // Access the document straightened image to display results
+        var resultBitmap = straightenedResult.StraightenedImage.ToBitmap().GetOrThrow<Bitmap>();
+        
+        // we will convert the Bitmap to byte[] to navigate
+        var byteArray = await resultBitmap.BitmapToByteArray();
+        
+        // Navigate to results page.
+        var intent = new Intent(this, typeof(ImageResultActivity));
+        intent.PutExtra("image_bytes", byteArray);
+        StartActivity(intent);
     }
 }

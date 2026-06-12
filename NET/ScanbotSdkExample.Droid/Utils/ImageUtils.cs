@@ -31,4 +31,19 @@ public static class ImageUtils
         }
         return byteArray;
     }
+
+    public static async Task<byte[]> BitmapToByteArray(this Bitmap bitmap)
+    {
+        return await Task.Run(() =>
+        {
+            using var stream = new MemoryStream();
+            bitmap.Compress(Bitmap.CompressFormat.Jpeg, 60, stream);
+            return stream.ToArray();
+        });
+    }
+
+    public static async Task<Bitmap> ByteArrayToBitmap(this byte[] bytes)
+    {
+        return await Task.Run(() => BitmapFactory.DecodeByteArray(bytes, 0, bytes.Length));
+    }
 }
