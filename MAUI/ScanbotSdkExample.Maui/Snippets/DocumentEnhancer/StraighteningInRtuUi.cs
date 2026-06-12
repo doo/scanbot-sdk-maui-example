@@ -3,9 +3,9 @@ using ScanbotSDK.MAUI.Core.DocumentScanner;
 using ScanbotSDK.MAUI.Core.Geometry;
 using ScanbotSDK.MAUI.Document;
 
-namespace ScanbotSdkExample.Maui.Snippets.DocumentScanner;
+namespace ScanbotSdkExample.Maui.Snippets.DocumentEnhancer;
 
-public class DocumentEnhancer 
+public class StraighteningInRtuUi 
 {
     private static async Task StartScannerAsync()
     {

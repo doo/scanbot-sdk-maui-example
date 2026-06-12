@@ -36,7 +36,6 @@ public partial class HomePage
             new SdkFeature("Single Finder Document Scanning", DocumentScannerFeature.SingleFinderDocumentScanningClicked),
             new SdkFeature("Multiple Document Scanning", DocumentScannerFeature.MultipleDocumentScanningClicked),
             new SdkFeature("Scan Document From Image", ScanDocumentFromImageClicked),
-            new SdkFeature("Enhance Document From Image", EnhanceDocumentFromImageClicked),
             new SdkFeature("Scan Document From PDF", ScanDocumentFromPdfClicked),
             new SdkFeature("Delete all documents", DeleteAllDocsFromStorageClicked),
 
@@ -64,6 +63,7 @@ public partial class HomePage
             new SdkFeature("OCR from Image", ExtractOcrFromImageClicked),
             
             new SdkFeature("MISCELLANEOUS"),
+            new SdkFeature("Straighten document", DocumentStraightenerClicked),
             new SdkFeature(ViewLicenseInfo, ViewLicenseInfoClicked), 
             new SdkFeature("Learn more about Scanbot SDK", LearnMoreClicked)
         ];
@@ -71,23 +71,36 @@ public partial class HomePage
         BindingContext = this;
     }
 
-    private async Task EnhanceDocumentFromImageClicked()
+    private async Task DocumentStraightenerClicked()
     {
         var image = await ImagePicker.PickImageAsSourceAsync();
         if (image is null) return;
 
         IsLoading = true;
 
-        var result = await ScanbotSDKMain.DocumentEnhancer.StraightenImageAsync(image, new DocumentStraighteningParameters());
+        var straighteningParameters = new DocumentStraighteningParameters
+        {
+            StraighteningMode = DocumentStraighteningMode.Straighten,
+        };
+
+        var result = await ScanbotSDKMain.DocumentEnhancer.StraightenImageAsync(image, straighteningParameters);
+        
+        IsLoading = false;
+        
         if (!result.IsSuccess)
         {
             await Alert.ShowAsync(result.Error);
             return;
         }
+        if (result.Value.StraightenedImage == null)
+        {
+            await Alert.ShowAsync(new Exception( "Straightening failed. The result does not contain a straightened image."));
+            return;
+        }
         
-        // success: Display results
+        // success: Display straightened image
         var source = result.Value.StraightenedImage.ToImageSource();
-        await Navigation.PushAsync(new PdfExtractedImageResultPage([source]));
+        await Navigation.PushAsync(new PreviewImagesPage([source]));
     }
 
     /// Item Selected method invoked on the ListView item selection.
@@ -258,7 +271,7 @@ public partial class HomePage
                 return;
             }
 
-            await Navigation.PushAsync(new PdfExtractedImageResultPage(result.Value));
+            await Navigation.PushAsync(new PreviewImagesPage(result.Value));
         }
         catch (Exception ex)
         {

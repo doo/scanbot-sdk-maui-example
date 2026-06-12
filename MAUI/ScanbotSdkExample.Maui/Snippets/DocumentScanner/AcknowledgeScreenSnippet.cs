@@ -13,9 +13,10 @@ public class AcknowledgeScreenSnippet
 
         // Set the acknowledgment mode
         // Modes:
-        // - `always`: Runs the quality analyzer on the captured document and always displays the acknowledgment screen.
-        // - `badQuality`: Runs the quality analyzer and displays the acknowledgment screen only if the quality is poor.
-        // - `none`: Skips the quality check entirely.
+        // - UnacceptableQuality: The acknowledgment screen will only be shown when the quality of a scanned page is unacceptable.
+        //                        The quality threshold is determined by the document quality analyzer parameters.
+        // - Always: The acknowledgment screen will always be shown after each snap, regardless of the scanned page's quality.
+        // - None: The acknowledgment screen will be disabled, in effect never shown.
         configuration.Screens.Camera.Acknowledgement.AcknowledgementMode = AcknowledgementMode.Always;
 
         // Set the minimum threshold of unacceptable and uncertain qualities.
