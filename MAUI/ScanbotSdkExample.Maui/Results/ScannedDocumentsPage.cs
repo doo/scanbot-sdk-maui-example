@@ -219,17 +219,8 @@ public class ScannedDocumentsPage : ContentPage
     // @Tag("Perform OCR")
     private async Task PerformOcrAsync()
     {
-        // NOTE:
-        // The default OCR engine is 'OcrConfiguration.ScanbotOCR' which is ML based. This mode doesn't expect the Languages array.
-        // If you wish to use the previous engine please use 'OcrConfiguration.Tesseract(...)'. The Languages array is mandatory in this mode.
-        // Uncomment the below code to use the past legacy 'OcrConfiguration.Tesseract(...)' engine mode.
-        // var ocrEngine = OcrConfiguration.Tesseract(withLanguageString: [ "en", "de" ]);
-
-        // Using the default OCR option
-        var ocrEngine = OcrConfiguration.ScanbotOcr;
-
         var sourceImages = _document.Pages.Select(p => new FileImageSource { File = p.OriginalImageUri.LocalPath });
-        var result = await ScanbotSDKMain.OcrEngine.RecognizeOnImagesAsync(images: sourceImages, configuration: ocrEngine);
+        var result = await ScanbotSDKMain.OcrEngine.RecognizeOnImagesAsync(images: sourceImages);
         if (!result.IsSuccess)
         {
             await Alert.ShowAsync(result.Error);
@@ -242,15 +233,6 @@ public class ScannedDocumentsPage : ContentPage
 
     private async Task GenerateSandwichPdfAsync()
     {
-        // NOTE:
-        // The default OCR engine is 'OcrEngine.ScanbotOCR' which is ML based. This mode doesn't expect the Languages array.
-        // If you wish to use the previous engine please use 'OcrEngine.Tesseract(...)'. The Languages array is mandatory in this mode.
-        // Uncomment the below code to use the past legacy 'OcrEngine.Tesseract(...)' engine mode.
-        // var ocrEngine = OcrEngine.Tesseract(withLanguageString: [ "en", "de" ]);
-
-        // Using the default OCR option
-        var ocrEngine = OcrConfiguration.ScanbotOcr;
-
         var result = await ScanbotSDKMain.PdfGenerator.GenerateFromImagesAsync(
             images: _document.Pages.Select(p => new FileImageSource { File = p.OriginalImageUri.LocalPath }),
             pdfConfiguration: new PdfConfiguration
@@ -269,7 +251,7 @@ public class ScannedDocumentsPage : ContentPage
                 JpegQuality = 80,
                 PageFit = PageFit.FitIn,
                 ResamplingMethod = ResamplingMethod.None
-            }, ocrConfiguration: ocrEngine);
+            });
 
         if (!result.IsSuccess)
         {

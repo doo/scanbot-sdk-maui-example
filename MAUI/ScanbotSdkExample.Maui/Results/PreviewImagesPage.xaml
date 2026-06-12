@@ -3,9 +3,9 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:results="clr-namespace:ScanbotSdkExample.Maui.Results"
-             x:Class="ScanbotSdkExample.Maui.Results.PdfExtractedImageResultPage"
-             x:DataType="results:PdfExtractedImageResultPage"
-             Title="Extracted Images">
+             x:Class="ScanbotSdkExample.Maui.Results.PreviewImagesPage"
+             x:DataType="results:PreviewImagesPage"
+             Title="Image Previewer">
     <ContentPage.Content>
         <Grid>
             <CollectionView
@@ -14,9 +14,9 @@
                 VerticalOptions="Fill">
                 <CollectionView.ItemTemplate>
                     <DataTemplate 
-                        x:DataType="results:ExtractedPdfImage">
+                        x:DataType="results:PreviewImage">
                        <Image
-                           Source="{Binding ExtractedImageSource}"
+                           Source="{Binding Image}"
                             Aspect="AspectFit"
                             HorizontalOptions="Fill"
                             VerticalOptions="Fill"

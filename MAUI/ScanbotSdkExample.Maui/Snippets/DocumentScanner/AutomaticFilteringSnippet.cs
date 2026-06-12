@@ -12,7 +12,7 @@ public class AutomaticFilteringSnippet
         var configuration = new DocumentScanningFlow();
 
         // setting default parametric filter
-        configuration.OutputSettings.DefaultFilter = ParametricFilter.ColorDocument;
+        configuration.OutputSettings.DefaultFilter = ParametricFilter.ColorDocument();
 
         // e.g. configure various colors.
         configuration.Appearance.TopBarBackgroundColor = new ColorValue("#C8193C");
