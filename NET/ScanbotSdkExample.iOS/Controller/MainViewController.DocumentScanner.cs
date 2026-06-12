@@ -6,273 +6,297 @@ using ScanbotSdkExample.iOS.Utils;
 
 namespace ScanbotSdkExample.iOS.Controller;
 
-public partial class MainViewController: IClassicDocumentScannerViewResult
+public partial class MainViewController : IClassicDocumentScannerViewResult
 {
-    private void SingleDocumentScanning()
-    {
-        // Initialize document scanner configuration object using default configurations
-        var configuration = new SBSDKUI2DocumentScanningFlow();
+      private void SingleDocumentScanning()
+      {
+            // Initialize document scanner configuration object using default configurations
+            var configuration = new SBSDKUI2DocumentScanningFlow();
 
-        // Disable the multiple page behavior
-        configuration.OutputSettings.PagesScanLimit = 1;
+            // Disable the multiple page behavior
+            configuration.OutputSettings.PagesScanLimit = 1;
 
-        // Enable/Disable the review screen.
-        configuration.Screens.Review.Enabled = false;
+            // Enable/Disable the review screen.
+            configuration.Screens.Review.Enabled = false;
 
-        // Enable/Disable Auto Snapping behavior
-        configuration.Screens.Camera.CameraConfiguration.AutoSnappingEnabled = true;
+            // Enable/Disable Auto Snapping behavior
+            configuration.Screens.Camera.CameraConfiguration.AutoSnappingEnabled = true;
 
-        // Configure the animation
-        // You can choose between genie animation or checkmark animation
-        // Note: Both modes can be further configured to your liking
+            // Configure the animation
+            // You can choose between genie animation or checkmark animation
+            // Note: Both modes can be further configured to your liking
 
-        // e.g for genie animation
-        configuration.Screens.Camera.CaptureFeedback.SnapFeedbackMode = new SBSDKUI2PageSnapFunnelAnimation();
+            // e.g for genie animation
+            configuration.Screens.Camera.CaptureFeedback.SnapFeedbackMode = new SBSDKUI2PageSnapFunnelAnimation();
 
-        // or for checkmark animation
-        configuration.Screens.Camera.CaptureFeedback.SnapFeedbackMode = new SBSDKUI2PageSnapCheckMarkAnimation();
+            // or for checkmark animation
+            configuration.Screens.Camera.CaptureFeedback.SnapFeedbackMode = new SBSDKUI2PageSnapCheckMarkAnimation();
 
-        // Hide the auto snapping enable/disable button
-        configuration.Screens.Camera.BottomBar.AutoSnappingModeButton.Visible = false;
-        configuration.Screens.Camera.BottomBar.ManualSnappingModeButton.Visible = false;
-        configuration.Screens.Camera.BottomBar.ImportButton.Title.Visible = true;
-        configuration.Screens.Camera.BottomBar.TorchOnButton.Title.Visible = true;
-        configuration.Screens.Camera.BottomBar.TorchOffButton.Title.Visible = true;
+            // Hide the auto snapping enable/disable button
+            configuration.Screens.Camera.BottomBar.AutoSnappingModeButton.Visible = false;
+            configuration.Screens.Camera.BottomBar.ManualSnappingModeButton.Visible = false;
+            configuration.Screens.Camera.BottomBar.ImportButton.Title.Visible = true;
+            configuration.Screens.Camera.BottomBar.TorchOnButton.Title.Visible = true;
+            configuration.Screens.Camera.BottomBar.TorchOffButton.Title.Visible = true;
 
-        // Set colors
-        configuration.Palette.SbColorPrimary = new SBSDKUI2Color(uiColor: Colors.ScanbotRed);
-        configuration.Palette.SbColorOnPrimary = new SBSDKUI2Color(uiColor: Colors.NearWhite);
+            // Set colors
+            configuration.Palette.SbColorPrimary = new SBSDKUI2Color(uiColor: Colors.ScanbotRed);
+            configuration.Palette.SbColorOnPrimary = new SBSDKUI2Color(uiColor: Colors.NearWhite);
 
-        // Configure the hint texts for different scenarios
-        configuration.Screens.Camera.UserGuidance.StatesTitles.TooDark = "Need more lighting to detect a document";
-        configuration.Screens.Camera.UserGuidance.StatesTitles.TooSmall = "Document too small";
-        configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
+            // Configure the hint texts for different scenarios
+            configuration.Screens.Camera.UserGuidance.StatesTitles.TooDark = "Need more lighting to detect a document";
+            configuration.Screens.Camera.UserGuidance.StatesTitles.TooSmall = "Document too small";
+            configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
 
-        try
-        {
-            // Launch the scanner.
-            // The GetOrThrow(NSError error); validates the operation if error. Throws if error occured.  
-            SBSDKUI2DocumentScannerController.PresentOn(viewController: this,
-                configuration: configuration,
-                error: out var presentationError,
-                completion: DidCompleteDocumentScanning).GetOrThrow(presentationError);
-        }
-        catch (Exception ex)
-        {
-            Alert.ValidateAndShowError(ex);
-        }
-    }
-
-    private void MultipleDocumentScanning()
-    {
-        // Initialize document scanner configuration object using default configurations
-        var configuration = new SBSDKUI2DocumentScanningFlow();
-
-        // Enable the multiple page behavior
-        configuration.OutputSettings.PagesScanLimit = 0;
-
-        // Enable/Disable Auto Snapping behavior
-        configuration.Screens.Camera.CameraConfiguration.AutoSnappingEnabled = true;
-
-        // Hide/Unhide the auto snapping enable/disable button
-        configuration.Screens.Camera.BottomBar.AutoSnappingModeButton.Visible = true;
-        configuration.Screens.Camera.BottomBar.ManualSnappingModeButton.Visible = true;
-
-        // Set colors
-        configuration.Palette.SbColorPrimary = new SBSDKUI2Color(uiColor: Colors.ScanbotRed);
-        configuration.Palette.SbColorOnPrimary = new SBSDKUI2Color(uiColor: Colors.NearWhite);
-
-        // Configure the hint texts for different scenarios
-        // e.g.
-        configuration.Screens.Camera.UserGuidance.StatesTitles.TooDark = "Need more lighting to detect a document";
-        configuration.Screens.Camera.UserGuidance.StatesTitles.TooSmall = "Document too small";
-        configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
-
-        // Enable/Disable the review screen.
-        configuration.Screens.Review.Enabled = true;
-
-        // Configure bottom bar (further properties like title, icon and  background can also be set for these buttons)
-        configuration.Screens.Review.BottomBar.AddButton.Visible = true;
-        configuration.Screens.Review.BottomBar.RetakeButton.Visible = true;
-        configuration.Screens.Review.BottomBar.CropButton.Visible = true;
-        configuration.Screens.Review.BottomBar.RotateButton.Visible = true;
-        configuration.Screens.Review.BottomBar.DeleteButton.Visible = true;
-
-        // Configure `more` popup on review screen
-        // e.g.
-        configuration.Screens.Review.MorePopup.ReorderPages.Icon.Visible = true;
-        configuration.Screens.Review.MorePopup.DeleteAll.Icon.Visible = true;
-        configuration.Screens.Review.MorePopup.DeleteAll.Title.Text = "Delete all pages";
-
-        // Configure reorder pages screen
-        // e.g.
-        configuration.Screens.ReorderPages.TopBarTitle.Text = "Reorder Pages";
-        configuration.Screens.ReorderPages.Guidance.Title.Text = "Reorder Pages";
-
-        // Configure cropping screen
-        // e.g
-        configuration.Screens.Cropping.TopBarTitle.Text = "Cropping Screen";
-        configuration.Screens.Cropping.BottomBar.ResetButton.Visible = true;
-        configuration.Screens.Cropping.BottomBar.RotateButton.Visible = true;
-        configuration.Screens.Cropping.BottomBar.DetectButton.Visible = true;
-        
-        try
-        {
-            // Launch the scanner.
-            // The GetOrThrow(NSError error); validates the operation if error. Throws if error occured.  
-            SBSDKUI2DocumentScannerController.PresentOn(viewController: this,
-                configuration: configuration,
-                error: out var presentationError,
-                completion: DidCompleteDocumentScanning).GetOrThrow(presentationError);
-        }
-        catch (Exception ex)
-        {
-            Alert.ValidateAndShowError(ex);
-        }
-    }
-
-    private void SingleFinderDocumentScanning()
-    {
-        // Initialize document scanner configuration object using default configurations
-        var configuration = new SBSDKUI2DocumentScanningFlow();
-
-        // Disable the multiple page behavior
-        configuration.OutputSettings.PagesScanLimit = 1;
-
-        // Enable view finder
-        configuration.Screens.Camera.ViewFinder.Visible = true;
-        configuration.Screens.Camera.ViewFinder.AspectRatio = new SBSDKAspectRatio(width: 3, height: 4);
-
-        // Enable/Disable the review screen.
-        configuration.Screens.Review.Enabled = false;
-
-        // Enable/Disable Auto Snapping behavior
-        configuration.Screens.Camera.CameraConfiguration.AutoSnappingEnabled = true;
-
-        // Hide the auto snapping enable/disable button
-        configuration.Screens.Camera.BottomBar.AutoSnappingModeButton.Visible = false;
-        configuration.Screens.Camera.BottomBar.ManualSnappingModeButton.Visible = false;
-
-        // Set colors
-        configuration.Palette.SbColorPrimary = new SBSDKUI2Color(uiColor: Colors.ScanbotRed);
-        configuration.Palette.SbColorOnPrimary = new SBSDKUI2Color(uiColor: Colors.NearWhite);
-
-        // Configure the hint texts for different scenarios
-        configuration.Screens.Camera.UserGuidance.StatesTitles.TooDark = "Need more lighting to detect a document";
-        configuration.Screens.Camera.UserGuidance.StatesTitles.TooSmall = "Document too small";
-        configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
-       
-        try
-        {
-            // Launch the scanner.
-            // The GetOrThrow(NSError error) extension, validates the operation if error. Throws if error occured.  
-            SBSDKUI2DocumentScannerController.PresentOn(viewController: this,
-                configuration: configuration,
-                error: out var presentationError,
-                completion: DidCompleteDocumentScanning).GetOrThrow(presentationError);
-        }
-        catch (Exception ex)
-        {
-            Alert.ValidateAndShowError(ex);
-        }
-    }
-
-    private void DidCompleteDocumentScanning(SBSDKUI2DocumentScannerController controller, SBSDKScannedDocument scannedDocument, NSError error)
-    {
-        // Dispose the controller instance returned in the handler.
-        controller?.Dispose();
-        
-        if (error != null)
-        {
-           Alert.ValidateAndShowError(error);
-           return;
-        }
-
-        // Completion handler to process the result.
-        if (scannedDocument?.Pages == null || scannedDocument.Pages.Length == 0)
-        {
-            return;
-        }
-
-        // Display results page.
-        OpenImageListController(scannedDocument.Uuid);
-    }
-    
-    /// <summary>
-    /// IClassicDocumentScannerViewResult implementation. Invoked from the Classic Component.
-    /// </summary>
-    /// <param name="scannedDocument"></param>
-    public void DidCompleteDocumentScanning(SBSDKScannedDocument scannedDocument)
-    {
-        if (scannedDocument?.Pages == null || scannedDocument.Pages.Length == 0)
-        {
-            return;
-        }
-
-        OpenImageListController(scannedDocument.Uuid);
-    }
-    
-    private async void CreateDocFromImage()
-    {
-        try
-        {
-            NSError error;
-            
-            // pick the image from photo library.
-            var image = await ImagePicker.Instance.PickImageAsync();
-            
-            // convert UIImage to SBSDKImageRef
-            var imageRef = SBSDKImageRef.FromUIImageWithImage(image, new SBSDKRawImageLoadOptions());
-
-            // Create an instance of a detector
-            // The GetOrThrow(NSError error) extension, validates the operation if error. Throws if error occured.
-            var detector = new SBSDKDocumentScanner(new SBSDKDocumentScannerConfiguration(), out error).GetOrThrow(error);
-
-            // Run detection on the image
-            var result = detector.RunWithImage(imageRef, out error).GetOrThrow(error);
-            if (result == null)
+            try
             {
-                Alert.Show("Error", "Unable to scan the document from image.");
-                return;
+                  // Launch the scanner.
+                  // The GetOrThrow(NSError error); validates the operation if error. Throws if error occured.  
+                  SBSDKUI2DocumentScannerController.PresentOn(viewController: this,
+                        configuration: configuration,
+                        error: out var presentationError,
+                        completion: DidCompleteDocumentScanning).GetOrThrow(presentationError);
+            }
+            catch (Exception ex)
+            {
+                  Alert.ValidateAndShowError(ex);
+            }
+      }
+
+      private void MultipleDocumentScanning()
+      {
+            // Initialize document scanner configuration object using default configurations
+            var configuration = new SBSDKUI2DocumentScanningFlow();
+
+            // Enable the multiple page behavior
+            configuration.OutputSettings.PagesScanLimit = 0;
+
+            // Enable/Disable Auto Snapping behavior
+            configuration.Screens.Camera.CameraConfiguration.AutoSnappingEnabled = true;
+
+            // Hide/Unhide the auto snapping enable/disable button
+            configuration.Screens.Camera.BottomBar.AutoSnappingModeButton.Visible = true;
+            configuration.Screens.Camera.BottomBar.ManualSnappingModeButton.Visible = true;
+
+            // Set colors
+            configuration.Palette.SbColorPrimary = new SBSDKUI2Color(uiColor: Colors.ScanbotRed);
+            configuration.Palette.SbColorOnPrimary = new SBSDKUI2Color(uiColor: Colors.NearWhite);
+
+            // Configure the hint texts for different scenarios
+            // e.g.
+            configuration.Screens.Camera.UserGuidance.StatesTitles.TooDark = "Need more lighting to detect a document";
+            configuration.Screens.Camera.UserGuidance.StatesTitles.TooSmall = "Document too small";
+            configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
+
+            // Enable/Disable the review screen.
+            configuration.Screens.Review.Enabled = true;
+
+            // Configure bottom bar (further properties like title, icon and  background can also be set for these buttons)
+            configuration.Screens.Review.BottomBar.AddButton.Visible = true;
+            configuration.Screens.Review.BottomBar.RetakeButton.Visible = true;
+            configuration.Screens.Review.BottomBar.CropButton.Visible = true;
+            configuration.Screens.Review.BottomBar.RotateButton.Visible = true;
+            configuration.Screens.Review.BottomBar.DeleteButton.Visible = true;
+
+            // Configure `more` popup on review screen
+            // e.g.
+            configuration.Screens.Review.MorePopup.ReorderPages.Icon.Visible = true;
+            configuration.Screens.Review.MorePopup.DeleteAll.Icon.Visible = true;
+            configuration.Screens.Review.MorePopup.DeleteAll.Title.Text = "Delete all pages";
+
+            // Configure reorder pages screen
+            // e.g.
+            configuration.Screens.ReorderPages.TopBarTitle.Text = "Reorder Pages";
+            configuration.Screens.ReorderPages.Guidance.Title.Text = "Reorder Pages";
+
+            // Configure cropping screen
+            // e.g
+            configuration.Screens.Cropping.TopBarTitle.Text = "Cropping Screen";
+            configuration.Screens.Cropping.BottomBar.ResetButton.Visible = true;
+            configuration.Screens.Cropping.BottomBar.RotateButton.Visible = true;
+            configuration.Screens.Cropping.BottomBar.DetectButton.Visible = true;
+
+            try
+            {
+                  // Launch the scanner.
+                  // The GetOrThrow(NSError error); validates the operation if error. Throws if error occured.  
+                  SBSDKUI2DocumentScannerController.PresentOn(viewController: this,
+                        configuration: configuration,
+                        error: out var presentationError,
+                        completion: DidCompleteDocumentScanning).GetOrThrow(presentationError);
+            }
+            catch (Exception ex)
+            {
+                  Alert.ValidateAndShowError(ex);
+            }
+      }
+
+      private void SingleFinderDocumentScanning()
+      {
+            // Initialize document scanner configuration object using default configurations
+            var configuration = new SBSDKUI2DocumentScanningFlow();
+
+            // Disable the multiple page behavior
+            configuration.OutputSettings.PagesScanLimit = 1;
+
+            // Enable view finder
+            configuration.Screens.Camera.ViewFinder.Visible = true;
+            configuration.Screens.Camera.ViewFinder.AspectRatio = new SBSDKAspectRatio(width: 3, height: 4);
+
+            // Enable/Disable the review screen.
+            configuration.Screens.Review.Enabled = false;
+
+            // Enable/Disable Auto Snapping behavior
+            configuration.Screens.Camera.CameraConfiguration.AutoSnappingEnabled = true;
+
+            // Hide the auto snapping enable/disable button
+            configuration.Screens.Camera.BottomBar.AutoSnappingModeButton.Visible = false;
+            configuration.Screens.Camera.BottomBar.ManualSnappingModeButton.Visible = false;
+
+            // Set colors
+            configuration.Palette.SbColorPrimary = new SBSDKUI2Color(uiColor: Colors.ScanbotRed);
+            configuration.Palette.SbColorOnPrimary = new SBSDKUI2Color(uiColor: Colors.NearWhite);
+
+            // Configure the hint texts for different scenarios
+            configuration.Screens.Camera.UserGuidance.StatesTitles.TooDark = "Need more lighting to detect a document";
+            configuration.Screens.Camera.UserGuidance.StatesTitles.TooSmall = "Document too small";
+            configuration.Screens.Camera.UserGuidance.StatesTitles.NoDocumentFound = "Could not detect a document";
+
+            try
+            {
+                  // Launch the scanner.
+                  // The GetOrThrow(NSError error) extension, validates the operation if error. Throws if error occured.  
+                  SBSDKUI2DocumentScannerController.PresentOn(viewController: this,
+                        configuration: configuration,
+                        error: out var presentationError,
+                        completion: DidCompleteDocumentScanning).GetOrThrow(presentationError);
+            }
+            catch (Exception ex)
+            {
+                  Alert.ValidateAndShowError(ex);
+            }
+      }
+
+      private void DidCompleteDocumentScanning(SBSDKUI2DocumentScannerController controller, SBSDKScannedDocument scannedDocument, NSError error)
+      {
+            // Dispose the controller instance returned in the handler.
+            controller?.Dispose();
+
+            if (error != null)
+            {
+                  Alert.ValidateAndShowError(error);
+                  return;
             }
 
-            // Create an instance of a document
-            var document = new SBSDKScannedDocument(documentImageSizeLimit: 0, out error).GetOrThrow(error);
+            // Completion handler to process the result.
+            if (scannedDocument?.Pages == null || scannedDocument.Pages.Length == 0)
+            {
+                  return;
+            }
 
-            // Add page to the document using the image and the detected polygon on the image (if any)
-            document.AddPageWith(image: imageRef, polygon: result.Polygon ?? new SBSDKPolygon(), filters: [], out error).GetOrThrow(error);
-            
-            // show the result
-            OpenImageListController(document.Uuid);
-        }
-        catch (Exception ex)
-        {
-            // display error
-            Alert.ValidateAndShowError(ex);
-        }
-    }
+            // Display results page.
+            OpenImageListController(scannedDocument.Uuid);
+      }
 
-    /// <summary>
-    /// Display Document results page.
-    /// </summary>
-    /// <param name="documentId">Document Guid string.</param>
-    private void OpenImageListController(string documentId)
-    {
-        var controller = new ScannedDocumentsViewController();
-        controller.NavigateData(documentId);
-        NavigationController?.PushViewController(controller, true);
-    }
+      /// <summary>
+      /// IClassicDocumentScannerViewResult implementation. Invoked from the Classic Component.
+      /// </summary>
+      /// <param name="scannedDocument"></param>
+      public void DidCompleteDocumentScanning(SBSDKScannedDocument scannedDocument)
+      {
+            if (scannedDocument?.Pages == null || scannedDocument.Pages.Length == 0)
+            {
+                  return;
+            }
 
-    /// <summary>
-    ///  Launch the Classic Component - SBSDKDocumentScannerViewController.
-    /// </summary>
-    private void ClassicDocumentScannerView()
-    {
-        var viewController = new ClassicDocumentScannerViewController
-        {
-            ResultDelegate = this
-        };
-        
-        NavigationController?.PushViewController(viewController, true);
-    }
+            OpenImageListController(scannedDocument.Uuid);
+      }
+
+      private async void CreateDocFromImage()
+      {
+            try
+            {
+                  NSError error;
+
+                  // pick the image from photo library.
+                  var image = await ImagePicker.Instance.PickImageAsync();
+
+                  // convert UIImage to SBSDKImageRef
+                  var imageRef = SBSDKImageRef.FromUIImageWithImage(image, new SBSDKRawImageLoadOptions());
+
+                  // Create an instance of a detector
+                  // The GetOrThrow(NSError error) extension, validates the operation if error. Throws if error occured.
+                  var detector = new SBSDKDocumentScanner(new SBSDKDocumentScannerConfiguration(), out error).GetOrThrow(error);
+
+                  // Run detection on the image
+                  var result = detector.RunWithImage(imageRef, out error).GetOrThrow(error);
+                  if (result == null)
+                  {
+                        Alert.Show("Error", "Unable to scan the document from image.");
+                        return;
+                  }
+
+                  // Create an instance of a document
+                  var document = new SBSDKScannedDocument(documentImageSizeLimit: 0, out error).GetOrThrow(error);
+
+                  // Add page to the document using the image and the detected polygon on the image (if any)
+                  document.AddPageWith(image: imageRef, polygon: result.Polygon ?? new SBSDKPolygon(), filters: [], straighteningParameters: new SBSDKDocumentStraighteningParameters(), out error).GetOrThrow(error);
+
+                  // show the result
+                  OpenImageListController(document.Uuid);
+            }
+            catch (Exception ex)
+            {
+                  // display error
+                  Alert.ValidateAndShowError(ex);
+            }
+      }
+
+      /// <summary>
+      /// Display Document results page.
+      /// </summary>
+      /// <param name="documentId">Document Guid string.</param>
+      private void OpenImageListController(string documentId)
+      {
+            var controller = new ScannedDocumentsViewController();
+            controller.NavigateData(documentId);
+            NavigationController?.PushViewController(controller, true);
+      }
+
+      /// <summary>
+      ///  Launch the Classic Component - SBSDKDocumentScannerViewController.
+      /// </summary>
+      private void ClassicDocumentScannerView()
+      {
+            var viewController = new ClassicDocumentScannerViewController
+            {
+                  ResultDelegate = this
+            };
+
+            NavigationController?.PushViewController(viewController, true);
+      }
+
+      private async void EnhanceDocumentFromImage()
+      {
+            try
+            {
+                  // pick the image from photo library.
+                  var image = await ImagePicker.Instance.PickImageAsync();
+                  if (image is null) return;
+
+                  var imageRef = SBSDKImageRef.FromUIImageWithImage(image, new SBSDKRawImageLoadOptions());
+
+                  // create the configuration
+                  var enhancer = SBSDKDocumentEnhancer.CreateAndReturnError(out var error).GetOrThrow(error);
+                  var result = enhancer.StraightenWithImage(imageRef, new SBSDKDocumentStraighteningParameters(), [], out error).GetOrThrow(error);
+
+                  // convert ImageRef to UIImage
+                  using var resultImage = result.StraightenedImage?.ToUIImageAndReturnError(out error).GetOrThrow(error);
+                  NavigationController?.PushViewController(new ImageResultViewController(resultImage), true);
+            } 
+            catch (Exception ex)
+            {
+                  Alert.ValidateAndShowError(ex);
+            }
+      }
 }

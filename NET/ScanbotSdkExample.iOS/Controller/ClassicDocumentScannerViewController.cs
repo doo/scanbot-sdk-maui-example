@@ -145,14 +145,13 @@ public class ClassicDocumentScannerViewController : UIViewController
         
         NavigationController?.PopViewController(true);
         
-        
         // Creating a SBSDKScannedDocument object from the captured original image.
         
         // Create an instance of a document
         var document = new SBSDKScannedDocument(documentImageSizeLimit:0, out _);
         
         // Add page to the document using the image and the detected polygon on the image (if any)
-        document.AddPageWith(args.OriginalImage, args.Result?.Polygon ?? new SBSDKPolygon(), [], out _);
+        document.AddPageWith(args.OriginalImage, args.Result?.Polygon ?? new SBSDKPolygon(), [], new SBSDKDocumentStraighteningParameters(), out var error);
         
         // set the result to navigate to the document listing page.
         ResultDelegate?.DidCompleteDocumentScanning(document);

@@ -16,12 +16,12 @@ public class StorageForPageSnippet
         
             // Create a new document with the specified maximum image size.
             // Setting the limit to 0, effectively disables the size limit.
-            var scannedDocument = new SBSDKScannedDocument(documentImageSizeLimit: 0, error: out error).GetOrThrow(error);
+            var scannedDocument = new SBSDKScannedDocument(documentImageSizeLimit: new IntPtr(0), error: out error).GetOrThrow(error);
 
             // add images to the document.
             foreach (var imageRef in imageRefs)
             {
-                scannedDocument.AddPageWith(image: imageRef, polygon:new SBSDKPolygon(), filters: [new SBSDKColorDocumentFilter()], error: out error).GetOrThrow(error);
+                scannedDocument.AddPageWith(image: imageRef, polygon:new SBSDKPolygon(), filters: [new SBSDKColorDocumentFilter()], new SBSDKDocumentStraighteningParameters(), error: out error).GetOrThrow(error);
             }
         }
         catch (Exception ex)
@@ -37,7 +37,7 @@ public class StorageForPageSnippet
         {
             // Create the scanned document using convenience initializer `init?(document:documentImageSizeLimit:)`
             // `SBSDKDocument` doesn't support `documentImageSizeLimit`, but you can add it to unify size of the documents.
-            var scannedDocument = new SBSDKScannedDocument(document: document, documentImageSizeLimit: 2048,error: out var error).GetOrThrow(error);
+            var scannedDocument = new SBSDKScannedDocument(document: document, documentImageSizeLimit: new IntPtr(2048), straighteningParameters: new SBSDKDocumentStraighteningParameters(), error: out var error).GetOrThrow(error);
             return scannedDocument;
         }
         catch (Exception ex)
@@ -71,7 +71,7 @@ public class StorageForPageSnippet
         try
         {
             // Reorder images in the scanned document.
-            scannedDocument.MovePageAtTo(sourceIndex, destinationIndex, error: out var error).GetOrThrow(error);
+            scannedDocument.MovePageAtTo(sourceIndex, (nint)destinationIndex, error: out var error).GetOrThrow(error);
         }
         catch (Exception ex)
         {

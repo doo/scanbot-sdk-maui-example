@@ -1,3 +1,4 @@
+using Scanbot.ImagePicker.iOS;
 using ScanbotSdkExample.iOS.View;
 using ScanbotSdkExample.iOS.Models;
 using ScanbotSdkExample.iOS.Utils;
@@ -28,7 +29,8 @@ namespace ScanbotSdkExample.iOS.Controller
                 new ListItem("Single Finder Document Scanning", SingleFinderDocumentScanning),
                 new ListItem("Multiple Document Scanning", MultipleDocumentScanning),
                 new ListItem("Create Document From Image", CreateDocFromImage),
-                new ListItem("Classic Document Scanner View", ClassicDocumentScannerView)
+                new ListItem("Classic Document Scanner View", ClassicDocumentScannerView),
+                new ListItem("Enhance document From Image", EnhanceDocumentFromImage)
             ];
 
             _dataDetectors =
@@ -61,7 +63,7 @@ namespace ScanbotSdkExample.iOS.Controller
 
             _contentView.LicenseIndicator.Text = Texts.NoLicenseFoundTheAppWillTerminateAfterOneMinute;
         }
-        
+
         public override void ViewWillAppear(bool animated)
         {
             base.ViewWillAppear(animated);
