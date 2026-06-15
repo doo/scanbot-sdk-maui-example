@@ -1,4 +1,5 @@
 using Android.Graphics;
+using ScanbotSDK.Droid.Helpers;
 
 namespace ScanbotSdkExample.Droid.Snippets.PdfOperations;
 
@@ -9,22 +10,18 @@ public static class CreateImagesFromPdfSnippet
         try
         {
             var extractor = sdk.CreatePdfImagesExtractor();
-
-            var imageUris = extractor.ImageUrlsFromPdf(
+            
+            var pdfExtractorResult = extractor.Extract(
                 pdfFile: new Java.IO.File(pdfFilePath),
                 outputDir: new Java.IO.File("path/to/output/folder"),
-                prefix: "image_",
-                compression: Bitmap.CompressFormat.Jpeg,
+                prefix: "image",
                 quality: 100,
-                scaling: 2.0f,
-                bitmapConfig: Bitmap.Config.Argb8888,
-                cancelCallback: null,
-                progressCallback: null
-            );
-
-            foreach (var imageUri in imageUris)
+                scaling: 2.0f);
+            
+            var imageUris = pdfExtractorResult.GetOrThrow<Java.Util.ArrayList>()?.ToArray() ?? [];
+            foreach (Android.Net.Uri imageUri in imageUris)
             {
-                // Handle the result
+                // Handle the Uri items here.
             }
         }
         catch (Exception e)

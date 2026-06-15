@@ -1,5 +1,6 @@
-using Android.Graphics;
 using IO.Scanbot.Sdk.Docprocessing;
+using IO.Scanbot.Sdk.Image;
+using IO.Scanbot.Sdk.Pdf;
 using ScanbotSDK.Droid.Helpers;
 
 namespace ScanbotSdkExample.Droid.Snippets.PdfOperations;
@@ -10,38 +11,27 @@ public static class CreateDocumentFromPdfSnippet
     {
         try
         {
-            var extractor = sdk.CreatePdfImagesExtractor();
-
-            var imageUris = extractor.ImageUrlsFromPdf(
-                pdfFile: new Java.IO.File(pdfFilePath),
-                outputDir: new Java.IO.File("path/to/output/folder"),
-                prefix: "image_",
-                compression: Bitmap.CompressFormat.Jpeg,
-                quality: 100,
-                scaling: 2.0f,
-                bitmapConfig: Bitmap.Config.Argb8888,
-                cancelCallback: null,
-                progressCallback: null
-            );
-
             var document = sdk.DocumentApi.CreateDocument(documentImageSizeLimit: 2048).GetOrThrow<Document>();
-
-            foreach (var imageUri in imageUris)
-            {
-                var bitmap = BitmapFactory.DecodeFile(imageUri.Path);
-
-                if (bitmap == null)
-                {
-                    Console.WriteLine("Failed to load bitmap from URI");
-                    continue;
-                }
-
-                document.AddPage(bitmap);
-            }
+            
+            var extractor = sdk.CreatePdfImagesExtractor();
+            extractor.Extract(pdfFile: new Java.IO.File(pdfFilePath), processingCallback: new PdfImageExtractingCallback(document)).GetOrThrow<Java.Lang.Void>();
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
+        }
+    }
+    
+    private class PdfImageExtractingCallback(Document document) : Java.Lang.Object, IPdfImagesExtractor.IPdfImageExtractingCallback
+    {
+        public bool Process(ImageRef extractedImage)
+        {
+            using (extractedImage)
+            {
+                document.AddPage(extractedImage).GetOrThrow<Java.Lang.Void>();
+            }
+
+            return true;
         }
     }
 }

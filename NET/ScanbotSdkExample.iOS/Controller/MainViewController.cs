@@ -28,7 +28,7 @@ namespace ScanbotSdkExample.iOS.Controller
                 new ListItem("Single Finder Document Scanning", SingleFinderDocumentScanning),
                 new ListItem("Multiple Document Scanning", MultipleDocumentScanning),
                 new ListItem("Create Document From Image", CreateDocFromImage),
-                new ListItem("Classic Document Scanner View", ClassicDocumentScannerView)
+                new ListItem("Classic Document Scanner View", ClassicDocumentScannerView),
             ];
 
             _dataDetectors =
@@ -61,7 +61,7 @@ namespace ScanbotSdkExample.iOS.Controller
 
             _contentView.LicenseIndicator.Text = Texts.NoLicenseFoundTheAppWillTerminateAfterOneMinute;
         }
-        
+
         public override void ViewWillAppear(bool animated)
         {
             base.ViewWillAppear(animated);

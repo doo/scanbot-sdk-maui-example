@@ -204,7 +204,7 @@ public partial class PagePreviewActivity : AppCompatActivity, IFiltersListener
     {
         foreach (var page in _document.Pages)
         {
-            page.Apply(page.Rotation, page.Polygon, [ selectedFilter ]);
+            page.Apply(page.Rotation, page.Polygon, [ selectedFilter ], null);
         }
         _adapter.Refresh(_document);                                          
     }

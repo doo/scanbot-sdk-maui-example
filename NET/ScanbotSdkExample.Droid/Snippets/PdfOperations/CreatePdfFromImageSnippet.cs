@@ -23,6 +23,7 @@ public static class CreatePdfFromImageSnippet
             pageFit: PageFit.FitIn,
             dpi: 72,
             jpegQuality: 80,
+            jpegOptimize: true,
             resamplingMethod: ResamplingMethod.None,
             binarizationFilter: ParametricFilter.ScanbotBinarizationFilter());
 
