@@ -14,14 +14,13 @@ public static class CreateImagesFromPdfSnippet
             var pdfExtractorResult = extractor.Extract(
                 pdfFile: new Java.IO.File(pdfFilePath),
                 outputDir: new Java.IO.File("path/to/output/folder"),
-                prefix: "image_",
+                prefix: "image",
                 quality: 100,
                 scaling: 2.0f);
             
-            var imageUris = pdfExtractorResult.GetOrThrow<global::Java.Util.ArrayList>()?.ToArray() ?? [];
-            foreach (var boxedUri in imageUris)
+            var imageUris = pdfExtractorResult.GetOrThrow<Java.Util.ArrayList>()?.ToArray() ?? [];
+            foreach (Android.Net.Uri imageUri in imageUris)
             {
-                if (boxedUri is not Android.Net.Uri uri) continue;
                 // Handle the Uri items here.
             }
         }

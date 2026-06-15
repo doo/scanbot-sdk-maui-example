@@ -15,7 +15,6 @@
         <NoWarn>CA1422;CS0618;XAOBS001</NoWarn>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="ScanbotSDK.NET" Version="9.0.0-alpha.1" />
-        <PackageReference Include="Xamarin.Google.Guava" Version="33.5.0.2" />
+        <PackageReference Include="ScanbotSDK.NET" Version="9.0.0-alpha.2" />
     </ItemGroup>
 </Project>

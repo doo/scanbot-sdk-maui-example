@@ -1,4 +1,3 @@
-using Scanbot.ImagePicker.iOS;
 using ScanbotSdkExample.iOS.View;
 using ScanbotSdkExample.iOS.Models;
 using ScanbotSdkExample.iOS.Utils;
@@ -30,7 +29,6 @@ namespace ScanbotSdkExample.iOS.Controller
                 new ListItem("Multiple Document Scanning", MultipleDocumentScanning),
                 new ListItem("Create Document From Image", CreateDocFromImage),
                 new ListItem("Classic Document Scanner View", ClassicDocumentScannerView),
-                new ListItem("Enhance document From Image", EnhanceDocumentFromImage)
             ];
 
             _dataDetectors =

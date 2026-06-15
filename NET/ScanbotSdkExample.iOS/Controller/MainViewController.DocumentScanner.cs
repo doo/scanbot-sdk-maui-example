@@ -275,28 +275,4 @@ public partial class MainViewController : IClassicDocumentScannerViewResult
 
             NavigationController?.PushViewController(viewController, true);
       }
-
-      private async void EnhanceDocumentFromImage()
-      {
-            try
-            {
-                  // pick the image from photo library.
-                  var image = await ImagePicker.Instance.PickImageAsync();
-                  if (image is null) return;
-
-                  var imageRef = SBSDKImageRef.FromUIImageWithImage(image, new SBSDKRawImageLoadOptions());
-
-                  // create the configuration
-                  var enhancer = SBSDKDocumentEnhancer.CreateAndReturnError(out var error).GetOrThrow(error);
-                  var result = enhancer.StraightenWithImage(imageRef, new SBSDKDocumentStraighteningParameters(), [], out error).GetOrThrow(error);
-
-                  // convert ImageRef to UIImage
-                  using var resultImage = result.StraightenedImage?.ToUIImageAndReturnError(out error).GetOrThrow(error);
-                  NavigationController?.PushViewController(new ImageResultViewController(resultImage), true);
-            } 
-            catch (Exception ex)
-            {
-                  Alert.ValidateAndShowError(ex);
-            }
-      }
 }

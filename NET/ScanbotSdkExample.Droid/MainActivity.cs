@@ -24,7 +24,6 @@ public partial class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
     private const int DetectCheckFromImageCode = 6004;
     private const int ExtractDocumentDataFromImageCode = 6005;
     private const int DetectCreditCardFromImageCode = 6006;
-    private const int StraightenDocumentFromImageCode = 6007;
     private const string ViewLicenseInfo = "View License Info";
 
     private readonly List<ListItemButton> _buttons = [];
@@ -49,7 +48,6 @@ public partial class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
             new ListItemButton(this, "Multiple Document Scanning", MultipleDocumentScanning),
             new ListItemButton(this, "Create Document From Image", CreateDocFromImage),
             new ListItemButton(this, "Classic Document Scanner View", ClassicDocumentScannerView),
-            new ListItemButton(this, "Document Straightener From Image", () => LaunchImagePicker(StraightenDocumentFromImageCode))
         ]);
 
         var detectors = (LinearLayout)container.FindViewById(ResourceConstant.Id.data_detectors)!;

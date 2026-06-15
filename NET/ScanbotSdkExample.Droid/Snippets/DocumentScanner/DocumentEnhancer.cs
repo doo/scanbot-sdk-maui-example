@@ -7,7 +7,7 @@ using IO.Scanbot.Sdk.Ui_v2.Common.Activity;
 using IO.Scanbot.Sdk.Ui_v2.Document;
 using IO.Scanbot.Sdk.Ui_v2.Document.Configuration;
 
-namespace ScanbotSdkExample.Droid.Snippets;
+namespace ScanbotSdkExample.Droid.Snippets.DocumentScanner;
 
 public class DocumentEnhancer : AppCompatActivity
 {
