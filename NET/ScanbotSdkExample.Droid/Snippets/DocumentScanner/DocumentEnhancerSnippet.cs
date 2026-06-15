@@ -9,7 +9,7 @@ using IO.Scanbot.Sdk.Ui_v2.Document.Configuration;
 
 namespace ScanbotSdkExample.Droid.Snippets.DocumentScanner;
 
-public class DocumentEnhancer : AppCompatActivity
+public class DocumentEnhancerSnippet : AppCompatActivity
 {
     private IO.Scanbot.Sdk.ScanbotSDK _scanbotSdk;
     private const int ScanDocumentRequestCode = 001;
@@ -33,7 +33,6 @@ public class DocumentEnhancer : AppCompatActivity
         var configuration = new DocumentScanningFlow();
 
         // Create the parameters as required
-        configuration.OutputSettings.StraighteningParameters.StraighteningMode = DocumentStraighteningMode.None;
         configuration.OutputSettings.StraighteningParameters.StraighteningMode = DocumentStraighteningMode.Straighten;
 
         // The straightening parameters can be customized to fit the expected aspect ratio of the document

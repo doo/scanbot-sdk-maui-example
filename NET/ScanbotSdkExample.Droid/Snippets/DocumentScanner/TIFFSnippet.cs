@@ -38,7 +38,7 @@ public class TIFFSnippet : AppCompatActivity
             zipCompressionLevel: defaultParams.ZipCompressionLevel,
             dpi: 200,
             userFields: Array.Empty<UserField>(),
-            ParametricFilter.ScanbotBinarizationFilter());
+            binarizationFilter: ParametricFilter.ScanbotBinarizationFilter());
 
         var isTiffGenerated = _scanbotSdk.CreateTiffGeneratorManager().GenerateFromDocument(document, tiffFile, options).GetValue<bool>();
         if (isTiffGenerated && document?.TiffUri != null)
@@ -59,7 +59,7 @@ public class TIFFSnippet : AppCompatActivity
             zipCompressionLevel: defaultParams.ZipCompressionLevel,
             dpi: 200,
             userFields: Array.Empty<UserField>(),
-            ParametricFilter.ScanbotBinarizationFilter());
+            binarizationFilter: ParametricFilter.ScanbotBinarizationFilter());
 
         // Notify the renderer that the images are encrypted with global sdk-encryption settings
         var encryptionEnabled = false;

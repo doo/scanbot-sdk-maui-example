@@ -3,7 +3,7 @@ using ScanbotSdkExample.iOS.Utils;
 
 namespace ScanbotSdkExample.iOS.Snippets.DocumentScanner;
 
-public class DocumentEnhancer : UIViewController
+public class DocumentEnhancerSnippet : UIViewController
 {
       public override void ViewDidLoad()
       {
@@ -19,7 +19,6 @@ public class DocumentEnhancer : UIViewController
             var configuration = new SBSDKUI2DocumentScanningFlow();
 
             // Create the parameters as required
-            configuration.OutputSettings.StraighteningParameters.StraighteningMode = SBSDKDocumentStraighteningMode.None;
             configuration.OutputSettings.StraighteningParameters.StraighteningMode = SBSDKDocumentStraighteningMode.Straighten;
 
             // The straightening parameters can be customized to fit the expected aspect ratio of the document

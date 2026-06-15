@@ -17,8 +17,8 @@ public class PdfSnippet : AppCompatActivity
 
         // Returns the singleton instance of the Sdk.
         _scanbotSdk = new IO.Scanbot.Sdk.ScanbotSDK(this);
-        var document = _scanbotSdk.DocumentApi.LoadDocument("Your_Document_Id").GetOrThrow<Document>();;
-		
+        var document = _scanbotSdk.DocumentApi.LoadDocument("Your_Document_Id").GetOrThrow<Document>();
+
         if (_scanbotSdk.LicenseInfo.IsValid)
         {
             CreatePdfFromDocument(document);
@@ -57,7 +57,7 @@ public class PdfSnippet : AppCompatActivity
     private void CreatePdfFromImage(List<Android.Net.Uri> inputUris)
     {
         var pdfFile = new Java.IO.File("Your path to pdf file.");
-		
+
         // Create the PDF attributes.  
         var pdfAttributes = new PdfAttributes(
             author: "Your author",
@@ -65,17 +65,17 @@ public class PdfSnippet : AppCompatActivity
             title: "Your title",
             subject: "Your subject",
             keywords: "Your keywords");
-		
+
         // Create the PDF rendering configurations.
-        var pdfConfig = new PdfConfiguration(attributes: pdfAttributes, 
-            pageSize:PageSize.A4, 
-            pageDirection:PageDirection.Auto, 
-            pageFit:PageFit.None, 
-            dpi:200, 
-            jpegQuality:100,
+        var pdfConfig = new PdfConfiguration(attributes: pdfAttributes,
+            pageSize: PageSize.A4,
+            pageDirection: PageDirection.Auto,
+            pageFit: PageFit.None,
+            dpi: 200,
+            jpegQuality: 100,
             jpegOptimize: false,
-            ResamplingMethod.None,
-            ParametricFilter.ScanbotBinarizationFilter());
+            resamplingMethod: ResamplingMethod.None,
+            binarizationFilter: ParametricFilter.ScanbotBinarizationFilter());
 
         // Notify the renderer that the images are encrypted with global sdk-encryption settings
         var encryptionEnabled = false;
