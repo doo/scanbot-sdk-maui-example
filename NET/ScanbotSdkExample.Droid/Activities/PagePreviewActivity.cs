@@ -9,7 +9,6 @@ using ScanbotSdkExample.Droid.Listeners;
 using ScanbotSdkExample.Droid.Utils;
 using IO.Scanbot.Sdk.Docprocessing;
 using IO.Scanbot.Sdk.Documentqualityanalyzer;
-using IO.Scanbot.Sdk.Documentscanner;
 using IO.Scanbot.Sdk.Image;
 using IO.Scanbot.Sdk.Imageprocessing;
 using IO.Scanbot.Sdk.Ui_v2.Common;

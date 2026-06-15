@@ -7,7 +7,6 @@ using AndroidX.Core.View;
 using IO.Scanbot.Common;
 using IO.Scanbot.Sdk.Camera;
 using IO.Scanbot.Sdk.Docprocessing;
-using IO.Scanbot.Sdk.Document;
 using IO.Scanbot.Sdk.Document.UI;
 using IO.Scanbot.Sdk.Documentscanner;
 using IO.Scanbot.Sdk.Image;
