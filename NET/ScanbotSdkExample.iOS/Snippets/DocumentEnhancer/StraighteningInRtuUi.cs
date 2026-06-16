@@ -1,9 +1,9 @@
 using ScanbotSDK.iOS;
 using ScanbotSdkExample.iOS.Utils;
 
-namespace ScanbotSdkExample.iOS.Snippets.DocumentScanner;
+namespace ScanbotSdkExample.iOS.Snippets.DocumentEnhancer;
 
-public class DocumentEnhancerSnippet : UIViewController
+public class StraighteningInRtuUi : UIViewController
 {
       public override void ViewDidLoad()
       {
@@ -37,11 +37,11 @@ public class DocumentEnhancerSnippet : UIViewController
             }
             catch (Exception e)
             {
-                  // handle the error thrown from the GetOrThrow(...) function, referenced by the PresentOn(...) error object. 
+                  // handle the error thrown from the GetOrThrow(...) function, referenced by the PresentOn(...) error object.
                   Console.WriteLine(e);
             }
       }
-      
+
       private void DocumentScannerCompletion(SBSDKUI2DocumentScannerController controller, SBSDKScannedDocument document, NSError error)
       {
             // check for error
