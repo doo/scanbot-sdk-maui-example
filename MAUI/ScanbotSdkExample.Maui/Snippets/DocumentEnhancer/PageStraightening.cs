@@ -1,26 +1,14 @@
-using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Core.Document;
 using ScanbotSDK.MAUI.Core.DocumentScanner;
 using ScanbotSDK.MAUI.Core.Geometry;
-using ScanbotSdkExample.Maui.Utils;
+using ScanbotSDK.MAUI.Document;
 
 namespace ScanbotSdkExample.Maui.Snippets.DocumentEnhancer;
 
 public class PageStraightening
 {
-    private static async Task StraighteningDocument(string documentUuid)
+    private static async Task StraighteningDocument(IScannedDocument.IPage page)
     {
-        // Retrieve the scanned document (replace Guid.Empty with a real value)
-        var documentResult = ScanbotSDKMain.Document.LoadDocument(documentUuid: documentUuid);
-        if (!documentResult.IsSuccess)
-        {
-            // access the returned exception with `result.Error`
-            return;
-        }
-
-        // Retrieve the selected document page.
-        var page = documentResult.Value.Pages.First();
-
         var straighteningParameters = new DocumentStraighteningParameters
         {
             // Configure the straightening mode as needed
