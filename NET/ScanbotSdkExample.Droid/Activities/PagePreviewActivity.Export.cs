@@ -115,19 +115,6 @@ public partial class PagePreviewActivity
         var recognitionMode = IOcrEngineManager.EngineMode.ScanbotOcr;
         IOcrEngineManager.OcrConfig ocrConfig = new IOcrEngineManager.OcrConfig(recognitionMode);
 
-        // to use legacy configuration we have to pass the installed languages.
-        if (recognitionMode == IOcrEngineManager.EngineMode.Tesseract)
-        {
-            var languages = _scanbotSdk.CreateOcrEngineManager().InstalledLanguages;
-            if (languages.Count == 0)
-            {
-                RunOnUiThread(delegate { Alert.Toast(this, "OCR languages blobs are not available"); });
-                return null;
-            }
-
-            ocrConfig = new IOcrEngineManager.OcrConfig(recognitionMode, languages);
-        }
-
         var pdfAttributes = new PdfAttributes(
             author: "Your author",
             creator: "Your creator",
@@ -160,24 +147,7 @@ public partial class PagePreviewActivity
         // This is the new OCR configuration with ML which doesn't require the languages.
         var recognitionMode = IOcrEngineManager.EngineMode.ScanbotOcr;
         var recognizer = _scanbotSdk.CreateOcrEngineManager();
-
-        // to use legacy configuration we have to pass the installed languages.
-        if (recognitionMode == IOcrEngineManager.EngineMode.Tesseract)
-        {
-            var languages = recognizer.InstalledLanguages;
-            if (languages.Count == 0)
-            {
-                RunOnUiThread(delegate { Alert.Toast(this, "OCR languages blobs are not available"); });
-                return;
-            }
-
-            var ocrConfig = new IOcrEngineManager.OcrConfig(recognitionMode, languages);
-            recognizer.SetOcrConfig(ocrConfig);
-        }
-        else
-        {
-            recognizer.SetOcrConfig(new IOcrEngineManager.OcrConfig(recognitionMode));
-        }
+        recognizer.SetOcrConfig(new IOcrEngineManager.OcrConfig(recognitionMode));
 
         try
         {
