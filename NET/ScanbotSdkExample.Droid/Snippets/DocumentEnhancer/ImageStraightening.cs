@@ -7,7 +7,7 @@ namespace ScanbotSdkExample.Droid.Snippets.DocumentEnhancer;
 
 public class ImageStraightening
 {
-    public static void StraightenImage(IDocumentEnhancer enhancer, ImageRef imageRef)
+    public static void StraightenImage(IO.Scanbot.Sdk.ScanbotSDK sdk, ImageRef imageRef)
     {
         try
         {
@@ -25,6 +25,9 @@ public class ImageStraightening
                     new AspectRatio(width: 3, height: 4)
                 ]
             };
+
+            // Create the document enhancer.
+            var enhancer = sdk.CreateDocumentEnhancer().GetOrThrow<IDocumentEnhancer>();
 
             // Straighten the image using the document enhancer.
             var result = enhancer.Straighten(image: imageRef,
