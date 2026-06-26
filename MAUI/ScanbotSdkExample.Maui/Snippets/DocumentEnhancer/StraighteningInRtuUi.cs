@@ -13,7 +13,6 @@ public class StraighteningInRtuUi
         var configuration = new DocumentScanningFlow();
 
         // Create the parameters as required
-        configuration.OutputSettings.StraighteningParameters.StraighteningMode = DocumentStraighteningMode.None;
         configuration.OutputSettings.StraighteningParameters.StraighteningMode = DocumentStraighteningMode.Straighten;
 
         // The straightening parameters can be customized to fit the expected aspect ratio of the document
