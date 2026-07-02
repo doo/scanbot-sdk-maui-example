@@ -19,7 +19,6 @@
         <CodesignProvision>Automatic</CodesignProvision>
         <CodesignKey>iPhone Developer</CodesignKey>
         <MtouchDebug>true</MtouchDebug>
-        <WarningsAsErrors>NU1603</WarningsAsErrors>
         <PackageId>ScanbotSdkExample.iOS</PackageId>
         <RootNamespace>ScanbotSdkExample.iOS</RootNamespace>
     </PropertyGroup>
@@ -80,6 +79,6 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Scanbot.Xamarin.ImagePicker" Version="0.0.3-beta.1" />
-        <PackageReference Include="ScanbotSDK.NET" Version="9.0.0-rc.1" />
+        <PackageReference Include="ScanbotSDK.NET" Version="9.0.0-rc.2" />
     </ItemGroup>
 </Project>
