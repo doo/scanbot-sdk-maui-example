@@ -29,6 +29,7 @@ public partial class FiltersPage
             FilterItem.InitSlider(nameof(CustomBinarizationFilter), FilterItemConstants.Radius, 32, 0, 512),
 
             FilterItem.InitPrimaryFilter(nameof(ColorDocumentFilter)),
+            FilterItem.InitPrimaryFilter(nameof(ColorDocumentShadowRemovalFilter)),
 
             FilterItem.InitPrimaryFilter(nameof(BrightnessFilter)),
             FilterItem.InitSlider(nameof(BrightnessFilter), FilterItemConstants.Brightness, 0.0, -1.0, 1.0),
@@ -246,7 +247,10 @@ public partial class FiltersPage
                     GetBinarizationPreset(presets));
             }
             case nameof(ColorDocumentFilter):
-                return ParametricFilter.ColorDocument;
+                return ParametricFilter.ColorDocument();
+            
+            case nameof(ColorDocumentShadowRemovalFilter):
+                return ParametricFilter.ColorDocumentShadowRemoval();
 
             case nameof(BrightnessFilter):
                 return ParametricFilter.Brightness(properties.First().SliderValue);

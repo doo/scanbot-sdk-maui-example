@@ -16,8 +16,7 @@
         <ApplicationVersion>1.0</ApplicationVersion>
         <!-- Supported Platforms -->
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">13.0</SupportedOSPlatformVersion>
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21</SupportedOSPlatformVersion>
-        <WarningsAsErrors>NU1603</WarningsAsErrors>
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">23</SupportedOSPlatformVersion>
         <NoWarn>CS0162;CS4014</NoWarn>
         <LangVersion>12.0</LangVersion>
         <PackageId>ScanbotSdkExample.Maui</PackageId>
@@ -99,6 +98,6 @@
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Maui" Version="14.0.1" />
         <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.*" />
-        <PackageReference Include="ScanbotSDK.MAUI" Version="8.0.0" />
+        <PackageReference Include="ScanbotSDK.MAUI" Version="9.0.0" />
     </ItemGroup>
 </Project>

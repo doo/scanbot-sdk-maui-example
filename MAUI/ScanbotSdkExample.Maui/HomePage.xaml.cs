@@ -1,7 +1,7 @@
 ﻿using ScanbotSDK.MAUI;
 using ScanbotSDK.MAUI.Core.Document;
+using ScanbotSDK.MAUI.Core.DocumentScanner;
 using ScanbotSDK.MAUI.Core.ImageProcessing;
-using OcrConfiguration = ScanbotSDK.MAUI.Core.Ocr.OcrConfiguration;
 using ScanbotSDK.MAUI.Core.PdfGeneration;
 using ScanbotSdkExample.Maui.Models;
 using ScanbotSdkExample.Maui.Results;
@@ -63,11 +63,44 @@ public partial class HomePage
             new SdkFeature("OCR from Image", ExtractOcrFromImageClicked),
             
             new SdkFeature("MISCELLANEOUS"),
+            new SdkFeature("Straighten document", DocumentStraightenerClicked),
             new SdkFeature(ViewLicenseInfo, ViewLicenseInfoClicked), 
             new SdkFeature("Learn more about Scanbot SDK", LearnMoreClicked)
         ];
         
         BindingContext = this;
+    }
+
+    private async Task DocumentStraightenerClicked()
+    {
+        var image = await ImagePicker.PickImageAsSourceAsync();
+        if (image is null) return;
+
+        IsLoading = true;
+
+        var straighteningParameters = new DocumentStraighteningParameters
+        {
+            StraighteningMode = DocumentStraighteningMode.Straighten,
+        };
+
+        var result = await ScanbotSDKMain.DocumentEnhancer.StraightenImageAsync(image, straighteningParameters);
+        
+        IsLoading = false;
+        
+        if (!result.IsSuccess)
+        {
+            await Alert.ShowAsync(result.Error);
+            return;
+        }
+        if (result.Value.StraightenedImage == null)
+        {
+            await Alert.ShowAsync(new Exception( "Straightening failed. The result does not contain a straightened image."));
+            return;
+        }
+        
+        // success: Display straightened image
+        var source = result.Value.StraightenedImage.ToImageSource();
+        await Navigation.PushAsync(new PreviewImagesPage([source]));
     }
 
     /// Item Selected method invoked on the ListView item selection.
@@ -163,9 +196,7 @@ public partial class HomePage
 
             IsLoading = true;
 
-            var result =
-                await ScanbotSDKMain.OcrEngine.RecognizeOnImagesAsync(images: [image],
-                    configuration: OcrConfiguration.ScanbotOcr);
+            var result = await ScanbotSDKMain.OcrEngine.RecognizeOnImagesAsync(images: [image]);
             if (!result.IsSuccess)
             {
                 await Alert.ShowAsync(result.Error);
@@ -240,7 +271,7 @@ public partial class HomePage
                 return;
             }
 
-            await Navigation.PushAsync(new PdfExtractedImageResultPage(result.Value));
+            await Navigation.PushAsync(new PreviewImagesPage(result.Value));
         }
         catch (Exception ex)
         {
