@@ -20,7 +20,7 @@ public partial class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
     private const int ScanVinRequestCode = 4004;
     private const int ScanCreditCardRequestCode = 4005;
     private const int ScanCheckRequestCode = 4008;
-    private const int  DetectMrzFromImageCode = 6001;
+    private const int DetectMrzFromImageCode = 6001;
     private const int DetectCheckFromImageCode = 6004;
     private const int ExtractDocumentDataFromImageCode = 6005;
     private const int DetectCreditCardFromImageCode = 6006;

@@ -7,7 +7,6 @@ using AndroidX.Core.View;
 using IO.Scanbot.Common;
 using IO.Scanbot.Sdk.Camera;
 using IO.Scanbot.Sdk.Docprocessing;
-using IO.Scanbot.Sdk.Document;
 using IO.Scanbot.Sdk.Document.UI;
 using IO.Scanbot.Sdk.Documentscanner;
 using IO.Scanbot.Sdk.Image;
@@ -52,7 +51,7 @@ namespace ScanbotSdkExample.Droid.Activities
             }
             catch (Exception ex)
             {
-                Alert.Show(this, "Error", ex.Message);
+                ShowAlert("Error", ex.Message);
                 return;
             }
           
@@ -131,11 +130,11 @@ namespace ScanbotSdkExample.Droid.Activities
             }
             catch (Exception e)
             {
-                SetAutoSnapEnabled(false);
-                Alert.Show(this, "Error", e.Message);
+                RunOnUiThread(() => SetAutoSnapEnabled(false));
+                ShowAlert("Error", e.Message);
                 return false;
             }
-            
+
             var color = Color.Red;
             var guideText = "";
 
@@ -172,6 +171,10 @@ namespace ScanbotSdkExample.Droid.Activities
             else if (result.Status.Equals(DocumentDetectionStatus.ErrorTooDark))
             {
                 guideText = "Poor light";
+            }
+            else
+            {
+                guideText = result.Status.ToString();
             }
 
             // The HandleResult callback is coming from a worker thread. Use main UI thread to update UI:
@@ -245,11 +248,19 @@ namespace ScanbotSdkExample.Droid.Activities
             }
             catch (Exception ex)
             {
-                Alert.Show(this, "Error", ex.Message);
+                ShowAlert("Error", ex.Message);
             }
         }
 
-        void SetAutoSnapEnabled(bool enabled)
+        private void ShowAlert(string title, string message)
+        {
+            RunOnUiThread(() =>
+            {
+                Alert.Show(this, title, message);
+            });
+        }
+
+        private void SetAutoSnapEnabled(bool enabled)
         {
             _documentScannerView.ViewController.AutoSnappingEnabled = enabled;
             _documentScannerView.ViewController.FrameProcessingEnabled = enabled;

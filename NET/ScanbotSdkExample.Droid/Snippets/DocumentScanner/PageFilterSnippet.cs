@@ -33,7 +33,10 @@ public class PageFilterSnippet : AppCompatActivity
 		
         foreach (var documentPage in document.Pages)
         {
-            documentPage.Apply(imageRotation, documentPage.Polygon,  new List<ParametricFilter> {binarizationFilter, brightnessFilter});
+            documentPage.Apply(newImageRotation:imageRotation, 
+                newPolygon: null, 
+                newFilters: [binarizationFilter, brightnessFilter],
+                newStraighteningParameters: null);
         }
     }
 }

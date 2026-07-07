@@ -1,8 +1,11 @@
-Open Source libraries used in the Scanbot SDK for .NET and MAUI version 8.0.0:
+Open Source libraries used in the Scanbot SDK for .NET and MAUI version 9.0.0:
 
 ------------------------------------------------------------------------------
 .NET for Android (formerly Xamarin.Android) bindings for Square.OkHttp3: 
-.NET for Android bindings for the Android Java library 'androidx.activity:activity-compose'.
+.NET for Android and MAUI bindings for the Android Java library 'androidx.activity:activity-compose'.
+
+Library description: Compose integration with Activity: 
+.NET for Android and MAUI bindings for the Android Java library 'androidx.activity:activity-compose'.
 
 Library description: Compose integration with Activity: 
 .NET for Android and MAUI bindings for the Android Java library 'androidx.activity:activity-ktx'.
@@ -121,6 +124,12 @@ Xamarin.Android bindings for AndroidX - material:
 .NET for Android and MAUI bindings for the Android Java library 'com.google.dagger:dagger'.
 
 Library description: A fast dependency injector for Android and Java.: 
+.NET for Android and MAUI bindings for the Android Java library 'com.google.guava:guava'.
+
+Library description: 
+    Guava is a suite of core and expanded libraries that include
+    utility classes, Google's collections, I/O classes, and
+    much more.: 
 .NET for Android bindings for the Android Java library 'org.jetbrains.kotlin:kotlin-parcelize-runtime'.
 
 Library description: Runtime library for the Parcelize compiler plugin: 
@@ -140,7 +149,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ------------------------------------------------------------------------------
 
-Open Source libraries used in the Scanbot SDK for Android version 8.0.1
+Open Source libraries used in the Scanbot SDK for Android version 9.0.1
 
 CWAC-Camera
 
@@ -2113,12 +2122,12 @@ defined by AIM ITS/04-023 International Technical Standard - Extended Channel In
 
 magic-enum
 
-Version v0.8.1
+Version v0.9.7
 (https://github.com/Neargye/magic_enum)
 
 MIT License
 
-Copyright (c) 2019 - 2022 Daniil Goncharov
+Copyright (c) 2019 - 2024 Daniil Goncharov
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -3629,7 +3638,7 @@ Version 1.1.0
 
 ------------------------------------------------------------------------------
 
-Open Source libraries used in ScanbotSDK for iOS version 8.0.4:
+Open Source libraries used in ScanbotSDK for iOS version 9.0.1:
 
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
@@ -5415,12 +5424,12 @@ defined by AIM ITS/04-023 International Technical Standard - Extended Channel In
 
 magic-enum
 
-Version v0.8.1
+Version v0.9.7
 (https://github.com/Neargye/magic_enum)
 
 MIT License
 
-Copyright (c) 2019 - 2022 Daniil Goncharov
+Copyright (c) 2019 - 2024 Daniil Goncharov
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -6939,4 +6948,3 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
