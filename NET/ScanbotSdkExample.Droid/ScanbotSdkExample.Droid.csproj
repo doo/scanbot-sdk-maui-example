@@ -14,6 +14,6 @@
         <NoWarn>CA1422;CS0618;XAOBS001</NoWarn>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="ScanbotSDK.NET" Version="9.0.0-rc.3" />
+        <PackageReference Include="ScanbotSDK.NET" Version="9.0.0" />
     </ItemGroup>
 </Project>
