@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ScanbotSdkExample.Maui.ClassicUI.Pages.ClassicMrzScannerPage" 
+             xmlns:classicView="clr-namespace:ScanbotSDK.MAUI.Mrz.ClassicComponent;assembly=DocumentSDK.MAUI"
+             xmlns:customButton="clr-namespace:ScanbotSdkExample.Maui.Controls;assembly=ScanbotSdkExample.Maui"
+             xmlns:models="clr-namespace:ScanbotSdkExample.Maui.Models;assembly=ScanbotSdkExample.Maui"
+             xmlns:local="clr-namespace:ScanbotSdkExample.Maui.ClassicUI.Pages"
+             x:DataType="local:ClassicMrzScannerPage">
+    <ContentPage.Resources>
+        <Style x:Key="ScannerButonStyle" TargetType="Button">
+            <Setter Property="CornerRadius">10</Setter>
+            <Setter Property="BackgroundColor">WhiteSmoke</Setter>
+            <Setter Property="TextColor">DarkSlateGrey</Setter>
+            <Setter Property="FontAttributes">Bold</Setter>
+        </Style>
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <Grid 
+            x:Name="GridParent"
+            RowDefinitions="8*,2*">
+            <Grid Grid.Row="0">
+            <classicView:MrzScannerView
+                x:Name="MrzView"
+                FlashEnabled="{Binding IsFlashEnabled}"
+                FinderEnabled="{Binding IsFinderEnabled}"
+                CameraModule="{Binding MrzCameraModule}"
+                IsCameraFrozen="{Binding FreezeCamera}"
+                IsVisible="{Binding IsCameraVisible}"
+                OnMrzScannerResult="MrzView_OnOnMrzScannerResult"
+                />
+            </Grid>
+            <CollectionView 
+                x:Name="CollectionViewButtons"
+                Grid.Row="1"
+                ItemsSource="{Binding ScannerButtons}"
+                Margin="10">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:ClassicCollectionItem">
+                        <customButton:ToggleButton
+                            Text="{Binding Title}"
+                            Clicked="ScannerButtonOnClicked"
+                            Style="{x:StaticResource Key=ScannerButonStyle}"
+                            IsSelected="{Binding Selected}"/>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout
+                        x:Name="CollectionViewGridLayout"
+                        Span="3"
+                        Orientation="Vertical"
+                        HorizontalItemSpacing="5"
+                        VerticalItemSpacing="5" />
+                </CollectionView.ItemsLayout>
+            </CollectionView>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>
