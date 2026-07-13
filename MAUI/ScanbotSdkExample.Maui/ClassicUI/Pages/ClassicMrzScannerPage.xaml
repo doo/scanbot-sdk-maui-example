@@ -26,7 +26,7 @@
                 FlashEnabled="{Binding IsFlashEnabled}"
                 FinderEnabled="{Binding IsFinderEnabled}"
                 IsVisible="{Binding IsCameraVisible}"
-                OnMrzScannerResult="MrzView_OnOnMrzScannerResult"
+                OnMrzScannerResult="MrzView_OnMrzScannerResult"
                 />
             </Grid>
             <CollectionView 
