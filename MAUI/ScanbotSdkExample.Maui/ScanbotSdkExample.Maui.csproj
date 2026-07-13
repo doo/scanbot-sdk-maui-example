@@ -23,6 +23,10 @@
         <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
         <CreatePackage>false</CreatePackage>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)|$(Platform)|$(Configuration)'=='net10.0-android|AnyCPU|Release'">
+        <RunAOTCompilation>false</RunAOTCompilation>
+        <PublishTrimmed>false</PublishTrimmed>
+    </PropertyGroup>
     <!-- ===================== Application Resources ===================== -->
     <ItemGroup>
         <!-- App Icon -->
