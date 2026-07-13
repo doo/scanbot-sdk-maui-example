@@ -9,7 +9,7 @@ namespace ScanbotSdkExample.Maui.ClassicUI.Pages;
 
 public partial class ClassicMrzScannerPage : ContentPage
 {
-      private const string Finder = "Finder", Flash = "Flash", Freeze = "Freeze", Unfreeze = "UnFreeze", Visibility = "Visibility";
+      private const string Finder = "Finder", Flash = "Flash", Freeze = "Freeze", Unfreeze = "Unfreeze", Visibility = "Visibility";
 
       public ClassicMrzScannerPage()
       {
