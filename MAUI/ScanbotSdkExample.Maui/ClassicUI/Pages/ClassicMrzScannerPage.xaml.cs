@@ -113,6 +113,6 @@ public partial class ClassicMrzScannerPage : ContentPage
       {
             if (!e.Success) return;
             MrzView.IsCameraFrozen = true;
-            await Alert.ShowAsync("MRZ Result", e.RawMRZ, "Retry", "Cancel");
-      }
+            if (await Alert.ShowAsync("MRZ Result", e.RawMRZ, "Retry", "Cancel"))
+                MrzView.IsCameraFrozen = false;
 }
