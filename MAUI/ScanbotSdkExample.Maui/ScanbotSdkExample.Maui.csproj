@@ -25,14 +25,9 @@
     </PropertyGroup>
     
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)' == 'Release|net10.0-ios'">
-        <IsAotCompatible>true</IsAotCompatible>
-        <!-- Temporary workaround:
-             Enabling IsAotCompatible on .NET 10 iOS causes the CollectionView
-             on the home page to render empty, making the example application unusable.
-             Unlike Android, PublishTrimmed cannot be disabled while
-             IsAotCompatible is enabled, as this results in a build error.
-             Therefore, IsAotCompatible is intentionally not enabled for iOS
-             until the framework/tooling issue is resolved. -->
+        <!-- Temporary workaround: IsAotCompatible is disabled due to a .NET 10 iOS framework/tooling issue.
+            Enabling it currently breaks the example app. -->
+        <!-- <IsAotCompatible>false</IsAotCompatible> -->
         <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
     </PropertyGroup>
 
