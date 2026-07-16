@@ -23,10 +23,28 @@
         <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
         <CreatePackage>false</CreatePackage>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(TargetFramework)|$(Platform)|$(Configuration)'=='net10.0-android|AnyCPU|Release'">
-        <RunAOTCompilation>false</RunAOTCompilation>
-        <PublishTrimmed>false</PublishTrimmed>
+    
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)' == 'Release|net10.0-ios'">
+        <!-- Temporary workaround: IsAotCompatible is disabled due to a .NET 10 iOS framework/tooling issue.
+            Enabling it currently breaks the example app. -->
+        <!-- <IsAotCompatible>false</IsAotCompatible> -->
+        <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
     </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)' == 'Release|net10.0-android'">
+        <!-- Enable trim/AOT analyzers -->
+        <IsAotCompatible>true</IsAotCompatible>
+
+        <!-- Temporary workaround:
+         .NET 10 Android Release currently crashes during startup
+         (UnsatisfiedLinkError: MauiApplication.n_onCreate)
+         when trimming/AOT is enabled. Keep analyzers enabled while
+         disabling runtime trimming/AOT until the issue is resolved. -->
+        <PublishTrimmed>false</PublishTrimmed>
+        <RunAOTCompilation>false</RunAOTCompilation>
+        <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
+    </PropertyGroup>
+    
     <!-- ===================== Application Resources ===================== -->
     <ItemGroup>
         <!-- App Icon -->
