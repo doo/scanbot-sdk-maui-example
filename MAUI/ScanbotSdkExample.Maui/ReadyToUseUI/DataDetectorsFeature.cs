@@ -7,6 +7,7 @@ using ScanbotSDK.MAUI.DocumentData;
 using ScanbotSDK.MAUI.Mrz;
 using ScanbotSDK.MAUI.TextPattern;
 using ScanbotSDK.MAUI.Vin;
+using ScanbotSdkExample.Maui.ClassicUI.Pages;
 using ScanbotSdkExample.Maui.Utils;
 
 namespace ScanbotSdkExample.Maui.ReadyToUseUI;
@@ -169,5 +170,10 @@ public static class DataDetectorsFeature
         {
             await Alert.ShowAsync("Credit Card Result", StringUtils.GenericDocumentToString(result.Value.CreditCard));
         }
+    }
+
+    public static async Task ClassicMrzScannerViewClicked()
+    {
+        await App.Navigation.PushAsync(new ClassicMrzScannerPage(), true);
     }
 }
