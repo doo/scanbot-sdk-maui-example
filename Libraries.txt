@@ -1,4 +1,4 @@
-Open Source libraries used in the Scanbot SDK for .NET and MAUI version 9.0.0:
+Open Source libraries used in the Scanbot SDK for .NET and MAUI version 9.0.1:
 
 ------------------------------------------------------------------------------
 .NET for Android (formerly Xamarin.Android) bindings for Square.OkHttp3: 
@@ -3633,12 +3633,9 @@ Version 1.1.0
    limitations under the License.
 
 
-
-
-
 ------------------------------------------------------------------------------
 
-Open Source libraries used in ScanbotSDK for iOS version 9.0.1:
+Open Source libraries used in ScanbotSDK for iOS version 9.0.2:
 
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
