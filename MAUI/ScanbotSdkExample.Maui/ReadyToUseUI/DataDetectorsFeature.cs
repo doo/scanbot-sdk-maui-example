@@ -9,6 +9,7 @@ using ScanbotSDK.MAUI.TextPattern;
 using ScanbotSDK.MAUI.Vin;
 using ScanbotSdkExample.Maui.ClassicUI.Pages;
 using ScanbotSdkExample.Maui.Utils;
+using Constants = ScanbotSDK.MAUI.Constants;
 
 namespace ScanbotSdkExample.Maui.ReadyToUseUI;
 
@@ -175,5 +176,10 @@ public static class DataDetectorsFeature
     public static async Task ClassicMrzScannerViewClicked()
     {
         await App.Navigation.PushAsync(new ClassicMrzScannerPage(), true);
+    }
+
+    public static async Task ClassicCheckScannerViewClicked()
+    {
+        await App.Navigation.PushAsync(new ClassicCheckScannerPage(), true);
     }
 }

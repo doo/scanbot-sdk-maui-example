@@ -43,6 +43,7 @@ public partial class HomePage
             new SdkFeature("Classic Document Scanner", DocumentScannerFeature.ClassicDocumentScannerViewClicked),
             new SdkFeature("Classic Document Scanner (MVVM)", DocumentScannerFeature.ClassicDocumentScannerMVVMViewClicked),
             new SdkFeature("Classic Mrz Scanner", DataDetectorsFeature.ClassicMrzScannerViewClicked),
+            new SdkFeature("Classic Check Scanner", DataDetectorsFeature.ClassicCheckScannerViewClicked),
 
             new SdkFeature("DATA DETECTORS"),
             new SdkFeature("Check Scanner", DataDetectorsFeature.CheckScannerClicked),

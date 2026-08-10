@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ScanbotSdkExample.Maui.ClassicUI.Pages.ClassicMrzScannerPage" 
-             xmlns:classicView="clr-namespace:ScanbotSDK.MAUI.Mrz.ClassicComponent;assembly=DocumentSDK.MAUI"
+             x:Class="ScanbotSdkExample.Maui.ClassicUI.Pages.ClassicCheckScannerPage"
+             xmlns:classicView="clr-namespace:ScanbotSDK.MAUI.Check.ClassicComponent;assembly=DocumentSDK.MAUI"
              xmlns:customButton="clr-namespace:ScanbotSdkExample.Maui.Controls;assembly=ScanbotSdkExample.Maui"
              xmlns:models="clr-namespace:ScanbotSdkExample.Maui.Models;assembly=ScanbotSdkExample.Maui"
              xmlns:local="clr-namespace:ScanbotSdkExample.Maui.ClassicUI.Pages"
-             x:DataType="local:ClassicMrzScannerPage">
+             x:DataType="local:ClassicCheckScannerPage">
     <ContentPage.Resources>
         <Style x:Key="ScannerButonStyle" TargetType="Button">
             <Setter Property="CornerRadius">10</Setter>
@@ -20,11 +21,11 @@
             x:Name="GridParent"
             RowDefinitions="8*,2*">
             <Grid Grid.Row="0">
-            <classicView:MrzScannerView
-                x:Name="MrzView"
+            <classicView:CheckScannerView
+                x:Name="CheckView"
                 FlashEnabled="{Binding IsFlashEnabled}"
                 IsVisible="{Binding IsCameraVisible}"
-                OnMrzScannerResult="MrzView_OnMrzScannerResult"
+                OnCheckScanningResult="OnCheckScanningResult"
                 />
             </Grid>
             <CollectionView 

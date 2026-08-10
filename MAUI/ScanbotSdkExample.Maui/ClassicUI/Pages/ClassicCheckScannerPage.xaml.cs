@@ -1,17 +1,18 @@
 using ScanbotSDK.MAUI.Common;
 using ScanbotSDK.MAUI.Core.Common;
 using ScanbotSDK.MAUI.Core.Geometry;
-using ScanbotSDK.MAUI.Core.Mrz;
+using ScanbotSDK.MAUI.Core.Check;
 using ScanbotSdkExample.Maui.Models;
 using ScanbotSdkExample.Maui.Utils;
 
 namespace ScanbotSdkExample.Maui.ClassicUI.Pages;
 
-public partial class ClassicMrzScannerPage : ContentPage
+public partial class ClassicCheckScannerPage : ContentPage
 {
       private const string Finder = "Finder", Flash = "Flash", Freeze = "Stop Scan", Unfreeze = "Start Scan", Visibility = "Visibility";
       private FinderConfiguration _finderConfiguration;
-      public ClassicMrzScannerPage()
+      
+      public ClassicCheckScannerPage()
       {
             InitializeComponent();
 
@@ -26,31 +27,24 @@ public partial class ClassicMrzScannerPage : ContentPage
 
             BindingContext = this;
 
-            MrzView.KeepScreenOn = true;
-            MrzView.CameraPreviewMode = CameraPreviewMode.FitIn;
-            UpdateFinderConfig(IsFinderEnabled);
-            
-            MrzView.ScannerConfiguration = new MrzScannerConfiguration
-            {
-                  ReturnCrops = true,
-                  EnableDetection = true,
-                  ProcessingMode = ProcessingMode.SingleShot,
-            };
-            
-      }
-
-      private void UpdateFinderConfig(bool isFinderEnabled)
-      {
-            _finderConfiguration = new FinderConfiguration
+            CheckView.KeepScreenOn = true;
+            CheckView.CameraPreviewMode = CameraPreviewMode.FitIn;
+            CheckView.FinderConfiguration = new FinderConfiguration
             {
                   AspectRatio = new AspectRatio(5, 1),
                   LineColor = Colors.BlueViolet,
                   LineWidth = 3.5f,
                   OverlayColor = Colors.DarkSlateBlue.WithAlpha(0.5f),
-                  MinimumPadding = 90,
-                  Enabled = isFinderEnabled
+                  MinimumPadding = 30,
             };
-            MrzView.FinderConfiguration = _finderConfiguration;
+            
+            CheckView.ScannerConfiguration = new CheckScannerConfiguration
+            {
+                  // ReturnCrops = true,
+                  // EnableDetection = true,
+                  ProcessingMode = ProcessingMode.SingleShot
+            };
+            
       }
 
       private bool _isFlashEnabled;
@@ -97,6 +91,20 @@ public partial class ClassicMrzScannerPage : ContentPage
                   OnPropertyChanged();
             }
       }
+      
+      private void UpdateFinderConfig(bool isFinderEnabled)
+      {
+            _finderConfiguration = new FinderConfiguration
+            {
+                  AspectRatio = new AspectRatio(5, 1),
+                  LineColor = Colors.BlueViolet,
+                  LineWidth = 3.5f,
+                  OverlayColor = Colors.DarkSlateBlue.WithAlpha(0.5f),
+                  MinimumPadding = 90,
+                  Enabled = isFinderEnabled
+            };
+            CheckView.FinderConfiguration = _finderConfiguration;
+      }
 
       private void ScannerButtonOnClicked(object sender, EventArgs e)
       {
@@ -113,20 +121,21 @@ public partial class ClassicMrzScannerPage : ContentPage
             if (selectedItem.Selected)
             {
                   selectedItem.Title = Freeze;
-                  MrzView.IsCameraFrozen = false;
+                  CheckView.IsCameraFrozen = false;
             }
             else
             {
                   selectedItem.Title = Unfreeze;
-                  MrzView.IsCameraFrozen = true;
+                  CheckView.IsCameraFrozen = true;
             }
       }
 
-      private async void MrzView_OnMrzScannerResult(object sender, MrzScannerResult e)
+      private async void OnCheckScanningResult(object sender, CheckScanningResult e)
       {
-            if (!e.Success) return;
-            MrzView.IsCameraFrozen = true;
-            if (await Alert.ShowAsync("MRZ Result", e.RawMRZ, "Retry", "Cancel"))
-                  MrzView.IsCameraFrozen = false;
+            if (e.Status != CheckMagneticInkStripScanningStatus.Success) return;
+            
+            CheckView.IsCameraFrozen = true;
+            if (await Alert.ShowAsync("Check Result", StringUtils.GenericDocumentToString(e.Check), "Retry", "Cancel"))
+                  CheckView.IsCameraFrozen = false;
       }
 }
