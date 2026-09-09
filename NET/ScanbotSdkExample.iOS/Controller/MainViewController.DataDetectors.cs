@@ -8,7 +8,7 @@ public partial class MainViewController
     private void ScanMrz()
     {
         var configuration = new SBSDKUI2MRZScannerScreenConfiguration();
-        SBSDKUI2MRZScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
+        var vc = SBSDKUI2MRZScannerViewController.CreateWith(configuration, error: out var nsError, (controller, result, error) =>
         {
             if (error != null)
             {
@@ -20,90 +20,121 @@ public partial class MainViewController
                 return;
 
             ShowPopup(this, result.MrzDocument.ToFormattedString());
-        }, out var nsError);
-        
-        if (nsError != null)
-        {
-            Alert.ValidateAndShowError(nsError);
-        }
+        }, performDismiss: PerformMrzDismissFunc); // performDismiss
+
+        PresentViewController(vc, true, null);
     }
-    
+
+    private void PerformMrzDismissFunc(SBSDKUI2MRZScannerViewController controller, SBSDKUI2MRZScannerDismissHandler dismissVc)
+    {
+        // Dismiss on your own
+        controller.DismissViewController(true, completionHandler: () =>
+        {
+            // Inform the SDK, so it initiates the result/error callback.
+            dismissVc?.Invoke();
+        });
+    }
+
     private void ExtractDocumentData()
     {
         var configuration = new SBSDKUI2DocumentDataExtractorScreenConfiguration();
         configuration.TopBar.CancelButton.Text = "Done";
-        SBSDKUI2DocumentDataExtractorViewController.PresentOn(this, configuration, (controller, result, error) =>
+        var vc = SBSDKUI2DocumentDataExtractorViewController.CreateWith(configuration, error: out var nsError,(controller, result, error) =>
         {
             if (error != null)
             {
                 Alert.ValidateAndShowError(error);
                 return;
             }
-            
+
             // Display the results.
             ShowPopup(this, result.Document?.ToFormattedString());
-        }, out var nsError);
-        
-        if (nsError != null)
+        }, PerformDdeDismissFunc); // performDismiss
+
+        PresentViewController(vc, true, null);
+    }
+
+    private void PerformDdeDismissFunc(SBSDKUI2DocumentDataExtractorViewController controller, SBSDKUI2DocumentDataExtractorDismissHandler dismissVc)
+    {
+
+        // Dismiss on your own
+        controller.DismissViewController(true, completionHandler: () =>
         {
-            Alert.ValidateAndShowError(nsError);
-        }
+            // Inform the SDK, so it initiates the result/error callback.
+            dismissVc?.Invoke();
+        });
     }
 
     private void ScanCheck()
     {
         var configuration = new SBSDKUI2CheckScannerScreenConfiguration();
         configuration.TopBar.CancelButton.Text = "Done";
-        SBSDKUI2CheckScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
+        var vc = SBSDKUI2CheckScannerViewController.CreateWith(configuration, error: out var nsError,(controller, result, error) =>
         {
             if (error != null)
             {
                 Alert.ValidateAndShowError(error);
                 return;
             }
-           
+
             // Display the results.
             ShowPopup(this, result.Check?.ToFormattedString());
-        },  out var nsError);
-        
-        if (nsError != null)
+        }, PerformCheckDismissFunc); // performDismiss
+
+        PresentViewController(vc, true, null);
+    }
+
+    private void PerformCheckDismissFunc(SBSDKUI2CheckScannerViewController controller, SBSDKUI2CheckScannerDismissHandler dismissVc)
+    {
+
+        // Dismiss on your own
+        controller.DismissViewController(true, completionHandler: () =>
         {
-            Alert.ValidateAndShowError(nsError);
-        }
+            // Inform the SDK, so it initiates the result/error callback.
+            dismissVc?.Invoke();
+        });
     }
 
     private void ScanTextPattern()
     {
         var configuration = new SBSDKUI2TextPatternScannerScreenConfiguration();
         configuration.TopBar.CancelButton.Text = "Done";
-        SBSDKUI2TextPatternScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
-        {
-            if (error != null)
-            {
-                Alert.ValidateAndShowError(error);
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(result.RawText))
-            {
-                Alert.Show("Alert", "Something went wrong while scanning the text.");
-                return;
-            }
-
-            Alert.Show("Result", result.RawText);
-        }, out var nsError);
+        configuration.ScannerConfiguration.Validator = new SBSDKCustomContentValidator("", new MyCallback());
         
-        if (nsError != null)
+        var vc = SBSDKUI2TextPatternScannerViewController.CreateWith(configuration, error: out var nsError,(controller, result, error) =>
+         {
+             if (error != null)
+             {
+                 Alert.ValidateAndShowError(error);
+                 return;
+             }
+             
+             if (string.IsNullOrWhiteSpace(result.RawText))
+             {
+                 Alert.Show("Alert", "Something went wrong while scanning the text.");
+                 return;
+             }
+             Alert.Show("Result", result.RawText);
+         }, PerformDismissFunc); // performDismiss
+
+        PresentViewController(vc, true, null);
+    }
+
+    private void PerformDismissFunc(SBSDKUI2TextPatternScannerViewController controller, SBSDKUI2TextPatternScannerDismissHandler dismissVc)
+    {
+        // Dismiss on your own
+        controller.DismissViewController(true, completionHandler: () =>
         {
-            Alert.ValidateAndShowError(nsError);
-        }
+            // Inform the SDK, so it initiates the result/error callback.
+            dismissVc?.Invoke();
+        });
     }
 
     private void ScanVin()
     {
         var configuration = new SBSDKUI2VINScannerScreenConfiguration();
         configuration.TopBar.CancelButton.Text = "Done";
-        SBSDKUI2VINScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
+        var vc = SBSDKUI2VINScannerViewController.CreateWith(configuration, error: out var nsError,(controller, result, error) =>
         {
             if (error != null)
             {
@@ -118,12 +149,19 @@ public partial class MainViewController
             }
 
             Alert.Show("Result", result.TextResult.RawText);
-        }, out var nsError);
-        
-        if (nsError != null)
+        }, PerformVinDismissFunc); // performDismiss
+
+        PresentViewController(vc, true, null);
+    }
+
+    private void PerformVinDismissFunc(SBSDKUI2VINScannerViewController controller, SBSDKUI2VINScannerDismissHandler dismissVc)
+    {
+        // Dismiss on your own
+        controller.DismissViewController(true, completionHandler: () =>
         {
-            Alert.ValidateAndShowError(nsError);
-        }
+            // Inform the SDK, so it initiates the result/error callback.
+            dismissVc?.Invoke();
+        });
     }
 
     private void ScanCreditCard()
@@ -131,23 +169,37 @@ public partial class MainViewController
         var configuration = new SBSDKUI2CreditCardScannerScreenConfiguration();
         configuration.TopBar.CancelButton.Text = "Done";
 
-        SBSDKUI2CreditCardScannerViewController.PresentOn(this, configuration, (controller, result, error) =>
+       var vc = SBSDKUI2CreditCardScannerViewController.CreateWith(configuration, error: out var nsError,(controller, result, error) =>
         {
             if (error != null)
             {
                 Alert.ValidateAndShowError(error);
                 return;
             }
-            
+
             if (result?.CreditCard == null)
                 return;
 
             ShowPopup(this, result.CreditCard?.ToFormattedString());
-        }, out var nsError);
-        
-        if (nsError != null)
+        }, PerformCreditCardDismissFunc); // performDismiss
+
+        PresentViewController(vc, true, null);
+    }
+
+    private void PerformCreditCardDismissFunc(SBSDKUI2CreditCardScannerViewController controller, SBSDKUI2CreditCardScannerDismissHandler dismissVc)
+    {
+        // Dismiss on your own
+        controller.DismissViewController(true, completionHandler: () =>
         {
-            Alert.ValidateAndShowError(nsError);
-        }
+            // Inform the SDK, so it initiates the result/error callback.
+            dismissVc?.Invoke();
+        });
+    }
+
+    // (1) Subclassing the wrapper crashes at construction:
+    public sealed class MyCallback : SBSDKContentValidationCallback
+    {
+        public override bool ValidateWithText(string text) => /* … */ true;
+        public override string CleanWithRawText(string rawText) => rawText;
     }
 }
