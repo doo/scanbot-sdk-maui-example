@@ -9,7 +9,6 @@ public class BottomActionBar : StackLayout
     // These are initialized in Image Results Page
     public BottomActionButton AddButton { get; private set; }
     public BottomActionButton SaveButton { get; private set; }
-    
     public BottomActionButton DeleteAllButton { get; private set; }
 
     // Whereas these are initialized in Image Details Page
@@ -17,8 +16,6 @@ public class BottomActionBar : StackLayout
     public BottomActionButton FilterButton { get; private set; }
     public BottomActionButton AnalyzeQualityButton { get; private set; }
     public BottomActionButton DeleteButton { get; private set; }
-    
-    public BottomActionButton CleanUpButton { get; private set; }
 
     public BottomActionBar(bool isDetailPage)
     {
@@ -46,12 +43,6 @@ public class BottomActionBar : StackLayout
             });
 
             Children.Add(DeleteButton = new BottomActionButton("DELETE PAGE")
-            {
-                HeightRequest = HEIGHT,
-                HorizontalOptions = LayoutOptions.End
-            });
-            
-            Children.Add(CleanUpButton = new BottomActionButton("CLEAN UP")
             {
                 HeightRequest = HEIGHT,
                 HorizontalOptions = LayoutOptions.End
