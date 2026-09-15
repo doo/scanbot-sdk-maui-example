@@ -7,7 +7,8 @@ namespace ScanbotSdkExample.Maui;
 
 public static class MauiProgram
 {
-    private const string LicenseKey = ""; // Insert your Scanbot SDK license key here. 
+    // Insert your Scanbot SDK license key here.
+    private const string LicenseKey = "";  
     
     [SuppressMessage("ReSharper", "ExpressionIsAlwaysNull")]
     public static MauiApp CreateMauiApp()

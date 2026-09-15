@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ScanbotSdkExample.Maui.ClassicUI.Pages.ClassicBarcodeScannerPage" 
+             xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+             xmlns:classicComponent="clr-namespace:ScanbotSDK.MAUI.Barcode.ClassicComponent;assembly=ScanbotSDK.Shared"
+             ios:Page.UseSafeArea="true"
+             Title="Classic AR Overlay">
+    <Grid RowDefinitions="7*,3*">
+        <classicComponent:BarcodeScannerView
+            x:Name="CameraView"
+            Grid.Row="0"
+            OnSelectBarcodeResult="OnSelectBarcodeResult" />
+        <StackLayout
+            Grid.Row="1">
+            <Label
+                Text="Result"
+                FontAttributes="Bold"
+                FontSize="18"
+                HorizontalTextAlignment="Center"
+                VerticalTextAlignment="Center"
+                VerticalOptions="Center"
+                HorizontalOptions="Center" />
+            <Label
+                x:Name="ResultLabel"
+                Margin="15,10"
+                HorizontalTextAlignment="Center"
+                VerticalTextAlignment="Center"
+                VerticalOptions="Center"
+                HorizontalOptions="Center" />
+        </StackLayout>
+    </Grid>
+</ContentPage>
