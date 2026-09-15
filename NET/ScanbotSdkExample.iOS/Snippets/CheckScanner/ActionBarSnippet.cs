@@ -61,6 +61,6 @@ class ActionBarSnippet : UIViewController
             Console.WriteLine($"Account number: {check.AccountNumber?.Value?.Text}");
             Console.WriteLine($"Transit Number: {check.TransitNumber?.Value?.Text}");
             Console.WriteLine($"AuxiliaryOnUs: {check.AuxiliaryOnUs?.Value?.Text}");
-        });
+        }, out var nsError);
     }
 }

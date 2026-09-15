@@ -69,6 +69,6 @@ class ScanningSnippet : UIViewController
             {
                 Console.WriteLine($"{field.Type.Name}: {field.Value?.Text}");
             }
-        });
+        }, out var nsError);
     }
 }

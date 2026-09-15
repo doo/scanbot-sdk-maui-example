@@ -41,6 +41,6 @@ class FinderOverlaySnippet : UIViewController
             }
 
             // Handle the result here.
-        });
+        }, out var nsError);
     }
 }

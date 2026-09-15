@@ -33,11 +33,11 @@ public partial class MainViewController : IClassicDocumentScannerViewResult
             configuration.Screens.Camera.CaptureFeedback.SnapFeedbackMode = new SBSDKUI2PageSnapCheckMarkAnimation();
 
             // Hide the auto snapping enable/disable button
-            configuration.Screens.Camera.BottomBar.AutoSnappingModeButton.Visible = false;
-            configuration.Screens.Camera.BottomBar.ManualSnappingModeButton.Visible = false;
-            configuration.Screens.Camera.BottomBar.ImportButton.Title.Visible = true;
-            configuration.Screens.Camera.BottomBar.TorchOnButton.Title.Visible = true;
-            configuration.Screens.Camera.BottomBar.TorchOffButton.Title.Visible = true;
+            configuration.Screens.Camera.ToolBar.AutoSnappingModeButton.Visible = false;
+            configuration.Screens.Camera.ToolBar.ManualSnappingModeButton.Visible = false;
+            configuration.Screens.Camera.ToolBar.ImportButton.Title.Visible = true;
+            configuration.Screens.Camera.ToolBar.TorchOnButton.Title.Visible = true;
+            configuration.Screens.Camera.ToolBar.TorchOffButton.Title.Visible = true;
 
             // Set colors
             configuration.Palette.SbColorPrimary = new SBSDKUI2Color(uiColor: Colors.ScanbotRed);
@@ -75,8 +75,8 @@ public partial class MainViewController : IClassicDocumentScannerViewResult
             configuration.Screens.Camera.CameraConfiguration.AutoSnappingEnabled = true;
 
             // Hide/Unhide the auto snapping enable/disable button
-            configuration.Screens.Camera.BottomBar.AutoSnappingModeButton.Visible = true;
-            configuration.Screens.Camera.BottomBar.ManualSnappingModeButton.Visible = true;
+            configuration.Screens.Camera.ToolBar.AutoSnappingModeButton.Visible = true;
+            configuration.Screens.Camera.ToolBar.ManualSnappingModeButton.Visible = true;
 
             // Set colors
             configuration.Palette.SbColorPrimary = new SBSDKUI2Color(uiColor: Colors.ScanbotRed);
@@ -92,15 +92,13 @@ public partial class MainViewController : IClassicDocumentScannerViewResult
             configuration.Screens.Review.Enabled = true;
 
             // Configure bottom bar (further properties like title, icon and  background can also be set for these buttons)
-            configuration.Screens.Review.BottomBar.AddButton.Visible = true;
-            configuration.Screens.Review.BottomBar.RetakeButton.Visible = true;
-            configuration.Screens.Review.BottomBar.CropButton.Visible = true;
-            configuration.Screens.Review.BottomBar.RotateButton.Visible = true;
-            configuration.Screens.Review.BottomBar.DeleteButton.Visible = true;
+            configuration.Screens.Review.ToolBar.AddButton.BarButton.Visible = true;
+            configuration.Screens.Review.ToolBar.RetakeButton.BarButton.Visible = true;
+            configuration.Screens.Review.ToolBar.CropButton.BarButton.Visible = true;
+            configuration.Screens.Review.ToolBar.RotateButton.BarButton.Visible = true;
+            configuration.Screens.Review.ToolBar.DeleteButton.BarButton.Visible = true;
 
-            // Configure `more` popup on review screen
-            // e.g.
-            configuration.Screens.Review.MorePopup.ReorderPages.Icon.Visible = true;
+
             configuration.Screens.Review.MorePopup.DeleteAll.Icon.Visible = true;
             configuration.Screens.Review.MorePopup.DeleteAll.Title.Text = "Delete all pages";
 
@@ -108,13 +106,14 @@ public partial class MainViewController : IClassicDocumentScannerViewResult
             // e.g.
             configuration.Screens.ReorderPages.TopBarTitle.Text = "Reorder Pages";
             configuration.Screens.ReorderPages.Guidance.Title.Text = "Reorder Pages";
+            configuration.Screens.ReorderPages.TopBarBackButton.Visible = true;
 
             // Configure cropping screen
-            // e.g
+            // e.g.
             configuration.Screens.Cropping.TopBarTitle.Text = "Cropping Screen";
-            configuration.Screens.Cropping.BottomBar.ResetButton.Visible = true;
-            configuration.Screens.Cropping.BottomBar.RotateButton.Visible = true;
-            configuration.Screens.Cropping.BottomBar.DetectButton.Visible = true;
+            configuration.Screens.Cropping.ToolBar.ResetButton.Visible = true;
+            configuration.Screens.Cropping.ToolBar.RotateButton.Visible = true;
+            configuration.Screens.Cropping.ToolBar.DetectButton.Visible = true;
 
             try
             {
@@ -150,8 +149,8 @@ public partial class MainViewController : IClassicDocumentScannerViewResult
             configuration.Screens.Camera.CameraConfiguration.AutoSnappingEnabled = true;
 
             // Hide the auto snapping enable/disable button
-            configuration.Screens.Camera.BottomBar.AutoSnappingModeButton.Visible = false;
-            configuration.Screens.Camera.BottomBar.ManualSnappingModeButton.Visible = false;
+            configuration.Screens.Camera.ToolBar.AutoSnappingModeButton.Visible = false;
+            configuration.Screens.Camera.ToolBar.ManualSnappingModeButton.Visible = false;
 
             // Set colors
             configuration.Palette.SbColorPrimary = new SBSDKUI2Color(uiColor: Colors.ScanbotRed);

@@ -65,7 +65,7 @@ public partial class ScannedDocumentsViewController : UIViewController
 
     private void OnManualCropClicked(object sender, EventArgs e)
     {
-        var configuration = new SBSDKUI2CroppingConfiguration(documentUuid: _scannedDocument.Uuid, pageUuid: _scannedDocument.PageUuids.First());
+        var configuration = new SBSDKUI2CroppingStandaloneConfiguration(documentUuid: _scannedDocument.Uuid, pageUuid: _scannedDocument.PageUuids.First());
 
         // e.g. configure various colors.
         configuration.Appearance.TopBarBackgroundColor = new SBSDKUI2Color(UIColor.Red);
@@ -74,7 +74,7 @@ public partial class ScannedDocumentsViewController : UIViewController
         // e.g. customize a UI element's text
         configuration.Localization.CroppingTopBarCancelButtonTitle = "Cancel";
 
-        SBSDKUI2CroppingViewController.PresentOn(this, configuration, completion: CroppingFinished, error: out _);
+        SBSDKUI2CroppingViewController.PresentOn(this, configuration, completion: CroppingFinished);
     }
 
     private void CroppingFinished(SBSDKUI2CroppingViewController controller, SBSDKUI2CroppingResult result, NSError error)

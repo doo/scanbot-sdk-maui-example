@@ -13,7 +13,7 @@
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
         <ApplicationVersion>1</ApplicationVersion>
 
-        <SupportedOSPlatformVersion>13.0</SupportedOSPlatformVersion>
+        <SupportedOSPlatformVersion>15.6</SupportedOSPlatformVersion>
         <MtouchLink>SdkOnly</MtouchLink>
         <CreatePackage>false</CreatePackage>
         <CodesignProvision>Automatic</CodesignProvision>
@@ -79,6 +79,6 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Scanbot.Xamarin.ImagePicker" Version="0.0.3-beta.1" />
-        <PackageReference Include="ScanbotSDK.NET" Version="9.0.1" />
+        <PackageReference Include="ScanbotSDK.NET" Version="10.0.0-alpha.1" />
     </ItemGroup>
 </Project>
