@@ -30,7 +30,7 @@ public class FilterListFragment : BottomSheetDialogFragment, IFilterItemAdapter
         {
             new FilterItem("Parametric Filters"),
             new FilterItem(nameof(ScanbotBinarizationFilter), () => FilterSelected(new ScanbotBinarizationFilter(outputMode: OutputMode.Binary))),
-            new FilterItem(nameof(CustomBinarizationFilter), () => FilterSelected(new CustomBinarizationFilter(outputMode: OutputMode.Binary, denoise: 0.5, radius: 32, preset: BinarizationFilterPreset.Preset1))),
+            new FilterItem(nameof(CustomBinarizationFilter), () => FilterSelected(new CustomBinarizationFilter(outputMode: OutputMode.Binary, denoise: 0.5, radius: 32, preset: BinarizationFilterPreset.Preset1, strokeWeight: 0.5))),
             new FilterItem(nameof(ColorDocumentFilter), () => FilterSelected(new ColorDocumentFilter())),
             new FilterItem(nameof(BrightnessFilter), () => FilterSelected(new BrightnessFilter(brightness: 0.2))),
             new FilterItem(nameof(ContrastFilter), () => FilterSelected(new ContrastFilter(contrast: 2))),

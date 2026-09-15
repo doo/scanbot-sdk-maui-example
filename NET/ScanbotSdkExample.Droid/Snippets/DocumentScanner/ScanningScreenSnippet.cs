@@ -40,7 +40,7 @@ public class ScanningScreenSnippet : AppCompatActivity
 
         // Configure the bottom bar and the bottom bar buttons.
         // Set the background color of the bottom bar.
-        configuration.Appearance.BottomBarBackgroundColor = new ScanbotColor("#C8193C");
+        configuration.Appearance.ToolbarBackgroundColor = new ScanbotColor("#C8193C");
 
         // Retrieve the camera screen configuration.
         configuration.Screens.Camera = new CameraScreenConfiguration();
@@ -78,21 +78,21 @@ public class ScanningScreenSnippet : AppCompatActivity
         configuration.Screens.Camera.UserGuidance.StatesTitles.CaptureManual = "The document is ready to be captured";
 
         // Import button is used to import image from the gallery.
-        configuration.Screens.Camera.BottomBar.ImportButton.Visible = true;
-        configuration.Screens.Camera.BottomBar.ImportButton.Title.Visible = true;
-        configuration.Screens.Camera.BottomBar.ImportButton.Title.Text = "Import";
+        configuration.Screens.Camera.Toolbar.ImportButton.Visible = true;
+        configuration.Screens.Camera.Toolbar.ImportButton.Title.Visible = true;
+        configuration.Screens.Camera.Toolbar.ImportButton.Title.Text = "Import";
 
         // Configure the auto/manual snap button.
-        configuration.Screens.Camera.BottomBar.AutoSnappingModeButton.Title.Visible = true;
-        configuration.Screens.Camera.BottomBar.AutoSnappingModeButton.Title.Text = "Auto";
-        configuration.Screens.Camera.BottomBar.ManualSnappingModeButton.Title.Visible = true;
-        configuration.Screens.Camera.BottomBar.ManualSnappingModeButton.Title.Text = "Manual";
+        configuration.Screens.Camera.Toolbar.AutoSnappingModeButton.Title.Visible = true;
+        configuration.Screens.Camera.Toolbar.AutoSnappingModeButton.Title.Text = "Auto";
+        configuration.Screens.Camera.Toolbar.ManualSnappingModeButton.Title.Visible = true;
+        configuration.Screens.Camera.Toolbar.ManualSnappingModeButton.Title.Text = "Manual";
 
         // Configure the torch off/on button.
-        configuration.Screens.Camera.BottomBar.TorchOnButton.Title.Visible = true;
-        configuration.Screens.Camera.BottomBar.TorchOnButton.Title.Text = "On";
-        configuration.Screens.Camera.BottomBar.TorchOffButton.Title.Visible = true;
-        configuration.Screens.Camera.BottomBar.TorchOffButton.Title.Text = "Off";
+        configuration.Screens.Camera.Toolbar.TorchOnButton.Title.Visible = true;
+        configuration.Screens.Camera.Toolbar.TorchOnButton.Title.Text = "On";
+        configuration.Screens.Camera.Toolbar.TorchOffButton.Title.Visible = true;
+        configuration.Screens.Camera.Toolbar.TorchOffButton.Title.Text = "Off";
 
 
         // Configure the document capture feedback.

@@ -39,7 +39,7 @@ public class ReviewScreenSnippets : AppCompatActivity
         configuration.Screens.Review.ZoomButton.Visible = false;
 
         // Hide the add button.
-        configuration.Screens.Review.BottomBar.AddButton.Visible = false;
+        configuration.Screens.Review.Toolbar.AddButton.BarButton.Visible = false;
 
         // Retrieve the instance of the reorder pages configuration from the main configuration object.
         // Hide the guidance view.
@@ -50,15 +50,15 @@ public class ReviewScreenSnippets : AppCompatActivity
 
         // Retrieve the instance of the cropping configuration from the main configuration object.
         // Hide the reset button.
-        configuration.Screens.Cropping.BottomBar.ResetButton.Visible = false;
+        configuration.Screens.Cropping.Toolbar.ResetButton.Visible = false;
         // Retrieve the retake button configuration from the main configuration object.
-		
+
         // Show the retake button.
-        configuration.Screens.Review.BottomBar.RetakeButton.Visible = true;
+        configuration.Screens.Review.Toolbar.RetakeButton.BarButton.Visible = true;
 
         // Configure the retake title color.
-        configuration.Screens.Review.BottomBar.RetakeButton.Title.Color = new ScanbotColor(Color.Black);
-		
+        configuration.Screens.Review.Toolbar.RetakeButton.BarButton.Title.Color = new ScanbotColor(Color.Black);
+
         // Start the Document Scanner activity.
         var intent = DocumentScannerActivity.NewIntent(this, configuration);
         StartActivityForResult(intent, ScanDocumentRequestCode);

@@ -94,7 +94,7 @@ public partial class PagePreviewActivity : AppCompatActivity, IFiltersListener
             configurations.Cropping.TopBarConfirmButton.Foreground.Color = new ScanbotColor(Color.Red);
                 
             // e.g. disable the rotation feature.
-            configurations.Cropping.BottomBar.RotateButton.Visible = false;
+            configurations.Cropping.Toolbar.RotateButton.Visible = false;
 
             // e.g. configure various colors.
             configurations.Appearance.TopBarBackgroundColor = new ScanbotColor(Color.Red);
