@@ -47,7 +47,6 @@ public partial class HomePage
             new SdkFeature("Delete all documents", DeleteAllDocsFromStorageClicked),
 
             new SdkFeature("CLASSIC COMPONENT"),
-            new SdkFeature("Classic Barcode Scanner", DocumentScannerFeature.ClassicBarcodeScannerViewClicked),
             new SdkFeature("Classic Document Scanner", DocumentScannerFeature.ClassicDocumentScannerViewClicked),
             new SdkFeature("Classic Document Scanner (MVVM)", DocumentScannerFeature.ClassicDocumentScannerMvvmViewClicked),
 
