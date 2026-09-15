@@ -168,7 +168,6 @@ public static class DocumentScannerFeature
 
     public static async Task ClassicBarcodeScannerViewClicked()
     {
-        MauiProgram.ShouldScanBarcodes = true;
         await App.Navigation.PushAsync(new ClassicBarcodeScannerPage(), true);
     }
 }
