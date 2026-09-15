@@ -34,11 +34,11 @@ public static class DocumentScannerFeature
         configuration.Screens.Camera.CaptureFeedback.SnapFeedbackMode = new PageSnapCheckMarkAnimation();
 
         // Hide the auto snapping enable/disable button
-        configuration.Screens.Camera.BottomBar.AutoSnappingModeButton.Visible = false;
-        configuration.Screens.Camera.BottomBar.ManualSnappingModeButton.Visible = false;
-        configuration.Screens.Camera.BottomBar.ImportButton.Title.Visible = true;
-        configuration.Screens.Camera.BottomBar.TorchOnButton.Title.Visible = true;
-        configuration.Screens.Camera.BottomBar.TorchOffButton.Title.Visible = true;
+        configuration.Screens.Camera.Toolbar.AutoSnappingModeButton.Visible = false;
+        configuration.Screens.Camera.Toolbar.ManualSnappingModeButton.Visible = false;
+        configuration.Screens.Camera.Toolbar.ImportButton.Title.Visible = true;
+        configuration.Screens.Camera.Toolbar.TorchOnButton.Title.Visible = true;
+        configuration.Screens.Camera.Toolbar.TorchOffButton.Title.Visible = true;
 
         // Set colors
         configuration.Palette.SbColorPrimary = Constants.Colors.ScanbotRed;
@@ -80,8 +80,8 @@ public static class DocumentScannerFeature
         configuration.Screens.Camera.CameraConfiguration.AutoSnappingEnabled = true;
 
         // Hide the auto snapping enable/disable button
-        configuration.Screens.Camera.BottomBar.AutoSnappingModeButton.Visible = false;
-        configuration.Screens.Camera.BottomBar.ManualSnappingModeButton.Visible = false;
+        configuration.Screens.Camera.Toolbar.AutoSnappingModeButton.Visible = false;
+        configuration.Screens.Camera.Toolbar.ManualSnappingModeButton.Visible = false;
 
         // Set colors
         configuration.Palette.SbColorPrimary = Constants.Colors.ScanbotRed;
@@ -109,8 +109,8 @@ public static class DocumentScannerFeature
         configuration.Screens.Camera.CameraConfiguration.AutoSnappingEnabled = true;
 
         // Hide/Unhide the auto snapping enable/disable button
-        configuration.Screens.Camera.BottomBar.AutoSnappingModeButton.Visible = true;
-        configuration.Screens.Camera.BottomBar.ManualSnappingModeButton.Visible = true;
+        configuration.Screens.Camera.Toolbar.AutoSnappingModeButton.Visible = true;
+        configuration.Screens.Camera.Toolbar.ManualSnappingModeButton.Visible = true;
 
         // Set colors
         // configuration.Palette.SbColorPrimary = Constants.Colors.ScanbotRed;
@@ -126,15 +126,14 @@ public static class DocumentScannerFeature
         configuration.Screens.Review.Enabled = true;
 
         // Configure bottom bar (further properties like title, icon and  background can also be set for these buttons)
-        configuration.Screens.Review.BottomBar.AddButton.Visible = true;
-        configuration.Screens.Review.BottomBar.RetakeButton.Visible = true;
-        configuration.Screens.Review.BottomBar.CropButton.Visible = true;
-        configuration.Screens.Review.BottomBar.RotateButton.Visible = true;
-        configuration.Screens.Review.BottomBar.DeleteButton.Visible = true;
+        configuration.Screens.Review.Toolbar.AddButton.BarButton.Visible = true;
+        configuration.Screens.Review.Toolbar.RetakeButton.BarButton.Visible = true;
+        configuration.Screens.Review.Toolbar.CropButton.BarButton.Visible = true;
+        configuration.Screens.Review.Toolbar.RotateButton.BarButton.Visible = true;
+        configuration.Screens.Review.Toolbar.DeleteButton.BarButton.Visible = true;
 
         // Configure `more` popup on review screen
         // e.G
-        configuration.Screens.Review.MorePopup.ReorderPages.Icon.Visible = true;
         configuration.Screens.Review.MorePopup.DeleteAll.Icon.Visible = true;
         configuration.Screens.Review.MorePopup.DeleteAll.Title.Text = "Delete all pages";
 
@@ -146,9 +145,9 @@ public static class DocumentScannerFeature
         // Configure cropping screen
         // e.G
         configuration.Screens.Cropping.TopBarTitle.Text = "Cropping Screen";
-        configuration.Screens.Cropping.BottomBar.ResetButton.Visible = true;
-        configuration.Screens.Cropping.BottomBar.RotateButton.Visible = true;
-        configuration.Screens.Cropping.BottomBar.DetectButton.Visible = true;
+        configuration.Screens.Cropping.Toolbar.ResetButton.Visible = true;
+        configuration.Screens.Cropping.Toolbar.RotateButton.Visible = true;
+        configuration.Screens.Cropping.Toolbar.DetectButton.Visible = true;
 
         var result = await ScanbotSDKMain.Document.StartScannerAsync(configuration);
         if (result.IsSuccess)
@@ -162,8 +161,14 @@ public static class DocumentScannerFeature
         await App.Navigation.PushAsync(new ClassicDocumentScannerPage(), true);
     }
 
-    public static async Task ClassicDocumentScannerMVVMViewClicked()
+    public static async Task ClassicDocumentScannerMvvmViewClicked()
     {
         await App.Navigation.PushAsync(new ClassicDocumentScannerView(), true);
+    }
+
+    public static async Task ClassicBarcodeScannerViewClicked()
+    {
+        MauiProgram.ShouldScanBarcodes = true;
+        await App.Navigation.PushAsync(new ClassicBarcodeScannerPage(), true);
     }
 }

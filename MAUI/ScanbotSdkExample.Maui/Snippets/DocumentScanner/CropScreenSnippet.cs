@@ -14,7 +14,7 @@ public static class CropScreenSnippet
         var cropScreenConfiguration = configuration.Screens.Cropping;
 
         // e.g disable the rotation feature.
-        cropScreenConfiguration.BottomBar.RotateButton.Visible = false;
+        cropScreenConfiguration.Toolbar.RotateButton.Visible = false;
 
         // e.g. configure various colors.
         configuration.Appearance.TopBarBackgroundColor = new ColorValue("#C8193C");
