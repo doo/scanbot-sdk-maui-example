@@ -64,24 +64,24 @@ public class ScanningScreenSnippet : UIViewController
         
         // MARK: Configure the bottom bar and the bottom bar buttons.
         // Set the background color of the bottom bar.
-        configuration.Appearance.ToolBarBackgroundColor = new SBSDKUI2Color(colorString: "#C8193C");
+        configuration.Appearance.ToolbarBackgroundColor = new SBSDKUI2Color(colorString: "#C8193C");
         
         // Import button is used to import image from the gallery.
-        cameraScreenConfig.ToolBar.ImportButton.Visible = true;
-        cameraScreenConfig.ToolBar.ImportButton.Title.Visible = true;
-        cameraScreenConfig.ToolBar.ImportButton.Title.Text = "Import";
+        cameraScreenConfig.Toolbar.ImportButton.Visible = true;
+        cameraScreenConfig.Toolbar.ImportButton.Title.Visible = true;
+        cameraScreenConfig.Toolbar.ImportButton.Title.Text = "Import";
         
         // Configure the auto/manual snap button.
-        cameraScreenConfig.ToolBar.AutoSnappingModeButton.Title.Visible = true;
-        cameraScreenConfig.ToolBar.AutoSnappingModeButton.Title.Text = "Auto";
-        cameraScreenConfig.ToolBar.ManualSnappingModeButton.Title.Visible = true;
-        cameraScreenConfig.ToolBar.ManualSnappingModeButton.Title.Text = "Manual";
+        cameraScreenConfig.Toolbar.AutoSnappingModeButton.Title.Visible = true;
+        cameraScreenConfig.Toolbar.AutoSnappingModeButton.Title.Text = "Auto";
+        cameraScreenConfig.Toolbar.ManualSnappingModeButton.Title.Visible = true;
+        cameraScreenConfig.Toolbar.ManualSnappingModeButton.Title.Text = "Manual";
         
         // Configure the torch off/on button.
-        cameraScreenConfig.ToolBar.TorchOnButton.Title.Visible = true;
-        cameraScreenConfig.ToolBar.TorchOnButton.Title.Text = "On";
-        cameraScreenConfig.ToolBar.TorchOffButton.Title.Visible = true;
-        cameraScreenConfig.ToolBar.TorchOffButton.Title.Text = "Off";
+        cameraScreenConfig.Toolbar.TorchOnButton.Title.Visible = true;
+        cameraScreenConfig.Toolbar.TorchOnButton.Title.Text = "On";
+        cameraScreenConfig.Toolbar.TorchOffButton.Title.Visible = true;
+        cameraScreenConfig.Toolbar.TorchOffButton.Title.Text = "Off";
         
         
         // MARK: Configure the document capture feedback.

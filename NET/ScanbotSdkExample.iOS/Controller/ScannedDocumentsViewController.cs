@@ -37,13 +37,25 @@ public partial class ScannedDocumentsViewController : UIViewController
             toolBarButtons.AddRange(new List<UIBarButtonItem>
             {
                 new UIBarButtonItem(Texts.DocumentQuality, UIBarButtonItemStyle.Done, OnAnalyzeDocumentClicked),
-                new UIBarButtonItem(Texts.Crop, UIBarButtonItemStyle.Done, OnManualCropClicked)
+                new UIBarButtonItem(Texts.Crop, UIBarButtonItemStyle.Done, OnManualCropClicked),
+                new UIBarButtonItem(Texts.CleanUp, UIBarButtonItemStyle.Done, OnDocumentCleanUpClicked),
             });
         }
 
         SetToolbarItems(toolBarButtons.ToArray(), true);
         NavigationController?.SetToolbarHidden(false, false);
         NavigationItem.SetRightBarButtonItem(new UIBarButtonItem(Texts.Export, UIBarButtonItemStyle.Done, OnExportButtonClick), true);
+    }
+
+    private void OnDocumentCleanUpClicked(object sender, EventArgs e)
+    {
+        var configuration = new SBSDKUI2DocumentCleanupStandaloneConfiguration(documentUuid: _scannedDocument.Uuid, pageUuid: _scannedDocument.PageUuids.First());
+        SBSDKUI2DocumentCleanupViewController.PresentOn(this, configuration, completion: DocCleanUpFinishedHandler);
+    }
+
+    private void DocCleanUpFinishedHandler(SBSDKUI2DocumentCleanupViewController controller, SBSDKUI2DocumentCleanupUIResult result, NSError error)
+    {
+        LoadPages();
     }
 
     private void OnAnalyzeDocumentClicked(object sender, EventArgs e)

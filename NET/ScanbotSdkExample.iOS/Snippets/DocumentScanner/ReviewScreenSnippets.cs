@@ -28,7 +28,7 @@ public class ReviewScreenSnippet : UIViewController
         reviewScreenConfiguration.ZoomButton.Visible = false;
 
         // Hide the add button.
-        reviewScreenConfiguration.ToolBar.AddButton.BarButton.Visible = false;
+        reviewScreenConfiguration.Toolbar.AddButton.BarButton.Visible = false;
 
         // Retrieve the instance of the reorder pages configuration from the main configuration object.
         var reorderScreenConfiguration = configuration.Screens.ReorderPages;
@@ -43,10 +43,10 @@ public class ReviewScreenSnippet : UIViewController
         var croppingScreenConfiguration = configuration.Screens.Cropping;
 
         // Hide the reset button.
-        croppingScreenConfiguration.ToolBar.ResetButton.Visible = false;
+        croppingScreenConfiguration.Toolbar.ResetButton.Visible = false;
 
         // Retrieve the retake button configuration from the main configuration object.
-        var retakeButtonConfiguration = configuration.Screens.Review.ToolBar.RetakeButton;
+        var retakeButtonConfiguration = configuration.Screens.Review.Toolbar.RetakeButton;
 
         // Show the retake button.
         retakeButtonConfiguration.BarButton.Visible = true;
@@ -55,7 +55,7 @@ public class ReviewScreenSnippet : UIViewController
         retakeButtonConfiguration.BarButton.Title.Color = new SBSDKUI2Color(uiColor: UIColor.White);
         
         // Apply the retake configuration button to the review toolbar configuration.
-        configuration.Screens.Review.ToolBar.RetakeButton = retakeButtonConfiguration;
+        configuration.Screens.Review.Toolbar.RetakeButton = retakeButtonConfiguration;
 
         // Apply the configurations.
         configuration.Screens.Review = reviewScreenConfiguration;
