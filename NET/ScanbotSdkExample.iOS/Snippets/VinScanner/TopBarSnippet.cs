@@ -41,6 +41,6 @@ class TopBarSnippet : UIViewController
             
             // Handle the result
             Console.WriteLine($"Vin Scanner result: {result.TextResult.RawText}");
-        });
+        }, out var nsError);
     }
 }

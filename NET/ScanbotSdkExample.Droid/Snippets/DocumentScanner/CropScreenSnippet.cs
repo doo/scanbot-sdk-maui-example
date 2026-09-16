@@ -42,7 +42,7 @@ public class CropScreenSnippet : AppCompatActivity
 
         // Configure the bottom bar and the bottom bar buttons.
         // Set the background color of the bottom bar.
-        configuration.Appearance.BottomBarBackgroundColor = new ScanbotColor("#C8193C");
+        configuration.Appearance.ToolbarBackgroundColor = new ScanbotColor("#C8193C");
 		
         // e.g. configure .
         configuration.Appearance.TopBarBackgroundColor = new ScanbotColor( Color.Red);
@@ -51,8 +51,8 @@ public class CropScreenSnippet : AppCompatActivity
         // e.g. customize a UI element's text
         configuration.Localization.CroppingTopBarCancelButtonTitle = "Cancel";
 
-        // e.g disable the rotation feature.
-        configuration.Screens.Cropping.BottomBar.RotateButton.Visible = false;
+        // e.g. disable the rotation feature.
+        configuration.Screens.Cropping.Toolbar.RotateButton.Visible = false;
 
         configuration.Screens.Cropping.TopBarConfirmButton.Foreground.Color = new ScanbotColor(Color.White);
 

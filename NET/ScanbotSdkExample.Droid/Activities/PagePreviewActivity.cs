@@ -87,14 +87,14 @@ public partial class PagePreviewActivity : AppCompatActivity, IFiltersListener
         _crop.Click += delegate
         {
             var document = _scanbotSdk.DocumentApi.LoadDocument(documentId)?.GetOrThrow<Document>();
-                var pageId = document.PageAtIndex(0)?.Uuid;
+            var pageId = document.PageAtIndex(0)?.Uuid;
             var configurations = CroppingActivityConfiguration.Init(documentId, pageId);
                 
             configurations.Appearance.TopBarBackgroundColor = new ScanbotColor(Color.Red);
             configurations.Cropping.TopBarConfirmButton.Foreground.Color = new ScanbotColor(Color.Red);
                 
-            // e.g. disable the rotation feature.
-            configurations.Cropping.BottomBar.RotateButton.Visible = false;
+            // e.g. enable/disable the rotation feature.
+            configurations.Cropping.Toolbar.RotateButton.Visible = true;
 
             // e.g. configure various colors.
             configurations.Appearance.TopBarBackgroundColor = new ScanbotColor(Color.Red);

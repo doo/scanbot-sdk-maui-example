@@ -10,6 +10,7 @@ using IO.Scanbot.Sdk.Ui_v2.Mrz.Configuration;
 using IO.Scanbot.Sdk.Ui_v2.Textpattern;
 using IO.Scanbot.Sdk.Ui_v2.Textpattern.Configuration;
 using IO.Scanbot.Sdk.Ui_v2.Vin.Configuration;
+using ScanbotSdkExample.Droid.Activities;
 using ScanbotSdkExample.Droid.Fragments;
 using ScanbotSdkExample.Droid.Utils;
 
@@ -24,9 +25,9 @@ public partial class MainActivity
         { ScanVinRequestCode, HandleVinResult },
         { ScanDataRequestCode, HandleTextDataResult },
         { ScanCheckRequestCode, HandleCheckResult },
-        { ScanCreditCardRequestCode, HandleCreditCard },
+        { ScanCreditCardRequestCode, HandleCreditCard }
     };
-    
+
     private void ScanMrz()
     {
         var configuration = new MrzScannerScreenConfiguration();

@@ -12,8 +12,9 @@
         <RootNamespace>ScanbotSdkExample.Droid</RootNamespace>
         <PackageId>ScanbotSdkExample.Droid</PackageId>
         <NoWarn>CA1422;CS0618;XAOBS001</NoWarn>
+        <JavaMaximumHeapSize>2G</JavaMaximumHeapSize>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="ScanbotSDK.NET" Version="9.0.1" />
+        <PackageReference Include="ScanbotSDK.NET" Version="10.0.0-alpha.1" />
     </ItemGroup>
 </Project>

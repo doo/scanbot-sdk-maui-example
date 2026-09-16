@@ -38,6 +38,6 @@ class LocalizationSnippet : UIViewController
             {
                 // Indicates that the cancel button was tapped.
             }
-        });
+        }, out var nsError);
     }
 }
