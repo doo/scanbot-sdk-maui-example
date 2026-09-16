@@ -13,4 +13,5 @@ public static class Texts
     public const string ImportingAndProcessing = "Importing selected image and running auto document detection...";
     public const string ShareTitle = "Select Image";
     public const string Tiff = "Save as TIFF";
+    public const string CleanUp = "CLEAN UP";
 }

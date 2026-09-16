@@ -51,7 +51,7 @@ public class CropScreenSnippet : AppCompatActivity
         // e.g. customize a UI element's text
         configuration.Localization.CroppingTopBarCancelButtonTitle = "Cancel";
 
-        // e.g disable the rotation feature.
+        // e.g. disable the rotation feature.
         configuration.Screens.Cropping.Toolbar.RotateButton.Visible = false;
 
         configuration.Screens.Cropping.TopBarConfirmButton.Foreground.Color = new ScanbotColor(Color.White);
