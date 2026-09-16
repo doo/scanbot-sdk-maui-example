@@ -24,7 +24,7 @@ namespace ScanbotSdkExample.Droid.Activities;
 public partial class PagePreviewActivity : AppCompatActivity, IFiltersListener
 {
     private const int CameraActivity = 8888;
-    private const int DocumentCleanUpdRequestCode = 001;
+
     private const string FiltersMenuTag = "FILTERS_MENU_TAG";
     private const string SaveMenuTag = "SAVE_MENU_TAG";
 
@@ -37,7 +37,7 @@ public partial class PagePreviewActivity : AppCompatActivity, IFiltersListener
     private FilterListFragment _filterFragment;
     private SaveBottomSheetMenuFragment _saveFragment;
 
-    private TextView _crop, _filter, _quality, _cleanUp;
+    private TextView _crop, _filter, _quality;
     private Button _export;
 
     internal static Intent CreateIntent(Context context, string documentId)
@@ -139,59 +139,6 @@ public partial class PagePreviewActivity : AppCompatActivity, IFiltersListener
         {
             _saveFragment.Show(SupportFragmentManager, SaveMenuTag);
         };
-        
-        _cleanUp = (TextView)FindViewById(R.Id.action_clean_up)!;
-        _cleanUp.Text = Texts.CleanUp;
-        _cleanUp.Click += LaunchDocumentCleanUp;
-    }
-
-    private void LaunchDocumentCleanUp(object sender, EventArgs e)
-    {
-        if (_document.Pages.Count == 0) return; // returns if no page for clean up.
-        
-        // Create the default configuration object. You may access the IScannedDocument to get the unique identifiers
-        var configuration = DocumentCleanupActivityConfiguration.Init(_document.Uuid, _document.Pages.First().Uuid);
-
-        // If true, the cleanup tool will not allow erasing text. But it takes some time to process OCR on the image initially,
-        configuration.Cleanup.EngineConfiguration.KeepText = false;
-
-        // The maximum number of undo/redo operations that can be performed. Make it less to save up memory
-        configuration.Cleanup.EngineConfiguration.MaxUndoRedoStackSize = 4;
-
-        // Downscales stroke area to this value in pixels (width x height) to speed up the cleanup process. The smaller the value the faster but quality will be lower too.
-        configuration.Cleanup.EngineConfiguration.MaxCleanupResolution = 1_200_000;
-
-        // Customize the top bar.
-        configuration.Cleanup.TopBarBackButton.Text = "Cancel";
-        configuration.Cleanup.TopBarConfirmButton.Text = "Done";
-        configuration.Cleanup.TopBarTitle.Text = "Clean up the page";
-
-        // background color
-        configuration.Cleanup.BackgroundColor = new ScanbotColor("#222222");
-
-        // Configure the toolbar buttons (undo / redo / reset).
-        configuration.Cleanup.Toolbar.UndoButton.Title.Text = "Undo";
-        configuration.Cleanup.Toolbar.RedoButton.Title.Text = "Redo";
-        configuration.Cleanup.Toolbar.ResetButton.Title.Text = "Reset";
-
-        configuration.Cleanup.Toolbar.StrokeSizeSlider.Visible = true;
-        configuration.Cleanup.Toolbar.StrokeSizeSlider.MinStrokeSize = 1;
-        configuration.Cleanup.Toolbar.StrokeSizeSlider.MaxStrokeSize = 50;
-        configuration.Cleanup.Toolbar.StrokeSizeSlider.Title.Text = "Brush size";
-
-        // Optional: show an introduction screen the first time the user opens cleanup.
-        configuration.Cleanup.Introduction.ShowAutomatically = true;
-
-        // Customize the alert dialogs shown for Reset and for cancelling with unsaved changes.
-        configuration.Cleanup.ResetAllEditsAlertDialog.Title.Text = "Reset all edits?";
-        configuration.Cleanup.ResetAllEditsAlertDialog.Subtitle.Text = "This will revert all cleanup operations on this page.";
-
-        configuration.Cleanup.DiscardChangesAlertDialog.Title.Text = "Discard changes?";
-        configuration.Cleanup.DiscardChangesAlertDialog.Subtitle.Text = "Your cleanup edits on this page will be lost.";
-
-        // Launch the scanner
-        var intent = DocumentCleanupActivity.NewIntent(this, configuration);
-        StartActivityForResult(intent, DocumentCleanUpdRequestCode);
     }
 
     private void SetupToolbar()

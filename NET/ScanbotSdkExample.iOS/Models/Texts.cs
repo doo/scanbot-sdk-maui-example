@@ -25,7 +25,5 @@
         public const string SaveHow = "How would you like to save the document?";
         
         public const string Tiff = "Save as TIFF";
-        
-        public const string CleanUp = "Clean Up";
     }
 }
