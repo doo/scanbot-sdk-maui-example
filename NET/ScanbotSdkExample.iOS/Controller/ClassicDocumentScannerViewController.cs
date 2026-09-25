@@ -45,7 +45,7 @@ public class ClassicDocumentScannerViewController : UIViewController
         var defaultConfigurations = _documentScannerViewController.CopyCurrentConfiguration();
 
         // We want unscaled images in full size:
-        _documentScannerViewController.ImageScale = 1.0f;
+        _documentScannerViewController.ViewModel.Configuration.ImageScale = 1.0f;
 
         // The minimum score in percent (0 - 100) of the perspective distortion to accept a detected document. 
         // Default is 75.0. Set lower values to accept more perspective distortion. Warning: Lower values result in more blurred document images.
@@ -57,7 +57,7 @@ public class ClassicDocumentScannerViewController : UIViewController
 
         // Sensitivity factor for automatic capturing. Must be in the range [0.0...1.0]. Invalid values are threated as 1.0. 
         // Defaults to 0.66 (1 sec).s A value of 1.0 triggers automatic capturing immediately, a value of 0.0 delays the automatic by 3 seconds.
-        _documentScannerViewController.AutoSnappingSensitivity = 0.7f;
+        _documentScannerViewController.ViewModel.Configuration.AutoSnappingSensitivity = 0.7f;
 
         // Set the updated configurations
         _documentScannerViewController.SetConfiguration(defaultConfigurations);
@@ -91,7 +91,7 @@ public class ClassicDocumentScannerViewController : UIViewController
 
     private void SetupDefaultShutterButtonColors()
     {
-        var shutterButton = _documentScannerViewController.SnapButton;
+        var shutterButton = _documentScannerViewController.ViewModel.Configuration.ShutterButtonConfiguration;
         shutterButton.ButtonSearchingColor = UIColor.Red;
         shutterButton.ButtonScannedColor = UIColor.Green;
     }
@@ -117,14 +117,14 @@ public class ClassicDocumentScannerViewController : UIViewController
         _flashButton = new UIButton(new CGRect(_bottomButtonsContainer.Frame.Width - 80, _bottomButtonsContainer.Frame.Height - 80, 40, 40));
         _flashButton.AddTarget(delegate
         {
-            _documentScannerViewController.IsFlashLightEnabled = !_documentScannerViewController.IsFlashLightEnabled;
-            _flashButton.Selected = _documentScannerViewController.IsFlashLightEnabled;
+            _documentScannerViewController.ViewModel.Camera.IsTorchLightEnabled = !_documentScannerViewController.ViewModel.Camera.IsTorchLightEnabled;
+            _flashButton.Selected = _documentScannerViewController.ViewModel.Camera.IsTorchLightEnabled;
         }, UIControlEvent.TouchUpInside);
 
         _flashButton.SetImage(UIImage.FromBundle("ui_flash_off"), UIControlState.Normal);
         _flashButton.SetImage(UIImage.FromBundle("ui_flash_on"), UIControlState.Selected);
 
-        _flashButton.Selected = _documentScannerViewController.IsFlashLightEnabled;
+        _flashButton.Selected = _documentScannerViewController.ViewModel.Camera.IsTorchLightEnabled;
 
         _bottomButtonsContainer.AddSubview(_flashButton);
         _bottomButtonsContainer.BringSubviewToFront(_flashButton);
@@ -133,9 +133,12 @@ public class ClassicDocumentScannerViewController : UIViewController
     private void SetAutoSnapEnabled(bool enabled)
     {
         _autoSnapButton.Selected = enabled;
-        _documentScannerViewController.AutoSnappingMode = enabled ? SBSDKAutoSnappingMode.Enabled : SBSDKAutoSnappingMode.Disabled;
-        _documentScannerViewController.SuppressDetectionStatusLabel = !enabled;
-        _documentScannerViewController.SnapButton.ScannerStatus = enabled ? SBSDKScannerStatus.Scanning : SBSDKScannerStatus.Idle;
+        _documentScannerViewController.ViewModel.Configuration.AutoSnappingMode = enabled ? SBSDKAutoSnappingMode.Enabled : SBSDKAutoSnappingMode.Disabled;
+        _documentScannerViewController.ViewModel.Configuration.SuppressDetectionStatusLabel = !enabled;
+        
+        // todo: Check with the iOS team
+        // _documentScannerViewController.ViewModel.RuntimeState.ShutterButtonStatus = enabled ? SBSDKShutterButtonStatus.Scanning : SBSDKShutterButtonStatus.Idle;
+        _documentScannerViewController.ViewModel.Configuration.IsShutterButtonVisible = enabled;
     }
 
     private void DidDetectDocument(object sender, SnapDocumentImageOnImageWithResultEventArgs args)

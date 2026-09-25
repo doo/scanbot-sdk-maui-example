@@ -23,11 +23,11 @@ public class ImageStraightening
 
             try
             {
-                  // Initialize the document enhancer.
-                  var enhancer = SBSDKDocumentEnhancer.CreateAndReturnError(out var documentEnhancerError).GetOrThrow(documentEnhancerError);
+                  // Initialize the document straightener.
+                  var straightener = SBSDKDocumentStraightener.CreateAndReturnError(out var documentEnhancerError).GetOrThrow(documentEnhancerError);
 
-                  // Straighten the image using the document enhancer.
-                  var result = enhancer.StraightenWithImage(image: imageRef,
+                  // Straighten the image using the document straightener.
+                  var result = straightener.RunWithImage(image: imageRef,
                         parameters: straighteningParameters,
                         priorCornersNormalized: [],
                         error: out var error).GetOrThrow(error);

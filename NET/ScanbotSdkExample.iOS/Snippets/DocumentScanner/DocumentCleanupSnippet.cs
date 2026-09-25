@@ -3,7 +3,7 @@ using ScanbotSdkExample.iOS.Utils;
 
 namespace ScanbotSdkExample.iOS.Snippets.DocumentScanner;
 
-public class CropScreenSnippet : UIViewController
+public class DocumentCleanupSnippet : UIViewController
 {
     public override void ViewDidLoad()
     {
@@ -18,18 +18,19 @@ public class CropScreenSnippet : UIViewController
         // Create the default configuration object.
         var configuration = new SBSDKUI2DocumentScanningFlow();
 
-        // Retrieve the instance of the crop configuration from the main configuration object.
-        var cropScreenConfiguration = configuration.Screens.Cropping;
+        // Retrieve the instance of the document cleanup configuration from the main configuration object.
+        var cleanupScreenConfiguration = configuration.Screens.Cleanup;
 
-        // e.g disable the rotation feature.
-        cropScreenConfiguration.Toolbar.RotateButton.Visible = false;
+        // e.g. enable/disable the buttons. They are by default ON
+        cleanupScreenConfiguration.Toolbar.RedoButton.Visible = true;
+        cleanupScreenConfiguration.Toolbar.UndoButton.Visible = true;
 
         // e.g. configure various colors.
         configuration.Appearance.TopBarBackgroundColor = new SBSDKUI2Color("#C8193C");
-        cropScreenConfiguration.TopBarConfirmButton.Foreground.Color = new SBSDKUI2Color(uiColor: UIColor.White);
+        cleanupScreenConfiguration.TopBarConfirmButton.Foreground.Color = new SBSDKUI2Color("#FFFFFF");;
 
         // e.g. customize a UI element's text
-        configuration.Localization.CroppingTopBarCancelButtonTitle = "Cancel";
+        configuration.Localization.DocumentCleanupTopBarCancelButtonTitle = "Cancel";
 
         try
         {
