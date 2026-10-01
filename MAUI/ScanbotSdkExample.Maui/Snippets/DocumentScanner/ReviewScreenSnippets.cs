@@ -20,7 +20,7 @@ public static class ReviewScreenSnippet
         reviewScreenConfiguration.ZoomButton.Visible = false;
 
         // Hide the add button.
-        reviewScreenConfiguration.BottomBar.AddButton.Visible = false;
+        reviewScreenConfiguration.Toolbar.AddButton.BarButton.Visible = false;
 
         // Retrieve the instance of the reorder pages configuration from the main configuration object.
         var reorderScreenConfiguration = configuration.Screens.ReorderPages;
@@ -35,19 +35,19 @@ public static class ReviewScreenSnippet
         var croppingScreenConfiguration = configuration.Screens.Cropping;
 
         // Hide the reset button.
-        croppingScreenConfiguration.BottomBar.ResetButton.Visible = false;
+        croppingScreenConfiguration.Toolbar.ResetButton.Visible = false;
 
         // Retrieve the retake button configuration from the main configuration object.
-        var retakeButtonConfiguration = configuration.Screens.Review.BottomBar.RetakeButton;
+        var retakeButtonConfiguration = configuration.Screens.Review.Toolbar.RetakeButton;
 
         // Show the retake button.
-        retakeButtonConfiguration.Visible = true;
+        retakeButtonConfiguration.BarButton.Visible = true;
 
         // Configure the retake title color.
-        retakeButtonConfiguration.Title.Color = Microsoft.Maui.Graphics.Colors.White;
+        retakeButtonConfiguration.BarButton.Background.StrokeColor = Microsoft.Maui.Graphics.Colors.White;
 
         // Apply the retake configuration button to the review bottom bar configuration.
-        configuration.Screens.Review.BottomBar.RetakeButton = retakeButtonConfiguration;
+        configuration.Screens.Review.Toolbar.RetakeButton = retakeButtonConfiguration;
 
         // Apply the configurations.
         configuration.Screens.Review = reviewScreenConfiguration;
