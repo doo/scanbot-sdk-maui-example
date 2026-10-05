@@ -21,6 +21,10 @@ public partial class MainViewController
 
             ShowPopup(this, result.MrzDocument.ToFormattedString());
         }, out var nsError);
+        if (nsError != null)
+        {
+            Alert.ValidateAndShowError(nsError);
+        }
     }
     
     private void ExtractDocumentData()
