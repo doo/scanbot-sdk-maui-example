@@ -135,9 +135,6 @@ public class ClassicDocumentScannerViewController : UIViewController
         _autoSnapButton.Selected = enabled;
         _documentScannerViewController.ViewModel.Configuration.AutoSnappingMode = enabled ? SBSDKAutoSnappingMode.Enabled : SBSDKAutoSnappingMode.Disabled;
         _documentScannerViewController.ViewModel.Configuration.SuppressDetectionStatusLabel = !enabled;
-        
-        // todo: Check with the iOS team
-        // _documentScannerViewController.ViewModel.RuntimeState.ShutterButtonStatus = enabled ? SBSDKShutterButtonStatus.Scanning : SBSDKShutterButtonStatus.Idle;
         _documentScannerViewController.ViewModel.Configuration.IsShutterButtonVisible = enabled;
     }
 

@@ -55,6 +55,11 @@ public partial class ScannedDocumentsViewController : UIViewController
 
     private void DocCleanUpFinishedHandler(SBSDKUI2DocumentCleanupViewController controller, SBSDKUI2DocumentCleanupUIResult result, NSError error)
     {
+        if (error != null)
+        {
+            Alert.ValidateAndShowError(error);
+            return;
+        }
         LoadPages();
     }
 
@@ -82,7 +87,7 @@ public partial class ScannedDocumentsViewController : UIViewController
         // e.g. configure various colors.
         configuration.Appearance.TopBarBackgroundColor = new SBSDKUI2Color(UIColor.Red);
         configuration.Cropping.TopBarConfirmButton.Foreground.Color = new SBSDKUI2Color(UIColor.White);
-        
+
         // e.g. customize a UI element's text
         configuration.Localization.CroppingTopBarCancelButtonTitle = "Cancel";
 
@@ -91,6 +96,12 @@ public partial class ScannedDocumentsViewController : UIViewController
 
     private void CroppingFinished(SBSDKUI2CroppingViewController controller, SBSDKUI2CroppingResult result, NSError error)
     {
+        if (error != null)
+        {
+            Alert.ValidateAndShowError(error);
+            return;
+        }
+
         LoadPages();
     }
 
@@ -128,12 +139,12 @@ public partial class ScannedDocumentsViewController : UIViewController
         controller.NavigateData(_ => LoadPages(), _scannedDocument);
         NavigationController?.PushViewController(controller, true);
     }
-    
+
     // Map document quality analysis result into string
     private string Map(SBSDKDocumentQuality documentQuality)
     {
         if (documentQuality == null) return "No Document";
-        
+
         if (SBSDKDocumentQuality.VeryPoor.Equals(documentQuality))
             return "Very Poor";
 
