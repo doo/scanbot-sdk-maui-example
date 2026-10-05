@@ -60,6 +60,7 @@ public partial class ScannedDocumentsViewController : UIViewController
             Alert.ValidateAndShowError(error);
             return;
         }
+        
         LoadPages();
     }
 
