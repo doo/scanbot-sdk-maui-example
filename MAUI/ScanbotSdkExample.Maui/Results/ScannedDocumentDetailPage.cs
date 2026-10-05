@@ -263,6 +263,9 @@ public class ScannedDocumentDetailPage : ContentPage
         if (!result.IsSuccess)
         {
             await Alert.ShowAsync(result.Error);
+            return;
         }
+
+        _documentImage.Source = _selectedPage.DocumentImagePreview.ToImageSource();
     }
 }
