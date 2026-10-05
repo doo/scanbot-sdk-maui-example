@@ -55,6 +55,12 @@ public partial class ScannedDocumentsViewController : UIViewController
 
     private void DocCleanUpFinishedHandler(SBSDKUI2DocumentCleanupViewController controller, SBSDKUI2DocumentCleanupUIResult result, NSError error)
     {
+        if (error != null)
+        {
+            Alert.ValidateAndShowError(error);
+            return;
+        }
+
         LoadPages();
     }
 
