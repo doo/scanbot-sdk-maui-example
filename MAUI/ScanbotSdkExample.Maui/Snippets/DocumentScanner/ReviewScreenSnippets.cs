@@ -44,9 +44,9 @@ public static class ReviewScreenSnippet
         retakeButtonConfiguration.BarButton.Visible = true;
 
         // Configure the retake title color.
-        retakeButtonConfiguration.BarButton.Background.StrokeColor = Microsoft.Maui.Graphics.Colors.White;
+        retakeButtonConfiguration.BarButton.Title.Color = Microsoft.Maui.Graphics.Colors.White;
 
-        // Apply the retake configuration button to the review bottom bar configuration.
+        // Apply the retake configuration button to the review toolbar configuration.
         configuration.Screens.Review.Toolbar.RetakeButton = retakeButtonConfiguration;
 
         // Apply the configurations.

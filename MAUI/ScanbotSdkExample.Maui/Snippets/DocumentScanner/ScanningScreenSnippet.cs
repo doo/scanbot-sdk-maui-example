@@ -35,7 +35,7 @@ public static class ScanningScreenSnippet
         cameraScreenConfig.UserGuidance.Background.FillColor = new ColorValue("#4A000000");
         cameraScreenConfig.UserGuidance.Title.Text = "Please hold your device over a document";
 
-        // Configure the the scanning assistance overlay.
+        // Configure the scanning assistance overlay.
         cameraScreenConfig.ScanAssistanceOverlay.Visible = true;
         cameraScreenConfig.ScanAssistanceOverlay.BackgroundColor = new ColorValue("#4A000000");
         cameraScreenConfig.ScanAssistanceOverlay.ForegroundColor = new ColorValue("#FFFFFF");
@@ -56,9 +56,9 @@ public static class ScanningScreenSnippet
         cameraScreenConfig.UserGuidance.StatesTitles.CaptureManual = "The document is ready to be captured";
 
 
-        // Configure the bottom bar and the bottom bar buttons.
+        // Configure the toolbar and the toolbar buttons.
         
-        // Set the background color of the bottom bar.
+        // Set the background color of the toolbar.
         configuration.Appearance.ToolbarBackgroundColor = new ColorValue("#C8193C");
 
         // Import button is used to import image from the gallery.

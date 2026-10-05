@@ -125,7 +125,7 @@ public static class DocumentScannerFeature
         // Enable/Disable the review screen.
         configuration.Screens.Review.Enabled = true;
 
-        // Configure bottom bar (further properties like title, icon and  background can also be set for these buttons)
+        // Configure toolbar (further properties like title, icon and  background can also be set for these buttons)
         configuration.Screens.Review.Toolbar.AddButton.BarButton.Visible = true;
         configuration.Screens.Review.Toolbar.RetakeButton.BarButton.Visible = true;
         configuration.Screens.Review.Toolbar.CropButton.BarButton.Visible = true;

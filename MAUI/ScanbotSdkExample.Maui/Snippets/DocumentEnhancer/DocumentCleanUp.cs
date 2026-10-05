@@ -6,7 +6,7 @@ namespace ScanbotSdkExample.Maui.Snippets.DocumentEnhancer;
 
 public class DocumentCleanUp
 {
-    public static async void StartDocumentCleanupAsync(string documentUuid, string pageUuid)
+    public static async Task StartDocumentCleanupAsync(string documentUuid, string pageUuid)
     {
         var configuration = new DocumentCleanupStandaloneConfiguration
         {
