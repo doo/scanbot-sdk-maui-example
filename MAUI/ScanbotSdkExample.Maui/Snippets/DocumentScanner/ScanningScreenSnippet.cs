@@ -35,7 +35,7 @@ public static class ScanningScreenSnippet
         cameraScreenConfig.UserGuidance.Background.FillColor = new ColorValue("#4A000000");
         cameraScreenConfig.UserGuidance.Title.Text = "Please hold your device over a document";
 
-        // Configure the the scanning assistance overlay.
+        // Configure the scanning assistance overlay.
         cameraScreenConfig.ScanAssistanceOverlay.Visible = true;
         cameraScreenConfig.ScanAssistanceOverlay.BackgroundColor = new ColorValue("#4A000000");
         cameraScreenConfig.ScanAssistanceOverlay.ForegroundColor = new ColorValue("#FFFFFF");
@@ -56,29 +56,28 @@ public static class ScanningScreenSnippet
         cameraScreenConfig.UserGuidance.StatesTitles.CaptureManual = "The document is ready to be captured";
 
 
-        // Configure the bottom bar and the bottom bar buttons.
+        // Configure the toolbar and the toolbar buttons.
         
-        // Set the background color of the bottom bar.
-        configuration.Appearance.BottomBarBackgroundColor = new ColorValue("#C8193C");
+        // Set the background color of the toolbar.
+        configuration.Appearance.ToolbarBackgroundColor = new ColorValue("#C8193C");
 
         // Import button is used to import image from the gallery.
-        cameraScreenConfig.BottomBar.ImportButton.Visible = true;
-        cameraScreenConfig.BottomBar.ImportButton.Title.Visible = true;
-        cameraScreenConfig.BottomBar.ImportButton.Title.Text = "Import";
+        cameraScreenConfig.Toolbar.ImportButton.Visible = true;
+        cameraScreenConfig.Toolbar.ImportButton.Title.Visible = true;
+        cameraScreenConfig.Toolbar.ImportButton.Title.Text = "Import";
 
         // Configure the auto/manual snap button.
-        cameraScreenConfig.BottomBar.AutoSnappingModeButton.Title.Visible = true;
-        cameraScreenConfig.BottomBar.AutoSnappingModeButton.Title.Text = "Auto";
-        cameraScreenConfig.BottomBar.ManualSnappingModeButton.Title.Visible = true;
-        cameraScreenConfig.BottomBar.ManualSnappingModeButton.Title.Text = "Manual";
+        cameraScreenConfig.Toolbar.AutoSnappingModeButton.Title.Visible = true;
+        cameraScreenConfig.Toolbar.AutoSnappingModeButton.Title.Text = "Auto";
+        cameraScreenConfig.Toolbar.ManualSnappingModeButton.Title.Visible = true;
+        cameraScreenConfig.Toolbar.ManualSnappingModeButton.Title.Text = "Manual";
 
         // Configure the torch off/on button.
-        cameraScreenConfig.BottomBar.TorchOnButton.Title.Visible = true;
-        cameraScreenConfig.BottomBar.TorchOnButton.Title.Text = "On";
-        cameraScreenConfig.BottomBar.TorchOffButton.Title.Visible = true;
-        cameraScreenConfig.BottomBar.TorchOffButton.Title.Text = "Off";
-
-
+        cameraScreenConfig.Toolbar.TorchOnButton.Title.Visible = true;
+        cameraScreenConfig.Toolbar.TorchOnButton.Title.Text = "On";
+        cameraScreenConfig.Toolbar.TorchOffButton.Title.Visible = true;
+        cameraScreenConfig.Toolbar.TorchOffButton.Title.Text = "Off";
+        
         // Configure the document capture feedback.
 
         // Configure the camera blink behavior when an image is captured.

@@ -1,12 +1,16 @@
 ﻿using ScanbotSDK.MAUI;
+using ScanbotSDK.MAUI.Barcode;
+using ScanbotSDK.MAUI.Core.Barcode;
 using ScanbotSDK.MAUI.Core.Document;
 using ScanbotSDK.MAUI.Core.DocumentScanner;
 using ScanbotSDK.MAUI.Core.ImageProcessing;
 using ScanbotSDK.MAUI.Core.PdfGeneration;
+using ScanbotSDK.MAUI.Image;
 using ScanbotSdkExample.Maui.Models;
 using ScanbotSdkExample.Maui.Results;
 using ScanbotSdkExample.Maui.ReadyToUseUI;
 using ScanbotSdkExample.Maui.Utils;
+using PointF = System.Drawing.PointF;
 
 namespace ScanbotSdkExample.Maui;
 
@@ -41,7 +45,7 @@ public partial class HomePage
 
             new SdkFeature("CLASSIC COMPONENT"),
             new SdkFeature("Classic Document Scanner", DocumentScannerFeature.ClassicDocumentScannerViewClicked),
-            new SdkFeature("Classic Document Scanner (MVVM)", DocumentScannerFeature.ClassicDocumentScannerMVVMViewClicked),
+            new SdkFeature("Classic Document Scanner (MVVM)", DocumentScannerFeature.ClassicDocumentScannerMvvmViewClicked),
 
             new SdkFeature("DATA DETECTORS"),
             new SdkFeature("Check Scanner", DataDetectorsFeature.CheckScannerClicked),
@@ -262,8 +266,7 @@ public partial class HomePage
 
             IsLoading = true;
 
-            var result = await ScanbotSDKMain.PdfImageExtractor.ExtractImageFilesAsync(
-                pdfFileUri: new Uri(filePath));
+            var result = await ScanbotSDKMain.PdfImageExtractor.ExtractImageFilesAsync(pdfFileUri: new Uri(filePath));
 
             if (!result.IsSuccess)
             {

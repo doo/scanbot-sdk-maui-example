@@ -13,9 +13,9 @@ public class TopBarSnippet
         var configuration = new CheckScannerScreenConfiguration();
         
         // Set the top bar mode.
-        configuration.TopBar.Mode = TopBarMode.Gradient;
+        configuration.TopBar.Mode = TopBarMode.Solid;
 
-        // Set the background color which will be used as a gradient.
+        // Set the background color used by the solid top bar.
         configuration.TopBar.BackgroundColor = new ColorValue("#C8193C");
 
         // Set the status bar mode.

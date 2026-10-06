@@ -25,14 +25,14 @@ public class AcknowledgeScreenSnippet
         // Set the background color for the acknowledgment screen.
         configuration.Screens.Camera.Acknowledgement.BackgroundColor = new ColorValue("#EFEFEF");
 
-        // You can also configure the buttons in the bottom bar of the acknowledgment screen.
+        // You can also configure the buttons in the toolbar of the acknowledgment screen.
         // E.g. to force the user to retake, if the captured document is not acceptable.
-        configuration.Screens.Camera.Acknowledgement.BottomBar.AcceptWhenAcceptableButton.Visible = false;
+        configuration.Screens.Camera.Acknowledgement.Toolbar.AcceptWhenAcceptableButton.Visible = false;
 
         // Hide the titles of the buttons.
-        configuration.Screens.Camera.Acknowledgement.BottomBar.AcceptWhenAcceptableButton.Title.Visible = false;
-        configuration.Screens.Camera.Acknowledgement.BottomBar.ProceedAnywayButton.UnacceptableQuality.Title.Visible = false;
-        configuration.Screens.Camera.Acknowledgement.BottomBar.RetakeButton.Title.Visible = false;
+        configuration.Screens.Camera.Acknowledgement.Toolbar.AcceptWhenAcceptableButton.Title.Visible = false;
+        configuration.Screens.Camera.Acknowledgement.Toolbar.ProceedAnywayButton.UnacceptableQuality.Title.Visible = false;
+        configuration.Screens.Camera.Acknowledgement.Toolbar.RetakeButton.Title.Visible = false;
 
         // Configure the acknowledgment screen's hint message which is shown if the least acceptable quality is not met.
         configuration.Screens.Camera.Acknowledgement.UnacceptableQualityWarning.Visible = true;
