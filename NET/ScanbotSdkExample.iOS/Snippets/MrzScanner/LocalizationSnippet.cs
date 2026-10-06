@@ -47,6 +47,6 @@ class LocalizationSnippet : UIViewController
             {
                 Console.WriteLine($"Nationality: {model.Nationality.Value.Text}, Confidence: {model.Nationality.ConfidenceWeight}");
             }
-        });
+        }, out var nsError);
     }
 }

@@ -20,7 +20,12 @@ public partial class MainViewController
                 return;
 
             ShowPopup(this, result.MrzDocument.ToFormattedString());
-        });
+        }, out var nsError);
+        
+        if (nsError != null)
+        {
+            Alert.ValidateAndShowError(nsError);
+        }
     }
     
     private void ExtractDocumentData()
@@ -37,7 +42,12 @@ public partial class MainViewController
             
             // Display the results.
             ShowPopup(this, result.Document?.ToFormattedString());
-        });
+        }, out var nsError);
+        
+        if (nsError != null)
+        {
+            Alert.ValidateAndShowError(nsError);
+        }
     }
 
     private void ScanCheck()
@@ -54,7 +64,12 @@ public partial class MainViewController
            
             // Display the results.
             ShowPopup(this, result.Check?.ToFormattedString());
-        });
+        },  out var nsError);
+        
+        if (nsError != null)
+        {
+            Alert.ValidateAndShowError(nsError);
+        }
     }
 
     private void ScanTextPattern()
@@ -68,14 +83,20 @@ public partial class MainViewController
                 Alert.ValidateAndShowError(error);
                 return;
             }
-            
+
             if (string.IsNullOrWhiteSpace(result.RawText))
             {
                 Alert.Show("Alert", "Something went wrong while scanning the text.");
                 return;
             }
+
             Alert.Show("Result", result.RawText);
-        });
+        }, out var nsError);
+        
+        if (nsError != null)
+        {
+            Alert.ValidateAndShowError(nsError);
+        }
     }
 
     private void ScanVin()
@@ -97,7 +118,12 @@ public partial class MainViewController
             }
 
             Alert.Show("Result", result.TextResult.RawText);
-        });
+        }, out var nsError);
+        
+        if (nsError != null)
+        {
+            Alert.ValidateAndShowError(nsError);
+        }
     }
 
     private void ScanCreditCard()
@@ -117,6 +143,11 @@ public partial class MainViewController
                 return;
 
             ShowPopup(this, result.CreditCard?.ToFormattedString());
-        });
+        }, out var nsError);
+        
+        if (nsError != null)
+        {
+            Alert.ValidateAndShowError(nsError);
+        }
     }
 }
