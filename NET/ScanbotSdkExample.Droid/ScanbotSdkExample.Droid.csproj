@@ -15,6 +15,6 @@
         <JavaMaximumHeapSize>2G</JavaMaximumHeapSize>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="ScanbotSDK.NET" Version="10.0.0-alpha.2" />
+        <PackageReference Include="ScanbotSDK.NET" Version="10.0.0-rc.1" />
     </ItemGroup>
 </Project>
