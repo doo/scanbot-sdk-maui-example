@@ -35,9 +35,6 @@ public partial class HomePage
         InitializeComponent();
         SdkFeatures =
         [
-            new SdkFeature("BARCODE SCANNER"),
-            new SdkFeature("RTU - Single Scanning", StartSingleBarcodeScanningAsync),
-            
             new SdkFeature("DOCUMENT SCANNER"),
             new SdkFeature("Single Document Scanning", DocumentScannerFeature.SingleDocumentScanningClicked),
             new SdkFeature("Single Finder Document Scanning", DocumentScannerFeature.SingleFinderDocumentScanningClicked),
@@ -68,7 +65,6 @@ public partial class HomePage
             new SdkFeature("PDF from Image", CreatePdfFromImageClicked),
             new SdkFeature("Extract Images from PDF", ExtractImagesFromPdfClicked),
             new SdkFeature("OCR from Image", ExtractOcrFromImageClicked),
-            new SdkFeature("Crop - ImageProcessor", CropImageProcessorClicked),
             
             new SdkFeature("MISCELLANEOUS"),
             new SdkFeature("Straighten document", DocumentStraightenerClicked),
@@ -77,71 +73,6 @@ public partial class HomePage
         ];
         
         BindingContext = this;
-    }
-    
-    private async Task StartSingleBarcodeScanningAsync()
-    {
-        // Create the default configuration object.
-        var config = new BarcodeScannerScreenConfiguration();
-
-        // Create single scanning mode.
-        var useCase = new SingleScanningMode();
-
-        // Enable and configure the confirmation sheet.
-        useCase.ConfirmationSheetEnabled = true;
-        
-        // Turn on the barcode AR overlay
-        useCase.ArOverlay.Visible = true;
-
-        // Configure other parameters, pertaining to single-scanning mode as needed.
-        config.UseCase = useCase;
-
-        // create barcode format configurations
-        var barcodeFormatConfiguration = new BarcodeFormatCommonConfiguration
-        {
-            // Set an array of accepted barcode types.
-            Formats = BarcodeFormats.All,
-            // Set an array of accepted barcode types.
-            Gs1Handling = Gs1Handling.DecodeStructure
-        };
-
-        // Set an array of barcode format configurations
-        config.ScannerConfiguration.BarcodeFormatConfigurations = [barcodeFormatConfiguration];
-        
-        // Enable return of barcode image.
-        config.ScannerConfiguration.ReturnBarcodeImage = true;
-
-        // Launch the barcode scanner.
-        var rtuResult = await ScanbotSDKMain.Barcode.StartScannerAsync(configuration: config);
-
-        // Comment out the above and use the below to try some of our snippets instead:
-        // var rtuResult = await ScanbotSDKMain.Barcode.StartScannerAsync(Snippets.SingleScanningUseCase);
-        // Or Snippets.MultipleScanningUseCase, Snippets.FindAndPickUseCase, Snippets.ActionBar, etc.
-        
-        // The scanner was canceled.
-        if (rtuResult.IsCanceled)
-        {
-            return;
-        }
-
-        // The scanning was failed
-        if (!rtuResult.IsSuccess && rtuResult.Error != null)
-        {
-            await Alert.ShowAsync(rtuResult.Error);
-            return;
-        }
-
-        // The scanning was success
-        if (rtuResult.IsSuccess)
-        {
-            var barcodeString = string.Empty;
-            foreach (var barcodeItem in rtuResult.Value.Items)
-            {
-                barcodeString += $"{barcodeItem.Barcode.Format}  {barcodeItem.Barcode.Text}";
-            }
-
-            await Alert.ShowAsync("Barcode Results", barcodeString);
-        }
     }
 
     private async Task DocumentStraightenerClicked()
@@ -189,37 +120,6 @@ public partial class HomePage
         }
 
         await feature.Action();
-    }
-
-    private async Task CropImageProcessorClicked()
-    {
-        try
-        {
-            var image = await ImagePicker.PickImageAsPathAsync();
-
-            if (image is null) return;
-
-            IsLoading = true;
-            var imageRef = ImageRef.FromPath(image);
-            var result = ScanbotSDKMain.ImageProcessor.Crop(imageRef, [new PointF()]);
-            
-            if (!result.IsSuccess)
-            {
-                await Alert.ShowAsync(result.Error);
-                return;
-            }
-
-            var imageSource = result.Value.ToImageSource(50); // only for displaying on the UI.
-            await Navigation.PushAsync(new PreviewImagesPage([imageSource]));
-        }
-        catch (Exception ex)
-        {
-            await Alert.ShowAsync("Error", ex.Message);
-        }
-        finally
-        {
-            IsLoading = false;
-        }
     }
 
     private async Task ScanDocumentFromImageClicked()

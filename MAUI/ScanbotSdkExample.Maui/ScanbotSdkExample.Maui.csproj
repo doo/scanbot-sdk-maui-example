@@ -121,6 +121,6 @@
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Maui" Version="14.0.1" />
         <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.*" />
-       <PackageReference Include="ScanbotSDK.MAUI" Version="10.0.0-alpha.2" />
+       <PackageReference Include="ScanbotSDK.MAUI" Version="10.0.0-rc.1" />
     </ItemGroup>
 </Project>
