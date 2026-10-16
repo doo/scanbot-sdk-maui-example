@@ -22,7 +22,6 @@
         <PackageId>ScanbotSdkExample.Maui</PackageId>
         <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
         <CreatePackage>false</CreatePackage>
-        <JavaMaximumHeapSize>2G</JavaMaximumHeapSize>
     </PropertyGroup>
     
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)' == 'Release|net10.0-ios'">
