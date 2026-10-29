@@ -48,9 +48,9 @@ class UserGuidanceSnippet : UIViewController
                 // Indicates that the cancel button was tapped.
                 return;
             }
-            
+
             // Handle the result
             Console.WriteLine($"Vin Scanner result: {result.TextResult.RawText}");
-        });
+        }, out var nsError);
     }
 }

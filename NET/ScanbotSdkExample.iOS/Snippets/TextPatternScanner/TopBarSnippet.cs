@@ -43,6 +43,6 @@ class TopBarSnippet : UIViewController
             {
                 // Indicates that the cancel button was tapped.
             }
-        });
+        }, out var nsError);
     }
 }

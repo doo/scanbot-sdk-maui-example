@@ -26,11 +26,11 @@ public class ImageStraightening
                 ]
             };
 
-            // Create the document enhancer.
-            var enhancer = sdk.CreateDocumentEnhancer().GetOrThrow<IDocumentEnhancer>();
+            // Create the document straightener.
+            var straightener = sdk.CreateDocumentStraightener().GetOrThrow<IDocumentStraightener>();
 
-            // Straighten the image using the document enhancer.
-            var result = enhancer.Straighten(image: imageRef,
+            // Straighten the image using the document straightener.
+            var result = straightener.Run(image: imageRef,
                 parameters: straighteningParameters,
                 priorCornersNormalized: []).GetOrThrow<DocumentStraighteningResult>();
 

@@ -53,7 +53,7 @@ public class ImageFilterAndRotateSnippet : AppCompatActivity
         imageProcessor.Rotate(ImageRotation.Clockwise90);
 
         // You can crop the image using the polygon if you want.
-        imageProcessor.Crop(result.DetectionResult.PointsNormalized);
+        imageProcessor.Crop(result.DetectionResult.PointsNormalized, DocumentCropOptimization.None);
 
         // Resize the image.
         imageProcessor.Resize(700);
