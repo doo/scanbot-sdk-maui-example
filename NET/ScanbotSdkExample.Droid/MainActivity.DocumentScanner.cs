@@ -74,7 +74,7 @@ public partial class MainActivity
 
         var configuration = new DocumentScanningFlow();
         configuration.OutputSettings.PagesScanLimit = 0; // allow multiple document scanning
-        configuration.Screens.Camera.BottomBar.ShutterButton.InnerColor = new ScanbotColor(Android.Graphics.Color.Red);
+        configuration.Screens.Camera.Toolbar.ShutterButton.InnerColor = new ScanbotColor(Android.Graphics.Color.Red);
 
         var intent = DocumentScannerActivity.NewIntent(this, configuration);
         StartActivityForResult(intent, ScanDocumentRequestCode);

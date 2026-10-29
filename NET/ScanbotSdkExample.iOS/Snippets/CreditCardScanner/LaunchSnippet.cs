@@ -42,6 +42,6 @@ class LaunchSnippet: UIViewController {
                 Console.WriteLine(
                     $"Name: {model.CardholderName.Value.Text}, Confidence: {model.CardholderName.ConfidenceWeight}");
             }
-        });
+        }, out var nsError);
     }
 }

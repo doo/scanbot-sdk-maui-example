@@ -48,7 +48,7 @@ adb devices
 To build the iOS example project for `net10.0-ios`:
 
 ```bash
-dotnet build NET/ScanbotSdkExample.iOS/ScanbotSdkExample.iOS.csproj -t:Run -f:net10.0-ios -r:ios-arm64 -p:_DeviceName=:<Your-Device-UDID>
+dotnet build NET/ScanbotSdkExample.iOS/ScanbotSdkExample.iOS.csproj -t:Build,Run -f net10.0-ios -p:RuntimeIdentifier=ios-arm64 -p:_DeviceName=<Your-Device-UDID>
 ```
 
 **Note:** To get all the iOS simulators and devices `UDID` you can run:
@@ -78,7 +78,7 @@ adb devices
 To build the iOS example project for `net10.0-ios`:
 
 ```bash
-dotnet build MAUI/ScanbotSdkExample.Maui/ScanbotSdkExample.Maui.csproj -t:Run -f:net10.0-ios -r:ios-arm64 -p:_DeviceName=:<Your-Device-UDID>
+dotnet build MAUI/ScanbotSdkExample.Maui/ScanbotSdkExample.Maui.csproj -t:Build,Run -f net10.0-ios -p:RuntimeIdentifier=ios-arm64 -p:_DeviceName=<Your-Device-UDID>
 ```
 
 **Note:** To get all the iOS simulators and devices `UDID` you can run:
