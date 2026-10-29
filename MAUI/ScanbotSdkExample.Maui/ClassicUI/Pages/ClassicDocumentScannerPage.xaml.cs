@@ -69,10 +69,6 @@ public partial class ClassicDocumentScannerPage : ContentPage
 		set
 		{
 			_isAutoSnappingEnabled = value;
-			if (!value)
-			{
-				ScanningHintLabel.IsVisible = false;
-			}
 			OnPropertyChanged();
 		}
 	}
@@ -140,11 +136,7 @@ public partial class ClassicDocumentScannerPage : ContentPage
 	private void ToggleVisibility()
 	{
 		IsCameraVisible = !IsCameraVisible;
-
-		if (!IsCameraVisible)
-		{
-			ScanningHintLabel.IsVisible = false;
-		}
+		ScanningHintLabel.IsVisible = IsCameraVisible;
 	}
 
 	// @Tag("Custom UI EventHandlers Implementation")
@@ -199,10 +191,8 @@ public partial class ClassicDocumentScannerPage : ContentPage
 				ScanningHintLabel.BackgroundColor = Colors.Yellow.WithAlpha(0.5f);;
 				break;
 			default:
-				ScanningHintLabel.IsVisible = false;
 				return;
 		}
-		ScanningHintLabel.IsVisible = IsAutoSnappingEnabled;
 	}
 	// @EndTag("Custom UI EventHandlers Implementation")
 
